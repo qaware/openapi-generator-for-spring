@@ -6,4 +6,4 @@ stages:
 build:
   stage: build
   script:
-    - mvn verify --fail-at-end
+    - mvn verify --batch-mode --fail-at-end
