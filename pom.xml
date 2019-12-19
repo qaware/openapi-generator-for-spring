@@ -22,6 +22,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <swagger-api.version>2.1.0</swagger-api.version>
+        <commons.io.version>2.6</commons.io.version>
     </properties>
 
     <modules>
@@ -31,6 +32,11 @@
     <dependencyManagement>
         <dependencies>
             <!-- swagger dependencies -->
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-core</artifactId>
+                <version>${swagger-api.version}</version>
+            </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-models</artifactId>
@@ -46,6 +52,14 @@
                 <artifactId>swagger-integration</artifactId>
                 <version>${swagger-api.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
