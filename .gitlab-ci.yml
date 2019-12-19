@@ -1,7 +1,9 @@
+image: maven:jdk8
+
 stages:
   - build
 
 build:
   stage: build
   script:
-    - mvn verify $MAVEN_BATCH --fail-at-end
+    - mvn verify --fail-at-end
