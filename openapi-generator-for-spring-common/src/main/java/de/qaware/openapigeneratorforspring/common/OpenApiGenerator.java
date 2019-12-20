@@ -2,10 +2,17 @@ package de.qaware.openapigeneratorforspring.common;
 
 import de.qaware.openapigeneratorforspring.common.filter.operation.OperationFilter;
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter;
+import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
+import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflict;
+import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
+import lombok.RequiredArgsConstructor;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -16,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@RequiredArgsConstructor
 public class OpenApiGenerator {
 
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
@@ -23,35 +31,43 @@ public class OpenApiGenerator {
     private final OperationBuilder operationBuilder;
     private final List<PathItemFilter> pathItemFilters;
     private final List<OperationFilter> operationFilters;
-
-    public OpenApiGenerator(RequestMappingHandlerMapping requestMappingHandlerMapping, OperationBuilder operationBuilder, List<PathItemFilter> pathItemFilters, List<OperationFilter> operationFilters) {
-        this.requestMappingHandlerMapping = requestMappingHandlerMapping;
-        this.operationBuilder = operationBuilder;
-        this.pathItemFilters = pathItemFilters;
-        this.operationFilters = operationFilters;
-    }
+    private final OperationIdConflictResolver operationIdConflictResolver;
 
     public OpenAPI generateOpenApi() {
 
         Map<RequestMappingInfo, HandlerMethod> map = requestMappingHandlerMapping.getHandlerMethods();
 
         Paths paths = new Paths();
+        MultiValueMap<String, OperationIdConflict> operationIdConflicts = new LinkedMultiValueMap<>();
         map.forEach((info, handlerMethod) -> info.getPatternsCondition().getPatterns().forEach(pathPattern -> {
             PathItem pathItem = new PathItem();
             Set<RequestMethod> requestMethods = info.getMethodsCondition().getMethods();
             Map<RequestMethod, Operation> operationPerMethod = new EnumMap<>(RequestMethod.class);
+            MultiValueMap<String, OperationIdConflict> operationIdConflictsPerPathItem = new LinkedMultiValueMap<>();
             requestMethods.forEach(requestMethod -> {
-                Operation operation = operationBuilder.buildOperation(requestMethod, pathPattern, handlerMethod);
+                OperationBuilderContext operationBuilderContext = new OperationBuilderContext(requestMethod, pathPattern, handlerMethod);
+                Operation operation = operationBuilder.buildOperation(operationBuilderContext);
                 if (isAcceptedByAllOperationFilters(operation, handlerMethod)) {
+                    String operationId = operation.getOperationId();
+                    if (operationId != null) {
+                        operationIdConflictsPerPathItem.add(operationId, OperationIdConflict.of(operation, operationBuilderContext));
+                    }
                     operationPerMethod.put(requestMethod, operation);
                     setOperationOnPathItem(requestMethod, pathItem, operation);
                 }
             });
 
             if (isAcceptedByAllPathFilters(pathItem, pathPattern, operationPerMethod)) {
+                operationIdConflicts.addAll(operationIdConflictsPerPathItem);
                 paths.addPathItem(pathPattern, pathItem);
             }
         }));
+
+        operationIdConflicts.forEach((operationId, operationIdConflictList) -> {
+            if (operationIdConflictList.size() > 1) {
+                operationIdConflictResolver.resolveConflict(operationId, operationIdConflictList);
+            }
+        });
 
         OpenAPI openApi = new OpenAPI();
         if (!paths.isEmpty()) {

@@ -1,0 +1,17 @@
+{
+  "openapi": "3.0.1",
+  "paths": {
+    "/v1/get-mapping": {
+      "get": {
+        "description": "de.qaware.openapigeneratorforspring.test.app3.App3Controller1#getMappingReturnString[0 args]",
+        "operationId": "getMappingReturnString0"
+      }
+    },
+    "/v2/get-mapping": {
+      "get": {
+        "description": "de.qaware.openapigeneratorforspring.test.app3.App3Controller2#getMappingReturnString[0 args]",
+        "operationId": "getMappingReturnString1"
+      }
+    }
+  }
+}

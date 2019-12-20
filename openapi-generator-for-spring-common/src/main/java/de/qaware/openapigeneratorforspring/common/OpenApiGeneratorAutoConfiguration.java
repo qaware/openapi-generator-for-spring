@@ -4,6 +4,11 @@ import de.qaware.openapigeneratorforspring.common.filter.operation.ExcludeHidden
 import de.qaware.openapigeneratorforspring.common.filter.operation.OperationFilter;
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.NoOperationsPathItemFilter;
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter;
+import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
+import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdConflictResolver;
+import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdProvider;
+import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
+import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,20 +31,34 @@ public class OpenApiGeneratorAutoConfiguration {
             RequestMappingHandlerMapping requestMappingHandlerMapping,
             OperationBuilder operationBuilder,
             List<PathItemFilter> pathItemFilters,
-            List<OperationFilter> operationFilters
+            List<OperationFilter> operationFilters,
+            OperationIdConflictResolver operationIdConflictResolver
     ) {
         return new OpenApiGenerator(
                 requestMappingHandlerMapping,
                 operationBuilder,
                 pathItemFilters,
-                operationFilters
+                operationFilters,
+                operationIdConflictResolver
         );
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public OperationBuilder operationBuilder() {
-        return new OperationBuilder();
+    public OperationBuilder operationBuilder(OperationIdProvider operationIdProvider) {
+        return new OperationBuilder(operationIdProvider);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OperationIdProvider defaultOperationIdProvider() {
+        return new DefaultOperationIdProvider();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OperationIdConflictResolver defaultOperationIdConflictResolver() {
+        return new DefaultOperationIdConflictResolver();
     }
 
     @Bean
