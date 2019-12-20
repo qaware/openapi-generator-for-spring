@@ -1,15 +1,17 @@
 package de.qaware.openapigeneratorforspring.test.app3;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "v2")
-public class App3Controller2 {
+@RequestMapping(path = "v3")
+public class App3ConflictingController3 {
 
-    @GetMapping("get-mapping")
-    public String getMappingReturnString() {
+    @GetMapping("post-mapping")
+    @Operation(operationId = "postMapping")
+    public String postMappingWithExplicitOperationId() {
         return null;
     }
 

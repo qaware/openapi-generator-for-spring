@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "v1")
-public class App3Controller1 {
+@RequestMapping(path = "v2")
+public class App3ConflictingController2 {
 
     @GetMapping("get-mapping")
     public String getMappingReturnString() {
@@ -14,3 +14,4 @@ public class App3Controller1 {
     }
 
 }
+

@@ -1,28 +1,60 @@
 {
   "openapi": "3.0.1",
   "paths": {
+    "/deprecated-methods/get-mapping": {
+      "get": {
+        "operationId": "deprecatedGetMapping",
+        "deprecated": true
+      }
+    },
+    "/deprecated-methods/post-mapping": {
+      "post": {
+        "tags": [],
+        "operationId": "deprecatedPostMapping",
+        "deprecated": true
+      }
+    },
+    "/all-deprecated/get-mapping": {
+      "get": {
+        "operationId": "allDeprecatedGetMapping",
+        "deprecated": true
+      }
+    },
+    "/all-deprecated/post-mapping": {
+      "post": {
+        "operationId": "allDeprecatedPostMapping",
+        "deprecated": true
+      }
+    },
+    "/operation-annotation/get1": {
+      "get": {
+        "tags": [
+          "TAG-1",
+          "TAG-2"
+        ],
+        "summary": "Summary 1",
+        "description": "Description 1",
+        "operationId": "getMappingOperation1"
+      }
+    },
     "/simple/get-mapping": {
       "get": {
-        "description": "de.qaware.openapigeneratorforspring.test.app2.App2SimpleController#getMappingReturnString[0 args]",
         "operationId": "getMappingReturnString"
-      }
-    },
-    "/simple/delete-mapping": {
-      "delete": {
-        "description": "de.qaware.openapigeneratorforspring.test.app2.App2SimpleController#deleteMapping[0 args]",
-        "operationId": "deleteMapping"
-      }
-    },
-    "/simple/post-mapping": {
-      "post": {
-        "description": "de.qaware.openapigeneratorforspring.test.app2.App2SimpleController#postMapping[0 args]",
-        "operationId": "postMapping"
       }
     },
     "/simple/put-mapping": {
       "put": {
-        "description": "de.qaware.openapigeneratorforspring.test.app2.App2SimpleController#putMapping[0 args]",
         "operationId": "putMapping"
+      }
+    },
+    "/simple/post-mapping": {
+      "post": {
+        "operationId": "postMapping"
+      }
+    },
+    "/simple/delete-mapping": {
+      "delete": {
+        "operationId": "deleteMapping"
       }
     }
   }

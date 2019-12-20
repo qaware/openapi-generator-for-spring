@@ -5,6 +5,9 @@ import de.qaware.openapigeneratorforspring.common.filter.operation.OperationFilt
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.NoOperationsPathItemFilter;
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultDeprecatedOperationCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationAnnotationCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdProvider;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
@@ -45,8 +48,8 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OperationBuilder operationBuilder(OperationIdProvider operationIdProvider) {
-        return new OperationBuilder(operationIdProvider);
+    public OperationBuilder operationBuilder(OperationIdProvider operationIdProvider, List<OperationCustomizer> operationCustomizers) {
+        return new OperationBuilder(operationIdProvider, operationCustomizers);
     }
 
     @Bean
@@ -59,6 +62,18 @@ public class OpenApiGeneratorAutoConfiguration {
     @ConditionalOnMissingBean
     public OperationIdConflictResolver defaultOperationIdConflictResolver() {
         return new DefaultOperationIdConflictResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultDeprecatedOperationCustomizer defaultDeprecatedOperationCustomizer() {
+        return new DefaultDeprecatedOperationCustomizer();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultOperationAnnotationCustomizer defaultOperationAnnotationCustomizer() {
+        return new DefaultOperationAnnotationCustomizer();
     }
 
     @Bean
