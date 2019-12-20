@@ -1,12 +1,3 @@
 {
-  "openapi": "3.0.1",
-  "paths": {
-    "error": {},
-    "errorHtml": {},
-    "getOpenApiAsJson": {
-      "get": {
-        "description": "de.qaware.openapigeneratorforspring.common.OpenApiResource#getOpenApiAsJson[0 args]"
-      }
-    }
-  }
+  "openapi": "3.0.1"
 }
