@@ -1,30 +1,31 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiAnnotationUtils;
+import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvider;
 import io.swagger.v3.oas.models.Operation;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.Ordered;
 
-import java.lang.reflect.Method;
-
-public class DefaultDeprecatedOperationCustomizer implements OperationCustomizer, Ordered {
+@RequiredArgsConstructor
+public class DefaultOperationIdCustomizer implements OperationCustomizer, Ordered {
 
     public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 1000;
 
+    private final OperationIdProvider operationIdProvider;
+
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        Method method = operationBuilderContext.getHandlerMethod().getMethod();
-        Deprecated deprecatedOnMethodOrClass = OpenApiAnnotationUtils.findAnnotationOnMethodOrClass(method, Deprecated.class);
-        if (deprecatedOnMethodOrClass != null) {
-            operation.deprecated(true);
-        }
+        operation.setOperationId(operationIdProvider.getOperationId(operationBuilderContext));
     }
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext,
                           io.swagger.v3.oas.annotations.Operation operationAnnotation) {
-        if (operationAnnotation.deprecated()) {
-            operation.setDeprecated(true);
+
+
+        if (StringUtils.isNotBlank(operationAnnotation.operationId())) {
+            operation.setOperationId(operationAnnotation.operationId());
         } else {
             customize(operation, operationBuilderContext);
         }

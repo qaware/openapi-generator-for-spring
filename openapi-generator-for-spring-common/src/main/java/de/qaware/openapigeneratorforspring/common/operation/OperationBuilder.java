@@ -4,7 +4,9 @@ import de.qaware.openapigeneratorforspring.common.operation.customizer.Operation
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvider;
 import io.swagger.v3.oas.models.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.annotation.AnnotationUtils;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -14,10 +16,17 @@ public class OperationBuilder {
     private final List<OperationCustomizer> operationCustomizers;
 
     public Operation buildOperation(OperationBuilderContext context) {
-        Operation operation = new Operation()
-                .operationId(operationIdProvider.getOperationId(context));
+        Method method = context.getHandlerMethod().getMethod();
+        io.swagger.v3.oas.annotations.Operation operationAnnotation
+                = AnnotationUtils.findAnnotation(method, io.swagger.v3.oas.annotations.Operation.class);
+
+        Operation operation = new Operation();
         for (OperationCustomizer operationCustomizer : operationCustomizers) {
-            operationCustomizer.customize(operation, context);
+            if (operationAnnotation != null) {
+                operationCustomizer.customize(operation, context, operationAnnotation);
+            } else {
+                operationCustomizer.customize(operation, context);
+            }
         }
         return operation;
     }

@@ -4,5 +4,13 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderCont
 import io.swagger.v3.oas.models.Operation;
 
 public interface OperationCustomizer {
-    void customize(Operation operation, OperationBuilderContext operationBuilderContext);
+
+    default void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
+        // do nothing by default
+    }
+
+    default void customize(Operation operation, OperationBuilderContext operationBuilderContext,
+                           io.swagger.v3.oas.annotations.Operation operationAnnotation) {
+        customize(operation, operationBuilderContext);
+    }
 }
