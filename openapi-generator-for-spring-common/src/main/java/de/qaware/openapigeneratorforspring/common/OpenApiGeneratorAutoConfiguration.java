@@ -6,8 +6,11 @@ import de.qaware.openapigeneratorforspring.common.filter.pathitem.NoOperationsPa
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultDeprecatedOperationCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationAnnotationCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationExternalDocsCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationIdCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationServersCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationSummaryAndDescriptionCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationTagsCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdProvider;
@@ -73,8 +76,27 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationAnnotationCustomizer defaultOperationAnnotationCustomizer() {
-        return new DefaultOperationAnnotationCustomizer();
+    public DefaultOperationSummaryAndDescriptionCustomizer defaultOperationSummaryAndDescriptionCustomizer() {
+        return new DefaultOperationSummaryAndDescriptionCustomizer();
+    }
+
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultOperationTagsCustomizer defaultOperationTagsCustomizer() {
+        return new DefaultOperationTagsCustomizer();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultOperationExternalDocsCustomizer defaultOperationExternalDocsCustomizer() {
+        return new DefaultOperationExternalDocsCustomizer();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultOperationServersCustomizer defaultOperationServersCustomizer() {
+        return new DefaultOperationServersCustomizer();
     }
 
     @Bean

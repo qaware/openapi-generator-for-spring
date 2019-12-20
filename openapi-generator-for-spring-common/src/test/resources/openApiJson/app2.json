@@ -1,28 +1,27 @@
 {
   "openapi": "3.0.1",
   "paths": {
+    "/deprecated-methods/post-mapping": {
+      "post": {
+        "operationId": "deprecatedPostMapping",
+        "deprecated": true
+      }
+    },
     "/deprecated-methods/get-mapping": {
       "get": {
         "operationId": "deprecatedGetMapping",
         "deprecated": true
       }
     },
-    "/deprecated-methods/post-mapping": {
+    "/all-deprecated/post-mapping": {
       "post": {
-        "tags": [],
-        "operationId": "deprecatedPostMapping",
+        "operationId": "allDeprecatedPostMapping",
         "deprecated": true
       }
     },
     "/all-deprecated/get-mapping": {
       "get": {
         "operationId": "allDeprecatedGetMapping",
-        "deprecated": true
-      }
-    },
-    "/all-deprecated/post-mapping": {
-      "post": {
-        "operationId": "allDeprecatedPostMapping",
         "deprecated": true
       }
     },
@@ -37,14 +36,62 @@
         "operationId": "getMappingOperation1"
       }
     },
+    "/operation-annotation/get3": {
+      "get": {
+        "externalDocs": {
+          "description": "external doc description",
+          "url": "http://some-url",
+          "x-extension1": {
+            "property2": "value2",
+            "property1": "value1"
+          }
+        },
+        "operationId": "getMappingOperation3"
+      }
+    },
+    "/operation-annotation/get4": {
+      "get": {
+        "operationId": "getMappingOperation4",
+        "servers": [
+          {
+            "url": "http://some-other-url",
+            "description": "Server description",
+            "variables": {
+              "server-variable-name-1": {
+                "description": "variable description",
+                "default": "A",
+                "enum": [
+                  "A",
+                  "B"
+                ],
+                "x-extension2": {
+                  "property4": "value4",
+                  "property3": "value3"
+                }
+              }
+            },
+            "x-extension3": {
+              "property6": "value6",
+              "property5": "value5"
+            }
+          }
+        ]
+      }
+    },
+    "/operation-annotation/get2": {
+      "get": {
+        "summary": "Summary 2",
+        "operationId": "getMappingOperation2"
+      }
+    },
     "/simple/get-mapping": {
       "get": {
         "operationId": "getMappingReturnString"
       }
     },
-    "/simple/put-mapping": {
-      "put": {
-        "operationId": "putMapping"
+    "/simple/delete-mapping": {
+      "delete": {
+        "operationId": "deleteMapping"
       }
     },
     "/simple/post-mapping": {
@@ -52,9 +99,9 @@
         "operationId": "postMapping"
       }
     },
-    "/simple/delete-mapping": {
-      "delete": {
-        "operationId": "deleteMapping"
+    "/simple/put-mapping": {
+      "put": {
+        "operationId": "putMapping"
       }
     }
   }
