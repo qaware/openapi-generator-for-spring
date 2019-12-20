@@ -12,16 +12,26 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import java.util.List;
 
 @Configuration
-public class OpenApiGeneratorForSpringAutoConfiguration {
+public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OpenApiResource openApiResource(
+    public OpenApiResource openApiResource(OpenApiGenerator openApiGenerator) {
+        return new OpenApiResource(openApiGenerator);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OpenApiGenerator openApiGenerator(
             RequestMappingHandlerMapping requestMappingHandlerMapping,
             List<PathItemFilter> pathItemFilters,
             List<OperationFilter> operationFilters
     ) {
-        return new OpenApiResource(requestMappingHandlerMapping, pathItemFilters, operationFilters);
+        return new OpenApiGenerator(
+                requestMappingHandlerMapping,
+                pathItemFilters,
+                operationFilters
+        );
     }
 
     @Bean

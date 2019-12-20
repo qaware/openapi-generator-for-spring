@@ -1,0 +1,25 @@
+{
+  "openapi": "3.0.1",
+  "paths": {
+    "/simple/get-mapping": {
+      "get": {
+        "description": "de.qaware.openapigeneratorforspring.test.app2.App2SimpleController#getMappingReturnString[0 args]"
+      }
+    },
+    "/simple/delete-mapping": {
+      "delete": {
+        "description": "de.qaware.openapigeneratorforspring.test.app2.App2SimpleController#deleteMapping[0 args]"
+      }
+    },
+    "/simple/post-mapping": {
+      "post": {
+        "description": "de.qaware.openapigeneratorforspring.test.app2.App2SimpleController#postMapping[0 args]"
+      }
+    },
+    "/simple/put-mapping": {
+      "put": {
+        "description": "de.qaware.openapigeneratorforspring.test.app2.App2SimpleController#putMapping[0 args]"
+      }
+    }
+  }
+}

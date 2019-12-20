@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-de.qaware.openapigeneratorforspring.common.OpenApiGeneratorForSpringAutoConfiguration
+de.qaware.openapigeneratorforspring.common.OpenApiGeneratorAutoConfiguration
