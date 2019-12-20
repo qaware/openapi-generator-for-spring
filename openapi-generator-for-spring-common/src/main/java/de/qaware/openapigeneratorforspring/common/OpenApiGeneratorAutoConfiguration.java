@@ -24,14 +24,22 @@ public class OpenApiGeneratorAutoConfiguration {
     @ConditionalOnMissingBean
     public OpenApiGenerator openApiGenerator(
             RequestMappingHandlerMapping requestMappingHandlerMapping,
+            OperationBuilder operationBuilder,
             List<PathItemFilter> pathItemFilters,
             List<OperationFilter> operationFilters
     ) {
         return new OpenApiGenerator(
                 requestMappingHandlerMapping,
+                operationBuilder,
                 pathItemFilters,
                 operationFilters
         );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OperationBuilder operationBuilder() {
+        return new OperationBuilder();
     }
 
     @Bean

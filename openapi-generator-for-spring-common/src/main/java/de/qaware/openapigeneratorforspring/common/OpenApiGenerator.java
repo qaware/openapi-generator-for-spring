@@ -20,11 +20,13 @@ public class OpenApiGenerator {
 
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
 
+    private final OperationBuilder operationBuilder;
     private final List<PathItemFilter> pathItemFilters;
     private final List<OperationFilter> operationFilters;
 
-    public OpenApiGenerator(RequestMappingHandlerMapping requestMappingHandlerMapping, List<PathItemFilter> pathItemFilters, List<OperationFilter> operationFilters) {
+    public OpenApiGenerator(RequestMappingHandlerMapping requestMappingHandlerMapping, OperationBuilder operationBuilder, List<PathItemFilter> pathItemFilters, List<OperationFilter> operationFilters) {
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
+        this.operationBuilder = operationBuilder;
         this.pathItemFilters = pathItemFilters;
         this.operationFilters = operationFilters;
     }
@@ -39,7 +41,7 @@ public class OpenApiGenerator {
             Set<RequestMethod> requestMethods = info.getMethodsCondition().getMethods();
             Map<RequestMethod, Operation> operationPerMethod = new EnumMap<>(RequestMethod.class);
             requestMethods.forEach(requestMethod -> {
-                Operation operation = new Operation().description(handlerMethod.getShortLogMessage());
+                Operation operation = operationBuilder.buildOperation(requestMethod, pathPattern, handlerMethod);
                 if (isAcceptedByAllOperationFilters(operation, handlerMethod)) {
                     operationPerMethod.put(requestMethod, operation);
                     setOperationOnPathItem(requestMethod, pathItem, operation);
