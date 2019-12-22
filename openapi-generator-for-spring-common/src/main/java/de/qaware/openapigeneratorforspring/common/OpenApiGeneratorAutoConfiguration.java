@@ -4,10 +4,19 @@ import de.qaware.openapigeneratorforspring.common.filter.operation.ExcludeHidden
 import de.qaware.openapigeneratorforspring.common.filter.operation.OperationFilter;
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.NoOperationsPathItemFilter;
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter;
+import de.qaware.openapigeneratorforspring.common.mapper.ContentAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultContentAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultEncodingAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultHeaderAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultSchemaAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.EncodingAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultDeprecatedOperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationExternalDocsCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationIdCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationResponseCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationServersCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationSummaryAndDescriptionCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationTagsCustomizer;
@@ -103,6 +112,36 @@ public class OpenApiGeneratorAutoConfiguration {
     @ConditionalOnMissingBean
     public DefaultOperationIdCustomizer defaultOperationIdCustomizer(OperationIdProvider operationIdProvider) {
         return new DefaultOperationIdCustomizer(operationIdProvider);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultOperationResponseCustomizer defaultOperationResponseCustomizer(HeaderAnnotationMapper headerAnnotationMapper, ContentAnnotationMapper contentAnnotationMapper) {
+        return new DefaultOperationResponseCustomizer(headerAnnotationMapper, contentAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public HeaderAnnotationMapper defaultHeaderAnnotationMapper(SchemaAnnotationMapper schemaAnnotationMapper) {
+        return new DefaultHeaderAnnotationMapper(schemaAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SchemaAnnotationMapper defaultSchemaAnnotationMapper() {
+        return new DefaultSchemaAnnotationMapper();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ContentAnnotationMapper defaultContentAnnotationMapper(EncodingAnnotationMapper encodingAnnotationMapper, SchemaAnnotationMapper schemaAnnotationMapper) {
+        return new DefaultContentAnnotationMapper(encodingAnnotationMapper, schemaAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public EncodingAnnotationMapper defaultEncodingAnnotationMapper(HeaderAnnotationMapper headerAnnotationMapper) {
+        return new DefaultEncodingAnnotationMapper(headerAnnotationMapper);
     }
 
     @Bean

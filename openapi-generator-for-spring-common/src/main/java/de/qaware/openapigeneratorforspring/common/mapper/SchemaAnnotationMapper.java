@@ -4,7 +4,7 @@ import io.swagger.v3.oas.models.media.Schema;
 
 import javax.annotation.Nullable;
 
-public interface SchemaMapper {
+public interface SchemaAnnotationMapper {
     @Nullable
-    Schema fromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation);
+    Schema mapFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation);
 }
