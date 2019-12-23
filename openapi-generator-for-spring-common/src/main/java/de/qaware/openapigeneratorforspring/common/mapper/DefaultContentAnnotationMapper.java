@@ -1,14 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import io.swagger.v3.core.util.AnnotationsUtils;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildMapFromArray;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
@@ -18,6 +14,8 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
 
     private final EncodingAnnotationMapper encodingAnnotationMapper;
     private final SchemaAnnotationMapper schemaAnnotationMapper;
+    private final ExtensionAnnotationMapper extensionAnnotationMapper;
+    private final ExampleObjectAnnotationMapper exampleObjectAnnotationMapper;
 
     @Override
     public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations) {
@@ -39,20 +37,15 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
         setExampleOrExamples(mediaType, contentAnnotation.examples());
         setMapIfNotEmpty(mediaType::setEncoding, encodingAnnotationMapper.mapArray(contentAnnotation.encoding()));
         mediaType.setSchema(schemaAnnotationMapper.mapFromAnnotation(contentAnnotation.schema()));
-        setMapIfNotEmpty(mediaType::setExtensions, AnnotationsUtils.getExtensions(contentAnnotation.extensions()));
+        setMapIfNotEmpty(mediaType::setExtensions, extensionAnnotationMapper.mapArray(contentAnnotation.extensions()));
         return mediaType;
     }
 
-    private void setExampleOrExamples(MediaType mediaType, ExampleObject[] examples) {
-        if (examples.length == 1 && StringUtils.isBlank(examples[0].name())) {
-            AnnotationsUtils.getExample(examples[0], true).ifPresent(mediaType::setExample);
+    private void setExampleOrExamples(MediaType mediaType, ExampleObject[] exampleObjectAnnotations) {
+        if (exampleObjectAnnotations.length == 1 && StringUtils.isBlank(exampleObjectAnnotations[0].name())) {
+            mediaType.setExample(exampleObjectAnnotationMapper.map(exampleObjectAnnotations[0]));
         } else {
-            setMapIfNotEmpty(mediaType::setExamples,
-                    buildMapFromArray(examples, ExampleObject::name, AnnotationsUtils::getExample)
-                            .entrySet().stream()
-                            .filter(entry -> entry.getValue().isPresent())
-                            .collect(Collectors.toMap(Map.Entry::getKey, x -> x.getValue().get()))
-            );
+            setMapIfNotEmpty(mediaType::setExamples, exampleObjectAnnotationMapper.mapArray(exampleObjectAnnotations));
         }
     }
 }

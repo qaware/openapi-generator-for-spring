@@ -106,12 +106,10 @@
                 "examples": {
                   "example3": {
                     "summary": "summary example3",
-                    "description": "example3",
                     "externalValue": "http://some-url2"
                   },
                   "example2": {
                     "summary": "summary example2",
-                    "description": "example2",
                     "externalValue": "http://some-url1"
                   }
                 }

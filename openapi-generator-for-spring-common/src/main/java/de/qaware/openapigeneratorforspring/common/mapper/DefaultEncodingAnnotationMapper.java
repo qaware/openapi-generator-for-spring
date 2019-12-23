@@ -1,7 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
 import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
-import io.swagger.v3.core.util.AnnotationsUtils;
 import io.swagger.v3.oas.models.media.Encoding;
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +16,7 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.se
 public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper {
 
     private final HeaderAnnotationMapper headerAnnotationMapper;
+    private final ExtensionAnnotationMapper extensionAnnotationMapper;
 
     @Override
     public Map<String, Encoding> mapArray(io.swagger.v3.oas.annotations.media.Encoding[] encodingAnnotations) {
@@ -38,7 +38,7 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
         }
 
         setMapIfNotEmpty(encoding::setHeaders, headerAnnotationMapper.mapArray(encodingAnnotation.headers()));
-        setMapIfNotEmpty(encoding::setExtensions, AnnotationsUtils.getExtensions(encodingAnnotation.extensions()));
+        setMapIfNotEmpty(encoding::setExtensions, extensionAnnotationMapper.mapArray(encodingAnnotation.extensions()));
 
         return encoding;
     }

@@ -7,6 +7,7 @@ import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter
 import de.qaware.openapigeneratorforspring.common.mapper.ContentAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultContentAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultEncodingAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultExampleObjectAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultHeaderAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkAnnotationMapper;
@@ -16,6 +17,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.DefaultSchemaAnnotation
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerVariableAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.EncodingAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
@@ -198,14 +200,34 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ContentAnnotationMapper defaultContentAnnotationMapper(EncodingAnnotationMapper encodingAnnotationMapper, SchemaAnnotationMapper schemaAnnotationMapper) {
-        return new DefaultContentAnnotationMapper(encodingAnnotationMapper, schemaAnnotationMapper);
+    public ContentAnnotationMapper defaultContentAnnotationMapper(
+            EncodingAnnotationMapper encodingAnnotationMapper,
+            SchemaAnnotationMapper schemaAnnotationMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper,
+            ExampleObjectAnnotationMapper exampleObjectAnnotationMapper
+    ) {
+        return new DefaultContentAnnotationMapper(
+                encodingAnnotationMapper, schemaAnnotationMapper,
+                extensionAnnotationMapper, exampleObjectAnnotationMapper
+        );
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public EncodingAnnotationMapper defaultEncodingAnnotationMapper(HeaderAnnotationMapper headerAnnotationMapper) {
-        return new DefaultEncodingAnnotationMapper(headerAnnotationMapper);
+    public ExampleObjectAnnotationMapper defaultExampleObjectAnnotationMapper(
+            ParsableValueMapper parsableValueMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper
+    ) {
+        return new DefaultExampleObjectAnnotationMapper(parsableValueMapper, extensionAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public EncodingAnnotationMapper defaultEncodingAnnotationMapper(
+            HeaderAnnotationMapper headerAnnotationMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper
+    ) {
+        return new DefaultEncodingAnnotationMapper(headerAnnotationMapper, extensionAnnotationMapper);
     }
 
     @Bean
