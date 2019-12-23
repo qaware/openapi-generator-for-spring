@@ -35,7 +35,7 @@ public class DefaultExampleObjectAnnotationMapper implements ExampleObjectAnnota
         );
         OpenApiStringUtils.setStringIfNotBlank(exampleObjectAnnotation.externalValue(), example::setExternalValue);
         OpenApiStringUtils.setStringIfNotBlank(exampleObjectAnnotation.ref(), example::set$ref);
-        OpenApiMapUtils.setMapIfNotEmpty(example::setExtensions, extensionAnnotationMapper.mapArray(exampleObjectAnnotation.extensions()));
+        OpenApiMapUtils.setMapIfNotEmpty(extensionAnnotationMapper.mapArray(exampleObjectAnnotation.extensions()), example::setExtensions);
         return example;
     }
 }

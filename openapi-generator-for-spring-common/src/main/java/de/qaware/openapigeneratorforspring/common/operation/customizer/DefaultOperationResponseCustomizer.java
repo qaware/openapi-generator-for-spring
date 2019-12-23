@@ -51,7 +51,7 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer, 
     private void fillApiResponses(Operation operation, Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponseAnnotations) {
         ApiResponses apiResponses = buildApiResponsesFromAnnotations(apiResponseAnnotations);
 
-        setMapIfNotEmpty(operation::setResponses, apiResponses);
+        setMapIfNotEmpty(apiResponses, operation::setResponses);
     }
 
     private String getResponseCodeFromMethod(Method method) {

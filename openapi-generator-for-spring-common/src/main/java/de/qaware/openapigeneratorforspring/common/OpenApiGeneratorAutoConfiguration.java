@@ -9,6 +9,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.DefaultContentAnnotatio
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultEncodingAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultExampleObjectAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultExtensionAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultExternalDocumentationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultHeaderAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkParameterAnnotationMapper;
@@ -19,6 +20,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerVariableAn
 import de.qaware.openapigeneratorforspring.common.mapper.EncodingAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkParameterAnnotationMapper;
@@ -114,8 +116,8 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationExternalDocsCustomizer defaultOperationExternalDocsCustomizer() {
-        return new DefaultOperationExternalDocsCustomizer();
+    public DefaultOperationExternalDocsCustomizer defaultOperationExternalDocsCustomizer(ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper) {
+        return new DefaultOperationExternalDocsCustomizer(externalDocumentationAnnotationMapper);
     }
 
     @Bean
@@ -154,6 +156,12 @@ public class OpenApiGeneratorAutoConfiguration {
         return new DefaultLinkAnnotationMapper(
                 parsableValueMapper, extensionAnnotationMapper, linkParameterAnnotationMapper, serverAnnotationMapper
         );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ExternalDocumentationAnnotationMapper defaultExternalDocumentationAnnotationMapper(ExtensionAnnotationMapper extensionAnnotationMapper) {
+        return new DefaultExternalDocumentationAnnotationMapper(extensionAnnotationMapper);
     }
 
     @Bean

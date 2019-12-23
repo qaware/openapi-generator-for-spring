@@ -32,8 +32,8 @@ public class DefaultLinkAnnotationMapper implements LinkAnnotationMapper {
         Link link = new Link();
         setStringIfNotBlank(linkAnnotation.operationRef(), link::setOperationRef);
         setStringIfNotBlank(linkAnnotation.operationId(), link::setOperationId);
-        setMapIfNotEmpty(link::setParameters,
-                linkParameterAnnotationMapper.mapArray(linkAnnotation.parameters()));
+        setMapIfNotEmpty(linkParameterAnnotationMapper.mapArray(linkAnnotation.parameters()), link::setParameters
+        );
         setStringIfNotBlank(linkAnnotation.requestBody(),
                 body -> link.setRequestBody(parsableValueMapper.parse(body))
         );
@@ -41,8 +41,8 @@ public class DefaultLinkAnnotationMapper implements LinkAnnotationMapper {
 
         setStringIfNotBlank(linkAnnotation.ref(), link::set$ref);
 
-        setMapIfNotEmpty(link::setExtensions,
-                extensionAnnotationMapper.mapArray(linkAnnotation.extensions()));
+        setMapIfNotEmpty(extensionAnnotationMapper.mapArray(linkAnnotation.extensions()), link::setExtensions
+        );
 
         serverAnnotationMapper.map(linkAnnotation.server()).ifPresent(link::setServer);
 

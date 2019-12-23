@@ -15,8 +15,8 @@ public class DefaultOperationExtensionsCustomizer implements OperationCustomizer
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext, io.swagger.v3.oas.annotations.Operation operationAnnotation) {
         setMapIfNotEmpty(
-                operation::setExtensions,
-                extensionAnnotationMapper.mapArray(operationAnnotation.extensions())
+                extensionAnnotationMapper.mapArray(operationAnnotation.extensions()),
+                operation::setExtensions
         );
     }
 }

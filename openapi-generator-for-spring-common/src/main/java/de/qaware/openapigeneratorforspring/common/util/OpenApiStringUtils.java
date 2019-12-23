@@ -11,10 +11,12 @@ public class OpenApiStringUtils {
         // static methods only
     }
 
-    public static void setStringIfNotBlank(@Nullable String value, Consumer<String> setter) {
+    public static boolean setStringIfNotBlank(@Nullable String value, Consumer<String> setter) {
         if (StringUtils.isNotBlank(value)) {
             setter.accept(value);
+            return true;
         }
+        return false;
     }
 
 }

@@ -18,14 +18,16 @@ public class OpenApiMapUtils {
         if (existingMap != null) {
             existingMap.putAll(toBeMerged);
         } else {
-            setMapIfNotEmpty(setter, toBeMerged);
+            setMapIfNotEmpty(toBeMerged, setter);
         }
     }
 
-    public static <M extends Map<K, V>, K, V> void setMapIfNotEmpty(Consumer<? super M> setter, M map) {
+    public static <M extends Map<K, V>, K, V> boolean setMapIfNotEmpty(M map, Consumer<? super M> setter) {
         if (!map.isEmpty()) {
             setter.accept(map);
+            return true;
         }
+        return false;
     }
 
     public static <T, K, V> Map<K, V> buildMapFromArray(

@@ -35,7 +35,7 @@ public class DefaultServerVariableAnnotationMapper implements ServerVariableAnno
         OpenApiStringUtils.setStringIfNotBlank(serverVariableAnnotation.defaultValue(), serverVariable::setDefault);
         OpenApiStringUtils.setStringIfNotBlank(serverVariableAnnotation.description(), serverVariable::setDescription);
         setCollectionIfNotEmpty(serverVariable::setEnum, Arrays.asList(serverVariableAnnotation.allowableValues()));
-        setMapIfNotEmpty(serverVariable::setExtensions, extensionAnnotationMapper.mapArray(serverVariableAnnotation.extensions()));
+        setMapIfNotEmpty(extensionAnnotationMapper.mapArray(serverVariableAnnotation.extensions()), serverVariable::setExtensions);
         return serverVariable;
     }
 }

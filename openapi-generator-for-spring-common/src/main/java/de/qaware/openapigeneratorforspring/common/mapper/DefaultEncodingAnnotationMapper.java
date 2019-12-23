@@ -37,8 +37,8 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
             encoding.setAllowReserved(true);
         }
 
-        setMapIfNotEmpty(encoding::setHeaders, headerAnnotationMapper.mapArray(encodingAnnotation.headers()));
-        setMapIfNotEmpty(encoding::setExtensions, extensionAnnotationMapper.mapArray(encodingAnnotation.extensions()));
+        setMapIfNotEmpty(headerAnnotationMapper.mapArray(encodingAnnotation.headers()), encoding::setHeaders);
+        setMapIfNotEmpty(extensionAnnotationMapper.mapArray(encodingAnnotation.extensions()), encoding::setExtensions);
 
         return encoding;
     }

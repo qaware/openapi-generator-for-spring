@@ -1,16 +1,15 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
 @RequiredArgsConstructor
 public class DefaultServerAnnotationMapper implements ServerAnnotationMapper {
@@ -30,20 +29,10 @@ public class DefaultServerAnnotationMapper implements ServerAnnotationMapper {
     @Override
     public Optional<Server> map(io.swagger.v3.oas.annotations.servers.Server serverAnnotation) {
         Server server = new Server();
-        AtomicBoolean notEmpty = new AtomicBoolean();
-        OpenApiStringUtils.setStringIfNotBlank(serverAnnotation.description(), description -> {
-            server.setDescription(description);
-            notEmpty.set(true);
-        });
-        OpenApiStringUtils.setStringIfNotBlank(serverAnnotation.url(), url -> {
-            server.setUrl(url);
-            notEmpty.set(true);
-        });
-        if (!notEmpty.get()) {
-            return Optional.empty();
-        }
-        setMapIfNotEmpty(server::setVariables, serverVariableAnnotationMapper.mapArray(serverAnnotation.variables()));
-        setMapIfNotEmpty(server::setExtensions, extensionAnnotationMapper.mapArray(serverAnnotation.extensions()));
-        return Optional.of(server);
+        boolean isNotEmpty = setStringIfNotBlank(serverAnnotation.description(), server::setDescription) |
+                setStringIfNotBlank(serverAnnotation.url(), server::setUrl) |
+                setMapIfNotEmpty(extensionAnnotationMapper.mapArray(serverAnnotation.extensions()), server::setExtensions) |
+                setMapIfNotEmpty(serverVariableAnnotationMapper.mapArray(serverAnnotation.variables()), server::setVariables);
+        return isNotEmpty ? Optional.of(server) : Optional.empty();
     }
 }

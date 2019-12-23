@@ -35,9 +35,9 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
     public MediaType map(io.swagger.v3.oas.annotations.media.Content contentAnnotation) {
         MediaType mediaType = new MediaType();
         setExampleOrExamples(mediaType, contentAnnotation.examples());
-        setMapIfNotEmpty(mediaType::setEncoding, encodingAnnotationMapper.mapArray(contentAnnotation.encoding()));
+        setMapIfNotEmpty(encodingAnnotationMapper.mapArray(contentAnnotation.encoding()), mediaType::setEncoding);
         mediaType.setSchema(schemaAnnotationMapper.mapFromAnnotation(contentAnnotation.schema()));
-        setMapIfNotEmpty(mediaType::setExtensions, extensionAnnotationMapper.mapArray(contentAnnotation.extensions()));
+        setMapIfNotEmpty(extensionAnnotationMapper.mapArray(contentAnnotation.extensions()), mediaType::setExtensions);
         return mediaType;
     }
 
@@ -45,7 +45,7 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
         if (exampleObjectAnnotations.length == 1 && StringUtils.isBlank(exampleObjectAnnotations[0].name())) {
             mediaType.setExample(exampleObjectAnnotationMapper.map(exampleObjectAnnotations[0]));
         } else {
-            setMapIfNotEmpty(mediaType::setExamples, exampleObjectAnnotationMapper.mapArray(exampleObjectAnnotations));
+            setMapIfNotEmpty(exampleObjectAnnotationMapper.mapArray(exampleObjectAnnotations), mediaType::setExamples);
         }
     }
 }
