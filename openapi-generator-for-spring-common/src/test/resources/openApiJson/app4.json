@@ -47,6 +47,93 @@
           }
         }
       }
+    },
+    "/get3": {
+      "get": {
+        "operationId": "getMapping3",
+        "responses": {
+          "200": {
+            "description": "All ok",
+            "headers": {
+              "header2": {
+                "description": "Description header 2",
+                "required": true,
+                "deprecated": true
+              },
+              "header1": {
+                "description": "Description header 1",
+                "$ref": "#/components/headers/RefToHeader1"
+              }
+            },
+            "content": {
+              "application/json": {
+                "example": {
+                  "summary": "summary example1",
+                  "description": "example description 1",
+                  "value": "some example value 1",
+                  "$ref": "#/components/examples/RefToExampleObject1",
+                  "x-extension-example-object-1": {
+                    "name1": "value2"
+                  }
+                },
+                "encoding": {
+                  "propertyInSchema1": {
+                    "contentType": "application/json",
+                    "style": "form",
+                    "explode": true,
+                    "allowReserved": true
+                  },
+                  "propertyInSchema2": {
+                    "contentType": "text/plain",
+                    "headers": {
+                      "header3": {
+                        "description": "Description header 3"
+                      }
+                    },
+                    "style": "form",
+                    "explode": true,
+                    "allowReserved": true,
+                    "x-extension-encoding-1": {
+                      "name1": "value2"
+                    }
+                  }
+                },
+                "x-extension-content-1": {
+                  "name1": "value2"
+                }
+              },
+              "text/plain": {
+                "examples": {
+                  "example3": {
+                    "summary": "summary example3",
+                    "description": "example3",
+                    "externalValue": "http://some-url2"
+                  },
+                  "example2": {
+                    "summary": "summary example2",
+                    "description": "example2",
+                    "externalValue": "http://some-url1"
+                  }
+                }
+              }
+            },
+            "links": {
+              "link1": {
+                "operationId": "getMapping3",
+                "parameters": {
+                  "parameter1": "parameterExpression1"
+                },
+                "requestBody": "payload for link",
+                "description": "link 1 description"
+              }
+            },
+            "$ref": "#/components/responses/RefToApiReponse2",
+            "x-extension-api-response-1": {
+              "name1": "value2"
+            }
+          }
+        }
+      }
     }
   }
 }

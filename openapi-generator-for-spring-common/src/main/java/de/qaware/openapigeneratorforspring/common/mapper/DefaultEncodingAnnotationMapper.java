@@ -5,7 +5,9 @@ import io.swagger.v3.core.util.AnnotationsUtils;
 import io.swagger.v3.oas.models.media.Encoding;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildMapFromArray;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
@@ -26,7 +28,7 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
         Encoding encoding = new Encoding();
 
         OpenApiStringUtils.setStringIfNotBlank(encodingAnnotation.contentType(), encoding::setContentType);
-        OpenApiStringUtils.setStringIfNotBlank(encodingAnnotation.style(), style -> encoding.setStyle(Encoding.StyleEnum.valueOf(style)));
+        OpenApiStringUtils.setStringIfNotBlank(encodingAnnotation.style(), style -> encoding.setStyle(mapEncodingStyle(style)));
 
         if (encodingAnnotation.explode()) {
             encoding.setExplode(true);
@@ -39,5 +41,13 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
         setMapIfNotEmpty(encoding::setExtensions, AnnotationsUtils.getExtensions(encodingAnnotation.extensions()));
 
         return encoding;
+    }
+
+    private Encoding.StyleEnum mapEncodingStyle(String style) {
+        return Stream.of(Encoding.StyleEnum.values())
+                .filter(e -> e.toString().equals(style))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Cannot find encoding style '" + style
+                        + "' in enum " + Arrays.toString(Encoding.StyleEnum.values())));
     }
 }
