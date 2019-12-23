@@ -1,7 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +7,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.apache.commons.lang3.StringUtils.prependIfMissing;
 
 @RequiredArgsConstructor
 public class DefaultExtensionAnnotationMapper implements ExtensionAnnotationMapper {
@@ -19,51 +21,37 @@ public class DefaultExtensionAnnotationMapper implements ExtensionAnnotationMapp
 
     @Override
     public Map<String, Object> mapArray(Extension[] extensionAnnotations) {
-        final Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         for (Extension extension : extensionAnnotations) {
-            final String name = extension.name();
-            final String key = name.length() > 0 ? StringUtils.prependIfMissing(name, EXTENSION_PROPERTY_PREFIX) : name;
-
-            for (ExtensionProperty property : extension.properties()) {
-                String propertyName = property.name();
-                String propertyValue = property.value();
-
-                boolean propertyAsJson = property.parseValue();
-                if (StringUtils.isNotBlank(propertyName) && StringUtils.isNotBlank(propertyValue)) {
-                    if (key.isEmpty()) {
-                        String prefixedKey = StringUtils.prependIfMissing(propertyName, EXTENSION_PROPERTY_PREFIX);
-                        if (propertyAsJson) {
-                            try {
-                                JsonNode processedValue = Json.mapper().readTree(propertyValue);
-                                map.put(prefixedKey, processedValue);
-                            } catch (Exception e) {
-                                map.put(prefixedKey, propertyValue);
-                            }
-                        } else {
-                            map.put(prefixedKey, propertyValue);
-                        }
-                    } else {
-                        Object value = map.get(key);
-                        if (!(value instanceof Map)) {
-                            value = new HashMap<String, Object>();
-                            map.put(key, value);
-                        }
-                        @SuppressWarnings("unchecked") Map<String, Object> mapValue = (Map<String, Object>) value;
-                        if (propertyAsJson) {
-                            try {
-                                JsonNode processedValue = Json.mapper().readTree(propertyValue);
-                                mapValue.put(propertyName, processedValue);
-                            } catch (Exception e) {
-                                mapValue.put(propertyName, propertyValue);
-                            }
-                        } else {
-                            mapValue.put(propertyName, propertyValue);
-                        }
-                    }
-                }
+            String name = extension.name();
+            if (name.isEmpty()) {
+                map.putAll(getPropertiesAsMap(extension.properties(), true));
+            } else {
+                String keyFromName = prependPrefix(name);
+                map.put(keyFromName, getPropertiesAsMap(extension.properties(), false));
             }
         }
-
         return map;
+    }
+
+    private Map<String, Object> getPropertiesAsMap(ExtensionProperty[] properties, boolean prependPrefix) {
+        return Stream.of(properties)
+                .filter(this::isNameAndValueNotBlank)
+                .collect(Collectors.toMap(
+                        property -> prependPrefix ? prependPrefix(property.name()) : property.name(),
+                        this::getPossiblyParsedPropertyValue
+                ));
+    }
+
+    private String prependPrefix(String name) {
+        return prependIfMissing(name, EXTENSION_PROPERTY_PREFIX);
+    }
+
+    private Object getPossiblyParsedPropertyValue(ExtensionProperty property) {
+        return property.parseValue() ? parsableValueMapper.parse(property.value()) : property.value();
+    }
+
+    private boolean isNameAndValueNotBlank(ExtensionProperty property) {
+        return StringUtils.isNotBlank(property.name()) && StringUtils.isNotBlank(property.value());
     }
 }

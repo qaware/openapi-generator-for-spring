@@ -1,6 +1,25 @@
 {
   "openapi": "3.0.1",
   "paths": {
+    "/get2": {
+      "get": {
+        "operationId": "getMapping2",
+        "responses": {
+          "410": {
+            "description": "Some response overwrite base base"
+          },
+          "411": {
+            "description": "Some more responses 2 from base base"
+          },
+          "503": {
+            "description": "Something went really wrong from base"
+          },
+          "210": {
+            "description": "All ok overwrite base"
+          }
+        }
+      }
+    },
     "/get1": {
       "get": {
         "operationId": "getMapping1",
@@ -25,25 +44,6 @@
           },
           "200": {
             "description": "All ok"
-          }
-        }
-      }
-    },
-    "/get2": {
-      "get": {
-        "operationId": "getMapping2",
-        "responses": {
-          "410": {
-            "description": "Some response overwrite base base"
-          },
-          "411": {
-            "description": "Some more responses 2 from base base"
-          },
-          "503": {
-            "description": "Something went really wrong from base"
-          },
-          "210": {
-            "description": "All ok overwrite base"
           }
         }
       }
@@ -151,9 +151,14 @@
               }
             },
             "$ref": "#/components/responses/RefToApiReponse2",
+            "x-nameless-property-2": {
+              "key1": "value1",
+              "key2": "value2"
+            },
             "x-extension-api-response-1": {
               "name1": "value2"
-            }
+            },
+            "x-nameless-property-1": "value2"
           }
         }
       }

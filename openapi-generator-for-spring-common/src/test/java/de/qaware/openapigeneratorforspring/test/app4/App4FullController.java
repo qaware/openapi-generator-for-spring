@@ -79,7 +79,16 @@ public class App4FullController {
                     }
                     )
             },
-            extensions = @Extension(name = "extension-api-response-1", properties = @ExtensionProperty(name = "name1", value = "value2")),
+            extensions = {
+                    @Extension(name = "extension-api-response-1", properties = @ExtensionProperty(name = "name1", value = "value2")),
+                    @Extension(properties = {
+                            @ExtensionProperty(name = "nameless-property-1", value = "value2"),
+                            @ExtensionProperty(name = "nameless-property-2", value = "{\n" +
+                                    "  \"key1\": \"value1\",\n" +
+                                    "  \"key2\": \"value2\"\n" +
+                                    "}", parseValue = true)
+                    })
+            },
             ref = "RefToApiReponse2"
     )
     public String getMapping3() {
