@@ -178,8 +178,8 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ExtensionAnnotationMapper defaultExtensionAnnotationMapper() {
-        return new DefaultExtensionAnnotationMapper();
+    public ExtensionAnnotationMapper defaultExtensionAnnotationMapper(ParsableValueMapper parsableValueMapper) {
+        return new DefaultExtensionAnnotationMapper(parsableValueMapper);
     }
 
     @Bean
