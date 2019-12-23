@@ -7,11 +7,23 @@ import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter
 import de.qaware.openapigeneratorforspring.common.mapper.ContentAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultContentAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultEncodingAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultHeaderAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkParameterAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultParsableValueMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultSchemaAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerVariableAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.EncodingAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.LinkParameterAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.SchemaAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ServerVariableAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultDeprecatedOperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationExternalDocsCustomizer;
@@ -25,6 +37,8 @@ import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationI
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdProvider;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvider;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
+import io.swagger.v3.core.util.Json;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,8 +51,8 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OpenApiResource openApiResource(OpenApiGenerator openApiGenerator) {
-        return new OpenApiResource(openApiGenerator);
+    public OpenApiResource openApiResource(OpenApiGenerator openApiGenerator, OpenApiObjectMapperSupplier openApiObjectMapperSupplier) {
+        return new OpenApiResource(openApiGenerator, openApiObjectMapperSupplier);
     }
 
     @Bean
@@ -104,8 +118,8 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationServersCustomizer defaultOperationServersCustomizer() {
-        return new DefaultOperationServersCustomizer();
+    public DefaultOperationServersCustomizer defaultOperationServersCustomizer(ServerAnnotationMapper serverAnnotationMapper) {
+        return new DefaultOperationServersCustomizer(serverAnnotationMapper);
     }
 
     @Bean
@@ -116,8 +130,58 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationResponseCustomizer defaultOperationResponseCustomizer(HeaderAnnotationMapper headerAnnotationMapper, ContentAnnotationMapper contentAnnotationMapper) {
-        return new DefaultOperationResponseCustomizer(headerAnnotationMapper, contentAnnotationMapper);
+    public DefaultOperationResponseCustomizer defaultOperationResponseCustomizer(
+            HeaderAnnotationMapper headerAnnotationMapper,
+            ContentAnnotationMapper contentAnnotationMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper,
+            LinkAnnotationMapper linkAnnotationMapper
+    ) {
+        return new DefaultOperationResponseCustomizer(
+                headerAnnotationMapper, contentAnnotationMapper, extensionAnnotationMapper, linkAnnotationMapper
+        );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public LinkAnnotationMapper defaultLinkAnnotationMapper(
+            ParsableValueMapper parsableValueMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper,
+            LinkParameterAnnotationMapper linkParameterAnnotationMapper,
+            ServerAnnotationMapper serverAnnotationMapper
+    ) {
+        return new DefaultLinkAnnotationMapper(
+                parsableValueMapper, extensionAnnotationMapper, linkParameterAnnotationMapper, serverAnnotationMapper
+        );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public LinkParameterAnnotationMapper defaultLinkParameterAnnotationMapper() {
+        return new DefaultLinkParameterAnnotationMapper();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ParsableValueMapper defaultParsableValueMapper(OpenApiObjectMapperSupplier objectMapperSupplier) {
+        return new DefaultParsableValueMapper(objectMapperSupplier);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ExtensionAnnotationMapper defaultExtensionAnnotationMapper() {
+        return new DefaultExtensionAnnotationMapper();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ServerAnnotationMapper defaultServerAnnotationMapper(ServerVariableAnnotationMapper serverVariableAnnotationMapper, ExtensionAnnotationMapper extensionAnnotationMapper) {
+        return new DefaultServerAnnotationMapper(serverVariableAnnotationMapper, extensionAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ServerVariableAnnotationMapper defaultServerVariableAnnotationMapper(ExtensionAnnotationMapper extensionAnnotationMapper) {
+        return new DefaultServerVariableAnnotationMapper(extensionAnnotationMapper);
     }
 
     @Bean
@@ -154,6 +218,13 @@ public class OpenApiGeneratorAutoConfiguration {
     @ConditionalOnMissingBean
     public ExcludeHiddenOperationFilter excludeHiddenOperationFilter() {
         return new ExcludeHiddenOperationFilter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OpenApiObjectMapperSupplier defaultOpenApiObjectMapperSupplier() {
+        // use swagger-core's object mapper by default
+        return Json::mapper;
     }
 
 }

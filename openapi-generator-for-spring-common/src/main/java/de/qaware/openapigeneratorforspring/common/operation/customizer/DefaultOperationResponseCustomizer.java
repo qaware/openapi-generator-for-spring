@@ -1,11 +1,12 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
 import de.qaware.openapigeneratorforspring.common.mapper.ContentAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiAnnotationUtils;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
-import io.swagger.v3.core.util.AnnotationsUtils;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
@@ -28,6 +29,8 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer, 
 
     private final HeaderAnnotationMapper headerAnnotationMapper;
     private final ContentAnnotationMapper contentAnnotationMapper;
+    private final ExtensionAnnotationMapper extensionAnnotationMapper;
+    private final LinkAnnotationMapper linkAnnotationMapper;
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
@@ -85,9 +88,9 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer, 
             ApiResponse apiResponse = apiResponses.computeIfAbsent(annotation.responseCode(), ignored -> new ApiResponse());
             OpenApiStringUtils.setStringIfNotBlank(annotation.description(), apiResponse::setDescription);
             mergeWithExistingMap(apiResponse::getHeaders, apiResponse::setHeaders, headerAnnotationMapper.mapArray(annotation.headers()));
-            mergeWithExistingMap(apiResponse::getLinks, apiResponse::setLinks, AnnotationsUtils.getLinks(annotation.links()));
+            mergeWithExistingMap(apiResponse::getLinks, apiResponse::setLinks, linkAnnotationMapper.mapArray(annotation.links()));
             mergeWithExistingMap(apiResponse::getContent, apiResponse::setContent, contentAnnotationMapper.mapArray(annotation.content()));
-            mergeWithExistingMap(apiResponse::getExtensions, apiResponse::setExtensions, AnnotationsUtils.getExtensions(annotation.extensions()));
+            mergeWithExistingMap(apiResponse::getExtensions, apiResponse::setExtensions, extensionAnnotationMapper.mapArray(annotation.extensions()));
             OpenApiStringUtils.setStringIfNotBlank(annotation.ref(), apiResponse::set$ref);
         });
         return apiResponses;

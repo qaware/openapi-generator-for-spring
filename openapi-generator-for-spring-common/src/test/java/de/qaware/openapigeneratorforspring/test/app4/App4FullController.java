@@ -31,7 +31,10 @@ public class App4FullController {
             },
             links = {
                     @Link(name = "link1", operationId = "getMapping3",
-                            description = "link 1 description", requestBody = "payload for link",
+                            description = "link 1 description",
+                            requestBody = "{\n" +
+                                    "  \"keyInBody1\": \"value1\"\n" +
+                                    "}",
                             parameters = {
                                     @LinkParameter(name = "parameter1", expression = "parameterExpression1")
                             },
