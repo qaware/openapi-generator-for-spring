@@ -1,14 +1,14 @@
 {
   "openapi": "3.0.1",
   "paths": {
-    "/v1/get-mapping": {
-      "get": {
-        "operationId": "getMappingReturnString0"
-      }
-    },
     "/v1/post-mapping": {
       "post": {
         "operationId": "postMapping0"
+      }
+    },
+    "/v1/get-mapping": {
+      "get": {
+        "operationId": "getMappingReturnString0"
       }
     },
     "/v2/get-mapping": {

@@ -5,7 +5,8 @@ import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapp
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiAnnotationUtils;
+import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseCodeMapper;
+import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponseCustomizer;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.responses.ApiResponse;
@@ -13,10 +14,9 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.mergeWithExistingMap;
@@ -31,11 +31,13 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer, 
     private final ContentAnnotationMapper contentAnnotationMapper;
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
     private final LinkAnnotationMapper linkAnnotationMapper;
+    private final ApiResponseCodeMapper apiResponseCodeMapper;
+    private final List<OperationApiResponseCustomizer> operationApiResponseCustomizers;
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
         Method method = operationBuilderContext.getHandlerMethod().getMethod();
-        fillApiResponses(operation, getApiResponseAnnotationsFromMethod(method));
+        fillApiResponses(operation, getApiResponseAnnotationsFromMethod(method), operationBuilderContext);
     }
 
     @Override
@@ -45,22 +47,18 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer, 
         // put the annotations from the operation last, which gives them the highest precedence
         Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponseAnnotations
                 = Stream.concat(getApiResponseAnnotationsFromMethod(method), Stream.of(operationAnnotation.responses()));
-        fillApiResponses(operation, apiResponseAnnotations);
+        fillApiResponses(operation, apiResponseAnnotations, operationBuilderContext);
     }
 
-    private void fillApiResponses(Operation operation, Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponseAnnotations) {
-        ApiResponses apiResponses = buildApiResponsesFromAnnotations(apiResponseAnnotations);
-
+    private void fillApiResponses(Operation operation, Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponseAnnotations, OperationBuilderContext operationBuilderContext) {
+        ApiResponses apiResponses = buildApiResponsesFromAnnotations(apiResponseAnnotations, operationBuilderContext);
+        for (OperationApiResponseCustomizer customizer : operationApiResponseCustomizers) {
+            customizer.customize(apiResponses, operationBuilderContext);
+        }
         setMapIfNotEmpty(apiResponses, operation::setResponses);
     }
 
-    private String getResponseCodeFromMethod(Method method) {
-        ResponseStatus responseStatus = OpenApiAnnotationUtils.findAnnotationOnMethodOrClass(method, ResponseStatus.class);
-        if (responseStatus != null) {
-            return Integer.toString(responseStatus.code().value());
-        }
-        return Integer.toString(HttpStatus.OK.value());
-    }
+
 
     private Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> getApiResponseAnnotationsFromMethod(Method method) {
 
@@ -82,10 +80,11 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer, 
         return Stream.concat(apiResponsesFromClass, apiResponsesFromMethod);
     }
 
-    private ApiResponses buildApiResponsesFromAnnotations(Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponseAnnotations) {
+    private ApiResponses buildApiResponsesFromAnnotations(Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponseAnnotations, OperationBuilderContext operationBuilderContext) {
         ApiResponses apiResponses = new ApiResponses();
         apiResponseAnnotations.forEachOrdered(annotation -> {
-            ApiResponse apiResponse = apiResponses.computeIfAbsent(annotation.responseCode(), ignored -> new ApiResponse());
+            String responseCode = apiResponseCodeMapper.map(annotation, operationBuilderContext);
+            ApiResponse apiResponse = apiResponses.computeIfAbsent(responseCode, ignored -> new ApiResponse());
             OpenApiStringUtils.setStringIfNotBlank(annotation.description(), apiResponse::setDescription);
             mergeWithExistingMap(apiResponse::getHeaders, apiResponse::setHeaders, headerAnnotationMapper.mapArray(annotation.headers()));
             mergeWithExistingMap(apiResponse::getLinks, apiResponse::setLinks, linkAnnotationMapper.mapArray(annotation.links()));

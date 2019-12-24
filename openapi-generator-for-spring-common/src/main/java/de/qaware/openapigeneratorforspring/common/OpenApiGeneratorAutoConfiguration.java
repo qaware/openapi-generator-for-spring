@@ -41,6 +41,10 @@ import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationI
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdProvider;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvider;
+import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseCodeMapper;
+import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseCodeMapper;
+import de.qaware.openapigeneratorforspring.common.operation.response.MethodResponseApiResponseCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponseCustomizer;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import io.swagger.v3.core.util.Json;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -138,11 +142,27 @@ public class OpenApiGeneratorAutoConfiguration {
             HeaderAnnotationMapper headerAnnotationMapper,
             ContentAnnotationMapper contentAnnotationMapper,
             ExtensionAnnotationMapper extensionAnnotationMapper,
-            LinkAnnotationMapper linkAnnotationMapper
+            LinkAnnotationMapper linkAnnotationMapper,
+            ApiResponseCodeMapper apiResponseCodeMapper,
+            List<OperationApiResponseCustomizer> apiResponsesCustomizers
     ) {
         return new DefaultOperationResponseCustomizer(
-                headerAnnotationMapper, contentAnnotationMapper, extensionAnnotationMapper, linkAnnotationMapper
+                headerAnnotationMapper, contentAnnotationMapper,
+                extensionAnnotationMapper, linkAnnotationMapper,
+                apiResponseCodeMapper, apiResponsesCustomizers
         );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public MethodResponseApiResponseCustomizer methodResponseApiResponseCustomizer(DefaultApiResponseCodeMapper defaultApiResponseCodeMapper) {
+        return new MethodResponseApiResponseCustomizer(defaultApiResponseCodeMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultApiResponseCodeMapper defaultApiResponseCodeMapper() {
+        return new DefaultApiResponseCodeMapper();
     }
 
     @Bean

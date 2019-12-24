@@ -3,10 +3,13 @@ package de.qaware.openapigeneratorforspring.test.app4;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@ResponseStatus(HttpStatus.CREATED)
 public class App4Controller extends App4BaseController {
 
     @GetMapping("/get1")
@@ -21,6 +24,7 @@ public class App4Controller extends App4BaseController {
 
 
     @GetMapping("/get2")
+    @ApiResponse(description = "Custom default description for response")
     @ApiResponse(responseCode = "210", description = "All ok overwrite base")
     @Operation(responses = {
             @ApiResponse(responseCode = "410", description = "Some response overwrite base base")
