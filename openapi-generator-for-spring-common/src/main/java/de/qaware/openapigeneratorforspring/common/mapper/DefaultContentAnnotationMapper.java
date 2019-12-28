@@ -19,16 +19,12 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
 
     @Override
     public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations) {
-        // TODO infer media type from handler method?
-        Content contentFromAnnotation = new Content();
-        contentFromAnnotation.putAll(
-                buildMapFromArray(
-                        contentAnnotations,
-                        io.swagger.v3.oas.annotations.media.Content::mediaType,
-                        this::map
-                )
+        return buildMapFromArray(
+                contentAnnotations,
+                io.swagger.v3.oas.annotations.media.Content::mediaType,
+                this::map,
+                Content::new
         );
-        return contentFromAnnotation;
     }
 
     @Override

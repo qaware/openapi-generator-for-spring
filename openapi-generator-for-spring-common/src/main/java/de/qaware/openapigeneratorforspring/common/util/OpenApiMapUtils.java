@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.util;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -35,7 +36,23 @@ public class OpenApiMapUtils {
             Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valueMapper
     ) {
+        return buildMapFromArray(array, keyMapper, valueMapper, LinkedHashMap::new);
+    }
+
+    public static <T, K, V, M extends Map<K, V>> M buildMapFromArray(
+            T[] array,
+            Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends V> valueMapper,
+            Supplier<? extends M> mapSupplier
+    ) {
         // TODO handle possible duplicate entries here?
-        return Stream.of(array).collect(Collectors.toMap(keyMapper, valueMapper));
+        return Stream.of(array).collect(Collectors.toMap(
+                keyMapper,
+                valueMapper,
+                (a, b) -> {
+                    throw new IllegalStateException("Duplicate key " + a);
+                },
+                mapSupplier
+        ));
     }
 }

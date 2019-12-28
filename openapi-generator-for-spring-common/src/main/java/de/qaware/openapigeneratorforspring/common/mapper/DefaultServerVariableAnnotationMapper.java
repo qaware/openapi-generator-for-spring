@@ -18,15 +18,12 @@ public class DefaultServerVariableAnnotationMapper implements ServerVariableAnno
 
     @Override
     public ServerVariables mapArray(io.swagger.v3.oas.annotations.servers.ServerVariable[] serverVariablesAnnotations) {
-        ServerVariables serverVariables = new ServerVariables();
-        serverVariables.putAll(
-                buildMapFromArray(
-                        serverVariablesAnnotations,
-                        io.swagger.v3.oas.annotations.servers.ServerVariable::name,
-                        this::map
-                )
+        return buildMapFromArray(
+                serverVariablesAnnotations,
+                io.swagger.v3.oas.annotations.servers.ServerVariable::name,
+                this::map,
+                ServerVariables::new
         );
-        return serverVariables;
     }
 
     @Override
