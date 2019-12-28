@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
+import de.qaware.openapigeneratorforspring.common.schema.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
 import io.swagger.v3.oas.models.headers.Header;
 import lombok.RequiredArgsConstructor;

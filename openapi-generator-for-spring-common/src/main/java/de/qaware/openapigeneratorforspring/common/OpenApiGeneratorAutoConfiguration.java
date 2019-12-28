@@ -14,7 +14,6 @@ import de.qaware.openapigeneratorforspring.common.mapper.DefaultHeaderAnnotation
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkParameterAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultParsableValueMapper;
-import de.qaware.openapigeneratorforspring.common.mapper.DefaultSchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerVariableAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.EncodingAnnotationMapper;
@@ -25,7 +24,6 @@ import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkParameterAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
-import de.qaware.openapigeneratorforspring.common.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerVariableAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
@@ -45,6 +43,8 @@ import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponse
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseCodeMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.MethodResponseApiResponseCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponseCustomizer;
+import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.schema.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import io.swagger.v3.core.util.Json;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -222,8 +222,11 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SchemaAnnotationMapper defaultSchemaAnnotationMapper() {
-        return new DefaultSchemaAnnotationMapper();
+    public SchemaAnnotationMapper defaultSchemaAnnotationMapper(
+            ParsableValueMapper parsableValueMapper,
+            ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper
+    ) {
+        return new DefaultSchemaAnnotationMapper(parsableValueMapper, externalDocumentationAnnotationMapper);
     }
 
     @Bean

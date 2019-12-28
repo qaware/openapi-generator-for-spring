@@ -9,7 +9,7 @@ public class OpenApiCollectionUtils {
         // static methods only
     }
 
-    public static <C extends Collection<T>, T> void setCollectionIfNotEmpty(Consumer<? super C> setter, C collection) {
+    public static <C extends Collection<T>, T> void setCollectionIfNotEmpty(C collection, Consumer<? super C> setter) {
         if (!collection.isEmpty()) {
             setter.accept(collection);
         }
