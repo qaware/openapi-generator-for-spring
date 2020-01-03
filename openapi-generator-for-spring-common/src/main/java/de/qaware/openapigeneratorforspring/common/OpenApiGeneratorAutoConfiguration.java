@@ -43,8 +43,12 @@ import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponse
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseCodeMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.MethodResponseApiResponseCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponseCustomizer;
+import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceNameFactory;
+import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import io.swagger.v3.core.util.Json;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -70,14 +74,16 @@ public class OpenApiGeneratorAutoConfiguration {
             OperationBuilder operationBuilder,
             List<PathItemFilter> pathItemFilters,
             List<OperationFilter> operationFilters,
-            OperationIdConflictResolver operationIdConflictResolver
+            OperationIdConflictResolver operationIdConflictResolver,
+            ReferenceNameFactory referenceNameFactory
     ) {
         return new OpenApiGenerator(
                 requestMappingHandlerMapping,
                 operationBuilder,
                 pathItemFilters,
                 operationFilters,
-                operationIdConflictResolver
+                operationIdConflictResolver,
+                referenceNameFactory
         );
     }
 
@@ -224,9 +230,11 @@ public class OpenApiGeneratorAutoConfiguration {
     @ConditionalOnMissingBean
     public SchemaAnnotationMapper defaultSchemaAnnotationMapper(
             ParsableValueMapper parsableValueMapper,
-            ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper
+            ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper,
+            SchemaResolver schemaResolver, ExtensionAnnotationMapper extensionAnnotationMapper
     ) {
-        return new DefaultSchemaAnnotationMapper(parsableValueMapper, externalDocumentationAnnotationMapper);
+        return new DefaultSchemaAnnotationMapper(parsableValueMapper, externalDocumentationAnnotationMapper,
+                schemaResolver, extensionAnnotationMapper);
     }
 
     @Bean
@@ -261,6 +269,7 @@ public class OpenApiGeneratorAutoConfiguration {
         return new DefaultEncodingAnnotationMapper(headerAnnotationMapper, extensionAnnotationMapper);
     }
 
+
     @Bean
     @ConditionalOnMissingBean
     public NoOperationsPathItemFilter noOperationsPathItemFilter() {
@@ -278,6 +287,18 @@ public class OpenApiGeneratorAutoConfiguration {
     public OpenApiObjectMapperSupplier defaultOpenApiObjectMapperSupplier() {
         // use swagger-core's object mapper by default
         return Json::mapper;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SchemaResolver defaultSchemaResolver() {
+        return new DefaultSchemaResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ReferenceNameFactory defaultReferenceNameFactory() {
+        return new DefaultReferenceNameFactory();
     }
 
 }

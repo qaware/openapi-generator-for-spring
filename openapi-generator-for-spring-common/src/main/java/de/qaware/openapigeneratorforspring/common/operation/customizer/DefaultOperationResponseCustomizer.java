@@ -59,7 +59,6 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer, 
     }
 
 
-
     private Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> getApiResponseAnnotationsFromMethod(Method method) {
 
         Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponsesFromClass = Stream.concat(
@@ -80,15 +79,18 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer, 
         return Stream.concat(apiResponsesFromClass, apiResponsesFromMethod);
     }
 
-    private ApiResponses buildApiResponsesFromAnnotations(Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponseAnnotations, OperationBuilderContext operationBuilderContext) {
+    private ApiResponses buildApiResponsesFromAnnotations(
+            Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponseAnnotations,
+            OperationBuilderContext operationBuilderContext
+    ) {
         ApiResponses apiResponses = new ApiResponses();
         apiResponseAnnotations.forEachOrdered(annotation -> {
             String responseCode = apiResponseCodeMapper.map(annotation, operationBuilderContext);
             ApiResponse apiResponse = apiResponses.computeIfAbsent(responseCode, ignored -> new ApiResponse());
             OpenApiStringUtils.setStringIfNotBlank(annotation.description(), apiResponse::setDescription);
-            mergeWithExistingMap(apiResponse::getHeaders, apiResponse::setHeaders, headerAnnotationMapper.mapArray(annotation.headers()));
+            mergeWithExistingMap(apiResponse::getHeaders, apiResponse::setHeaders, headerAnnotationMapper.mapArray(annotation.headers(), operationBuilderContext.getNestedSchemaConsumer()));
             mergeWithExistingMap(apiResponse::getLinks, apiResponse::setLinks, linkAnnotationMapper.mapArray(annotation.links()));
-            mergeWithExistingMap(apiResponse::getContent, apiResponse::setContent, contentAnnotationMapper.mapArray(annotation.content()));
+            mergeWithExistingMap(apiResponse::getContent, apiResponse::setContent, contentAnnotationMapper.mapArray(annotation.content(), operationBuilderContext.getNestedSchemaConsumer()));
             mergeWithExistingMap(apiResponse::getExtensions, apiResponse::setExtensions, extensionAnnotationMapper.mapArray(annotation.extensions()));
             OpenApiStringUtils.setStringIfNotBlank(annotation.ref(), apiResponse::set$ref);
         });

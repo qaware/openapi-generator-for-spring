@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
+import de.qaware.openapigeneratorforspring.common.schema.NestedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaAnnotationMapper;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.models.media.Content;
@@ -18,22 +19,21 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
     private final ExampleObjectAnnotationMapper exampleObjectAnnotationMapper;
 
-    @Override
-    public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations) {
+    public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations, NestedSchemaConsumer nestedSchemaConsumer) {
         return buildMapFromArray(
                 contentAnnotations,
                 io.swagger.v3.oas.annotations.media.Content::mediaType,
-                this::map,
+                annotation -> map(annotation, nestedSchemaConsumer),
                 Content::new
         );
     }
 
     @Override
-    public MediaType map(io.swagger.v3.oas.annotations.media.Content contentAnnotation) {
+    public MediaType map(io.swagger.v3.oas.annotations.media.Content contentAnnotation, NestedSchemaConsumer nestedSchemaConsumer) {
         MediaType mediaType = new MediaType();
         setExampleOrExamples(mediaType, contentAnnotation.examples());
-        setMapIfNotEmpty(encodingAnnotationMapper.mapArray(contentAnnotation.encoding()), mediaType::setEncoding);
-        mediaType.setSchema(schemaAnnotationMapper.mapFromAnnotation(contentAnnotation.schema()));
+        setMapIfNotEmpty(encodingAnnotationMapper.mapArray(contentAnnotation.encoding(), nestedSchemaConsumer), mediaType::setEncoding);
+        mediaType.setSchema(schemaAnnotationMapper.mapFromAnnotation(contentAnnotation.schema(), nestedSchemaConsumer));
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(contentAnnotation.extensions()), mediaType::setExtensions);
         return mediaType;
     }

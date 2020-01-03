@@ -6,10 +6,15 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflict;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
+import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
+import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
+import de.qaware.openapigeneratorforspring.common.schema.NestedSchemaConsumer;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -19,9 +24,12 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class OpenApiGenerator {
@@ -32,6 +40,7 @@ public class OpenApiGenerator {
     private final List<PathItemFilter> pathItemFilters;
     private final List<OperationFilter> operationFilters;
     private final OperationIdConflictResolver operationIdConflictResolver;
+    private final ReferenceNameFactory referenceNameFactory;
 
     public OpenAPI generateOpenApi() {
 
@@ -39,13 +48,28 @@ public class OpenApiGenerator {
 
         Paths paths = new Paths();
         MultiValueMap<String, OperationIdConflict> operationIdConflicts = new LinkedMultiValueMap<>();
+        Map<ReferenceName, Schema> nestedSchemas = new LinkedHashMap<>();
+        NestedSchemaConsumer nestedSchemaConsumer = schema -> {
+            Optional<Map.Entry<ReferenceName, Schema>> knownSchema = nestedSchemas.entrySet().stream()
+                    .filter(entry -> schema.equals(entry.getValue()))
+                    .findFirst();
+            if (knownSchema.isPresent()) {
+                return knownSchema.get().getKey();
+            } else {
+                ReferenceName referenceName = referenceNameFactory.create(schema);
+                // TODO check for referenceName conflict here
+                nestedSchemas.put(referenceName, schema);
+                return referenceName;
+            }
+        };
+
         map.forEach((info, handlerMethod) -> info.getPatternsCondition().getPatterns().forEach(pathPattern -> {
             PathItem pathItem = new PathItem();
             Set<RequestMethod> requestMethods = info.getMethodsCondition().getMethods();
             Map<RequestMethod, Operation> operationPerMethod = new EnumMap<>(RequestMethod.class);
             MultiValueMap<String, OperationIdConflict> operationIdConflictsPerPathItem = new LinkedMultiValueMap<>();
             requestMethods.forEach(requestMethod -> {
-                OperationBuilderContext operationBuilderContext = new OperationBuilderContext(requestMethod, pathPattern, handlerMethod);
+                OperationBuilderContext operationBuilderContext = new OperationBuilderContext(requestMethod, pathPattern, handlerMethod, nestedSchemaConsumer);
                 Operation operation = operationBuilder.buildOperation(operationBuilderContext);
                 if (isAcceptedByAllOperationFilters(operation, handlerMethod)) {
                     String operationId = operation.getOperationId();
@@ -73,6 +97,15 @@ public class OpenApiGenerator {
         if (!paths.isEmpty()) {
             openApi.setPaths(paths);
         }
+
+        if (!nestedSchemas.isEmpty()) {
+            Components components = new Components();
+            Map<String, Schema> componentsSchemas = nestedSchemas.entrySet().stream()
+                    .collect(Collectors.toMap(e -> e.getKey().asUniqueString(), Map.Entry::getValue));
+            components.setSchemas(componentsSchemas);
+            openApi.setComponents(components);
+        }
+
         return openApi;
     }
 
