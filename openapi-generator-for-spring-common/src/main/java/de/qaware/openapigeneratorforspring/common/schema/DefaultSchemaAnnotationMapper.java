@@ -3,7 +3,6 @@ package de.qaware.openapigeneratorforspring.common.schema;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
 import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
@@ -31,8 +30,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
 
     @Override
-    public Schema<Object> mapFromAnnotation(io.swagger.v3.oas.annotations.media.Schema annotation, NestedSchemaConsumer nestedSchemaConsumer) {
-        Schema<Object> schema = new Schema<>();
+    public void applyFromAnnotation(Schema<Object> schema, io.swagger.v3.oas.annotations.media.Schema annotation, NestedSchemaConsumer nestedSchemaConsumer) {
 
         setStringIfNotBlank(annotation.name(), schema::setName);
         setStringIfNotBlank(annotation.description(), schema::setDescription);
@@ -61,8 +59,6 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         setDiscriminator(schema, annotation, nestedSchemaConsumer);
 
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(annotation.extensions()), schema::setExtensions);
-
-        return schema;
     }
 
     private void setDiscriminator(Schema<Object> schema, io.swagger.v3.oas.annotations.media.Schema annotation, NestedSchemaConsumer nestedSchemaConsumer) {
@@ -71,23 +67,30 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         if (StringUtils.isBlank(propertyName) || ArrayUtils.isEmpty(mappings)) {
             return;
         }
-        Map<String, String> mappingsMap = OpenApiMapUtils.buildMapFromArray(
+        Map<String, Schema<Object>> schemasMap = OpenApiMapUtils.buildMapFromArray(
                 mappings,
                 DiscriminatorMapping::value,
-                mapping -> {
-                    Schema<?> mappingSchema = schemaResolver.resolveFromClass(mapping.schema());
-                    ReferenceName schemaReference = nestedSchemaConsumer.consumeAndCreateReference(mappingSchema);
-                    return schemaReference.asUniqueString();
-                }
+                mapping -> schemaResolver.resolveFromClass(mapping.schema(), nestedSchemaConsumer)
         );
-        schema.setDiscriminator(
-                new Discriminator()
-                        .propertyName(propertyName)
-                        .mapping(mappingsMap)
+
+        Discriminator discriminator = new Discriminator()
+                .propertyName(propertyName);
+
+        nestedSchemaConsumer.consumeMany(
+                schemasMap.entrySet().stream()
+                        .map(entry -> new NestedSchemaConsumer.EntryWithSchema<>(entry, entry.getValue())),
+                entriesWithReferenceNames -> discriminator.setMapping(
+                        entriesWithReferenceNames.collect(Collectors.toMap(
+                                entry -> entry.getEntry().getKey(),
+                                entry -> entry.getReferenceName().asUniqueString()
+                        ))
+                )
         );
+
+        schema.setDiscriminator(discriminator);
     }
 
-    private void setAccessMode(AccessMode accessMode, Schema schema) {
+    private void setAccessMode(AccessMode accessMode, Schema<?> schema) {
         switch (accessMode) {
             case READ_ONLY:
                 schema.setReadOnly(true);

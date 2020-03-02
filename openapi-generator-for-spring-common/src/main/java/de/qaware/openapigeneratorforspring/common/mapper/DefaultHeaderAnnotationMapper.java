@@ -33,7 +33,7 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
         if (headerAnnotation.required()) {
             header.setRequired(true);
         }
-        header.setSchema(schemaAnnotationMapper.mapFromAnnotation(headerAnnotation.schema(), nestedSchemaConsumer));
+        header.setSchema(schemaAnnotationMapper.buildFromAnnotation(headerAnnotation.schema(), nestedSchemaConsumer));
         OpenApiStringUtils.setStringIfNotBlank(headerAnnotation.ref(), header::set$ref);
         return header;
     }

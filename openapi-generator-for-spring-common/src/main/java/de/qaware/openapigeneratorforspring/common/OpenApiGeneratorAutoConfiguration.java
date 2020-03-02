@@ -43,7 +43,9 @@ import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponse
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseCodeMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.MethodResponseApiResponseCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponseCustomizer;
+import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceNameFactory;
+import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaResolver;
@@ -75,7 +77,8 @@ public class OpenApiGeneratorAutoConfiguration {
             List<PathItemFilter> pathItemFilters,
             List<OperationFilter> operationFilters,
             OperationIdConflictResolver operationIdConflictResolver,
-            ReferenceNameFactory referenceNameFactory
+            ReferenceNameFactory referenceNameFactory,
+            ReferenceNameConflictResolver referenceNameConflictResolver
     ) {
         return new OpenApiGenerator(
                 requestMappingHandlerMapping,
@@ -83,7 +86,8 @@ public class OpenApiGeneratorAutoConfiguration {
                 pathItemFilters,
                 operationFilters,
                 operationIdConflictResolver,
-                referenceNameFactory
+                referenceNameFactory,
+                referenceNameConflictResolver
         );
     }
 
@@ -291,8 +295,9 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SchemaResolver defaultSchemaResolver() {
-        return new DefaultSchemaResolver();
+    public SchemaResolver defaultSchemaResolver(OpenApiObjectMapperSupplier openApiObjectMapperSupplier,
+                                                SchemaAnnotationMapper schemaAnnotationMapper) {
+        return new DefaultSchemaResolver(openApiObjectMapperSupplier, schemaAnnotationMapper);
     }
 
     @Bean
@@ -301,4 +306,9 @@ public class OpenApiGeneratorAutoConfiguration {
         return new DefaultReferenceNameFactory();
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    ReferenceNameConflictResolver defaultReferenceNameConflictResolver() {
+        return new DefaultReferenceNameConflictResolver();
+    }
 }

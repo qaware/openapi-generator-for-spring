@@ -19,6 +19,7 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
     private final ExampleObjectAnnotationMapper exampleObjectAnnotationMapper;
 
+    @Override
     public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations, NestedSchemaConsumer nestedSchemaConsumer) {
         return buildMapFromArray(
                 contentAnnotations,
@@ -33,7 +34,7 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
         MediaType mediaType = new MediaType();
         setExampleOrExamples(mediaType, contentAnnotation.examples());
         setMapIfNotEmpty(encodingAnnotationMapper.mapArray(contentAnnotation.encoding(), nestedSchemaConsumer), mediaType::setEncoding);
-        mediaType.setSchema(schemaAnnotationMapper.mapFromAnnotation(contentAnnotation.schema(), nestedSchemaConsumer));
+        mediaType.setSchema(schemaAnnotationMapper.buildFromAnnotation(contentAnnotation.schema(), nestedSchemaConsumer));
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(contentAnnotation.extensions()), mediaType::setExtensions);
         return mediaType;
     }

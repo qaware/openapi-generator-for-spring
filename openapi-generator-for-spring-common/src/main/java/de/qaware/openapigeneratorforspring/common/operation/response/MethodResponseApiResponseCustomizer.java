@@ -38,6 +38,7 @@ public class MethodResponseApiResponseCustomizer implements OperationApiResponse
         List<String> producesContentType = getProducesContentType(method);
         for (String contentType : producesContentType) {
             MediaType mediaType = content.computeIfAbsent(contentType, ignored -> new MediaType());
+            // TODO actually consume this?
         }
 
     }

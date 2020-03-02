@@ -7,8 +7,12 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderCont
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflict;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
+import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
+import de.qaware.openapigeneratorforspring.common.schema.DefaultNestedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.DefaultReferencedSchemaStorage;
 import de.qaware.openapigeneratorforspring.common.schema.NestedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaStorage;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -24,10 +28,8 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.EnumMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,6 +43,7 @@ public class OpenApiGenerator {
     private final List<OperationFilter> operationFilters;
     private final OperationIdConflictResolver operationIdConflictResolver;
     private final ReferenceNameFactory referenceNameFactory;
+    private final ReferenceNameConflictResolver referenceNameConflictResolver;
 
     public OpenAPI generateOpenApi() {
 
@@ -48,20 +51,10 @@ public class OpenApiGenerator {
 
         Paths paths = new Paths();
         MultiValueMap<String, OperationIdConflict> operationIdConflicts = new LinkedMultiValueMap<>();
-        Map<ReferenceName, Schema> nestedSchemas = new LinkedHashMap<>();
-        NestedSchemaConsumer nestedSchemaConsumer = schema -> {
-            Optional<Map.Entry<ReferenceName, Schema>> knownSchema = nestedSchemas.entrySet().stream()
-                    .filter(entry -> schema.equals(entry.getValue()))
-                    .findFirst();
-            if (knownSchema.isPresent()) {
-                return knownSchema.get().getKey();
-            } else {
-                ReferenceName referenceName = referenceNameFactory.create(schema);
-                // TODO check for referenceName conflict here
-                nestedSchemas.put(referenceName, schema);
-                return referenceName;
-            }
-        };
+
+        ReferencedSchemaStorage referencedSchemaStorage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);
+
+        NestedSchemaConsumer nestedSchemaConsumer = new DefaultNestedSchemaConsumer(referencedSchemaStorage);
 
         map.forEach((info, handlerMethod) -> info.getPatternsCondition().getPatterns().forEach(pathPattern -> {
             PathItem pathItem = new PathItem();
@@ -98,9 +91,11 @@ public class OpenApiGenerator {
             openApi.setPaths(paths);
         }
 
-        if (!nestedSchemas.isEmpty()) {
+        Map<ReferenceName, Schema<Object>> referencedSchemas = referencedSchemaStorage.buildReferencedSchemas();
+
+        if (!referencedSchemas.isEmpty()) {
             Components components = new Components();
-            Map<String, Schema> componentsSchemas = nestedSchemas.entrySet().stream()
+            Map<String, Schema> componentsSchemas = referencedSchemas.entrySet().stream()
                     .collect(Collectors.toMap(e -> e.getKey().asUniqueString(), Map.Entry::getValue));
             components.setSchemas(componentsSchemas);
             openApi.setComponents(components);

@@ -11,6 +11,10 @@ public class ReferenceName {
         return type.getPrefix() + identifier;
     }
 
+    public ReferenceName withIdentifier(String newIdentifier) {
+        return new ReferenceName(type, newIdentifier);
+    }
+
     enum Type {
 
         SCHEMA("#/components/schemas/");
