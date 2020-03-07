@@ -27,7 +27,10 @@
             "description": "All ok"
           },
           "201": {
-            "description": "Default response"
+            "description": "Default response",
+            "content": {
+              "*/*": {}
+            }
           }
         }
       }
@@ -49,7 +52,10 @@
             "description": "All ok overwrite base"
           },
           "201": {
-            "description": "Custom default description for response"
+            "description": "Custom default description for response",
+            "content": {
+              "*/*": {}
+            }
           }
         }
       }
@@ -61,14 +67,17 @@
           "200": {
             "description": "All ok",
             "headers": {
-              "header2": {
-                "description": "Description header 2",
-                "required": true,
-                "deprecated": true
-              },
               "header1": {
                 "description": "Description header 1",
                 "$ref": "#/components/headers/RefToHeader1"
+              },
+              "header2": {
+                "description": "Description header 2",
+                "required": true,
+                "deprecated": true,
+                "schema": {
+                  "$ref": "#/components/schemas/RefToSchemaOfHeader2"
+                }
               }
             },
             "content": {
@@ -110,16 +119,17 @@
               },
               "text/plain": {
                 "examples": {
-                  "example3": {
-                    "summary": "summary example3",
-                    "externalValue": "http://some-url2"
-                  },
                   "example2": {
                     "summary": "summary example2",
                     "externalValue": "http://some-url1"
+                  },
+                  "example3": {
+                    "summary": "summary example3",
+                    "externalValue": "http://some-url2"
                   }
                 }
-              }
+              },
+              "*/*": {}
             },
             "links": {
               "link1": {

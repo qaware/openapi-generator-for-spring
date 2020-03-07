@@ -32,6 +32,8 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
     @Override
     public void applyFromAnnotation(Schema<Object> schema, io.swagger.v3.oas.annotations.media.Schema annotation, NestedSchemaConsumer nestedSchemaConsumer) {
 
+        // TODO consider annotation.implementation() if not Void.class
+
         setStringIfNotBlank(annotation.name(), schema::setName);
         setStringIfNotBlank(annotation.description(), schema::setDescription);
         setStringIfNotBlank(annotation.format(), schema::setFormat);
