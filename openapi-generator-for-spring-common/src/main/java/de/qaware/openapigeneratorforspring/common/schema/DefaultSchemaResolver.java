@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 public class DefaultSchemaResolver implements SchemaResolver {
 
     private final OpenApiObjectMapperSupplier openApiObjectMapperSupplier;
-    private final SchemaAnnotationMapper schemaAnnotationMapper;
+    private final SchemaAnnotationMapperFactory schemaAnnotationMapperFactory;
 
     @Override
     public Schema<Object> resolveFromClass(Class<?> clazz, NestedSchemaConsumer nestedSchemaConsumer) {
@@ -62,6 +62,9 @@ public class DefaultSchemaResolver implements SchemaResolver {
         if (annotationsSupplier.findAnnotations(Nullable.class).findFirst().isPresent()) {
             schema.setNullable(true);
         }
+
+        // TODO create this once
+        SchemaAnnotationMapper schemaAnnotationMapper = schemaAnnotationMapperFactory.create(this);
 
         annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
                 .collect(Collectors.toCollection(LinkedList::new))

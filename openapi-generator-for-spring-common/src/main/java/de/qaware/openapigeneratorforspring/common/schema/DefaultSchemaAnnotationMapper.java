@@ -26,8 +26,8 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
 
     private final ParsableValueMapper parsableValueMapper;
     private final ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper;
-    private final SchemaResolver schemaResolver;
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
+    private final SchemaResolver schemaResolver;
 
     @Override
     public void applyFromAnnotation(Schema<Object> schema, io.swagger.v3.oas.annotations.media.Schema annotation, NestedSchemaConsumer nestedSchemaConsumer) {
@@ -67,6 +67,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         if (StringUtils.isBlank(propertyName) || ArrayUtils.isEmpty(mappings)) {
             return;
         }
+
         Map<String, Schema<Object>> schemasMap = OpenApiMapUtils.buildMapFromArray(
                 mappings,
                 DiscriminatorMapping::value,

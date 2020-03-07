@@ -35,6 +35,11 @@ public class App5Test {
 
     @Test
     public void resolveSchemaWithResolver() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper()
+                .configure(SerializationFeature.INDENT_OUTPUT, true)
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+
         DefaultReferenceNameFactory referenceNameFactory = new DefaultReferenceNameFactory();
         DefaultReferenceNameConflictResolver referenceNameConflictResolver = new DefaultReferenceNameConflictResolver();
 
@@ -43,11 +48,8 @@ public class App5Test {
             setStringIfNotBlank(schemaAnnotation.description(), schema::setDescription);
             setStringIfNotBlank(schemaAnnotation.title(), schema::setTitle);
         };
-        ObjectMapper objectMapper = new ObjectMapper()
-                .configure(SerializationFeature.INDENT_OUTPUT, true)
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        SchemaResolver sut = new DefaultSchemaResolver(() -> objectMapper, schemaAnnotationMapper);
+        SchemaResolver sut = new DefaultSchemaResolver(() -> objectMapper, schemaResolver -> schemaAnnotationMapper);
 
         ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);
         NestedSchemaConsumer nestedSchemaConsumer = new DefaultNestedSchemaConsumer(storage);

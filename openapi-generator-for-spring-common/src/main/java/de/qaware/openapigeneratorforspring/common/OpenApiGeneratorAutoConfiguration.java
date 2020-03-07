@@ -47,9 +47,10 @@ import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceName
 import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceNameFactory;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
-import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.schema.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import io.swagger.v3.core.util.Json;
@@ -233,13 +234,22 @@ public class OpenApiGeneratorAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public SchemaAnnotationMapper defaultSchemaAnnotationMapper(
+            SchemaAnnotationMapperFactory schemaAnnotationMapperFactory,
+            SchemaResolver schemaResolver
+    ) {
+        return schemaAnnotationMapperFactory.create(schemaResolver);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SchemaAnnotationMapperFactory defaultSchemaAnnotationMapperFactory(
             ParsableValueMapper parsableValueMapper,
             ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper,
-            SchemaResolver schemaResolver, ExtensionAnnotationMapper extensionAnnotationMapper
+            ExtensionAnnotationMapper extensionAnnotationMapper
     ) {
-        return new DefaultSchemaAnnotationMapper(parsableValueMapper, externalDocumentationAnnotationMapper,
-                schemaResolver, extensionAnnotationMapper);
+        return new DefaultSchemaAnnotationMapperFactory(parsableValueMapper, externalDocumentationAnnotationMapper, extensionAnnotationMapper);
     }
+
 
     @Bean
     @ConditionalOnMissingBean
@@ -296,8 +306,8 @@ public class OpenApiGeneratorAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public SchemaResolver defaultSchemaResolver(OpenApiObjectMapperSupplier openApiObjectMapperSupplier,
-                                                SchemaAnnotationMapper schemaAnnotationMapper) {
-        return new DefaultSchemaResolver(openApiObjectMapperSupplier, schemaAnnotationMapper);
+                                                SchemaAnnotationMapperFactory schemaAnnotationMapperFactory) {
+        return new DefaultSchemaResolver(openApiObjectMapperSupplier, schemaAnnotationMapperFactory);
     }
 
     @Bean
