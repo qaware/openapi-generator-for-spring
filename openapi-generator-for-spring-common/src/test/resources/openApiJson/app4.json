@@ -29,7 +29,11 @@
           "201": {
             "description": "Default response",
             "content": {
-              "*/*": {}
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
             }
           }
         }
@@ -54,7 +58,11 @@
           "201": {
             "description": "Custom default description for response",
             "content": {
-              "*/*": {}
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
             }
           }
         }
@@ -129,7 +137,11 @@
                   }
                 }
               },
-              "*/*": {}
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
             },
             "links": {
               "link1": {

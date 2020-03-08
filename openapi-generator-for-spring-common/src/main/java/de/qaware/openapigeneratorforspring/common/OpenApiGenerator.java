@@ -91,7 +91,7 @@ public class OpenApiGenerator {
             openApi.setPaths(paths);
         }
 
-        Map<ReferenceName, Schema<Object>> referencedSchemas = referencedSchemaStorage.buildReferencedSchemas();
+        Map<ReferenceName, Schema<?>> referencedSchemas = referencedSchemaStorage.buildReferencedSchemas();
 
         if (!referencedSchemas.isEmpty()) {
             Components components = new Components();

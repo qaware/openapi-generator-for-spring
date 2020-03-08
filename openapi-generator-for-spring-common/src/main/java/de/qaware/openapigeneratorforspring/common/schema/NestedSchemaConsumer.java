@@ -9,11 +9,11 @@ import java.util.stream.Stream;
 
 public interface NestedSchemaConsumer {
 
-    default void consume(Schema<Object> schema, Consumer<ReferenceName> referenceNameSetter) {
+    default void consume(Schema<?> schema, Consumer<ReferenceName> referenceNameSetter) {
         consumeMany(
-                Stream.of(new EntryWithSchema<>(null, schema)),
+                Stream.of(new EntryWithSchema<Object>(null, schema)),
                 referenceNames -> {
-                    EntryWithReferenceName<Object> objectEntryWithReferenceName = referenceNames
+                    EntryWithReferenceName<?> objectEntryWithReferenceName = referenceNames
                             .findFirst()
                             .orElseThrow(() -> new IllegalStateException("Expected one element"));
                     referenceNameSetter.accept(objectEntryWithReferenceName.getReferenceName());
@@ -26,7 +26,7 @@ public interface NestedSchemaConsumer {
     @Value
     class EntryWithSchema<T> {
         T entry;
-        Schema<Object> schema;
+        Schema<?> schema;
     }
 
     @Value

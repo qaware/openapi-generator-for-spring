@@ -1,20 +1,6 @@
 {
   "openapi": "3.0.1",
   "paths": {
-    "/deprecated-methods/get-mapping": {
-      "get": {
-        "operationId": "deprecatedGetMapping",
-        "responses": {
-          "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {}
-            }
-          }
-        },
-        "deprecated": true
-      }
-    },
     "/deprecated-methods/post-mapping": {
       "post": {
         "operationId": "deprecatedPostMapping",
@@ -22,7 +8,27 @@
           "200": {
             "description": "Default response",
             "content": {
-              "*/*": {}
+              "*/*": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/deprecated-methods/get-mapping": {
+      "get": {
+        "operationId": "deprecatedGetMapping",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
             }
           }
         },
@@ -36,7 +42,11 @@
           "200": {
             "description": "Default response",
             "content": {
-              "*/*": {}
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
             }
           }
         },
@@ -50,51 +60,13 @@
           "200": {
             "description": "Default response",
             "content": {
-              "*/*": {}
+              "*/*": {
+                "schema": {}
+              }
             }
           }
         },
         "deprecated": true
-      }
-    },
-    "/operation-annotation/get1": {
-      "get": {
-        "tags": [
-          "TAG-1",
-          "TAG-2"
-        ],
-        "summary": "Summary 1",
-        "description": "Description 1",
-        "operationId": "getMappingOperation1",
-        "responses": {
-          "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {}
-            }
-          }
-        }
-      }
-    },
-    "/operation-annotation/get3": {
-      "get": {
-        "externalDocs": {
-          "description": "external doc description",
-          "url": "http://some-url",
-          "x-extension1": {
-            "property2": "value2",
-            "property1": "value1"
-          }
-        },
-        "operationId": "getMappingOperation3",
-        "responses": {
-          "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {}
-            }
-          }
-        }
       }
     },
     "/operation-annotation/get4": {
@@ -104,7 +76,11 @@
           "200": {
             "description": "Default response",
             "content": {
-              "*/*": {}
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
             }
           }
         },
@@ -134,6 +110,54 @@
         ]
       }
     },
+    "/operation-annotation/get3": {
+      "get": {
+        "externalDocs": {
+          "description": "external doc description",
+          "url": "http://some-url",
+          "x-extension1": {
+            "property2": "value2",
+            "property1": "value1"
+          }
+        },
+        "operationId": "getMappingOperation3",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operation-annotation/get1": {
+      "get": {
+        "tags": [
+          "TAG-1",
+          "TAG-2"
+        ],
+        "summary": "Summary 1",
+        "description": "Description 1",
+        "operationId": "getMappingOperation1",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/operation-annotation/get2": {
       "get": {
         "summary": "Summary 2",
@@ -142,33 +166,11 @@
           "200": {
             "description": "Default response",
             "content": {
-              "*/*": {}
-            }
-          }
-        }
-      }
-    },
-    "/simple/put-mapping": {
-      "put": {
-        "operationId": "putMapping",
-        "responses": {
-          "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {}
-            }
-          }
-        }
-      }
-    },
-    "/simple/delete-mapping": {
-      "delete": {
-        "operationId": "deleteMapping",
-        "responses": {
-          "204": {
-            "description": "Default response",
-            "content": {
-              "*/*": {}
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
             }
           }
         }
@@ -181,7 +183,39 @@
           "201": {
             "description": "Default response",
             "content": {
-              "*/*": {}
+              "*/*": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simple/put-mapping": {
+      "put": {
+        "operationId": "putMapping",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simple/delete-mapping": {
+      "delete": {
+        "operationId": "deleteMapping",
+        "responses": {
+          "204": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {}
+              }
             }
           }
         }
@@ -194,7 +228,11 @@
           "200": {
             "description": "Default response",
             "content": {
-              "*/*": {}
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
             }
           }
         }

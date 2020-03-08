@@ -166,8 +166,8 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MethodResponseApiResponseCustomizer methodResponseApiResponseCustomizer(DefaultApiResponseCodeMapper defaultApiResponseCodeMapper) {
-        return new MethodResponseApiResponseCustomizer(defaultApiResponseCodeMapper);
+    public MethodResponseApiResponseCustomizer methodResponseApiResponseCustomizer(DefaultApiResponseCodeMapper defaultApiResponseCodeMapper, SchemaResolver schemaResolver) {
+        return new MethodResponseApiResponseCustomizer(defaultApiResponseCodeMapper, schemaResolver);
     }
 
     @Bean

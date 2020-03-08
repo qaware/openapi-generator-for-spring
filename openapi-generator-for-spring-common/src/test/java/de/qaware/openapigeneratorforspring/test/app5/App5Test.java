@@ -54,9 +54,9 @@ public class App5Test {
         ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);
         NestedSchemaConsumer nestedSchemaConsumer = new DefaultNestedSchemaConsumer(storage);
 
-        io.swagger.v3.oas.models.media.Schema<Object> schema = sut.resolveFromClass(SomeDto.class, nestedSchemaConsumer);
+        io.swagger.v3.oas.models.media.Schema<?> schema = sut.resolveFromClass(SomeDto.class, nestedSchemaConsumer);
 
-        Map<ReferenceName, io.swagger.v3.oas.models.media.Schema<Object>> referencedSchemas = storage.buildReferencedSchemas();
+        Map<ReferenceName, io.swagger.v3.oas.models.media.Schema<?>> referencedSchemas = storage.buildReferencedSchemas();
 
         System.out.println("==== Constructed schema");
         System.out.println(objectMapper.writeValueAsString(schema));

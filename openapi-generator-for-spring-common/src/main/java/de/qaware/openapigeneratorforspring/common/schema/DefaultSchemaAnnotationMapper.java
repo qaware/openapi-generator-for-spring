@@ -70,7 +70,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
             return;
         }
 
-        Map<String, Schema<Object>> schemasMap = OpenApiMapUtils.buildMapFromArray(
+        Map<String, Schema<?>> schemasMap = OpenApiMapUtils.buildMapFromArray(
                 mappings,
                 DiscriminatorMapping::value,
                 mapping -> schemaResolver.resolveFromClass(mapping.schema(), nestedSchemaConsumer)

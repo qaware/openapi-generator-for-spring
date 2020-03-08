@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -33,7 +34,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
     private final SchemaAnnotationMapperFactory schemaAnnotationMapperFactory;
 
     @Override
-    public Schema<Object> resolveFromClass(Class<?> clazz, NestedSchemaConsumer nestedSchemaConsumer) {
+    public Schema<?> resolveFromClass(Class<?> clazz, NestedSchemaConsumer nestedSchemaConsumer) {
         ObjectMapper mapper = openApiObjectMapperSupplier.get();
         ReferencedSchemas referencedSchemas = new ReferencedSchemas();
 
@@ -41,7 +42,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
         AnnotationsSupplierForClass annotationsSupplier = new AnnotationsSupplierForClass(clazz);
 
-        Schema<Object> schema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier, nestedSchemaConsumer);
+        Schema<?> schema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier, nestedSchemaConsumer);
         addPropertiesToSchema(javaType, schema, referencedSchemas, nestedSchemaConsumer);
 
         referencedSchemas.referencedSchemas.forEach(referencedSchema -> nestedSchemaConsumer.consume(
@@ -52,8 +53,12 @@ public class DefaultSchemaResolver implements SchemaResolver {
         return schema;
     }
 
-    private Schema<Object> buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier, NestedSchemaConsumer nestedSchemaConsumer) {
+    private Schema<?> buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier, NestedSchemaConsumer nestedSchemaConsumer) {
         // TODO do some primitive type handling here
+        if (javaType.getRawClass().equals(String.class)) {
+            return new StringSchema();
+        }
+
         Schema<Object> schema = new Schema<>();
 
         schema.setName(javaType.getRawClass().getSimpleName());
@@ -74,7 +79,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
         return schema;
     }
 
-    private void addPropertiesToSchema(JavaType javaType, Schema<Object> schema, ReferencedSchemas referencedSchemas, NestedSchemaConsumer nestedSchemaConsumer) {
+    private void addPropertiesToSchema(JavaType javaType, Schema<?> schema, ReferencedSchemas referencedSchemas, NestedSchemaConsumer nestedSchemaConsumer) {
 
         BeanDescription beanDesc = getBeanDescription(javaType);
         Set<String> ignoredPropertyNames = beanDesc.getIgnoredPropertyNames();
@@ -87,7 +92,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
             AnnotatedMember member = propDef.getAccessor();
 
-            Schema<Object> propertySchema = buildSchemaFromTypeWithoutProperties(member.getType(), new AnnotationSupplierForMember(member), nestedSchemaConsumer);
+            Schema<?> propertySchema = buildSchemaFromTypeWithoutProperties(member.getType(), new AnnotationSupplierForMember(member), nestedSchemaConsumer);
 
             Schema<?> schemaReference = referencedSchemas.findSchemaReferenceIgnoringProperties(propertySchema);
 
@@ -129,14 +134,14 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
         @RequiredArgsConstructor
         public static class ReferencedSchema {
-            private final Schema<Object> schema;
+            private final Schema<?> schema;
             private final Schema<?> reference = new Schema<>();
         }
 
         private final List<ReferencedSchema> referencedSchemas = new ArrayList<>();
 
         @Nullable
-        public Schema<?> findSchemaReferenceIgnoringProperties(Schema<Object> schema) {
+        public Schema<?> findSchemaReferenceIgnoringProperties(Schema<?> schema) {
             return referencedSchemas.stream()
                     .filter(referencedSchema -> {
                         // Schema.equals ignores the name, that's why we check it here manually
@@ -154,7 +159,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     .orElse(null);
         }
 
-        public Schema<?> addNewSchemaAndCreateReference(Schema<Object> schema) {
+        public Schema<?> addNewSchemaAndCreateReference(Schema<?> schema) {
             ReferencedSchema referencedSchema = new ReferencedSchema(schema);
             referencedSchemas.add(referencedSchema);
             return referencedSchema.reference;
