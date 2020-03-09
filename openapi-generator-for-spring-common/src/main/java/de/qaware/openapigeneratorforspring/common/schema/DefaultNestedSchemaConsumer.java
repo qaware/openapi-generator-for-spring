@@ -4,6 +4,7 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -19,15 +20,11 @@ public class DefaultNestedSchemaConsumer implements NestedSchemaConsumer {
     public <T> void consumeMany(Stream<EntryWithSchema<T>> entriesWithSchemasStream, Consumer<Stream<EntryWithReferenceName<T>>> referenceNameSetters) {
 
         List<EntryWithSchema<T>> entriesWithSchemas = entriesWithSchemasStream.collect(Collectors.toList());
-
-        List<EntryWithReferenceName<T>> result = new ArrayList<>();
-        while (result.size() < entriesWithSchemas.size()) {
-            result.add(null);
-        }
+        List<EntryWithReferenceName<T>> result = new ArrayList<>(Collections.nCopies(entriesWithSchemas.size(), null));
 
         for (int i = 0; i < entriesWithSchemas.size(); i++) {
             EntryWithSchema<T> entryWithSchema = entriesWithSchemas.get(i);
-            Consumer<ReferenceName> referenceNameConsumer = new ReferenceNameConsumer<>(i, result, entryWithSchema.getEntry());
+            Consumer<ReferenceName> referenceNameConsumer = new ReferenceNameConsumerForIndexedResult<>(i, result, entryWithSchema.getEntry());
             referencedSchemaStorage.storeSchema(
                     entryWithSchema.getSchema(),
                     referenceName -> {
@@ -42,14 +39,14 @@ public class DefaultNestedSchemaConsumer implements NestedSchemaConsumer {
     }
 
     @RequiredArgsConstructor
-    private static class ReferenceNameConsumer<T> implements Consumer<ReferenceName> {
+    private static class ReferenceNameConsumerForIndexedResult<T> implements Consumer<ReferenceName> {
         private final int i;
-        private final List<EntryWithReferenceName<T>> output;
+        private final List<EntryWithReferenceName<T>> result;
         private final T entry;
 
         @Override
         public void accept(ReferenceName referenceName) {
-            output.set(i, new EntryWithReferenceName<>(entry, referenceName));
+            result.set(i, new EntryWithReferenceName<>(entry, referenceName));
         }
     }
 }

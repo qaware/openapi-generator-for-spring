@@ -1,0 +1,143 @@
+{
+  "openapi": "3.0.1",
+  "paths": {
+    "/get1": {
+      "get": {
+        "operationId": "getMappingWithString",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get2": {
+      "get": {
+        "operationId": "getMappingWithSimpleDto",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "properties": {
+                    "property1": {
+                      "$ref": "#/components/schemas/null"
+                    }
+                  },
+                  "description": "global description"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get3": {
+      "get": {
+        "operationId": "getMappingWithComplexDto",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "properties": {
+                    "other1": {
+                      "$ref": "#/components/schemas/ComplexDto_0"
+                    },
+                    "other2": {
+                      "$ref": "#/components/schemas/ComplexDto_1"
+                    },
+                    "someOtherDto": {
+                      "$ref": "#/components/schemas/SomeOtherDto_0"
+                    }
+                  },
+                  "description": "global description"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "#/components/schemas/null": {
+        "type": "string"
+      },
+      "#/components/schemas/SomeOtherDto_0": {
+        "properties": {
+          "other": {
+            "$ref": "#/components/schemas/ComplexDto_2"
+          },
+          "someOtherDto": {
+            "$ref": "#/components/schemas/SomeOtherDto_1"
+          }
+        },
+        "nullable": true
+      },
+      "#/components/schemas/ComplexDto_0": {
+        "properties": {
+          "other1": {
+            "$ref": "#/components/schemas/ComplexDto_0"
+          },
+          "other2": {
+            "$ref": "#/components/schemas/ComplexDto_1"
+          },
+          "someOtherDto": {
+            "$ref": "#/components/schemas/SomeOtherDto_0"
+          }
+        },
+        "description": "description1"
+      },
+      "#/components/schemas/SomeOtherDto_1": {
+        "properties": {
+          "other": {
+            "$ref": "#/components/schemas/ComplexDto_2"
+          },
+          "someOtherDto": {
+            "$ref": "#/components/schemas/SomeOtherDto_1"
+          }
+        },
+        "description": "nestedOtherDescription"
+      },
+      "#/components/schemas/ComplexDto_1": {
+        "properties": {
+          "other1": {
+            "$ref": "#/components/schemas/ComplexDto_0"
+          },
+          "other2": {
+            "$ref": "#/components/schemas/ComplexDto_1"
+          },
+          "someOtherDto": {
+            "$ref": "#/components/schemas/SomeOtherDto_0"
+          }
+        },
+        "description": "description2"
+      },
+      "#/components/schemas/ComplexDto_2": {
+        "properties": {
+          "other1": {
+            "$ref": "#/components/schemas/ComplexDto_0"
+          },
+          "other2": {
+            "$ref": "#/components/schemas/ComplexDto_1"
+          },
+          "someOtherDto": {
+            "$ref": "#/components/schemas/SomeOtherDto_0"
+          }
+        },
+        "description": "nestedDescription"
+      }
+    }
+  }
+}

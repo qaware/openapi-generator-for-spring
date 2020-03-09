@@ -54,13 +54,13 @@ public class DefaultSchemaResolver implements SchemaResolver {
     }
 
     private Schema<?> buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier, NestedSchemaConsumer nestedSchemaConsumer) {
-        // TODO do some primitive type handling here
+        // TODO do some more primitive type handling here
         if (javaType.getRawClass().equals(String.class)) {
+            // TODO properly handle "referenced" and "inline" schemas
             return new StringSchema();
         }
 
         Schema<Object> schema = new Schema<>();
-
         schema.setName(javaType.getRawClass().getSimpleName());
 
         // TODO support other nullable annotations?
