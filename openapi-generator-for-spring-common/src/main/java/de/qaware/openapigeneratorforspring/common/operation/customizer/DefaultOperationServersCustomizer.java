@@ -9,7 +9,7 @@ import org.springframework.core.Ordered;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
 
 @RequiredArgsConstructor
-public class DefaultOperationServersCustomizer implements OperationCustomizer, Ordered {
+public class DefaultOperationServersCustomizer implements OperationCustomizer {
 
     public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 1000;
 

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.Ordered;
 
 @RequiredArgsConstructor
-public class DefaultOperationExternalDocsCustomizer implements OperationCustomizer, Ordered {
+public class DefaultOperationExternalDocsCustomizer implements OperationCustomizer {
 
     public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 1000;
 

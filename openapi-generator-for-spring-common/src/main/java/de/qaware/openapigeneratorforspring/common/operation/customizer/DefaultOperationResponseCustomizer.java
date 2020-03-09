@@ -23,7 +23,7 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.me
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
-public class DefaultOperationResponseCustomizer implements OperationCustomizer, Ordered {
+public class DefaultOperationResponseCustomizer implements OperationCustomizer {
 
     public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 1000;
 

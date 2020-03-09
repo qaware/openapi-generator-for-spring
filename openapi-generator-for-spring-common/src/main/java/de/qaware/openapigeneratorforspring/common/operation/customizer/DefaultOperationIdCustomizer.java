@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.Ordered;
 
 @RequiredArgsConstructor
-public class DefaultOperationIdCustomizer implements OperationCustomizer, Ordered {
+public class DefaultOperationIdCustomizer implements OperationCustomizer {
 
     public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 1000;
 

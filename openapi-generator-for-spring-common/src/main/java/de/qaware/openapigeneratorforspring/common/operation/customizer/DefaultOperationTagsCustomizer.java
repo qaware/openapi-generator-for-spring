@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class DefaultOperationTagsCustomizer implements OperationCustomizer, Ordered {
+public class DefaultOperationTagsCustomizer implements OperationCustomizer {
 
     public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 1000;
 

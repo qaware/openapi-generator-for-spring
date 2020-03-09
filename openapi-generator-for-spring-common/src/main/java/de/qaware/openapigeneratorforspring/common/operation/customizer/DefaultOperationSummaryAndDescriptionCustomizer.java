@@ -6,7 +6,7 @@ import org.springframework.core.Ordered;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
-public class DefaultOperationSummaryAndDescriptionCustomizer implements OperationCustomizer, Ordered {
+public class DefaultOperationSummaryAndDescriptionCustomizer implements OperationCustomizer {
 
     public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 1000;
 

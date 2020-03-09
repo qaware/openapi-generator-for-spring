@@ -7,7 +7,7 @@ import org.springframework.core.Ordered;
 
 import java.lang.reflect.Method;
 
-public class DefaultDeprecatedOperationCustomizer implements OperationCustomizer, Ordered {
+public class DefaultDeprecatedOperationCustomizer implements OperationCustomizer {
 
     public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 1000;
 
