@@ -1,23 +1,6 @@
 {
   "openapi": "3.0.1",
   "paths": {
-    "/get1": {
-      "get": {
-        "operationId": "getMappingWithString",
-        "responses": {
-          "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/get2": {
       "get": {
         "operationId": "getMappingWithSimpleDto",
@@ -27,6 +10,7 @@
             "content": {
               "*/*": {
                 "schema": {
+                  "type": "object",
                   "properties": {
                     "property1": {
                       "$ref": "#/components/schemas/null"
@@ -49,6 +33,7 @@
             "content": {
               "*/*": {
                 "schema": {
+                  "type": "object",
                   "properties": {
                     "other1": {
                       "$ref": "#/components/schemas/ComplexDto_0"
@@ -67,6 +52,23 @@
           }
         }
       }
+    },
+    "/get1": {
+      "get": {
+        "operationId": "getMappingWithString",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -74,18 +76,8 @@
       "#/components/schemas/null": {
         "type": "string"
       },
-      "#/components/schemas/SomeOtherDto_0": {
-        "properties": {
-          "other": {
-            "$ref": "#/components/schemas/ComplexDto_2"
-          },
-          "someOtherDto": {
-            "$ref": "#/components/schemas/SomeOtherDto_1"
-          }
-        },
-        "nullable": true
-      },
       "#/components/schemas/ComplexDto_0": {
+        "type": "object",
         "properties": {
           "other1": {
             "$ref": "#/components/schemas/ComplexDto_0"
@@ -99,7 +91,8 @@
         },
         "description": "description1"
       },
-      "#/components/schemas/SomeOtherDto_1": {
+      "#/components/schemas/SomeOtherDto_0": {
+        "type": "object",
         "properties": {
           "other": {
             "$ref": "#/components/schemas/ComplexDto_2"
@@ -108,9 +101,10 @@
             "$ref": "#/components/schemas/SomeOtherDto_1"
           }
         },
-        "description": "nestedOtherDescription"
+        "nullable": true
       },
       "#/components/schemas/ComplexDto_1": {
+        "type": "object",
         "properties": {
           "other1": {
             "$ref": "#/components/schemas/ComplexDto_0"
@@ -124,7 +118,20 @@
         },
         "description": "description2"
       },
+      "#/components/schemas/SomeOtherDto_1": {
+        "type": "object",
+        "properties": {
+          "other": {
+            "$ref": "#/components/schemas/ComplexDto_2"
+          },
+          "someOtherDto": {
+            "$ref": "#/components/schemas/SomeOtherDto_1"
+          }
+        },
+        "description": "nestedOtherDescription"
+      },
       "#/components/schemas/ComplexDto_2": {
+        "type": "object",
         "properties": {
           "other1": {
             "$ref": "#/components/schemas/ComplexDto_0"

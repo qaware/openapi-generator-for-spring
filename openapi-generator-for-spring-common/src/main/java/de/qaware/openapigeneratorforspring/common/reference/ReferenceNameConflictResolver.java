@@ -1,10 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
 
-import io.swagger.v3.oas.models.media.Schema;
+import de.qaware.openapigeneratorforspring.common.schema.Schema;
 
 import java.util.List;
 
 public interface ReferenceNameConflictResolver {
-    List<ReferenceName> resolveConflict(List<Schema<?>> schemasWithSameReferenceName, ReferenceName originalReferenceName);
+    List<ReferenceName> resolveConflict(List<Schema> schemasWithSameReferenceName, ReferenceName originalReferenceName);
 }

@@ -3,7 +3,6 @@ package de.qaware.openapigeneratorforspring.common.schema;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
-import io.swagger.v3.oas.models.media.Schema;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
@@ -26,12 +25,12 @@ public class DefaultReferencedSchemaStorage implements ReferencedSchemaStorage {
     private final List<SchemaWithReferenceNameSetters> entries = new ArrayList<>();
 
     @Override
-    public void storeSchema(Schema<?> schema, Consumer<ReferenceName> referenceNameSetter) {
+    public void storeSchema(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
         SchemaWithReferenceNameSetters entry = getEntryOrAddNew(schema);
         entry.getReferenceNameSetters().add(referenceNameSetter);
     }
 
-    private SchemaWithReferenceNameSetters getEntryOrAddNew(Schema<?> schema) {
+    private SchemaWithReferenceNameSetters getEntryOrAddNew(Schema schema) {
         return entries.stream()
                 .filter(entry -> Objects.equals(entry.getSchema().getName(), schema.getName()) && entry.getSchema().equals(schema))
                 .findAny()
@@ -43,8 +42,8 @@ public class DefaultReferencedSchemaStorage implements ReferencedSchemaStorage {
     }
 
     @Override
-    public Map<ReferenceName, Schema<?>> buildReferencedSchemas() {
-        Map<ReferenceName, Schema<?>> referencedSchemas = new HashMap<>();
+    public Map<ReferenceName, Schema> buildReferencedSchemas() {
+        Map<ReferenceName, Schema> referencedSchemas = new HashMap<>();
 
         Map<ReferenceName, List<SchemaWithReferenceNameSetters>> entriesGroupedByReferenceName = entries.stream()
                 .collect(Collectors.groupingBy(entry -> referenceNameFactory.create(entry.getSchema())));
@@ -56,7 +55,7 @@ public class DefaultReferencedSchemaStorage implements ReferencedSchemaStorage {
                 ReferenceName uniqueReferenceName = uniqueReferenceNames.get(i);
                 SchemaWithReferenceNameSetters schemaWithSetters = schemasWithSetters.get(i);
 
-                Schema<?> existingSchema = referencedSchemas.get(uniqueReferenceName);
+                Schema existingSchema = referencedSchemas.get(uniqueReferenceName);
                 if (existingSchema != null) {
                     throw new IllegalStateException("Encountered conflicting reference name " + uniqueReferenceName
                             + " for " + existingSchema + " vs. " + schemaWithSetters.getSchema());
@@ -77,7 +76,7 @@ public class DefaultReferencedSchemaStorage implements ReferencedSchemaStorage {
             return Collections.singletonList(referenceName);
         }
 
-        List<Schema<?>> schemasWithSameReferenceName = schemasWithSetters.stream()
+        List<Schema> schemasWithSameReferenceName = schemasWithSetters.stream()
                 .map(SchemaWithReferenceNameSetters::getSchema)
                 .collect(Collectors.toList());
 
@@ -95,7 +94,7 @@ public class DefaultReferencedSchemaStorage implements ReferencedSchemaStorage {
 
     @Value
     private static class SchemaWithReferenceNameSetters {
-        Schema<?> schema;
+        de.qaware.openapigeneratorforspring.common.schema.Schema schema;
         List<Consumer<ReferenceName>> referenceNameSetters = new ArrayList<>();
     }
 

@@ -1,7 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.schema;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
-import io.swagger.v3.oas.models.media.Schema;
 import lombok.Value;
 
 import java.util.function.Consumer;
@@ -9,9 +8,9 @@ import java.util.stream.Stream;
 
 public interface NestedSchemaConsumer {
 
-    default void consume(Schema<?> schema, Consumer<ReferenceName> referenceNameSetter) {
+    default void consume(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
         consumeMany(
-                Stream.of(new EntryWithSchema<Object>(null, schema)),
+                Stream.of(new EntryWithSchema<>(null, schema)),
                 referenceNames -> {
                     EntryWithReferenceName<?> objectEntryWithReferenceName = referenceNames
                             .findFirst()
@@ -26,7 +25,7 @@ public interface NestedSchemaConsumer {
     @Value
     class EntryWithSchema<T> {
         T entry;
-        Schema<?> schema;
+        Schema schema;
     }
 
     @Value

@@ -7,7 +7,6 @@ import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
 import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import io.swagger.v3.oas.models.media.Discriminator;
-import io.swagger.v3.oas.models.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +29,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
     private final SchemaResolver schemaResolver;
 
     @Override
-    public void applyFromAnnotation(Schema<Object> schema, io.swagger.v3.oas.annotations.media.Schema annotation, NestedSchemaConsumer nestedSchemaConsumer) {
+    public void applyFromAnnotation(Schema schema, io.swagger.v3.oas.annotations.media.Schema annotation, NestedSchemaConsumer nestedSchemaConsumer) {
 
         // TODO consider annotation.implementation() if not Void.class
 
@@ -63,14 +62,14 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(annotation.extensions()), schema::setExtensions);
     }
 
-    private void setDiscriminator(Schema<Object> schema, io.swagger.v3.oas.annotations.media.Schema annotation, NestedSchemaConsumer nestedSchemaConsumer) {
+    private void setDiscriminator(Schema schema, io.swagger.v3.oas.annotations.media.Schema annotation, NestedSchemaConsumer nestedSchemaConsumer) {
         String propertyName = annotation.discriminatorProperty();
         DiscriminatorMapping[] mappings = annotation.discriminatorMapping();
         if (StringUtils.isBlank(propertyName) || ArrayUtils.isEmpty(mappings)) {
             return;
         }
 
-        Map<String, Schema<?>> schemasMap = OpenApiMapUtils.buildMapFromArray(
+        Map<String, Schema> schemasMap = OpenApiMapUtils.buildMapFromArray(
                 mappings,
                 DiscriminatorMapping::value,
                 mapping -> schemaResolver.resolveFromClass(mapping.schema(), nestedSchemaConsumer)
@@ -93,7 +92,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         schema.setDiscriminator(discriminator);
     }
 
-    private void setAccessMode(AccessMode accessMode, Schema<?> schema) {
+    private void setAccessMode(AccessMode accessMode, Schema schema) {
         switch (accessMode) {
             case READ_ONLY:
                 schema.setReadOnly(true);

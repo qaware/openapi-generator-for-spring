@@ -1,11 +1,11 @@
 package de.qaware.openapigeneratorforspring.common.operation.response;
 
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiAnnotationUtils;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
-import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class MethodResponseApiResponseCustomizer implements OperationApiResponse
         List<String> producesContentType = getProducesContentType(method);
         for (String contentType : producesContentType) {
             MediaType mediaType = content.computeIfAbsent(contentType, ignored -> new MediaType());
-            Schema<?> schema = schemaResolver.resolveFromClass(method.getReturnType(), operationBuilderContext.getNestedSchemaConsumer());
+            Schema schema = schemaResolver.resolveFromClass(method.getReturnType(), operationBuilderContext.getNestedSchemaConsumer());
             mediaType.setSchema(schema);
             // TODO investigate @Schema annotation on operation method?
         }

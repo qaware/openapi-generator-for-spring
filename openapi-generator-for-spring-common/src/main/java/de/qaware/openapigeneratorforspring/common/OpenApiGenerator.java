@@ -13,12 +13,12 @@ import de.qaware.openapigeneratorforspring.common.schema.DefaultNestedSchemaCons
 import de.qaware.openapigeneratorforspring.common.schema.DefaultReferencedSchemaStorage;
 import de.qaware.openapigeneratorforspring.common.schema.NestedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaStorage;
+import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
-import io.swagger.v3.oas.models.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -91,11 +91,11 @@ public class OpenApiGenerator {
             openApi.setPaths(paths);
         }
 
-        Map<ReferenceName, Schema<?>> referencedSchemas = referencedSchemaStorage.buildReferencedSchemas();
+        Map<ReferenceName, Schema> referencedSchemas = referencedSchemaStorage.buildReferencedSchemas();
 
         if (!referencedSchemas.isEmpty()) {
             Components components = new Components();
-            Map<String, Schema> componentsSchemas = referencedSchemas.entrySet().stream()
+            Map<String, io.swagger.v3.oas.models.media.Schema> componentsSchemas = referencedSchemas.entrySet().stream()
                     .collect(Collectors.toMap(e -> e.getKey().asUniqueString(), Map.Entry::getValue));
             components.setSchemas(componentsSchemas);
             openApi.setComponents(components);
