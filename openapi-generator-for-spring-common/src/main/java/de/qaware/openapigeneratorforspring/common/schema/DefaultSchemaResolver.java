@@ -36,130 +36,132 @@ public class DefaultSchemaResolver implements SchemaResolver {
     @Override
     public Schema resolveFromClass(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer) {
         ObjectMapper mapper = openApiObjectMapperSupplier.get();
-        ReferencedSchemas referencedSchemas = new ReferencedSchemas();
 
-        JavaType javaType = mapper.constructType(clazz);
-
+        Context context = new Context(mapper, schemaAnnotationMapperFactory.create(this), referencedSchemaConsumer);
         AnnotationsSupplierForClass annotationsSupplier = new AnnotationsSupplierForClass(clazz);
-
-        Schema schema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier, referencedSchemas, referencedSchemaConsumer);
-        addPropertiesToSchema(javaType, schema, referencedSchemas, referencedSchemaConsumer);
-
-        referencedSchemas.referencedSchemas.forEach(
-                referencedSchema -> {
-                    if (referencedSchema.referenceConsumers.size() == 1 || referencedSchema.schema.getName() == null) {
-                        // TODO make handling of "name == null" more flexible?
-                        referencedSchema.referenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(referencedSchema.schema));
-                    } else {
-                        Schema schemaForReferenceName = new Schema();
-                        referencedSchema.referenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(schemaForReferenceName));
-                        referencedSchemaConsumer.consume(
-                                referencedSchema.schema,
-                                referenceName -> schemaForReferenceName.set$ref(referenceName.asUniqueString())
-                        );
-                    }
-                }
-        );
+        JavaType javaType = mapper.constructType(clazz);
+        Schema schema = context.buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
+        context.addPropertiesToSchema(javaType, schema);
+        context.resolveReferencedSchemas();
 
         return schema;
     }
 
+    @RequiredArgsConstructor
+    private static class Context {
 
-    private Schema buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier, ReferencedSchemas referencedSchemas, ReferencedSchemaConsumer referencedSchemaConsumer) {
+        private final ObjectMapper mapper;
+        private final SchemaAnnotationMapper schemaAnnotationMapper;
+        private final ReferencedSchemaConsumer referencedSchemaConsumer;
+        private final ReferencedSchemas referencedSchemas = new ReferencedSchemas();
+
+        private void buildSchemaFromType(Consumer<Schema> schemaConsumer, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+            if (javaType.isCollectionLikeType()) {
+                Schema containerSchema = new Schema();
+                containerSchema.setType("array");
+                // TODO adapt annotations supplier to content type, consider @ArraySchema
+                buildSchemaFromType(containerSchema::setItems, javaType.getContentType(), annotationsSupplier);
+                schemaConsumer.accept(containerSchema);
+                return;
+            }
+
+            Schema newSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
+            List<Consumer<Schema>> schemaReferenceSetters = referencedSchemas.findSchemaReferenceIgnoringProperties(newSchema);
+            if (schemaReferenceSetters != null) {
+                // we've seen this newSchema before, then simply reference it
+                schemaReferenceSetters.add(schemaConsumer);
+            } else {
+                // important to add the newSchema first before traversing the nested properties
+                referencedSchemas.addNewSchemaReference(newSchema, schemaConsumer);
+                addPropertiesToSchema(javaType, newSchema);
+            }
+        }
+
+        private Schema buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+
+            // TODO do some more primitive type handling here
+            if (javaType.getRawClass().equals(String.class)) {
+                // TODO properly handle "referenced" and "inline" schemas
+                Schema schema = new Schema();
+                schema.setType("string");
+                return schema;
+            }
 
 
-        // TODO do some more primitive type handling here
-        if (javaType.getRawClass().equals(String.class)) {
-            // TODO properly handle "referenced" and "inline" schemas
             Schema schema = new Schema();
-            schema.setType("string");
+            schema.setType("object");
+            schema.setName(javaType.getRawClass().getSimpleName());
+
+            // TODO support other nullable annotations?
+            if (annotationsSupplier.findAnnotations(Nullable.class).findFirst().isPresent()) {
+                schema.setNullable(true);
+            }
+
+            // TODO respect schema implementation type if any is given
+            annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
+                    .collect(Collectors.toCollection(LinkedList::new))
+                    .descendingIterator()
+                    .forEachRemaining(schemaAnnotation -> schemaAnnotationMapper.applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer));
+
             return schema;
         }
 
+        private void addPropertiesToSchema(JavaType javaType, Schema schema) {
 
-        Schema schema = new Schema();
-        schema.setType("object");
-        schema.setName(javaType.getRawClass().getSimpleName());
+            BeanDescription beanDesc = getBeanDescription(javaType);
+            Set<String> ignoredPropertyNames = beanDesc.getIgnoredPropertyNames();
 
-        // TODO support other nullable annotations?
-        if (annotationsSupplier.findAnnotations(Nullable.class).findFirst().isPresent()) {
-            schema.setNullable(true);
-        }
+            for (BeanPropertyDefinition propDef : beanDesc.findProperties()) {
+                if (ignoredPropertyNames.contains(propDef.getName())) {
+                    continue;
+                }
 
-        // TODO create this once per public method call
-        SchemaAnnotationMapper schemaAnnotationMapper = schemaAnnotationMapperFactory.create(this);
-
-        // TODO respect schema implementation type if any is given
-        annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
-                .collect(Collectors.toCollection(LinkedList::new))
-                .descendingIterator()
-                .forEachRemaining(schemaAnnotation -> schemaAnnotationMapper.applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer));
-
-        return schema;
-    }
-
-    private void addPropertiesToSchema(JavaType javaType, Schema schema, ReferencedSchemas referencedSchemas, ReferencedSchemaConsumer referencedSchemaConsumer) {
-
-        BeanDescription beanDesc = getBeanDescription(javaType);
-        Set<String> ignoredPropertyNames = beanDesc.getIgnoredPropertyNames();
-
-        for (BeanPropertyDefinition propDef : beanDesc.findProperties()) {
-            if (ignoredPropertyNames.contains(propDef.getName())) {
-                continue;
+                AnnotatedMember member = propDef.getAccessor();
+                AnnotationSupplierForMember annotationsSupplier = new AnnotationSupplierForMember(member);
+                buildSchemaFromType(schemaReference -> schema.addProperties(propDef.getName(), schemaReference),
+                        member.getType(), annotationsSupplier);
             }
-
-            AnnotatedMember member = propDef.getAccessor();
-            AnnotationSupplierForMember annotationsSupplier = new AnnotationSupplierForMember(member);
-            buildSchemaFromType(schemaReference -> schema.addProperties(propDef.getName(), schemaReference),
-                    member.getType(), annotationsSupplier, referencedSchemas, referencedSchemaConsumer);
-        }
-    }
-
-    private void buildSchemaFromType(Consumer<Schema> schemaConsumer, JavaType javaType, AnnotationsSupplier annotationsSupplier, ReferencedSchemas referencedSchemas, ReferencedSchemaConsumer referencedSchemaConsumer) {
-        if (javaType.isCollectionLikeType()) {
-            Schema containerSchema = new Schema();
-            containerSchema.setType("array");
-            // TODO adapt annotations supplier to content type, consider @ArraySchema
-            buildSchemaFromType(containerSchema::setItems, javaType.getContentType(), annotationsSupplier, referencedSchemas, referencedSchemaConsumer);
-            schemaConsumer.accept(containerSchema);
-            return;
         }
 
-        Schema newSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier, referencedSchemas, referencedSchemaConsumer);
-        List<Consumer<Schema>> schemaReferenceSetters = referencedSchemas.findSchemaReferenceIgnoringProperties(newSchema);
-        if (schemaReferenceSetters != null) {
-            // we've seen this newSchema before, then simply reference it
-            schemaReferenceSetters.add(schemaConsumer);
-        } else {
-            // important to add the newSchema first before traversing the nested properties
-            referencedSchemas.addNewSchemaReference(newSchema, schemaConsumer);
-            addPropertiesToSchema(javaType, newSchema, referencedSchemas, referencedSchemaConsumer);
-        }
-    }
+        private BeanDescription getBeanDescription(JavaType type) {
 
-    private BeanDescription getBeanDescription(JavaType type) {
-        // TODO reduce calls to supplier by passing mapper around
-        ObjectMapper mapper = openApiObjectMapperSupplier.get();
+            BeanDescription recurBeanDesc = mapper.getSerializationConfig().introspect(type);
+            HashSet<String> visited = new HashSet<>();
+            JsonSerialize jsonSerialize = recurBeanDesc.getClassAnnotations().get(JsonSerialize.class);
 
-        BeanDescription recurBeanDesc = mapper.getSerializationConfig().introspect(type);
-        HashSet<String> visited = new HashSet<>();
-        JsonSerialize jsonSerialize = recurBeanDesc.getClassAnnotations().get(JsonSerialize.class);
+            while (jsonSerialize != null && !Void.class.equals(jsonSerialize.as())) {
+                String asName = jsonSerialize.as().getName();
+                if (visited.contains(asName)) {
+                    break;
+                }
+                visited.add(asName);
 
-        while (jsonSerialize != null && !Void.class.equals(jsonSerialize.as())) {
-            String asName = jsonSerialize.as().getName();
-            if (visited.contains(asName)) {
-                break;
+                recurBeanDesc = mapper.getSerializationConfig().introspect(
+                        mapper.constructType(jsonSerialize.as())
+                );
+                jsonSerialize = recurBeanDesc.getClassAnnotations().get(JsonSerialize.class);
             }
-            visited.add(asName);
+            return recurBeanDesc;
+        }
 
-            recurBeanDesc = mapper.getSerializationConfig().introspect(
-                    mapper.constructType(jsonSerialize.as())
+        public void resolveReferencedSchemas() {
+            referencedSchemas.referencedSchemas.forEach(
+                    referencedSchema -> {
+                        if (referencedSchema.referenceConsumers.size() == 1 || referencedSchema.schema.getName() == null) {
+                            // TODO make handling of "name == null" more flexible?
+                            referencedSchema.referenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(referencedSchema.schema));
+                        } else {
+                            Schema schemaForReferenceName = new Schema();
+                            referencedSchema.referenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(schemaForReferenceName));
+                            referencedSchemaConsumer.consume(
+                                    referencedSchema.schema,
+                                    referenceName -> schemaForReferenceName.set$ref(referenceName.asUniqueString())
+                            );
+                        }
+                    }
             );
-            jsonSerialize = recurBeanDesc.getClassAnnotations().get(JsonSerialize.class);
         }
-        return recurBeanDesc;
     }
-
 
     private static class ReferencedSchemas {
 
