@@ -1,6 +1,12 @@
 package de.qaware.openapigeneratorforspring.common.schema;
 
-@SuppressWarnings("rawtypes")
+import lombok.Getter;
+import lombok.Setter;
+
+@SuppressWarnings({"rawtypes", "squid:S2160"})
+@Getter
+@Setter
 public class Schema extends io.swagger.v3.oas.models.media.Schema {
+    private Schema items = null;
 
 }

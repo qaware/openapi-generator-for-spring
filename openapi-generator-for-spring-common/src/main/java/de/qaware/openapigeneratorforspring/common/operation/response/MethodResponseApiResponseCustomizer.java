@@ -41,7 +41,7 @@ public class MethodResponseApiResponseCustomizer implements OperationApiResponse
         List<String> producesContentType = getProducesContentType(method);
         for (String contentType : producesContentType) {
             MediaType mediaType = content.computeIfAbsent(contentType, ignored -> new MediaType());
-            Schema schema = schemaResolver.resolveFromClass(method.getReturnType(), operationBuilderContext.getNestedSchemaConsumer());
+            Schema schema = schemaResolver.resolveFromClass(method.getReturnType(), operationBuilderContext.getReferencedSchemaConsumer());
             mediaType.setSchema(schema);
             // TODO investigate @Schema annotation on operation method?
         }

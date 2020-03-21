@@ -29,7 +29,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
     private final SchemaResolver schemaResolver;
 
     @Override
-    public void applyFromAnnotation(Schema schema, io.swagger.v3.oas.annotations.media.Schema annotation, NestedSchemaConsumer nestedSchemaConsumer) {
+    public void applyFromAnnotation(Schema schema, io.swagger.v3.oas.annotations.media.Schema annotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
 
         // TODO consider annotation.implementation() if not Void.class
 
@@ -57,12 +57,12 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
 
         setStringIfNotBlank(annotation.defaultValue(), value -> schema.setDefault(parsableValueMapper.parse(value)));
 
-        setDiscriminator(schema, annotation, nestedSchemaConsumer);
+        setDiscriminator(schema, annotation, referencedSchemaConsumer);
 
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(annotation.extensions()), schema::setExtensions);
     }
 
-    private void setDiscriminator(Schema schema, io.swagger.v3.oas.annotations.media.Schema annotation, NestedSchemaConsumer nestedSchemaConsumer) {
+    private void setDiscriminator(Schema schema, io.swagger.v3.oas.annotations.media.Schema annotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
         String propertyName = annotation.discriminatorProperty();
         DiscriminatorMapping[] mappings = annotation.discriminatorMapping();
         if (StringUtils.isBlank(propertyName) || ArrayUtils.isEmpty(mappings)) {
@@ -72,15 +72,15 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         Map<String, Schema> schemasMap = OpenApiMapUtils.buildMapFromArray(
                 mappings,
                 DiscriminatorMapping::value,
-                mapping -> schemaResolver.resolveFromClass(mapping.schema(), nestedSchemaConsumer)
+                mapping -> schemaResolver.resolveFromClass(mapping.schema(), referencedSchemaConsumer)
         );
 
         Discriminator discriminator = new Discriminator()
                 .propertyName(propertyName);
 
-        nestedSchemaConsumer.consumeMany(
+        referencedSchemaConsumer.consumeMany(
                 schemasMap.entrySet().stream()
-                        .map(entry -> new NestedSchemaConsumer.EntryWithSchema<>(entry, entry.getValue())),
+                        .map(entry -> ReferencedSchemaConsumer.EntryWithSchema.of(entry, entry.getValue())),
                 entriesWithReferenceNames -> discriminator.setMapping(
                         entriesWithReferenceNames.collect(Collectors.toMap(
                                 entry -> entry.getEntry().getKey(),

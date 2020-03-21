@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import de.qaware.openapigeneratorforspring.common.schema.NestedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaAnnotationMapper;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.models.media.Content;
@@ -20,21 +20,21 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
     private final ExampleObjectAnnotationMapper exampleObjectAnnotationMapper;
 
     @Override
-    public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations, NestedSchemaConsumer nestedSchemaConsumer) {
+    public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations, ReferencedSchemaConsumer referencedSchemaConsumer) {
         return buildMapFromArray(
                 contentAnnotations,
                 io.swagger.v3.oas.annotations.media.Content::mediaType,
-                annotation -> map(annotation, nestedSchemaConsumer),
+                annotation -> map(annotation, referencedSchemaConsumer),
                 Content::new
         );
     }
 
     @Override
-    public MediaType map(io.swagger.v3.oas.annotations.media.Content contentAnnotation, NestedSchemaConsumer nestedSchemaConsumer) {
+    public MediaType map(io.swagger.v3.oas.annotations.media.Content contentAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
         MediaType mediaType = new MediaType();
         setExampleOrExamples(mediaType, contentAnnotation.examples());
-        setMapIfNotEmpty(encodingAnnotationMapper.mapArray(contentAnnotation.encoding(), nestedSchemaConsumer), mediaType::setEncoding);
-        mediaType.setSchema(schemaAnnotationMapper.buildFromAnnotation(contentAnnotation.schema(), nestedSchemaConsumer));
+        setMapIfNotEmpty(encodingAnnotationMapper.mapArray(contentAnnotation.encoding(), referencedSchemaConsumer), mediaType::setEncoding);
+        mediaType.setSchema(schemaAnnotationMapper.buildFromAnnotation(contentAnnotation.schema(), referencedSchemaConsumer));
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(contentAnnotation.extensions()), mediaType::setExtensions);
         return mediaType;
     }

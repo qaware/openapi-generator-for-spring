@@ -1,22 +1,16 @@
 {
   "openapi": "3.0.1",
   "paths": {
-    "/get2": {
+    "/get1": {
       "get": {
-        "operationId": "getMappingWithSimpleDto",
+        "operationId": "getMappingWithString",
         "responses": {
           "200": {
             "description": "Default response",
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "property1": {
-                      "$ref": "#/components/schemas/null"
-                    }
-                  },
-                  "description": "global description"
+                  "type": "string"
                 }
               }
             }
@@ -53,16 +47,22 @@
         }
       }
     },
-    "/get1": {
+    "/get2": {
       "get": {
-        "operationId": "getMappingWithString",
+        "operationId": "getMappingWithSimpleDto",
         "responses": {
           "200": {
             "description": "Default response",
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "string"
+                  "type": "object",
+                  "properties": {
+                    "property1": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "global description"
                 }
               }
             }
@@ -73,8 +73,17 @@
   },
   "components": {
     "schemas": {
-      "#/components/schemas/null": {
-        "type": "string"
+      "#/components/schemas/SomeOtherDto_0": {
+        "type": "object",
+        "properties": {
+          "other": {
+            "$ref": "#/components/schemas/ComplexDto_2"
+          },
+          "someOtherDto": {
+            "$ref": "#/components/schemas/SomeOtherDto_1"
+          }
+        },
+        "nullable": true
       },
       "#/components/schemas/ComplexDto_0": {
         "type": "object",
@@ -90,18 +99,6 @@
           }
         },
         "description": "description1"
-      },
-      "#/components/schemas/SomeOtherDto_0": {
-        "type": "object",
-        "properties": {
-          "other": {
-            "$ref": "#/components/schemas/ComplexDto_2"
-          },
-          "someOtherDto": {
-            "$ref": "#/components/schemas/SomeOtherDto_1"
-          }
-        },
-        "nullable": true
       },
       "#/components/schemas/ComplexDto_1": {
         "type": "object",

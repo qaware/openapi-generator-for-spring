@@ -6,9 +6,9 @@ public interface SchemaAnnotationMapper {
 
 
     @Nullable
-    default Schema buildFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, NestedSchemaConsumer nestedSchemaConsumer) {
+    default Schema buildFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
         Schema schema = new Schema();
-        applyFromAnnotation(schema, schemaAnnotation, nestedSchemaConsumer);
+        applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer);
         // do not return anything if schema is still empty
         if (new Schema().equals(schema)) {
             return null;
@@ -16,5 +16,5 @@ public interface SchemaAnnotationMapper {
         return schema;
     }
 
-    void applyFromAnnotation(Schema schema, io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, NestedSchemaConsumer nestedSchemaConsumer);
+    void applyFromAnnotation(Schema schema, io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer);
 }

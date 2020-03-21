@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import de.qaware.openapigeneratorforspring.common.schema.NestedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
 import io.swagger.v3.oas.models.media.Encoding;
 import lombok.RequiredArgsConstructor;
@@ -20,14 +20,14 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
 
     @Override
-    public Map<String, Encoding> mapArray(io.swagger.v3.oas.annotations.media.Encoding[] encodingAnnotations, NestedSchemaConsumer nestedSchemaConsumer) {
+    public Map<String, Encoding> mapArray(io.swagger.v3.oas.annotations.media.Encoding[] encodingAnnotations, ReferencedSchemaConsumer referencedSchemaConsumer) {
         return buildMapFromArray(encodingAnnotations, io.swagger.v3.oas.annotations.media.Encoding::name,
-                encodingAnnotation -> map(encodingAnnotation, nestedSchemaConsumer)
+                encodingAnnotation -> map(encodingAnnotation, referencedSchemaConsumer)
         );
     }
 
     @Override
-    public Encoding map(io.swagger.v3.oas.annotations.media.Encoding encodingAnnotation, NestedSchemaConsumer nestedSchemaConsumer) {
+    public Encoding map(io.swagger.v3.oas.annotations.media.Encoding encodingAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
         Encoding encoding = new Encoding();
 
         OpenApiStringUtils.setStringIfNotBlank(encodingAnnotation.contentType(), encoding::setContentType);
@@ -40,7 +40,7 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
             encoding.setAllowReserved(true);
         }
 
-        setMapIfNotEmpty(headerAnnotationMapper.mapArray(encodingAnnotation.headers(), nestedSchemaConsumer), encoding::setHeaders);
+        setMapIfNotEmpty(headerAnnotationMapper.mapArray(encodingAnnotation.headers(), referencedSchemaConsumer), encoding::setHeaders);
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(encodingAnnotation.extensions()), encoding::setExtensions);
 
         return encoding;

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
-public class DefaultNestedSchemaConsumer implements NestedSchemaConsumer {
+public class DefaultReferencedSchemaConsumer implements ReferencedSchemaConsumer {
 
     private final ReferencedSchemaStorage referencedSchemaStorage;
 
@@ -46,7 +46,7 @@ public class DefaultNestedSchemaConsumer implements NestedSchemaConsumer {
 
         @Override
         public void accept(ReferenceName referenceName) {
-            result.set(i, new EntryWithReferenceName<>(entry, referenceName));
+            result.set(i, EntryWithReferenceName.of(entry, referenceName));
         }
     }
 }

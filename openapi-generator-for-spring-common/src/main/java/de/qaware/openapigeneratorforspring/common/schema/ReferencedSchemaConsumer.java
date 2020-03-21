@@ -6,7 +6,7 @@ import lombok.Value;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public interface NestedSchemaConsumer {
+public interface ReferencedSchemaConsumer {
 
     default void consume(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
         consumeMany(
@@ -22,13 +22,13 @@ public interface NestedSchemaConsumer {
 
     <T> void consumeMany(Stream<EntryWithSchema<T>> entriesWithSchemas, Consumer<Stream<EntryWithReferenceName<T>>> referenceNameSetters);
 
-    @Value
+    @Value(staticConstructor = "of")
     class EntryWithSchema<T> {
         T entry;
         Schema schema;
     }
 
-    @Value
+    @Value(staticConstructor = "of")
     class EntryWithReferenceName<T> {
         T entry;
         ReferenceName referenceName;

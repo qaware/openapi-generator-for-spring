@@ -88,9 +88,9 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
             String responseCode = apiResponseCodeMapper.map(annotation, operationBuilderContext);
             ApiResponse apiResponse = apiResponses.computeIfAbsent(responseCode, ignored -> new ApiResponse());
             OpenApiStringUtils.setStringIfNotBlank(annotation.description(), apiResponse::setDescription);
-            mergeWithExistingMap(apiResponse::getHeaders, apiResponse::setHeaders, headerAnnotationMapper.mapArray(annotation.headers(), operationBuilderContext.getNestedSchemaConsumer()));
+            mergeWithExistingMap(apiResponse::getHeaders, apiResponse::setHeaders, headerAnnotationMapper.mapArray(annotation.headers(), operationBuilderContext.getReferencedSchemaConsumer()));
             mergeWithExistingMap(apiResponse::getLinks, apiResponse::setLinks, linkAnnotationMapper.mapArray(annotation.links()));
-            mergeWithExistingMap(apiResponse::getContent, apiResponse::setContent, contentAnnotationMapper.mapArray(annotation.content(), operationBuilderContext.getNestedSchemaConsumer()));
+            mergeWithExistingMap(apiResponse::getContent, apiResponse::setContent, contentAnnotationMapper.mapArray(annotation.content(), operationBuilderContext.getReferencedSchemaConsumer()));
             mergeWithExistingMap(apiResponse::getExtensions, apiResponse::setExtensions, extensionAnnotationMapper.mapArray(annotation.extensions()));
             OpenApiStringUtils.setStringIfNotBlank(annotation.ref(), apiResponse::set$ref);
         });

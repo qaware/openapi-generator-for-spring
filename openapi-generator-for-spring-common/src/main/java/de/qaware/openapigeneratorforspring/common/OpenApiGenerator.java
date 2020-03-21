@@ -9,9 +9,9 @@ import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConfli
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
-import de.qaware.openapigeneratorforspring.common.schema.DefaultNestedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.DefaultReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultReferencedSchemaStorage;
-import de.qaware.openapigeneratorforspring.common.schema.NestedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaStorage;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import io.swagger.v3.oas.models.Components;
@@ -54,7 +54,7 @@ public class OpenApiGenerator {
 
         ReferencedSchemaStorage referencedSchemaStorage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);
 
-        NestedSchemaConsumer nestedSchemaConsumer = new DefaultNestedSchemaConsumer(referencedSchemaStorage);
+        ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(referencedSchemaStorage);
 
         map.forEach((info, handlerMethod) -> info.getPatternsCondition().getPatterns().forEach(pathPattern -> {
             PathItem pathItem = new PathItem();
@@ -62,7 +62,7 @@ public class OpenApiGenerator {
             Map<RequestMethod, Operation> operationPerMethod = new EnumMap<>(RequestMethod.class);
             MultiValueMap<String, OperationIdConflict> operationIdConflictsPerPathItem = new LinkedMultiValueMap<>();
             requestMethods.forEach(requestMethod -> {
-                OperationBuilderContext operationBuilderContext = new OperationBuilderContext(requestMethod, pathPattern, handlerMethod, nestedSchemaConsumer);
+                OperationBuilderContext operationBuilderContext = new OperationBuilderContext(requestMethod, pathPattern, handlerMethod, referencedSchemaConsumer);
                 Operation operation = operationBuilder.buildOperation(operationBuilderContext);
                 if (isAcceptedByAllOperationFilters(operation, handlerMethod)) {
                     String operationId = operation.getOperationId();
