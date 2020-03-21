@@ -49,6 +49,8 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflic
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaResolver;
+import de.qaware.openapigeneratorforspring.common.schema.NestedTypeSchemaResolver;
+import de.qaware.openapigeneratorforspring.common.schema.NestedTypeSchemaResolverForCollections;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
@@ -306,8 +308,15 @@ public class OpenApiGeneratorAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public SchemaResolver defaultSchemaResolver(OpenApiObjectMapperSupplier openApiObjectMapperSupplier,
-                                                SchemaAnnotationMapperFactory schemaAnnotationMapperFactory) {
-        return new DefaultSchemaResolver(openApiObjectMapperSupplier, schemaAnnotationMapperFactory);
+                                                SchemaAnnotationMapperFactory schemaAnnotationMapperFactory,
+                                                List<NestedTypeSchemaResolver> nestedTypeSchemaResolvers) {
+        return new DefaultSchemaResolver(openApiObjectMapperSupplier, schemaAnnotationMapperFactory, nestedTypeSchemaResolvers);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public NestedTypeSchemaResolverForCollections defaultNestedTypeSchemaResolverForCollections() {
+        return new NestedTypeSchemaResolverForCollections();
     }
 
     @Bean

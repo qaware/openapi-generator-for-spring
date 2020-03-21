@@ -9,6 +9,7 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultReferencedSchemaStorage;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaResolver;
+import de.qaware.openapigeneratorforspring.common.schema.NestedTypeSchemaResolverForCollections;
 import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaStorage;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaAnnotationMapper;
@@ -21,6 +22,7 @@ import lombok.Value;
 import org.junit.Test;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,7 +54,8 @@ public class App5SimpleUnitTest {
             setStringIfNotBlank(schemaAnnotation.title(), schema::setTitle);
         };
 
-        SchemaResolver sut = new DefaultSchemaResolver(() -> MAPPER, schemaResolver -> schemaAnnotationMapper);
+        SchemaResolver sut = new DefaultSchemaResolver(() -> MAPPER, schemaResolver -> schemaAnnotationMapper,
+                Collections.singletonList(new NestedTypeSchemaResolverForCollections()));
 
         ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);
         ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(storage);

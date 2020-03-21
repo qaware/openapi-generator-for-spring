@@ -77,7 +77,6 @@ public class OpenApiGenerator {
 
             if (isAcceptedByAllPathFilters(pathItem, pathPattern, operationPerMethod)) {
                 operationIdConflicts.addAll(operationIdConflictsPerPathItem);
-                System.out.println("Path pattern: " + pathPattern);
                 paths.addPathItem(pathPattern, pathItem);
             }
         }));

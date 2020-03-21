@@ -32,6 +32,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
     private final OpenApiObjectMapperSupplier openApiObjectMapperSupplier;
     private final SchemaAnnotationMapperFactory schemaAnnotationMapperFactory;
+    private final List<NestedTypeSchemaResolver> nestedTypeSchemaResolvers;
 
     @Override
     public Schema resolveFromClass(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer) {
@@ -48,21 +49,19 @@ public class DefaultSchemaResolver implements SchemaResolver {
     }
 
     @RequiredArgsConstructor
-    private static class Context {
+    private class Context implements SchemaBuilderFromType {
 
         private final ObjectMapper mapper;
         private final SchemaAnnotationMapper schemaAnnotationMapper;
         private final ReferencedSchemaConsumer referencedSchemaConsumer;
         private final ReferencedSchemas referencedSchemas = new ReferencedSchemas();
 
-        private void buildSchemaFromType(Consumer<Schema> schemaConsumer, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-            if (javaType.isCollectionLikeType()) {
-                Schema containerSchema = new Schema();
-                containerSchema.setType("array");
-                // TODO adapt annotations supplier to content type, consider @ArraySchema
-                buildSchemaFromType(containerSchema::setItems, javaType.getContentType(), annotationsSupplier);
-                schemaConsumer.accept(containerSchema);
-                return;
+        @Override
+        public void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer) {
+            for (NestedTypeSchemaResolver nestedTypeSchemaResolver : nestedTypeSchemaResolvers) {
+                if (nestedTypeSchemaResolver.apply(javaType, annotationsSupplier, this, schemaConsumer)) {
+                    return;
+                }
             }
 
             Schema newSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
@@ -77,7 +76,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
             }
         }
 
-        private Schema buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+        public Schema buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
 
             // TODO do some more primitive type handling here
             if (javaType.getRawClass().equals(String.class)) {
@@ -86,7 +85,6 @@ public class DefaultSchemaResolver implements SchemaResolver {
                 schema.setType("string");
                 return schema;
             }
-
 
             Schema schema = new Schema();
             schema.setType("object");
@@ -106,24 +104,24 @@ public class DefaultSchemaResolver implements SchemaResolver {
             return schema;
         }
 
-        private void addPropertiesToSchema(JavaType javaType, Schema schema) {
+        public void addPropertiesToSchema(JavaType javaType, Schema schema) {
 
             BeanDescription beanDesc = getBeanDescription(javaType);
             Set<String> ignoredPropertyNames = beanDesc.getIgnoredPropertyNames();
 
-            for (BeanPropertyDefinition propDef : beanDesc.findProperties()) {
-                if (ignoredPropertyNames.contains(propDef.getName())) {
+            for (BeanPropertyDefinition propertyDefinition : beanDesc.findProperties()) {
+                if (ignoredPropertyNames.contains(propertyDefinition.getName())) {
                     continue;
                 }
 
-                AnnotatedMember member = propDef.getAccessor();
+                AnnotatedMember member = propertyDefinition.getAccessor();
                 AnnotationSupplierForMember annotationsSupplier = new AnnotationSupplierForMember(member);
-                buildSchemaFromType(schemaReference -> schema.addProperties(propDef.getName(), schemaReference),
-                        member.getType(), annotationsSupplier);
+                buildSchemaFromType(member.getType(), annotationsSupplier,
+                        propertySchema -> schema.addProperties(propertyDefinition.getName(), propertySchema));
             }
         }
 
-        private BeanDescription getBeanDescription(JavaType type) {
+        public BeanDescription getBeanDescription(JavaType type) {
 
             BeanDescription recurBeanDesc = mapper.getSerializationConfig().introspect(type);
             HashSet<String> visited = new HashSet<>();
@@ -201,12 +199,6 @@ public class DefaultSchemaResolver implements SchemaResolver {
         }
     }
 
-
-    @FunctionalInterface
-    private interface AnnotationsSupplier {
-        // "nearest" or "most relevant" annotations should come first in stream
-        <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType);
-    }
 
     private static class AnnotationSupplierForMember implements AnnotationsSupplier {
         private final AnnotatedMember annotatedMember;
