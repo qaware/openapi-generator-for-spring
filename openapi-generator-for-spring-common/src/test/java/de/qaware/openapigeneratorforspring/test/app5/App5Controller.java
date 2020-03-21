@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 public class App5Controller {
@@ -49,6 +51,9 @@ public class App5Controller {
         ComplexDto other2;
         @Nullable
         SomeOtherDto someOtherDto;
+        List<ComplexDto> listOfComplexDtos;
+        List<Set<String>> listOfSetOfStrings;
+        Set<List<SimpleDto>> setOfListOfSimpleDtos;
     }
 
     @Value

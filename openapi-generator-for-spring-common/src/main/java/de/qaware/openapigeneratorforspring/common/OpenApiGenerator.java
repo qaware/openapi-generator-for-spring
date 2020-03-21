@@ -56,6 +56,7 @@ public class OpenApiGenerator {
 
         ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(referencedSchemaStorage);
 
+        // TODO iteration over this map is not really constant when adding/deleting controller methods
         map.forEach((info, handlerMethod) -> info.getPatternsCondition().getPatterns().forEach(pathPattern -> {
             PathItem pathItem = new PathItem();
             Set<RequestMethod> requestMethods = info.getMethodsCondition().getMethods();
@@ -76,6 +77,7 @@ public class OpenApiGenerator {
 
             if (isAcceptedByAllPathFilters(pathItem, pathPattern, operationPerMethod)) {
                 operationIdConflicts.addAll(operationIdConflictsPerPathItem);
+                System.out.println("Path pattern: " + pathPattern);
                 paths.addPathItem(pathPattern, pathItem);
             }
         }));

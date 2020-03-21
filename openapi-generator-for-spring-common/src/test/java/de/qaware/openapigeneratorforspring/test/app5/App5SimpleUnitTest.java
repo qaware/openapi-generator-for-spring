@@ -23,6 +23,7 @@ import org.junit.Test;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
@@ -96,13 +97,14 @@ public class App5SimpleUnitTest {
     @Value
     private static class SomeDto implements BaseForSomeDto {
         List<String> strings;
+        List<Set<String>> stringsOfStrings;
+        List<Set<SomeDto>> listOfSetOfSomeDto;
         @Schema(description = "description1")
         SomeDto other1;
         @Schema(title = "title override", description = "description2")
         SomeDto other2;
         @Nullable
         SomeOtherDto someOtherDto;
-        List<SomeDto> someDtos;
     }
 
     @Value

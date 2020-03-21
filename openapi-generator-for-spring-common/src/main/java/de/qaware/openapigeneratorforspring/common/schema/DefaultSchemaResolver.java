@@ -48,6 +48,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
         referencedSchemas.referencedSchemas.forEach(
                 referencedSchema -> {
                     if (referencedSchema.referenceConsumers.size() == 1 || referencedSchema.schema.getName() == null) {
+                        // TODO make handling of "name == null" more flexible?
                         referencedSchema.referenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(referencedSchema.schema));
                     } else {
                         Schema schemaForReferenceName = new Schema();
@@ -66,17 +67,6 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
     private Schema buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier, ReferencedSchemas referencedSchemas, ReferencedSchemaConsumer referencedSchemaConsumer) {
 
-        if (javaType.isCollectionLikeType()) {
-            Schema containerSchema = new Schema();
-            containerSchema.setType("array");
-            JavaType contentType = javaType.getContentType();
-            // TODO adapt annotations supplier, consider @ArraySchema
-            Schema schemaItems = buildSchemaFromTypeWithoutProperties(contentType, annotationsSupplier, referencedSchemas, referencedSchemaConsumer);
-
-            addPropertiesToSchema(contentType, schemaItems, referencedSchemas, referencedSchemaConsumer);
-            containerSchema.setItems(schemaItems);
-            return containerSchema;
-        }
 
         // TODO do some more primitive type handling here
         if (javaType.getRawClass().equals(String.class)) {
@@ -96,7 +86,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
             schema.setNullable(true);
         }
 
-        // TODO create this once
+        // TODO create this once per public method call
         SchemaAnnotationMapper schemaAnnotationMapper = schemaAnnotationMapperFactory.create(this);
 
         // TODO respect schema implementation type if any is given
@@ -119,22 +109,31 @@ public class DefaultSchemaResolver implements SchemaResolver {
             }
 
             AnnotatedMember member = propDef.getAccessor();
+            AnnotationSupplierForMember annotationsSupplier = new AnnotationSupplierForMember(member);
+            buildSchemaFromType(schemaReference -> schema.addProperties(propDef.getName(), schemaReference),
+                    member.getType(), annotationsSupplier, referencedSchemas, referencedSchemaConsumer);
+        }
+    }
 
-            Schema propertySchema = buildSchemaFromTypeWithoutProperties(member.getType(), new AnnotationSupplierForMember(member), referencedSchemas, referencedSchemaConsumer);
+    private void buildSchemaFromType(Consumer<Schema> schemaConsumer, JavaType javaType, AnnotationsSupplier annotationsSupplier, ReferencedSchemas referencedSchemas, ReferencedSchemaConsumer referencedSchemaConsumer) {
+        if (javaType.isCollectionLikeType()) {
+            Schema containerSchema = new Schema();
+            containerSchema.setType("array");
+            // TODO adapt annotations supplier to content type, consider @ArraySchema
+            buildSchemaFromType(containerSchema::setItems, javaType.getContentType(), annotationsSupplier, referencedSchemas, referencedSchemaConsumer);
+            schemaConsumer.accept(containerSchema);
+            return;
+        }
 
-            List<Consumer<Schema>> schemaReferenceSetters = referencedSchemas.findSchemaReferenceIgnoringProperties(propertySchema);
-
-            if (schemaReferenceSetters != null) {
-                // we've seen this propertySchema before, then simply reference it
-                schemaReferenceSetters.add(schemaReference -> schema.addProperties(propDef.getName(), schemaReference));
-            } else {
-                // important to add the propertySchema first before traversing the nested properties
-                referencedSchemas.addNewSchemaReference(
-                        propertySchema,
-                        schemaReference -> schema.addProperties(propDef.getName(), schemaReference)
-                );
-                addPropertiesToSchema(member.getType(), propertySchema, referencedSchemas, referencedSchemaConsumer);
-            }
+        Schema newSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier, referencedSchemas, referencedSchemaConsumer);
+        List<Consumer<Schema>> schemaReferenceSetters = referencedSchemas.findSchemaReferenceIgnoringProperties(newSchema);
+        if (schemaReferenceSetters != null) {
+            // we've seen this newSchema before, then simply reference it
+            schemaReferenceSetters.add(schemaConsumer);
+        } else {
+            // important to add the newSchema first before traversing the nested properties
+            referencedSchemas.addNewSchemaReference(newSchema, schemaConsumer);
+            addPropertiesToSchema(javaType, newSchema, referencedSchemas, referencedSchemaConsumer);
         }
     }
 
@@ -203,6 +202,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
     @FunctionalInterface
     private interface AnnotationsSupplier {
+        // "nearest" or "most relevant" annotations should come first in stream
         <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType);
     }
 
