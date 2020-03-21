@@ -9,4 +9,9 @@ import lombok.Setter;
 public class Schema extends io.swagger.v3.oas.models.media.Schema {
     private Schema items = null;
 
+    @Override
+    public Schema type(String type) {
+        setType(type);
+        return this;
+    }
 }

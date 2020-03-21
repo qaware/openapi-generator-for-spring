@@ -1,11 +1,14 @@
-package de.qaware.openapigeneratorforspring.common.schema;
+package de.qaware.openapigeneratorforspring.common.schema.typeresolver;
 
 import com.fasterxml.jackson.databind.JavaType;
+import de.qaware.openapigeneratorforspring.common.schema.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.schema.Schema;
+import de.qaware.openapigeneratorforspring.common.schema.SchemaBuilderFromType;
 import org.springframework.core.Ordered;
 
 import java.util.function.Consumer;
 
-public class NestedTypeSchemaResolverForCollections implements NestedTypeSchemaResolver {
+public class GenericTypeResolverForCollections implements GenericTypeResolver {
 
     public static final int ORDER = Ordered.LOWEST_PRECEDENCE - 1000;
 

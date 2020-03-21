@@ -9,11 +9,13 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultReferencedSchemaStorage;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaResolver;
-import de.qaware.openapigeneratorforspring.common.schema.NestedTypeSchemaResolverForCollections;
 import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaStorage;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
+import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForCollections;
+import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForObject;
+import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForPrimitiveTypes;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.converter.ResolvedSchema;
@@ -22,6 +24,7 @@ import lombok.Value;
 import org.junit.Test;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +58,9 @@ public class App5SimpleUnitTest {
         };
 
         SchemaResolver sut = new DefaultSchemaResolver(() -> MAPPER, schemaResolver -> schemaAnnotationMapper,
-                Collections.singletonList(new NestedTypeSchemaResolverForCollections()));
+                Collections.singletonList(new GenericTypeResolverForCollections()),
+                // order is important here
+                Arrays.asList(new SimpleTypeResolverForPrimitiveTypes(), new SimpleTypeResolverForObject()));
 
         ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);
         ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(storage);

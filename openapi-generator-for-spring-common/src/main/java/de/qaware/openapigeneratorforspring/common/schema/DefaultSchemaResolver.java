@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolver;
+import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.MergedAnnotation;
@@ -32,7 +34,8 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
     private final OpenApiObjectMapperSupplier openApiObjectMapperSupplier;
     private final SchemaAnnotationMapperFactory schemaAnnotationMapperFactory;
-    private final List<NestedTypeSchemaResolver> nestedTypeSchemaResolvers;
+    private final List<GenericTypeResolver> genericTypeResolvers;
+    private final List<SimpleTypeResolver> simpleTypeResolvers;
 
     @Override
     public Schema resolveFromClass(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer) {
@@ -58,8 +61,8 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
         @Override
         public void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer) {
-            for (NestedTypeSchemaResolver nestedTypeSchemaResolver : nestedTypeSchemaResolvers) {
-                if (nestedTypeSchemaResolver.apply(javaType, annotationsSupplier, this, schemaConsumer)) {
+            for (GenericTypeResolver genericTypeResolver : genericTypeResolvers) {
+                if (genericTypeResolver.apply(javaType, annotationsSupplier, this, schemaConsumer)) {
                     return;
                 }
             }
@@ -77,18 +80,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
         }
 
         public Schema buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-
-            // TODO do some more primitive type handling here
-            if (javaType.getRawClass().equals(String.class)) {
-                // TODO properly handle "referenced" and "inline" schemas
-                Schema schema = new Schema();
-                schema.setType("string");
-                return schema;
-            }
-
-            Schema schema = new Schema();
-            schema.setType("object");
-            schema.setName(javaType.getRawClass().getSimpleName());
+            Schema schema = getSchemaFromSimpleTypeResolvers(javaType);
 
             // TODO support other nullable annotations?
             if (annotationsSupplier.findAnnotations(Nullable.class).findFirst().isPresent()) {
@@ -102,6 +94,16 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     .forEachRemaining(schemaAnnotation -> schemaAnnotationMapper.applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer));
 
             return schema;
+        }
+
+        private Schema getSchemaFromSimpleTypeResolvers(JavaType javaType) {
+            for (SimpleTypeResolver simpleTypeResolver : simpleTypeResolvers) {
+                Schema resolvedSchema = simpleTypeResolver.resolveFromType(javaType);
+                if (resolvedSchema != null) {
+                    return resolvedSchema;
+                }
+            }
+            throw new IllegalStateException("No simple type resolver found for " + javaType);
         }
 
         public void addPropertiesToSchema(JavaType javaType, Schema schema) {
