@@ -5,12 +5,11 @@ import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvid
 import io.swagger.v3.oas.models.Operation;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.Ordered;
 
 @RequiredArgsConstructor
 public class DefaultOperationIdCustomizer implements OperationCustomizer {
 
-    public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 1000;
+    public static final int ORDER = DEFAULT_ORDER;
 
     private final OperationIdProvider operationIdProvider;
 

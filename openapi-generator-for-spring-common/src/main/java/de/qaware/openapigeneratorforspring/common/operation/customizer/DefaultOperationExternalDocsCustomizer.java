@@ -4,12 +4,11 @@ import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAn
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import io.swagger.v3.oas.models.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.Ordered;
 
 @RequiredArgsConstructor
 public class DefaultOperationExternalDocsCustomizer implements OperationCustomizer {
 
-    public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 1000;
+    public static final int ORDER = DEFAULT_ORDER;
 
     private final ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper;
 

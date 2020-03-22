@@ -12,7 +12,6 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.reflect.Method;
@@ -25,7 +24,7 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.se
 @RequiredArgsConstructor
 public class DefaultOperationResponseCustomizer implements OperationCustomizer {
 
-    public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 1000;
+    public static final int ORDER = DEFAULT_ORDER;
 
     private final HeaderAnnotationMapper headerAnnotationMapper;
     private final ContentAnnotationMapper contentAnnotationMapper;

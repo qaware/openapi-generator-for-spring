@@ -3,13 +3,12 @@ package de.qaware.openapigeneratorforspring.common.operation.customizer;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiAnnotationUtils;
 import io.swagger.v3.oas.models.Operation;
-import org.springframework.core.Ordered;
 
 import java.lang.reflect.Method;
 
 public class DefaultDeprecatedOperationCustomizer implements OperationCustomizer {
 
-    public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 1000;
+    public static final int ORDER = DEFAULT_ORDER;
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
