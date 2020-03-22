@@ -1,5 +1,10 @@
 package de.qaware.openapigeneratorforspring.common;
 
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.annotation.DefaultAnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.filter.operation.ExcludeHiddenOperationFilter;
 import de.qaware.openapigeneratorforspring.common.filter.operation.OperationFilter;
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.NoOperationsPathItemFilter;
@@ -49,14 +54,13 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflic
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
-import de.qaware.openapigeneratorforspring.common.schema.annotation.AnnotationsSupplierFactory;
-import de.qaware.openapigeneratorforspring.common.schema.annotation.DefaultAnnotationsSupplierFactory;
-import de.qaware.openapigeneratorforspring.common.schema.annotation.DefaultSchemaAnnotationMapperFactory;
-import de.qaware.openapigeneratorforspring.common.schema.annotation.SchemaAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.schema.annotation.SchemaAnnotationMapperFactory;
+import de.qaware.openapigeneratorforspring.common.schema.mapper.DefaultSchemaAnnotationMapperFactory;
+import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.DefaultSchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForCollections;
+import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForReferenceType;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForObject;
@@ -121,8 +125,8 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultDeprecatedOperationCustomizer defaultDeprecatedOperationCustomizer() {
-        return new DefaultDeprecatedOperationCustomizer();
+    public DefaultDeprecatedOperationCustomizer defaultDeprecatedOperationCustomizer(AnnotationsSupplierFactory annotationsSupplierFactory) {
+        return new DefaultDeprecatedOperationCustomizer(annotationsSupplierFactory);
     }
 
     @Bean
@@ -175,14 +179,17 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MethodResponseApiResponseCustomizer methodResponseApiResponseCustomizer(DefaultApiResponseCodeMapper defaultApiResponseCodeMapper, SchemaResolver schemaResolver) {
-        return new MethodResponseApiResponseCustomizer(defaultApiResponseCodeMapper, schemaResolver);
+    public MethodResponseApiResponseCustomizer methodResponseApiResponseCustomizer(
+            DefaultApiResponseCodeMapper defaultApiResponseCodeMapper, SchemaResolver schemaResolver,
+            AnnotationsSupplierFactory annotationsSupplierFactory
+    ) {
+        return new MethodResponseApiResponseCustomizer(defaultApiResponseCodeMapper, schemaResolver, annotationsSupplierFactory);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultApiResponseCodeMapper defaultApiResponseCodeMapper() {
-        return new DefaultApiResponseCodeMapper();
+    public DefaultApiResponseCodeMapper defaultApiResponseCodeMapper(AnnotationsSupplierFactory annotationsSupplierFactory) {
+        return new DefaultApiResponseCodeMapper(annotationsSupplierFactory);
     }
 
     @Bean
@@ -292,7 +299,6 @@ public class OpenApiGeneratorAutoConfiguration {
         return new DefaultEncodingAnnotationMapper(headerAnnotationMapper, extensionAnnotationMapper);
     }
 
-
     @Bean
     @ConditionalOnMissingBean
     public NoOperationsPathItemFilter noOperationsPathItemFilter() {
@@ -301,15 +307,20 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ExcludeHiddenOperationFilter excludeHiddenOperationFilter() {
-        return new ExcludeHiddenOperationFilter();
+    public ExcludeHiddenOperationFilter excludeHiddenOperationFilter(AnnotationsSupplierFactory annotationsSupplierFactory) {
+        return new ExcludeHiddenOperationFilter(annotationsSupplierFactory);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public OpenApiObjectMapperSupplier defaultOpenApiObjectMapperSupplier() {
         // use swagger-core's object mapper by default
-        return Json::mapper;
+        // TODO consider this choice again: Maybe the "auto-configured" object
+        //  mapper from spring would work better?
+        return () -> Json.mapper()
+                .registerModule(new ParameterNamesModule())
+                .registerModule(new Jdk8Module())
+                .registerModule(new JavaTimeModule());
     }
 
     @Bean
@@ -337,6 +348,13 @@ public class OpenApiGeneratorAutoConfiguration {
     @ConditionalOnMissingBean
     public GenericTypeResolverForCollections defaultGenericTypeResolverForCollections() {
         return new GenericTypeResolverForCollections();
+    }
+
+
+    @Bean
+    @ConditionalOnMissingBean
+    public GenericTypeResolverForReferenceType defaultGenericTypeResolverForOptional() {
+        return new GenericTypeResolverForReferenceType();
     }
 
     @Bean

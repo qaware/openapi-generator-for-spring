@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.schema.annotation;
+package de.qaware.openapigeneratorforspring.common.schema.mapper;
 
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;

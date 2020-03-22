@@ -6,16 +6,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
-import de.qaware.openapigeneratorforspring.common.schema.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.schema.annotation.AnnotationsSupplierFactory;
-import de.qaware.openapigeneratorforspring.common.schema.annotation.SchemaAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.schema.annotation.SchemaAnnotationMapperFactory;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -38,16 +40,18 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
     @Override
     public Schema resolveFromClass(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer) {
+        return resolveFromType(clazz, annotationsSupplierFactory.createFromAnnotatedElement(clazz), referencedSchemaConsumer);
+    }
+
+    @Override
+    public Schema resolveFromType(Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer) {
         ObjectMapper mapper = openApiObjectMapperSupplier.get();
-
         Context context = new Context(mapper, schemaAnnotationMapperFactory.create(this), referencedSchemaConsumer);
-        AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createForClass(clazz);
-        JavaType javaType = mapper.constructType(clazz);
-        Schema schema = context.buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
-        context.addPropertiesToSchema(javaType, schema);
+        JavaType javaType = mapper.constructType(type);
+        AtomicReference<Schema> schema = new AtomicReference<>();
+        context.buildSchemaFromType(javaType, annotationsSupplier, schema::set);
         context.resolveReferencedSchemas();
-
-        return schema;
+        return schema.get();
     }
 
     @RequiredArgsConstructor
@@ -61,7 +65,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
         @Override
         public void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer) {
             for (GenericTypeResolver genericTypeResolver : genericTypeResolvers) {
-                if (genericTypeResolver.apply(javaType, annotationsSupplier, this, schemaConsumer)) {
+                if (genericTypeResolver.resolveFromType(javaType, annotationsSupplier, this, schemaConsumer)) {
                     return;
                 }
             }
@@ -116,7 +120,8 @@ public class DefaultSchemaResolver implements SchemaResolver {
                 }
 
                 AnnotatedMember member = propertyDefinition.getAccessor();
-                AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createForMember(member);
+                AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMember(member)
+                        .andThen(annotationsSupplierFactory.createFromAnnotatedElement(member.getType().getRawClass()));
                 buildSchemaFromType(member.getType(), annotationsSupplier,
                         propertySchema -> schema.addProperties(propertyDefinition.getName(), propertySchema));
             }

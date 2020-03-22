@@ -1,6 +1,23 @@
 {
   "openapi": "3.0.1",
   "paths": {
+    "/get1": {
+      "get": {
+        "operationId": "getMappingWithString",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/get2": {
       "get": {
         "operationId": "getMappingWithSimpleDto",
@@ -18,23 +35,6 @@
                     }
                   },
                   "description": "global description"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/get1": {
-      "get": {
-        "operationId": "getMappingWithString",
-        "responses": {
-          "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
                 }
               }
             }
@@ -88,6 +88,24 @@
                     }
                   },
                   "description": "global description"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get4": {
+      "get": {
+        "operationId": "getMappingWithOptionalString",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "nullable": true
                 }
               }
             }

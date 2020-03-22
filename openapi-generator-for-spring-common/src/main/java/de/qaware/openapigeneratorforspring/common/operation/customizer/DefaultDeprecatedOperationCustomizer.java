@@ -1,19 +1,24 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiAnnotationUtils;
 import io.swagger.v3.oas.models.Operation;
+import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Method;
 
+@RequiredArgsConstructor
 public class DefaultDeprecatedOperationCustomizer implements OperationCustomizer {
 
     public static final int ORDER = DEFAULT_ORDER;
 
+    private final AnnotationsSupplierFactory annotationsSupplierFactory;
+
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
         Method method = operationBuilderContext.getHandlerMethod().getMethod();
-        Deprecated deprecatedOnMethodOrClass = OpenApiAnnotationUtils.findAnnotationOnMethodOrClass(method, Deprecated.class);
+        Deprecated deprecatedOnMethodOrClass = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method)
+                .findFirstAnnotation(Deprecated.class);
         if (deprecatedOnMethodOrClass != null) {
             operation.deprecated(true);
         }

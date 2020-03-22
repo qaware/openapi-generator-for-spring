@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -25,6 +26,11 @@ public class App5Controller {
     @GetMapping("/get3")
     public ComplexDto getMappingWithComplexDto() {
         return null;
+    }
+
+    @GetMapping("/get4")
+    public Optional<String> getMappingWithOptionalString() {
+        return Optional.empty();
     }
 
     @Schema(description = "global description", title = "should never appear")

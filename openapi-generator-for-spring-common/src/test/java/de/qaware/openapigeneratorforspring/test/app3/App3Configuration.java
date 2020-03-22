@@ -18,7 +18,7 @@ public class App3Configuration {
 
         // TODO make overriding method response customization independent of constructor
         public NoopMethodResponseApiResponseCustomizer() {
-            super(null, null);
+            super(null, null, null);
         }
 
         @Override

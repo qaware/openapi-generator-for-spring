@@ -8,18 +8,18 @@ import org.springframework.core.Ordered;
 
 import java.util.function.Consumer;
 
-public class GenericTypeResolverForCollections implements GenericTypeResolver {
+public class GenericTypeResolverForReferenceType implements GenericTypeResolver {
 
     public static final int ORDER = Ordered.LOWEST_PRECEDENCE - 1000;
 
     @Override
     public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
-        if (javaType.isCollectionLikeType()) {
-            Schema containerSchema = new Schema();
-            containerSchema.setType("array");
-            // TODO adapt annotations supplier to content type, consider @ArraySchema
-            schemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, containerSchema::setItems);
-            schemaConsumer.accept(containerSchema);
+        if (javaType.isReferenceType()) {
+            schemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, schema -> {
+                // TODO check again if all jackson reference types should be considered @Nullable
+                schema.setNullable(true);
+                schemaConsumer.accept(schema);
+            });
             return true;
         }
         return false;
@@ -27,6 +27,6 @@ public class GenericTypeResolverForCollections implements GenericTypeResolver {
 
     @Override
     public int getOrder() {
-        return ORDER;
+        return 0;
     }
 }

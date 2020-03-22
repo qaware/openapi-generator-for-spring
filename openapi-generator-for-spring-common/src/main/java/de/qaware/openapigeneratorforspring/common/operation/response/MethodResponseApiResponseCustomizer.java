@@ -1,9 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.operation.response;
 
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiAnnotationUtils;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.responses.ApiResponse;
@@ -26,6 +27,7 @@ public class MethodResponseApiResponseCustomizer implements OperationApiResponse
 
     private final DefaultApiResponseCodeMapper defaultApiResponseCodeMapper;
     private final SchemaResolver schemaResolver;
+    private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
     public void customize(ApiResponses apiResponses, OperationBuilderContext operationBuilderContext) {
@@ -38,17 +40,23 @@ public class MethodResponseApiResponseCustomizer implements OperationApiResponse
             defaultApiResponse.setDescription("Default response");
         }
         Content content = getOrCreateEmptyContent(defaultApiResponse);
-        List<String> producesContentType = getProducesContentType(method);
+
+        AnnotationsSupplier annotationsSupplierFromMethodWithDeclaringClass = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method);
+
+        List<String> producesContentType = getProducesContentType(annotationsSupplierFromMethodWithDeclaringClass);
         for (String contentType : producesContentType) {
             MediaType mediaType = content.computeIfAbsent(contentType, ignored -> new MediaType());
-            Schema schema = schemaResolver.resolveFromClass(method.getReturnType(), operationBuilderContext.getReferencedSchemaConsumer());
+            // just using resolveFromClass here with method.getReturnType() does not work for generic return types
+            // TODO check if supplying annotations from type, method and method's declaring class isn't too much searching
+            AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(method.getReturnType())
+                    .andThen(annotationsSupplierFromMethodWithDeclaringClass);
+            Schema schema = schemaResolver.resolveFromType(method.getGenericReturnType(), annotationsSupplier, operationBuilderContext.getReferencedSchemaConsumer());
             mediaType.setSchema(schema);
-            // TODO investigate @Schema annotation on operation method?
         }
 
     }
 
-    private Content getOrCreateEmptyContent(ApiResponse apiResponse) {
+    private static Content getOrCreateEmptyContent(ApiResponse apiResponse) {
         if (apiResponse.getContent() != null) {
             return apiResponse.getContent();
         }
@@ -57,8 +65,8 @@ public class MethodResponseApiResponseCustomizer implements OperationApiResponse
         return content;
     }
 
-    private List<String> getProducesContentType(Method method) {
-        RequestMapping requestMappingAnnotation = OpenApiAnnotationUtils.findAnnotationOnMethodOrClass(method, RequestMapping.class);
+    private static List<String> getProducesContentType(AnnotationsSupplier annotationsSupplierFromMethodWithDeclaringClass) {
+        RequestMapping requestMappingAnnotation = annotationsSupplierFromMethodWithDeclaringClass.findFirstAnnotation(RequestMapping.class);
         if (requestMappingAnnotation == null || ArrayUtils.isEmpty(requestMappingAnnotation.produces())) {
             return Collections.singletonList(org.springframework.http.MediaType.ALL_VALUE);
         }
