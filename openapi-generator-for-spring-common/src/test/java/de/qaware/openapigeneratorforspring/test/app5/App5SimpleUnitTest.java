@@ -17,6 +17,7 @@ import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaStorage;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
+import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForNullable;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.DefaultSchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForCollections;
@@ -87,7 +88,8 @@ public class App5SimpleUnitTest {
                 Arrays.asList(
                         new SimpleTypeResolverForPrimitiveTypes(),
                         new SimpleTypeResolverForObject(new DefaultSchemaNameFactory())
-                )
+                ),
+                Arrays.asList(new SchemaCustomizerForNullable())
         );
 
         ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);

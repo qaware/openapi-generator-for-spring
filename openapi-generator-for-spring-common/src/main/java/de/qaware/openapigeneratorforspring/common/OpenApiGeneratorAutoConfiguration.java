@@ -54,6 +54,8 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflic
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
+import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizer;
+import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForNullable;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.DefaultSchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
@@ -332,11 +334,12 @@ public class OpenApiGeneratorAutoConfiguration {
             SchemaAnnotationMapperFactory schemaAnnotationMapperFactory,
             AnnotationsSupplierFactory annotationsSupplierFactory,
             List<GenericTypeResolver> genericTypeResolvers,
-            List<SimpleTypeResolver> simpleTypeResolvers
+            List<SimpleTypeResolver> simpleTypeResolvers,
+            List<SchemaCustomizer> schemaCustomizers
     ) {
         return new DefaultSchemaResolver(
                 openApiObjectMapperSupplier, schemaAnnotationMapperFactory, annotationsSupplierFactory,
-                genericTypeResolvers, simpleTypeResolvers
+                genericTypeResolvers, simpleTypeResolvers, schemaCustomizers
         );
     }
 
@@ -385,6 +388,12 @@ public class OpenApiGeneratorAutoConfiguration {
     @ConditionalOnMissingBean
     public SimpleTypeResolverForObject defaultSimpleTypeResolverForObject(SchemaNameFactory schemaNameFactory) {
         return new SimpleTypeResolverForObject(schemaNameFactory);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SchemaCustomizerForNullable defaultSchemaCustomizerForNullable() {
+        return new SchemaCustomizerForNullable();
     }
 
     @Bean

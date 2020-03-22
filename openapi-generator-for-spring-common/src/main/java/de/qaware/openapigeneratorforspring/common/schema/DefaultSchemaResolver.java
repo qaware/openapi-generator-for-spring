@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolver;
@@ -33,6 +34,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
     private final List<GenericTypeResolver> genericTypeResolvers;
     private final List<SimpleTypeResolver> simpleTypeResolvers;
+    private final List<SchemaCustomizer> schemaCustomizers;
 
     @Override
     public Schema resolveFromClass(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer) {
@@ -82,12 +84,14 @@ public class DefaultSchemaResolver implements SchemaResolver {
         public Schema buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
             Schema schema = getSchemaFromSimpleTypeResolvers(javaType);
 
-            // TODO support other nullable annotations?
-            if (annotationsSupplier.findAnnotations(Nullable.class).findFirst().isPresent()) {
-                schema.setNullable(true);
+            for (SchemaCustomizer schemaCustomizer : schemaCustomizers) {
+                schemaCustomizer.customize(schema, javaType, annotationsSupplier);
             }
 
-            // TODO respect schema implementation type if any is given
+            // applying the schemaAnnotationMapper is treated specially here:
+            // 1) It can only be built with an existing SchemaResolver (this class!)
+            //    so that would end up in a circular loop if it wasn't resolved by using the SchemaResolverFactory
+            // 2) Using it requires a referencedSchemaConsumer, something which is only present on invocation
             annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
                     .collect(Collectors.toCollection(LinkedList::new))
                     .descendingIterator()
