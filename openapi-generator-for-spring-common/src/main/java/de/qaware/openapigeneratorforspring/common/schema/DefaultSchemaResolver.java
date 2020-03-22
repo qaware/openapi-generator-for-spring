@@ -3,9 +3,7 @@ package de.qaware.openapigeneratorforspring.common.schema;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
-import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
@@ -19,7 +17,6 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -72,10 +69,11 @@ public class DefaultSchemaResolver implements SchemaResolver {
             Schema newSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
             List<Consumer<Schema>> schemaReferenceSetters = referencedSchemas.findSchemaReferenceIgnoringProperties(newSchema);
             if (schemaReferenceSetters != null) {
-                // we've seen this newSchema before, then simply reference it
+                // we've seen this newSchema before, then simply reference it lazily
                 schemaReferenceSetters.add(schemaConsumer);
             } else {
                 // important to add the newSchema first before traversing the nested properties
+                // this prevents infinite loops when types refer to themselves
                 referencedSchemas.addNewSchemaReference(newSchema, schemaConsumer);
                 addPropertiesToSchema(javaType, newSchema);
             }
@@ -109,49 +107,22 @@ public class DefaultSchemaResolver implements SchemaResolver {
         }
 
         public void addPropertiesToSchema(JavaType javaType, Schema schema) {
-
-            BeanDescription beanDesc = getBeanDescription(javaType);
-            Set<String> ignoredPropertyNames = beanDesc.getIgnoredPropertyNames();
-
-            for (BeanPropertyDefinition propertyDefinition : beanDesc.findProperties()) {
-                if (ignoredPropertyNames.contains(propertyDefinition.getName())) {
-                    continue;
-                }
-
-                AnnotatedMember member = propertyDefinition.getAccessor();
-                if (member == null) {
-                    continue;
-                }
-                AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMember(member)
-                        .andThen(annotationsSupplierFactory.createFromAnnotatedElement(member.getType().getRawClass()));
-                buildSchemaFromType(member.getType(), annotationsSupplier,
-                        propertySchema -> schema.addProperties(propertyDefinition.getName(), propertySchema));
-            }
-        }
-
-        public BeanDescription getBeanDescription(JavaType type) {
-
-            BeanDescription recurBeanDesc = mapper.getSerializationConfig().introspect(type);
-            HashSet<String> visited = new HashSet<>();
-            JsonSerialize jsonSerialize = recurBeanDesc.getClassAnnotations().get(JsonSerialize.class);
-
-            while (jsonSerialize != null && !Void.class.equals(jsonSerialize.as())) {
-                String asName = jsonSerialize.as().getName();
-                if (visited.contains(asName)) {
-                    break;
-                }
-                visited.add(asName);
-
-                recurBeanDesc = mapper.getSerializationConfig().introspect(
-                        mapper.constructType(jsonSerialize.as())
-                );
-                jsonSerialize = recurBeanDesc.getClassAnnotations().get(JsonSerialize.class);
-            }
-            return recurBeanDesc;
+            BeanDescription beanDescriptionForType = mapper.getSerializationConfig().introspect(javaType);
+            Set<String> ignoredPropertyNames = beanDescriptionForType.getIgnoredPropertyNames();
+            beanDescriptionForType.findProperties().stream()
+                    .filter(property -> !ignoredPropertyNames.contains(property.getName()))
+                    .filter(property -> property.getAccessor() != null) // safe-guard weird types
+                    .forEachOrdered(property -> {
+                        AnnotatedMember member = property.getAccessor();
+                        AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMember(member)
+                                .andThen(annotationsSupplierFactory.createFromAnnotatedElement(member.getType().getRawClass()));
+                        buildSchemaFromType(member.getType(), annotationsSupplier,
+                                propertySchema -> schema.addProperties(property.getName(), propertySchema));
+                    });
         }
 
         public void resolveReferencedSchemas() {
-            referencedSchemas.referencedSchemas.forEach(
+            referencedSchemas.items.forEach(
                     referencedSchema -> {
                         if (referencedSchema.referenceConsumers.size() == 1 || referencedSchema.schema.getName() == null) {
                             // TODO make handling of "name == null" more flexible?
@@ -177,18 +148,18 @@ public class DefaultSchemaResolver implements SchemaResolver {
             private final List<Consumer<Schema>> referenceConsumers;
         }
 
-        private final List<ReferencedSchema> referencedSchemas = new ArrayList<>();
+        private final List<ReferencedSchema> items = new ArrayList<>();
 
         @Nullable
         public List<Consumer<Schema>> findSchemaReferenceIgnoringProperties(Schema schema) {
-            return referencedSchemas.stream()
+            return items.stream()
                     .filter(referencedSchema -> {
                         // Schema.equals ignores the name, that's why we check it here manually
                         if (!Objects.equals(referencedSchema.schema.getName(), schema.getName())) {
                             return false;
                         }
                         // safe-guard against wrong implementation of GenericTypeResolvers
-                        // they must defer setting properties until the resolveReferencedSchemas of the context
+                        // they must defer setting properties until resolveReferencedSchemas is called
                         if (schema.getProperties() != null) {
                             throw new IllegalStateException("To be added schema has non-null properties");
                         }
@@ -207,7 +178,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     schema,
                     new ArrayList<>(Collections.singleton(firstSchemaConsumer))
             );
-            referencedSchemas.add(referencedSchema);
+            items.add(referencedSchema);
         }
     }
 

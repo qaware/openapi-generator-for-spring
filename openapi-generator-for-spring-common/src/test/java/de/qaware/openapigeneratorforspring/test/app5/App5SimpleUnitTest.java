@@ -22,6 +22,7 @@ import de.qaware.openapigeneratorforspring.common.schema.typeresolver.DefaultSch
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForCollections;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForObject;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForReferenceType;
+import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForSchemaAnnotation;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForObject;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForPrimitiveTypes;
 import io.swagger.v3.core.converter.AnnotatedType;
@@ -37,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
@@ -73,17 +73,27 @@ public class App5SimpleUnitTest {
             }
         };
 
+        DefaultAnnotationsSupplierFactory annotationsSupplierFactory = new DefaultAnnotationsSupplierFactory();
         SchemaResolver sut = new DefaultSchemaResolver(
                 () -> MAPPER, schemaResolver -> schemaAnnotationMapper,
-                new DefaultAnnotationsSupplierFactory(),
-                Arrays.asList(new GenericTypeResolverForCollections(), new GenericTypeResolverForReferenceType(), new GenericTypeResolverForObject()),
+                annotationsSupplierFactory,
                 // order is important here
-                Arrays.asList(new SimpleTypeResolverForPrimitiveTypes(), new SimpleTypeResolverForObject(new DefaultSchemaNameFactory())));
+                Arrays.asList(
+                        new GenericTypeResolverForSchemaAnnotation(() -> MAPPER, annotationsSupplierFactory),
+                        new GenericTypeResolverForCollections(),
+                        new GenericTypeResolverForReferenceType(),
+                        new GenericTypeResolverForObject()
+                ),
+                Arrays.asList(
+                        new SimpleTypeResolverForPrimitiveTypes(),
+                        new SimpleTypeResolverForObject(new DefaultSchemaNameFactory())
+                )
+        );
 
         ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);
         ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(storage);
 
-        io.swagger.v3.oas.models.media.Schema<?> schema = sut.resolveFromClass(SomeDto.class, referencedSchemaConsumer);
+        io.swagger.v3.oas.models.media.Schema<?> schema = sut.resolveFromClass(ContainerDto.class, referencedSchemaConsumer);
 
         Map<ReferenceName, de.qaware.openapigeneratorforspring.common.schema.Schema> referencedSchemas = storage.buildReferencedSchemas();
 
@@ -105,10 +115,11 @@ public class App5SimpleUnitTest {
     }
 
     @Value
-    private static class ContainerDto implements BaseForSomeDto {
-        @Schema(nullable = true)
+    private static class ContainerDto {
+        @Schema(nullable = true, implementation = Object.class)
         Optional<String> stringOptional;
-        AtomicReference<String> stringAtomicReference;
+
+//        AtomicReference<String> stringAtomicReference;
 
 //        List<String> property1;
 //        Map<String, String> property2;

@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.common.annotation;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @FunctionalInterface
@@ -21,6 +22,16 @@ public interface AnnotationsSupplier {
         return findAnnotations(annotationType)
                 .findFirst()
                 .orElse(null);
+    }
+
+    default AnnotationsSupplier withExcludedBy(Predicate<? super Annotation> annotationExclusion) {
+        AnnotationsSupplier annotationsSupplier = this;
+        return new AnnotationsSupplier() {
+            @Override
+            public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
+                return annotationsSupplier.findAnnotations(annotationType).filter(annotationExclusion.negate());
+            }
+        };
     }
 
     default AnnotationsSupplier andThen(AnnotationsSupplier anotherAnnotationsSupplier) {

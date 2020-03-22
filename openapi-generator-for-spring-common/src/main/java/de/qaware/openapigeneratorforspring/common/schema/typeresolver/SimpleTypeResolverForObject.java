@@ -21,7 +21,7 @@ public class SimpleTypeResolverForObject implements SimpleTypeResolver {
     @Override
     public Schema resolveFromType(JavaType javaType) {
         Schema schema = OBJECT_SCHEMA_SUPPLIER.get();
-        schema.setName(schemaNameFactory.create(javaType));
+        schema.setName(schemaNameFactory.createFromType(javaType));
         return schema;
     }
 

@@ -62,6 +62,7 @@ import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTyp
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForCollections;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForObject;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForReferenceType;
+import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForSchemaAnnotation;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForObject;
@@ -363,6 +364,15 @@ public class OpenApiGeneratorAutoConfiguration {
     @ConditionalOnMissingBean
     public GenericTypeResolverForObject defaultGenericTypeResolverForObject() {
         return new GenericTypeResolverForObject();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public GenericTypeResolverForSchemaAnnotation defaultGenericTypeResolverForSchemaAnnotation(
+            OpenApiObjectMapperSupplier openApiObjectMapperSupplier,
+            AnnotationsSupplierFactory annotationsSupplierFactory
+    ) {
+        return new GenericTypeResolverForSchemaAnnotation(openApiObjectMapperSupplier, annotationsSupplierFactory);
     }
 
     @Bean
