@@ -83,7 +83,7 @@ public class App5SimpleUnitTest {
         ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);
         ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(storage);
 
-        io.swagger.v3.oas.models.media.Schema<?> schema = sut.resolveFromClass(Object.class, referencedSchemaConsumer);
+        io.swagger.v3.oas.models.media.Schema<?> schema = sut.resolveFromClass(SomeDto.class, referencedSchemaConsumer);
 
         Map<ReferenceName, de.qaware.openapigeneratorforspring.common.schema.Schema> referencedSchemas = storage.buildReferencedSchemas();
 

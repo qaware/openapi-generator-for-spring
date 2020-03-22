@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -188,11 +187,15 @@ public class DefaultSchemaResolver implements SchemaResolver {
                         if (!Objects.equals(referencedSchema.schema.getName(), schema.getName())) {
                             return false;
                         }
-                        Map<String, Schema> originalProperties = schema.getProperties();
-                        schema.setProperties(referencedSchema.schema.getProperties());
-                        boolean equalsIgnoringProperties = referencedSchema.schema.equals(schema);
-                        schema.setProperties(originalProperties);
-                        return equalsIgnoringProperties;
+                        // safe-guard against wrong implementation of GenericTypeResolvers
+                        // they must defer setting properties until the resolveReferencedSchemas of the context
+                        if (schema.getProperties() != null) {
+                            throw new IllegalStateException("To be added schema has non-null properties");
+                        }
+                        if (referencedSchema.schema.getProperties() != null) {
+                            throw new IllegalStateException("Existing referenced schema has non-null properties");
+                        }
+                        return referencedSchema.schema.equals(schema);
                     })
                     .findFirst()
                     .map(referencedSchema -> referencedSchema.referenceConsumers)

@@ -14,6 +14,7 @@ public class GenericTypeResolverForObject implements GenericTypeResolver {
     @Override
     public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
         if (javaType.getRawClass().equals(Object.class)) {
+            // accept object schema without any properties as fallback here
             schemaConsumer.accept(SimpleTypeResolverForObject.OBJECT_SCHEMA_SUPPLIER.get());
             return true;
         }

@@ -14,11 +14,14 @@ public class GenericTypeResolverForCollections implements GenericTypeResolver {
     @Override
     public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
         if (javaType.isCollectionLikeType()) {
+            // TODO adapt annotations supplier to nested getContentType, consider @ArraySchema
             Schema containerSchema = new Schema();
             containerSchema.setType("array");
-            // TODO adapt annotations supplier to content type, consider @ArraySchema
-            schemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, containerSchema::setItems);
-            schemaConsumer.accept(containerSchema);
+            schemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, schema -> {
+                        containerSchema.setItems(schema);
+                        schemaConsumer.accept(containerSchema);
+                    }
+            );
             return true;
         }
         return false;
