@@ -54,8 +54,10 @@ import de.qaware.openapigeneratorforspring.common.schema.annotation.DefaultAnnot
 import de.qaware.openapigeneratorforspring.common.schema.annotation.DefaultSchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.annotation.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.annotation.SchemaAnnotationMapperFactory;
+import de.qaware.openapigeneratorforspring.common.schema.typeresolver.DefaultSchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForCollections;
+import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForObject;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForPrimitiveTypes;
@@ -345,8 +347,8 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SimpleTypeResolverForObject defaultSimpleTypeResolverForObject() {
-        return new SimpleTypeResolverForObject();
+    public SimpleTypeResolverForObject defaultSimpleTypeResolverForObject(SchemaNameFactory schemaNameFactory) {
+        return new SimpleTypeResolverForObject(schemaNameFactory);
     }
 
     @Bean
@@ -360,4 +362,11 @@ public class OpenApiGeneratorAutoConfiguration {
     ReferenceNameConflictResolver defaultReferenceNameConflictResolver() {
         return new DefaultReferenceNameConflictResolver();
     }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SchemaNameFactory defaultSchemaNameFactory() {
+        return new DefaultSchemaNameFactory();
+    }
+
 }

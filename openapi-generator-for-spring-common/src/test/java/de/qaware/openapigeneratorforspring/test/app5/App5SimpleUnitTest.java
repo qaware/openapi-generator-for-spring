@@ -14,6 +14,7 @@ import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaStorage
 import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.annotation.DefaultAnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.annotation.SchemaAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.schema.typeresolver.DefaultSchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForCollections;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForObject;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForPrimitiveTypes;
@@ -63,12 +64,12 @@ public class App5SimpleUnitTest {
                 new DefaultAnnotationsSupplierFactory(),
                 Collections.singletonList(new GenericTypeResolverForCollections()),
                 // order is important here
-                Arrays.asList(new SimpleTypeResolverForPrimitiveTypes(), new SimpleTypeResolverForObject()));
+                Arrays.asList(new SimpleTypeResolverForPrimitiveTypes(), new SimpleTypeResolverForObject(new DefaultSchemaNameFactory())));
 
         ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);
         ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(storage);
 
-        io.swagger.v3.oas.models.media.Schema<?> schema = sut.resolveFromClass(SomeDto.class, referencedSchemaConsumer);
+        io.swagger.v3.oas.models.media.Schema<?> schema = sut.resolveFromClass(ContainerDto.class, referencedSchemaConsumer);
 
         Map<ReferenceName, de.qaware.openapigeneratorforspring.common.schema.Schema> referencedSchemas = storage.buildReferencedSchemas();
 
@@ -97,6 +98,13 @@ public class App5SimpleUnitTest {
         Map<String, SimpleDto> property4;
         List<List<String>> property5;
         Map<SimpleDto, SimpleDto> property6;
+        NestedDto nestedProperty;
+
+        @Value
+        private static class NestedDto {
+            NestedDto selfReferenceProperty;
+            String simpleNestedProperty1;
+        }
     }
 
     @Value
