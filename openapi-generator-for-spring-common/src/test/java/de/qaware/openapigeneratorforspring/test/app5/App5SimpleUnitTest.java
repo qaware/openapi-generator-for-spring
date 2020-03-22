@@ -11,8 +11,9 @@ import de.qaware.openapigeneratorforspring.common.schema.DefaultReferencedSchema
 import de.qaware.openapigeneratorforspring.common.schema.DefaultSchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaStorage;
-import de.qaware.openapigeneratorforspring.common.schema.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
+import de.qaware.openapigeneratorforspring.common.schema.annotation.DefaultAnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.schema.annotation.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForCollections;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForObject;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForPrimitiveTypes;
@@ -57,7 +58,9 @@ public class App5SimpleUnitTest {
             setStringIfNotBlank(schemaAnnotation.title(), schema::setTitle);
         };
 
-        SchemaResolver sut = new DefaultSchemaResolver(() -> MAPPER, schemaResolver -> schemaAnnotationMapper,
+        SchemaResolver sut = new DefaultSchemaResolver(
+                () -> MAPPER, schemaResolver -> schemaAnnotationMapper,
+                new DefaultAnnotationsSupplierFactory(),
                 Collections.singletonList(new GenericTypeResolverForCollections()),
                 // order is important here
                 Arrays.asList(new SimpleTypeResolverForPrimitiveTypes(), new SimpleTypeResolverForObject()));
@@ -89,11 +92,11 @@ public class App5SimpleUnitTest {
     @Value
     private static class ContainerDto implements BaseForSomeDto {
         List<String> property1;
-//        Map<String, String> property2;
-//        List<SimpleDto> property3;
-//        Map<String, SimpleDto> property4;
-//        List<List<String>> property5;
-//        Map<SimpleDto, SimpleDto> property6;
+        Map<String, String> property2;
+        List<SimpleDto> property3;
+        Map<String, SimpleDto> property4;
+        List<List<String>> property5;
+        Map<SimpleDto, SimpleDto> property6;
     }
 
     @Value

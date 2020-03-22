@@ -1,4 +1,7 @@
-package de.qaware.openapigeneratorforspring.common.schema;
+package de.qaware.openapigeneratorforspring.common.schema.annotation;
+
+import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.Schema;
 
 import javax.annotation.Nullable;
 

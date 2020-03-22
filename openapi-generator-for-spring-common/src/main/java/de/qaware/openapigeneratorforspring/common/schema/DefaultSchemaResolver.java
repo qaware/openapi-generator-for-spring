@@ -6,16 +6,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import de.qaware.openapigeneratorforspring.common.schema.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.schema.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.schema.annotation.SchemaAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.schema.annotation.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.RepeatableContainers;
 
 import javax.annotation.Nullable;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,17 +23,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class DefaultSchemaResolver implements SchemaResolver {
 
     private final OpenApiObjectMapperSupplier openApiObjectMapperSupplier;
     private final SchemaAnnotationMapperFactory schemaAnnotationMapperFactory;
+    private final AnnotationsSupplierFactory annotationsSupplierFactory;
     private final List<GenericTypeResolver> genericTypeResolvers;
     private final List<SimpleTypeResolver> simpleTypeResolvers;
 
@@ -42,7 +41,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
         ObjectMapper mapper = openApiObjectMapperSupplier.get();
 
         Context context = new Context(mapper, schemaAnnotationMapperFactory.create(this), referencedSchemaConsumer);
-        AnnotationsSupplierForClass annotationsSupplier = new AnnotationsSupplierForClass(clazz);
+        AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createForClass(clazz);
         JavaType javaType = mapper.constructType(clazz);
         Schema schema = context.buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
         context.addPropertiesToSchema(javaType, schema);
@@ -117,7 +116,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                 }
 
                 AnnotatedMember member = propertyDefinition.getAccessor();
-                AnnotationSupplierForMember annotationsSupplier = new AnnotationSupplierForMember(member);
+                AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createForMember(member);
                 buildSchemaFromType(member.getType(), annotationsSupplier,
                         propertySchema -> schema.addProperties(propertyDefinition.getName(), propertySchema));
             }
@@ -198,39 +197,6 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     new ArrayList<>(Collections.singleton(firstSchemaConsumer))
             );
             referencedSchemas.add(referencedSchema);
-        }
-    }
-
-
-    private static class AnnotationSupplierForMember implements AnnotationsSupplier {
-        private final AnnotatedMember annotatedMember;
-        private final AnnotationsSupplierForClass supplierForType;
-
-        public AnnotationSupplierForMember(AnnotatedMember annotatedMember) {
-            this.annotatedMember = annotatedMember;
-            this.supplierForType = new AnnotationsSupplierForClass(annotatedMember.getType().getRawClass());
-        }
-
-        @Override
-        public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
-            Stream<A> annotationFromMember = Optional.ofNullable(annotatedMember.getAnnotation(annotationType))
-                    .map(Stream::of)
-                    .orElse(Stream.empty());
-            return Stream.concat(annotationFromMember, supplierForType.findAnnotations(annotationType));
-        }
-    }
-
-    private static class AnnotationsSupplierForClass implements AnnotationsSupplier {
-        private final MergedAnnotations mergedAnnotations;
-
-        public AnnotationsSupplierForClass(Class<?> clazz) {
-            this.mergedAnnotations = MergedAnnotations.from(clazz, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY, RepeatableContainers.none());
-        }
-
-        @Override
-        public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
-            return mergedAnnotations.stream(annotationType)
-                    .map(MergedAnnotation::synthesize);
         }
     }
 

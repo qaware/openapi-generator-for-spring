@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.schema;
+package de.qaware.openapigeneratorforspring.common.schema.annotation;
 
 import java.lang.annotation.Annotation;
 import java.util.stream.Stream;

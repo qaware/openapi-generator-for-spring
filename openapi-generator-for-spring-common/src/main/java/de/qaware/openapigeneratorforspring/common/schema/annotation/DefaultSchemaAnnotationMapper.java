@@ -1,8 +1,11 @@
-package de.qaware.openapigeneratorforspring.common.schema;
+package de.qaware.openapigeneratorforspring.common.schema.annotation;
 
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
+import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.Schema;
+import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
 import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;

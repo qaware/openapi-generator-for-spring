@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.schema;
 
 import com.fasterxml.jackson.databind.JavaType;
+import de.qaware.openapigeneratorforspring.common.schema.annotation.AnnotationsSupplier;
 
 import java.util.function.Consumer;
 
