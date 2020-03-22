@@ -20,6 +20,7 @@ import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.DefaultSchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForCollections;
+import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForObject;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.GenericTypeResolverForReferenceType;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForObject;
 import de.qaware.openapigeneratorforspring.common.schema.typeresolver.SimpleTypeResolverForPrimitiveTypes;
@@ -75,14 +76,14 @@ public class App5SimpleUnitTest {
         SchemaResolver sut = new DefaultSchemaResolver(
                 () -> MAPPER, schemaResolver -> schemaAnnotationMapper,
                 new DefaultAnnotationsSupplierFactory(),
-                Arrays.asList(new GenericTypeResolverForCollections(), new GenericTypeResolverForReferenceType()),
+                Arrays.asList(new GenericTypeResolverForCollections(), new GenericTypeResolverForReferenceType(), new GenericTypeResolverForObject()),
                 // order is important here
                 Arrays.asList(new SimpleTypeResolverForPrimitiveTypes(), new SimpleTypeResolverForObject(new DefaultSchemaNameFactory())));
 
         ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);
         ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(storage);
 
-        io.swagger.v3.oas.models.media.Schema<?> schema = sut.resolveFromClass(ContainerDto.class, referencedSchemaConsumer);
+        io.swagger.v3.oas.models.media.Schema<?> schema = sut.resolveFromClass(Object.class, referencedSchemaConsumer);
 
         Map<ReferenceName, de.qaware.openapigeneratorforspring.common.schema.Schema> referencedSchemas = storage.buildReferencedSchemas();
 

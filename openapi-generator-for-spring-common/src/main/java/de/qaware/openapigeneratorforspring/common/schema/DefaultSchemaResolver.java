@@ -120,6 +120,9 @@ public class DefaultSchemaResolver implements SchemaResolver {
                 }
 
                 AnnotatedMember member = propertyDefinition.getAccessor();
+                if (member == null) {
+                    continue;
+                }
                 AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMember(member)
                         .andThen(annotationsSupplierFactory.createFromAnnotatedElement(member.getType().getRawClass()));
                 buildSchemaFromType(member.getType(), annotationsSupplier,

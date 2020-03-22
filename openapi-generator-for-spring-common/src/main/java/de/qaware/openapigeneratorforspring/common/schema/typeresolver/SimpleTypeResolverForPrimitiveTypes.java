@@ -10,7 +10,7 @@ public class SimpleTypeResolverForPrimitiveTypes implements SimpleTypeResolver {
 
     public static final Supplier<Schema> STRING_SCHEMA_SUPPLIER = () -> new Schema().type("string");
 
-    public static final int ORDER = SimpleTypeResolverForObject.ORDER - 1000;
+    public static final int ORDER = DEFAULT_ORDER;
 
     @Nullable
     @Override

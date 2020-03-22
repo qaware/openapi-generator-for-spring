@@ -8,6 +8,10 @@ import org.springframework.core.Ordered;
 
 import java.util.function.Consumer;
 
+@SuppressWarnings("squid:S1214") // suppress warning about constant in interface
 public interface GenericTypeResolver extends Ordered {
+
+    int DEFAULT_ORDER = Ordered.LOWEST_PRECEDENCE - 1000;
+
     boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer);
 }

@@ -7,18 +7,14 @@ import de.qaware.openapigeneratorforspring.common.schema.SchemaBuilderFromType;
 
 import java.util.function.Consumer;
 
-public class GenericTypeResolverForReferenceType implements GenericTypeResolver {
+public class GenericTypeResolverForObject implements GenericTypeResolver {
 
     public static final int ORDER = DEFAULT_ORDER;
 
     @Override
     public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
-        if (javaType.isReferenceType()) {
-            schemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, schema -> {
-                // TODO check again if all jackson reference types should be considered @Nullable
-                schema.setNullable(true);
-                schemaConsumer.accept(schema);
-            });
+        if (javaType.getRawClass().equals(Object.class)) {
+            schemaConsumer.accept(SimpleTypeResolverForObject.OBJECT_SCHEMA_SUPPLIER.get());
             return true;
         }
         return false;
@@ -26,6 +22,6 @@ public class GenericTypeResolverForReferenceType implements GenericTypeResolver 
 
     @Override
     public int getOrder() {
-        return 0;
+        return ORDER;
     }
 }

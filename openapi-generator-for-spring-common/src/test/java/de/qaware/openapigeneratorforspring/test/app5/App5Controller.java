@@ -33,6 +33,11 @@ public class App5Controller {
         return Optional.empty();
     }
 
+    @GetMapping("/get5")
+    public Object getMappingReturnsObject() {
+        return null;
+    }
+
     @Schema(description = "global description", title = "should never appear")
     private interface BaseForEverything {
 
