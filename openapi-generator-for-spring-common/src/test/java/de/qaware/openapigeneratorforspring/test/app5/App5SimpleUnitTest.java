@@ -31,6 +31,7 @@ import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.converter.ResolvedSchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Value;
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Test;
 
 import javax.annotation.Nullable;
@@ -65,12 +66,22 @@ public class App5SimpleUnitTest {
         DefaultReferenceNameFactory referenceNameFactory = new DefaultReferenceNameFactory();
         DefaultReferenceNameConflictResolver referenceNameConflictResolver = new DefaultReferenceNameConflictResolver();
 
-        SchemaAnnotationMapper schemaAnnotationMapper = (schema, schemaAnnotation, referencedSchemaStorage) -> {
-            // just for testing
-            setStringIfNotBlank(schemaAnnotation.description(), schema::setDescription);
-            setStringIfNotBlank(schemaAnnotation.title(), schema::setTitle);
-            if (schemaAnnotation.nullable()) {
-                schema.setNullable(true);
+        SchemaAnnotationMapper schemaAnnotationMapper = new SchemaAnnotationMapper() {
+            @Nullable
+            @Override
+            public de.qaware.openapigeneratorforspring.common.schema.Schema buildFromAnnotation(Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
+                // not used during schema resolution
+                throw new NotImplementedException("not implemented");
+            }
+
+            @Override
+            public void applyFromAnnotation(de.qaware.openapigeneratorforspring.common.schema.Schema schema, Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
+                // just some simple stuff for testing
+                setStringIfNotBlank(schemaAnnotation.description(), schema::setDescription);
+                setStringIfNotBlank(schemaAnnotation.title(), schema::setTitle);
+                if (schemaAnnotation.nullable()) {
+                    schema.setNullable(true);
+                }
             }
         };
 

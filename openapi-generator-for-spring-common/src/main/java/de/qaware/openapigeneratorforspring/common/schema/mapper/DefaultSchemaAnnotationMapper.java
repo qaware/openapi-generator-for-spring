@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,10 +32,28 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
     private final SchemaResolver schemaResolver;
 
+    @Nullable
+    @Override
+    public Schema buildFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
+        Schema schema;
+        if (!Void.class.equals(schemaAnnotation.implementation())) {
+            schema = schemaResolver.resolveFromClass(schemaAnnotation.implementation(), referencedSchemaConsumer);
+        } else {
+            schema = new Schema();
+        }
+
+        applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer);
+
+        // do not return anything if schema is still empty
+        if (new Schema().equals(schema)) {
+            return null;
+        }
+
+        return schema;
+    }
+
     @Override
     public void applyFromAnnotation(Schema schema, io.swagger.v3.oas.annotations.media.Schema annotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
-
-        // TODO consider annotation.implementation() if not Void.class
 
         setStringIfNotBlank(annotation.name(), schema::setName);
         setStringIfNotBlank(annotation.description(), schema::setDescription);

@@ -6,21 +6,8 @@ import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSch
 import javax.annotation.Nullable;
 
 public interface SchemaAnnotationMapper {
-
     @Nullable
-    default Schema buildFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
-        // TODO consider schema.implementation here using the SchemaResolver?
-
-        // TODO consider schema customizers!
-
-        Schema schema = new Schema();
-        applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer);
-        // do not return anything if schema is still empty
-        if (new Schema().equals(schema)) {
-            return null;
-        }
-        return schema;
-    }
+    Schema buildFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer);
 
     void applyFromAnnotation(Schema schema, io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer);
 }
