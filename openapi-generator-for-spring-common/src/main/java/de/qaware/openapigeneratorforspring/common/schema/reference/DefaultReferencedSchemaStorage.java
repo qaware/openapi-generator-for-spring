@@ -1,8 +1,9 @@
-package de.qaware.openapigeneratorforspring.common.schema;
+package de.qaware.openapigeneratorforspring.common.schema.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
+import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 

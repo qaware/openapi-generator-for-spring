@@ -3,7 +3,7 @@ package de.qaware.openapigeneratorforspring.common.schema.mapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
-import de.qaware.openapigeneratorforspring.common.schema.SchemaResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

@@ -1,9 +1,9 @@
-package de.qaware.openapigeneratorforspring.common.schema.typeresolver;
+package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
-import de.qaware.openapigeneratorforspring.common.schema.SchemaBuilderFromType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaBuilderFromType;
 
 import java.util.function.Consumer;
 

@@ -9,11 +9,11 @@ import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConfli
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
-import de.qaware.openapigeneratorforspring.common.schema.DefaultReferencedSchemaConsumer;
-import de.qaware.openapigeneratorforspring.common.schema.DefaultReferencedSchemaStorage;
-import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaConsumer;
-import de.qaware.openapigeneratorforspring.common.schema.ReferencedSchemaStorage;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
+import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferencedSchemaStorage;
+import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaStorage;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;

@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.schema;
+package de.qaware.openapigeneratorforspring.common.schema.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import lombok.RequiredArgsConstructor;

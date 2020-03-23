@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.schema.typeresolver;
+package de.qaware.openapigeneratorforspring.common.schema.resolver;
 
 import com.fasterxml.jackson.databind.JavaType;
 
