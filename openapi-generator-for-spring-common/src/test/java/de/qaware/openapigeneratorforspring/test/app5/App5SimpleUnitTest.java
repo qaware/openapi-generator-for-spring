@@ -30,6 +30,9 @@ import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.converter.ResolvedSchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Test;
@@ -56,7 +59,7 @@ public class App5SimpleUnitTest {
 
     @Test
     public void resolveSchemaWithSwagger() throws Exception {
-        ResolvedSchema resolvedSchema = ModelConverters.getInstance().readAllAsResolvedSchema(new AnnotatedType().type(ContainerDto.class));
+        ResolvedSchema resolvedSchema = ModelConverters.getInstance().readAllAsResolvedSchema(new AnnotatedType().type(SomeDto.class));
         System.out.println(MAPPER.writeValueAsString(resolvedSchema.schema));
     }
 
@@ -106,14 +109,14 @@ public class App5SimpleUnitTest {
         ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);
         ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(storage);
 
-        io.swagger.v3.oas.models.media.Schema<?> schema = sut.resolveFromClass(ContainerDto.class, referencedSchemaConsumer);
+        io.swagger.v3.oas.models.media.Schema<?> schema = sut.resolveFromClass(SimpleDto.class, referencedSchemaConsumer);
 
         Map<ReferenceName, de.qaware.openapigeneratorforspring.common.schema.Schema> referencedSchemas = storage.buildReferencedSchemas();
 
         System.out.println("==== Constructed schema");
         System.out.println(MAPPER.writeValueAsString(schema));
-        System.out.println("==== Referenced schemas");
-        System.out.println(MAPPER.writeValueAsString(referencedSchemas.entrySet()));
+//        System.out.println("==== Referenced schemas");
+//        System.out.println(MAPPER.writeValueAsString(referencedSchemas.entrySet()));
 
     }
 
@@ -123,13 +126,15 @@ public class App5SimpleUnitTest {
     }
 
     @Schema(title = "global title")
-    private interface BaseForSomeDto extends BaseForEverything {
-
+    @Getter
+    @Setter
+    private abstract static class BaseForSomeDto implements BaseForEverything {
+        private String propertyInBaseClass;
     }
 
     @Value
     private static class ContainerDto {
-        @Schema(nullable = true, implementation = Object.class)
+        @Schema(nullable = true)
         Optional<String> stringOptional;
 
 //        AtomicReference<String> stringAtomicReference;
@@ -150,13 +155,18 @@ public class App5SimpleUnitTest {
     }
 
     @Value
-    private static class SimpleDto implements BaseForSomeDto {
+    @EqualsAndHashCode(callSuper = true)
+    private static class SimpleDto extends BaseForSomeDto {
         @Nullable
         String property1;
+        int someInteger;
+        @Nullable
+        Integer nullableInteger;
     }
 
     @Value
-    private static class SomeDto implements BaseForSomeDto {
+    @EqualsAndHashCode(callSuper = true)
+    private static class SomeDto extends BaseForSomeDto {
         List<String> strings;
         List<Set<String>> stringsOfStrings;
         List<Set<SomeDto>> listOfSetOfSomeDto;
