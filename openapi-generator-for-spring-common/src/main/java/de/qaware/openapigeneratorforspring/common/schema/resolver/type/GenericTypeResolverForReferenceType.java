@@ -26,6 +26,6 @@ public class GenericTypeResolverForReferenceType implements GenericTypeResolver 
 
     @Override
     public int getOrder() {
-        return 0;
+        return ORDER;
     }
 }

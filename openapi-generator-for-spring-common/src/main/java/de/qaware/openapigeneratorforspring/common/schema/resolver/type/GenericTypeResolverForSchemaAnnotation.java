@@ -26,6 +26,7 @@ public class GenericTypeResolverForSchemaAnnotation implements GenericTypeResolv
             JavaType javaTypeFromSchemaAnnotation = openApiObjectMapperSupplier.get().constructType(schemaAnnotation.implementation());
             // TODO think about correct precedence of annotations, maybe make it customizable?
             AnnotationsSupplier annotationsSupplierWithSchemaAnnotation = annotationsSupplier
+                    // prevent infinite loop by detecting the same annotation again and again
                     .withExcludedBy(schemaAnnotation::equals)
                     .andThen(annotationsSupplierFactory.createFromAnnotatedElement(schemaAnnotation.implementation()));
             schemaBuilderFromType.buildSchemaFromType(
@@ -41,6 +42,6 @@ public class GenericTypeResolverForSchemaAnnotation implements GenericTypeResolv
 
     @Override
     public int getOrder() {
-        return 0;
+        return ORDER;
     }
 }
