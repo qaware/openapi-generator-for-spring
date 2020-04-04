@@ -4,7 +4,6 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.Method;
@@ -22,7 +21,8 @@ public class ExcludeHiddenOperationFilter implements OperationFilter {
         if (hiddenOnMethodOrClass != null) {
             return false;
         }
-        Operation operationAnnotation = AnnotationUtils.findAnnotation(method, Operation.class);
+        Operation operationAnnotation = annotationsSupplierFactory.createFromAnnotatedElement(method)
+                .findFirstAnnotation(Operation.class);
         return operationAnnotation == null || !operationAnnotation.hidden();
     }
 }

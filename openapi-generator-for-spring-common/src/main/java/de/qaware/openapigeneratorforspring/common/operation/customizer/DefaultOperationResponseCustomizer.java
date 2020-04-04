@@ -1,5 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.mapper.ContentAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
@@ -12,7 +14,6 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -32,6 +33,7 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
     private final LinkAnnotationMapper linkAnnotationMapper;
     private final ApiResponseCodeMapper apiResponseCodeMapper;
     private final List<OperationApiResponseCustomizer> operationApiResponseCustomizers;
+    private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
@@ -59,23 +61,23 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
 
 
     private Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> getApiResponseAnnotationsFromMethod(Method method) {
-
-        Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponsesFromClass = Stream.concat(
-                AnnotatedElementUtils.findAllMergedAnnotations(method.getDeclaringClass(), io.swagger.v3.oas.annotations.responses.ApiResponses.class).stream()
-                        .flatMap(x -> Stream.of(x.value())),
-                AnnotatedElementUtils.findMergedRepeatableAnnotations(method.getDeclaringClass(), io.swagger.v3.oas.annotations.responses.ApiResponse.class).stream()
-        );
-
-        Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponsesFromMethod = Stream.concat(
-                AnnotatedElementUtils.findAllMergedAnnotations(method, io.swagger.v3.oas.annotations.responses.ApiResponses.class).stream()
-                        .flatMap(x -> Stream.of(x.value())),
-                AnnotatedElementUtils.findMergedRepeatableAnnotations(method, io.swagger.v3.oas.annotations.responses.ApiResponse.class).stream()
-        );
+        AnnotationsSupplier annotationsSupplierFromMethod = annotationsSupplierFactory.createFromAnnotatedElement(method);
+        AnnotationsSupplier annotationsSupplierFromClass = annotationsSupplierFactory.createFromAnnotatedElement(method.getDeclaringClass());
 
         // first the annotations from declaring class,
         // then the annotations from methods
         // this way it's possible to overwrite responses on method level
-        return Stream.concat(apiResponsesFromClass, apiResponsesFromMethod);
+        return Stream.concat(
+                getMergedApiResponsesFromSupplier(annotationsSupplierFromClass),
+                getMergedApiResponsesFromSupplier(annotationsSupplierFromMethod)
+        );
+    }
+
+    private Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> getMergedApiResponsesFromSupplier(AnnotationsSupplier annotationsSupplier) {
+        return Stream.concat(
+                annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.responses.ApiResponses.class).flatMap(x -> Stream.of(x.value())),
+                annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.responses.ApiResponse.class)
+        );
     }
 
     private ApiResponses buildApiResponsesFromAnnotations(

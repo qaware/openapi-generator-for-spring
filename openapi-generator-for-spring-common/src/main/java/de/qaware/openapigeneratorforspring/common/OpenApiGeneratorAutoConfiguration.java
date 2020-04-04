@@ -111,8 +111,8 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OperationBuilder operationBuilder(OperationIdProvider operationIdProvider, List<OperationCustomizer> operationCustomizers) {
-        return new OperationBuilder(operationIdProvider, operationCustomizers);
+    public OperationBuilder operationBuilder(List<OperationCustomizer> operationCustomizers, AnnotationsSupplierFactory annotationsSupplierFactory) {
+        return new OperationBuilder(operationCustomizers, annotationsSupplierFactory);
     }
 
     @Bean
@@ -172,12 +172,14 @@ public class OpenApiGeneratorAutoConfiguration {
             ExtensionAnnotationMapper extensionAnnotationMapper,
             LinkAnnotationMapper linkAnnotationMapper,
             ApiResponseCodeMapper apiResponseCodeMapper,
-            List<OperationApiResponseCustomizer> apiResponsesCustomizers
+            List<OperationApiResponseCustomizer> apiResponsesCustomizers,
+            AnnotationsSupplierFactory annotationsSupplierFactory
     ) {
         return new DefaultOperationResponseCustomizer(
                 headerAnnotationMapper, contentAnnotationMapper,
                 extensionAnnotationMapper, linkAnnotationMapper,
-                apiResponseCodeMapper, apiResponsesCustomizers
+                apiResponseCodeMapper, apiResponsesCustomizers,
+                annotationsSupplierFactory
         );
     }
 

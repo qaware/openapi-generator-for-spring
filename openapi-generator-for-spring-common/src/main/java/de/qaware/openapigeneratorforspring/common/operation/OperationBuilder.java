@@ -1,10 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.operation;
 
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvider;
 import io.swagger.v3.oas.models.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -12,13 +12,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OperationBuilder {
 
-    private final OperationIdProvider operationIdProvider;
     private final List<OperationCustomizer> operationCustomizers;
+    private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     public Operation buildOperation(OperationBuilderContext context) {
         Method method = context.getHandlerMethod().getMethod();
+
+        AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(method);
         io.swagger.v3.oas.annotations.Operation operationAnnotation
-                = AnnotationUtils.findAnnotation(method, io.swagger.v3.oas.annotations.Operation.class);
+                = annotationsSupplier.findFirstAnnotation(io.swagger.v3.oas.annotations.Operation.class);
 
         Operation operation = new Operation();
         for (OperationCustomizer operationCustomizer : operationCustomizers) {
