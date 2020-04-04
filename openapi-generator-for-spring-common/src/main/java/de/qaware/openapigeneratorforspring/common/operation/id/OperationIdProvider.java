@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.id;
 
-import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.operation.OperationInfo;
 
 public interface OperationIdProvider {
-    String getOperationId(OperationBuilderContext operationBuilderContext);
+    String getOperationId(OperationInfo operationInfo);
 }

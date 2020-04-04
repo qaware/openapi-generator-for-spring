@@ -16,7 +16,7 @@ public class OperationBuilder {
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     public Operation buildOperation(OperationBuilderContext context) {
-        Method method = context.getHandlerMethod().getMethod();
+        Method method = context.getOperationInfo().getHandlerMethod().getMethod();
 
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(method);
         io.swagger.v3.oas.annotations.Operation operationAnnotation

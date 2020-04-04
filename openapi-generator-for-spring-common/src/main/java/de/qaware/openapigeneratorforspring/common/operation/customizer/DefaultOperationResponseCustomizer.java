@@ -37,14 +37,14 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        Method method = operationBuilderContext.getHandlerMethod().getMethod();
+        Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
         fillApiResponses(operation, getApiResponseAnnotationsFromMethod(method), operationBuilderContext);
     }
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext,
                           io.swagger.v3.oas.annotations.Operation operationAnnotation) {
-        Method method = operationBuilderContext.getHandlerMethod().getMethod();
+        Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
         // put the annotations from the operation last, which gives them the highest precedence
         Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponseAnnotations
                 = Stream.concat(getApiResponseAnnotationsFromMethod(method), Stream.of(operationAnnotation.responses()));

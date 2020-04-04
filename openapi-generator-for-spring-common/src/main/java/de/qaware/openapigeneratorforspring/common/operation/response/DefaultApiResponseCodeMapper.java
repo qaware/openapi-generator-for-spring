@@ -30,7 +30,7 @@ public class DefaultApiResponseCodeMapper implements ApiResponseCodeMapper {
             }
             return annotationResponseCode;
         }
-        Method method = operationBuilderContext.getHandlerMethod().getMethod();
+        Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
         return getResponseCodeFromMethod(method);
     }
 

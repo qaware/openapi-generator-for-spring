@@ -1,10 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.operation.id;
 
-import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.operation.OperationInfo;
 
 public class DefaultOperationIdProvider implements OperationIdProvider {
     @Override
-    public String getOperationId(OperationBuilderContext operationBuilderContext) {
-        return operationBuilderContext.getHandlerMethod().getMethod().getName();
+    public String getOperationId(OperationInfo operationInfo) {
+        return operationInfo.getHandlerMethod().getMethod().getName();
     }
 }

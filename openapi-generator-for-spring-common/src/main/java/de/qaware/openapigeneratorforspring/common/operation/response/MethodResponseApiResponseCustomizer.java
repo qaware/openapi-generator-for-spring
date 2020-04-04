@@ -31,7 +31,7 @@ public class MethodResponseApiResponseCustomizer implements OperationApiResponse
 
     @Override
     public void customize(ApiResponses apiResponses, OperationBuilderContext operationBuilderContext) {
-        Method method = operationBuilderContext.getHandlerMethod().getMethod();
+        Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
         String responseCodeFromMethod = defaultApiResponseCodeMapper.getResponseCodeFromMethod(method);
         ApiResponse defaultApiResponse = apiResponses.computeIfAbsent(responseCodeFromMethod, ignored -> new ApiResponse());
 

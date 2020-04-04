@@ -16,7 +16,7 @@ public class DefaultDeprecatedOperationCustomizer implements OperationCustomizer
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        Method method = operationBuilderContext.getHandlerMethod().getMethod();
+        Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
         Deprecated deprecatedOnMethodOrClass = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method)
                 .findFirstAnnotation(Deprecated.class);
         if (deprecatedOnMethodOrClass != null) {

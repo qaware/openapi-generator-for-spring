@@ -15,7 +15,7 @@ public class DefaultOperationIdCustomizer implements OperationCustomizer {
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        operation.setOperationId(operationIdProvider.getOperationId(operationBuilderContext));
+        operation.setOperationId(operationIdProvider.getOperationId(operationBuilderContext.getOperationInfo()));
     }
 
     @Override
