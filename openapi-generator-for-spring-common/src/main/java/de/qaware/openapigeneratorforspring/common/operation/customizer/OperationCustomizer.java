@@ -13,8 +13,8 @@ public interface OperationCustomizer extends Ordered {
         // do nothing by default
     }
 
-    default void customize(Operation operation, OperationBuilderContext operationBuilderContext,
-                           io.swagger.v3.oas.annotations.Operation operationAnnotation) {
+    default void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
+                                                io.swagger.v3.oas.annotations.Operation operationAnnotation) {
         customize(operation, operationBuilderContext);
     }
 }

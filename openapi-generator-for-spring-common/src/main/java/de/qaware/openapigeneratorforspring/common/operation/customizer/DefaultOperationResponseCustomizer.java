@@ -42,8 +42,8 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
     }
 
     @Override
-    public void customize(Operation operation, OperationBuilderContext operationBuilderContext,
-                          io.swagger.v3.oas.annotations.Operation operationAnnotation) {
+    public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
+                                               io.swagger.v3.oas.annotations.Operation operationAnnotation) {
         Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
         // put the annotations from the operation last, which gives them the highest precedence
         Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponseAnnotations

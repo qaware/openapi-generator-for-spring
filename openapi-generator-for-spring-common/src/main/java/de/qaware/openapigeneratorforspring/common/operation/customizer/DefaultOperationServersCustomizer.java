@@ -15,8 +15,8 @@ public class DefaultOperationServersCustomizer implements OperationCustomizer {
     private final ServerAnnotationMapper serverAnnotationMapper;
 
     @Override
-    public void customize(Operation operation, OperationBuilderContext operationBuilderContext,
-                          io.swagger.v3.oas.annotations.Operation operationAnnotation) {
+    public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
+                                               io.swagger.v3.oas.annotations.Operation operationAnnotation) {
         setCollectionIfNotEmpty(serverAnnotationMapper.mapArray(operationAnnotation.servers()), operation::setServers);
     }
 

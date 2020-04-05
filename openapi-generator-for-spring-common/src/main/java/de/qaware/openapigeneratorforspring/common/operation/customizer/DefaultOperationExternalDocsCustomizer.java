@@ -13,8 +13,8 @@ public class DefaultOperationExternalDocsCustomizer implements OperationCustomiz
     private final ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper;
 
     @Override
-    public void customize(Operation operation, OperationBuilderContext operationBuilderContext,
-                          io.swagger.v3.oas.annotations.Operation operationAnnotation) {
+    public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
+                                               io.swagger.v3.oas.annotations.Operation operationAnnotation) {
         externalDocumentationAnnotationMapper.map(operationAnnotation.externalDocs())
                 .ifPresent(operation::setExternalDocs);
     }

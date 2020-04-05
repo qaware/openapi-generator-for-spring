@@ -25,7 +25,7 @@ public class OperationBuilder {
         Operation operation = new Operation();
         for (OperationCustomizer operationCustomizer : operationCustomizers) {
             if (operationAnnotation != null) {
-                operationCustomizer.customize(operation, context, operationAnnotation);
+                operationCustomizer.customizeWithAnnotationPresent(operation, context, operationAnnotation);
             } else {
                 operationCustomizer.customize(operation, context);
             }

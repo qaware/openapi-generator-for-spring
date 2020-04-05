@@ -19,8 +19,8 @@ public class DefaultOperationIdCustomizer implements OperationCustomizer {
     }
 
     @Override
-    public void customize(Operation operation, OperationBuilderContext operationBuilderContext,
-                          io.swagger.v3.oas.annotations.Operation operationAnnotation) {
+    public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
+                                               io.swagger.v3.oas.annotations.Operation operationAnnotation) {
 
 
         if (StringUtils.isNotBlank(operationAnnotation.operationId())) {

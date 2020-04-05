@@ -13,8 +13,8 @@ public class DefaultOperationTagsCustomizer implements OperationCustomizer {
     public static final int ORDER = DEFAULT_ORDER;
 
     @Override
-    public void customize(Operation operation, OperationBuilderContext operationBuilderContext,
-                          io.swagger.v3.oas.annotations.Operation operationAnnotation) {
+    public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
+                                               io.swagger.v3.oas.annotations.Operation operationAnnotation) {
         List<String> distinctTags = Stream.of(operationAnnotation.tags())
                 .filter(StringUtils::isNotBlank)
                 .distinct()

@@ -10,8 +10,8 @@ public class DefaultOperationSummaryAndDescriptionCustomizer implements Operatio
     public static final int ORDER = DEFAULT_ORDER;
 
     @Override
-    public void customize(Operation operation, OperationBuilderContext operationBuilderContext,
-                          io.swagger.v3.oas.annotations.Operation operationAnnotation) {
+    public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
+                                               io.swagger.v3.oas.annotations.Operation operationAnnotation) {
         setStringIfNotBlank(operationAnnotation.summary(), operation::setSummary);
         setStringIfNotBlank(operationAnnotation.description(), operation::setDescription);
     }
