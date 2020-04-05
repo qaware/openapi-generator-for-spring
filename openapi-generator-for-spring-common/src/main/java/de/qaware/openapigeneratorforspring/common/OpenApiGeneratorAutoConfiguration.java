@@ -44,6 +44,7 @@ import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationI
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdProvider;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvider;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.DefaultOperationParameterCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseCodeMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseCodeMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.MethodResponseApiResponseCustomizer;
@@ -213,6 +214,12 @@ public class OpenApiGeneratorAutoConfiguration {
     @ConditionalOnMissingBean
     public DefaultApiResponseCodeMapper defaultApiResponseCodeMapper(AnnotationsSupplierFactory annotationsSupplierFactory) {
         return new DefaultApiResponseCodeMapper(annotationsSupplierFactory);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultOperationParameterCustomizer defaultOperationParameterCustomizer(AnnotationsSupplierFactory annotationsSupplierFactory) {
+        return new DefaultOperationParameterCustomizer(annotationsSupplierFactory);
     }
 
     @Bean

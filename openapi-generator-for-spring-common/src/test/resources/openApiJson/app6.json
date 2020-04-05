@@ -1,0 +1,28 @@
+{
+  "openapi": "3.0.1",
+  "paths": {
+    "/simple/get-mapping": {
+      "get": {
+        "operationId": "getMappingRequestParam",
+        "parameters": [
+          {
+            "name": "param1",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
