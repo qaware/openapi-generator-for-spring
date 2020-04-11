@@ -7,7 +7,14 @@
         "parameters": [
           {
             "name": "param1",
-            "in": "query"
+            "in": "query",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         ],
         "responses": {

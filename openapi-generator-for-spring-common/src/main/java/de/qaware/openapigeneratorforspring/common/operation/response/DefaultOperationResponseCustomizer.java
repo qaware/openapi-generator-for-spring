@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.operation.customizer;
+package de.qaware.openapigeneratorforspring.common.operation.response;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
@@ -7,8 +7,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapp
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseCodeMapper;
-import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponseCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.responses.ApiResponse;

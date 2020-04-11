@@ -35,7 +35,6 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultDeprecatedOperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationExternalDocsCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationIdCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationResponseCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationServersCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationSummaryAndDescriptionCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationTagsCustomizer;
@@ -47,6 +46,7 @@ import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvid
 import de.qaware.openapigeneratorforspring.common.operation.parameter.DefaultOperationParameterCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseCodeMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseCodeMapper;
+import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOperationResponseCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.MethodResponseApiResponseCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponseCustomizer;
 import de.qaware.openapigeneratorforspring.common.paths.DefaultPathsBuilder;
@@ -218,8 +218,11 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationParameterCustomizer defaultOperationParameterCustomizer(AnnotationsSupplierFactory annotationsSupplierFactory) {
-        return new DefaultOperationParameterCustomizer(annotationsSupplierFactory);
+    public DefaultOperationParameterCustomizer defaultOperationParameterCustomizer(
+            AnnotationsSupplierFactory annotationsSupplierFactory,
+            SchemaResolver schemaResolver
+    ) {
+        return new DefaultOperationParameterCustomizer(annotationsSupplierFactory, schemaResolver);
     }
 
     @Bean
