@@ -1,19 +1,32 @@
 {
   "openapi": "3.0.1",
   "paths": {
-    "/simple/get-mapping": {
+    "/simple/get-mapping/{pathVariableName}": {
       "get": {
         "operationId": "getMappingRequestParam",
         "parameters": [
           {
-            "name": "param1",
+            "name": "someQueryStringParameterWithoutExplicitName",
             "in": "query",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pathVariableName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "headerName",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
         ],

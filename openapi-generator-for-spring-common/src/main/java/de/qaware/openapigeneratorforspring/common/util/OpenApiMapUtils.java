@@ -1,12 +1,12 @@
 package de.qaware.openapigeneratorforspring.common.util;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class OpenApiMapUtils {
 
@@ -46,7 +46,7 @@ public class OpenApiMapUtils {
             Supplier<? extends M> mapSupplier
     ) {
         // TODO handle possible duplicate entries here?
-        return Stream.of(array).collect(Collectors.toMap(
+        return Arrays.stream(array).collect(Collectors.toMap(
                 keyMapper,
                 valueMapper,
                 (a, b) -> {
