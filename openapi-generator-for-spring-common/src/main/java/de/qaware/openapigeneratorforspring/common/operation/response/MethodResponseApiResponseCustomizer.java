@@ -39,11 +39,16 @@ public class MethodResponseApiResponseCustomizer implements OperationApiResponse
             // TODO make this description customizable?
             defaultApiResponse.setDescription("Default response");
         }
+
+        if (Void.TYPE.equals(method.getReturnType()) || Void.class.equals(method.getReturnType())) {
+            return;
+        }
+
         Content content = getOrCreateEmptyContent(defaultApiResponse);
 
         AnnotationsSupplier annotationsSupplierFromMethodWithDeclaringClass = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method);
-
         List<String> producesContentType = getProducesContentType(annotationsSupplierFromMethodWithDeclaringClass);
+
         for (String contentType : producesContentType) {
             MediaType mediaType = content.computeIfAbsent(contentType, ignored -> new MediaType());
             // just using resolveFromClass here with method.getReturnType() does not work for generic return types

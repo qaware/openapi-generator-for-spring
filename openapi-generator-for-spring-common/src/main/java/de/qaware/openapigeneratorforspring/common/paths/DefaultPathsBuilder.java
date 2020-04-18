@@ -12,6 +12,7 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,31 +40,40 @@ public class DefaultPathsBuilder implements PathsBuilder {
         MultiValueMap<String, OperationWithInfo> operationsById = new LinkedMultiValueMap<>();
 
         Paths paths = new Paths();
-        handlerMethods.forEach(handlerMethodWithInfo -> handlerMethodWithInfo.getPathPatterns().forEach(pathPattern -> {
-            HandlerMethod handlerMethod = handlerMethodWithInfo.getHandlerMethod();
-            PathItem pathItem = new PathItem();
-            Set<RequestMethod> requestMethods = handlerMethodWithInfo.getRequestMethods();
-            Map<RequestMethod, Operation> operationPerMethod = new EnumMap<>(RequestMethod.class);
-            MultiValueMap<String, OperationWithInfo> operationsByIdPerPathItem = new LinkedMultiValueMap<>();
-            requestMethods.forEach(requestMethod -> {
-                OperationInfo operationInfo = OperationInfo.of(handlerMethod, requestMethod, pathPattern);
-                OperationBuilderContext operationBuilderContext = new OperationBuilderContext(operationInfo, referencedSchemaConsumer);
-                Operation operation = operationBuilder.buildOperation(operationBuilderContext);
-                if (isAcceptedByAllOperationFilters(operation, handlerMethod)) {
-                    String operationId = operation.getOperationId();
-                    if (operationId != null) {
-                        operationsByIdPerPathItem.add(operationId, OperationWithInfo.of(operation, operationInfo));
-                    }
-                    operationPerMethod.put(requestMethod, operation);
-                    setOperationOnPathItem(requestMethod, pathItem, operation);
-                }
-            });
 
-            if (isAcceptedByAllPathFilters(pathItem, pathPattern, operationPerMethod)) {
-                operationsById.addAll(operationsByIdPerPathItem);
-                paths.addPathItem(pathPattern, pathItem);
-            }
-        }));
+        handlerMethods.stream()
+                .flatMap(
+                        handlerMethodWithInfo -> handlerMethodWithInfo.getPathPatterns().stream()
+                                .map(pathPattern -> Pair.of(pathPattern, handlerMethodWithInfo))
+                )
+                .sorted(Map.Entry.comparingByKey())
+                .forEachOrdered(item -> {
+                    String pathPattern = item.getLeft();
+                    HandlerMethodWithInfo handlerMethodWithInfo = item.getRight();
+                    HandlerMethod handlerMethod = handlerMethodWithInfo.getHandlerMethod();
+                    PathItem pathItem = new PathItem();
+                    Set<RequestMethod> requestMethods = handlerMethodWithInfo.getRequestMethods();
+                    Map<RequestMethod, Operation> operationPerMethod = new EnumMap<>(RequestMethod.class);
+                    MultiValueMap<String, OperationWithInfo> operationsByIdPerPathItem = new LinkedMultiValueMap<>();
+                    requestMethods.forEach(requestMethod -> {
+                        OperationInfo operationInfo = OperationInfo.of(handlerMethod, requestMethod, pathPattern);
+                        OperationBuilderContext operationBuilderContext = new OperationBuilderContext(operationInfo, referencedSchemaConsumer);
+                        Operation operation = operationBuilder.buildOperation(operationBuilderContext);
+                        if (isAcceptedByAllOperationFilters(operation, handlerMethod)) {
+                            String operationId = operation.getOperationId();
+                            if (operationId != null) {
+                                operationsByIdPerPathItem.add(operationId, OperationWithInfo.of(operation, operationInfo));
+                            }
+                            operationPerMethod.put(requestMethod, operation);
+                            setOperationOnPathItem(requestMethod, pathItem, operation);
+                        }
+                    });
+
+                    if (isAcceptedByAllPathFilters(pathItem, pathPattern, operationPerMethod)) {
+                        operationsById.addAll(operationsByIdPerPathItem);
+                        paths.addPathItem(pathPattern, pathItem);
+                    }
+                });
 
         operationsById.forEach((operationId, operationsWithInfo) -> {
             if (operationsWithInfo.size() > 1) {

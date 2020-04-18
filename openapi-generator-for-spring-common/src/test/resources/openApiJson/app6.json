@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.1",
   "paths": {
-    "/simple/get-mapping/{pathVariableName}": {
+    "/simple/get-mapping-1/{pathVariableName}": {
       "get": {
-        "operationId": "getMappingRequestParam",
+        "operationId": "getMappingRequestParam1",
         "parameters": [
           {
             "name": "someQueryStringParameterWithoutExplicitName",
@@ -32,14 +32,38 @@
         ],
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
+            "description": "Default response"
+          }
+        }
+      }
+    },
+    "/simple/get-mapping-2": {
+      "get": {
+        "operationId": "getMappingRequestParam2",
+        "parameters": [
+          {
+            "name": "someStringParam1",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
+          },
+          {
+            "name": "someStringParam2",
+            "in": "query",
+            "required": true,
+            "deprecated": true
+          },
+          {
+            "name": "hiddenParam",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default response"
           }
         }
       }

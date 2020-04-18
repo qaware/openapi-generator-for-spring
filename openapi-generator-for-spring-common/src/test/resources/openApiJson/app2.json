@@ -1,42 +1,6 @@
 {
   "openapi": "3.0.1",
   "paths": {
-    "/deprecated-methods/get-mapping": {
-      "get": {
-        "operationId": "deprecatedGetMapping",
-        "responses": {
-          "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "deprecated": true
-      }
-    },
-    "/deprecated-methods/post-mapping": {
-      "post": {
-        "operationId": "deprecatedPostMapping",
-        "responses": {
-          "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "deprecated": true
-      }
-    },
     "/all-deprecated/get-mapping": {
       "get": {
         "operationId": "allDeprecatedGetMapping",
@@ -60,11 +24,22 @@
         "operationId": "allDeprecatedPostMapping",
         "responses": {
           "200": {
+            "description": "Default response"
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/deprecated-methods/get-mapping": {
+      "get": {
+        "operationId": "deprecatedGetMapping",
+        "responses": {
+          "200": {
             "description": "Default response",
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "object"
+                  "type": "string"
                 }
               }
             }
@@ -73,10 +48,69 @@
         "deprecated": true
       }
     },
+    "/deprecated-methods/post-mapping": {
+      "post": {
+        "operationId": "deprecatedPostMapping",
+        "responses": {
+          "200": {
+            "description": "Default response"
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/operation-annotation/get1": {
+      "get": {
+        "tags": [
+          "TAG-1",
+          "TAG-2"
+        ],
+        "summary": "Summary 1",
+        "description": "Description 1",
+        "operationId": "getMappingOperation1",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/operation-annotation/get2": {
       "get": {
         "summary": "Summary 2",
         "operationId": "getMappingOperation2",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operation-annotation/get3": {
+      "get": {
+        "externalDocs": {
+          "description": "external doc description",
+          "url": "http://some-url",
+          "x-extension1": {
+            "property2": "value2",
+            "property1": "value1"
+          }
+        },
+        "operationId": "getMappingOperation3",
         "responses": {
           "200": {
             "description": "Default response",
@@ -132,40 +166,19 @@
         ]
       }
     },
-    "/operation-annotation/get1": {
-      "get": {
-        "tags": [
-          "TAG-1",
-          "TAG-2"
-        ],
-        "summary": "Summary 1",
-        "description": "Description 1",
-        "operationId": "getMappingOperation1",
+    "/simple/delete-mapping": {
+      "delete": {
+        "operationId": "deleteMapping",
         "responses": {
-          "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+          "204": {
+            "description": "Default response"
           }
         }
       }
     },
-    "/operation-annotation/get3": {
+    "/simple/get-mapping": {
       "get": {
-        "externalDocs": {
-          "description": "external doc description",
-          "url": "http://some-url",
-          "x-extension1": {
-            "property2": "value2",
-            "property1": "value1"
-          }
-        },
-        "operationId": "getMappingOperation3",
+        "operationId": "getMappingReturnString",
         "responses": {
           "200": {
             "description": "Default response",
@@ -185,31 +198,7 @@
         "operationId": "postMapping",
         "responses": {
           "201": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/simple/delete-mapping": {
-      "delete": {
-        "operationId": "deleteMapping",
-        "responses": {
-          "204": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
+            "description": "Default response"
           }
         }
       }
@@ -219,31 +208,7 @@
         "operationId": "putMapping",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/simple/get-mapping": {
-      "get": {
-        "operationId": "getMappingReturnString",
-        "responses": {
-          "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "description": "Default response"
           }
         }
       }

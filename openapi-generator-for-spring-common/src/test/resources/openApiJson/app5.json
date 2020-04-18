@@ -1,24 +1,6 @@
 {
   "openapi": "3.0.1",
   "paths": {
-    "/get4": {
-      "get": {
-        "operationId": "getMappingWithOptionalString",
-        "responses": {
-          "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string",
-                  "nullable": true
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/get1": {
       "get": {
         "operationId": "getMappingWithString",
@@ -29,6 +11,30 @@
               "*/*": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get2": {
+      "get": {
+        "operationId": "getMappingWithSimpleDto",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "property1": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "description": "global description"
                 }
               }
             }
@@ -89,6 +95,24 @@
         }
       }
     },
+    "/get4": {
+      "get": {
+        "operationId": "getMappingWithOptionalString",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/get5": {
       "get": {
         "operationId": "getMappingReturnsObject",
@@ -99,30 +123,6 @@
               "*/*": {
                 "schema": {
                   "type": "object"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/get2": {
-      "get": {
-        "operationId": "getMappingWithSimpleDto",
-        "responses": {
-          "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "property1": {
-                      "type": "string",
-                      "nullable": true
-                    }
-                  },
-                  "description": "global description"
                 }
               }
             }
