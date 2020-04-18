@@ -44,10 +44,8 @@
           {
             "name": "someStringParam1",
             "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "description": "Description for String parameter",
+            "required": true
           },
           {
             "name": "someStringParam2",

@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,7 +22,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildMapFromArray;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -38,11 +38,19 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
     public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
                                                io.swagger.v3.oas.annotations.Operation operationAnnotation) {
 
-        Map<String, io.swagger.v3.oas.annotations.Parameter> parameterAnnotationMap = buildMapFromArray(
-                operationAnnotation.parameters(),
-                io.swagger.v3.oas.annotations.Parameter::name,
-                x -> x
-        );
+        Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
+        AnnotationsSupplier methodAnnotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(method);
+
+        Map<String, io.swagger.v3.oas.annotations.Parameter> parameterAnnotationMap = Stream.concat(
+                Arrays.stream(operationAnnotation.parameters()),
+                methodAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.Parameter.class)
+        )
+                .collect(Collectors.toMap(
+                        io.swagger.v3.oas.annotations.Parameter::name,
+                        x -> x,
+                        // TODO investigate merge conflicts even for simple, probably annotation finding isn't completely correct (see TODO there)
+                        (a, b) -> a
+                ));
 
         List<Parameter> parameters = new ArrayList<>();
 
