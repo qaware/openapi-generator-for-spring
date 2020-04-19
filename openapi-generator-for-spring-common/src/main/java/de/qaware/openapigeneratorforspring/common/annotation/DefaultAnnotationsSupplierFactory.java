@@ -2,13 +2,14 @@ package de.qaware.openapigeneratorforspring.common.annotation;
 
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.AnnotationFilter;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.RepeatableContainers;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -44,20 +45,23 @@ public class DefaultAnnotationsSupplierFactory implements AnnotationsSupplierFac
 
         public AnnotationsSupplierFromAnnotatedElement(AnnotatedElement annotatedElement) {
             this.annotatedElement = annotatedElement;
-            this.mergedAnnotations = MergedAnnotations.from(annotatedElement, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY, RepeatableContainers.none());
+            this.mergedAnnotations = MergedAnnotations.from(
+                    annotatedElement,
+                    MergedAnnotations.SearchStrategy.TYPE_HIERARCHY,
+                    RepeatableContainers.standardRepeatables(),
+                    AnnotationFilter.NONE // broken, see https://github.com/spring-projects/spring-framework/issues/24932
+            );
         }
 
         @Override
         public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
-            // TODO investigate why explicitly finding this annotation might return something while
-            // the approach via mergedAnnotations doesn't
-            Stream<A> annotationOnMethod = Optional.ofNullable(AnnotationUtils.findAnnotation(annotatedElement, annotationType))
-                    .map(Stream::of)
-                    .orElse(Stream.empty());
-            return Stream.concat(
-                    annotationOnMethod,
-                    mergedAnnotations.stream(annotationType).map(MergedAnnotation::synthesize)
-            );
+            if (AnnotationFilter.PLAIN.matches(annotationType)) {
+                // This specialized treatment can be
+                // removed once https://github.com/spring-projects/spring-framework/issues/24932 is fixed
+                return Arrays.stream(annotatedElement.getAnnotationsByType(annotationType));
+            } else {
+                return mergedAnnotations.stream(annotationType).map(MergedAnnotation::synthesize);
+            }
         }
     }
 }

@@ -47,9 +47,7 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
         )
                 .collect(Collectors.toMap(
                         io.swagger.v3.oas.annotations.Parameter::name,
-                        x -> x,
-                        // TODO investigate merge conflicts even for simple, probably annotation finding isn't completely correct (see TODO there)
-                        (a, b) -> a
+                        x -> x
                 ));
 
         List<Parameter> parameters = new ArrayList<>();
