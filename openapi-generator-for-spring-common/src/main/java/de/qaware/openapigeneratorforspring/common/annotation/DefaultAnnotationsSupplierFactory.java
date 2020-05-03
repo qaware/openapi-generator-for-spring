@@ -48,16 +48,15 @@ public class DefaultAnnotationsSupplierFactory implements AnnotationsSupplierFac
             this.mergedAnnotations = MergedAnnotations.from(
                     annotatedElement,
                     MergedAnnotations.SearchStrategy.TYPE_HIERARCHY,
-                    RepeatableContainers.standardRepeatables(),
-                    AnnotationFilter.NONE // broken, see https://github.com/spring-projects/spring-framework/issues/24932
+                    RepeatableContainers.standardRepeatables()
             );
         }
 
         @Override
         public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
             if (AnnotationFilter.PLAIN.matches(annotationType)) {
-                // This specialized treatment can be
-                // removed once https://github.com/spring-projects/spring-framework/issues/24932 is fixed
+                // PLAIN annotations are ignored by merged annotations API, see
+                // https://github.com/spring-projects/spring-framework/issues/24932
                 return Arrays.stream(annotatedElement.getAnnotationsByType(annotationType));
             } else {
                 return mergedAnnotations.stream(annotationType).map(MergedAnnotation::synthesize);
