@@ -59,9 +59,10 @@ import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseCodeMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseCodeMapper;
+import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOperationApiResponseFromMethodCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOperationResponseCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.response.MethodResponseApiResponseCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponseCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponseFromMethodCustomizer;
 import de.qaware.openapigeneratorforspring.common.paths.DefaultPathsBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProviderFromWebMvc;
@@ -216,11 +217,11 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MethodResponseApiResponseCustomizer methodResponseApiResponseCustomizer(
+    public OperationApiResponseFromMethodCustomizer methodResponseApiResponseCustomizer(
             DefaultApiResponseCodeMapper defaultApiResponseCodeMapper, SchemaResolver schemaResolver,
             AnnotationsSupplierFactory annotationsSupplierFactory
     ) {
-        return new MethodResponseApiResponseCustomizer(defaultApiResponseCodeMapper, schemaResolver, annotationsSupplierFactory);
+        return new DefaultOperationApiResponseFromMethodCustomizer(defaultApiResponseCodeMapper, schemaResolver, annotationsSupplierFactory);
     }
 
     @Bean

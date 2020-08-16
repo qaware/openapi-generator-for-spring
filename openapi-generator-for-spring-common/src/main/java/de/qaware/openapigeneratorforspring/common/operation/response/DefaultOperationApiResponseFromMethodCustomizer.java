@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class MethodResponseApiResponseCustomizer implements OperationApiResponseCustomizer, Ordered {
+public class DefaultOperationApiResponseFromMethodCustomizer implements Ordered, OperationApiResponseFromMethodCustomizer {
 
     public static final int ORDER = Ordered.LOWEST_PRECEDENCE - 1000;
 
