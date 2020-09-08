@@ -65,7 +65,6 @@ import de.qaware.openapigeneratorforspring.common.operation.response.OperationAp
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponseFromMethodCustomizer;
 import de.qaware.openapigeneratorforspring.common.paths.DefaultPathsBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
-import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProviderFromWebMvc;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
 import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceNameFactory;
@@ -93,7 +92,6 @@ import io.swagger.v3.core.util.Json;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.List;
 
@@ -132,13 +130,6 @@ public class OpenApiGeneratorAutoConfiguration {
             OperationIdConflictResolver operationIdConflictResolver
     ) {
         return new DefaultPathsBuilder(handlerMethodsProvider, operationBuilder, pathItemFilters, operationFilters, operationIdConflictResolver);
-    }
-
-
-    // TODO extract this to maven module with Spring Web MVC dependency?
-    @Bean
-    public HandlerMethodsProvider handlerMethodsProviderFromWebMvc(RequestMappingHandlerMapping requestMappingHandlerMapping) {
-        return new HandlerMethodsProviderFromWebMvc(requestMappingHandlerMapping);
     }
 
     @Bean

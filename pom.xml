@@ -29,10 +29,37 @@
 
     <modules>
         <module>openapi-generator-for-spring-common</module>
+        <module>openapi-generator-for-spring-webmvc</module>
+        <module>openapi-generator-for-spring-webflux</module>
+        <module>openapi-generator-for-spring-autoconfigure</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <artifactId>openapi-generator-for-spring-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <artifactId>openapi-generator-for-spring-webmvc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <artifactId>openapi-generator-for-spring-webflux</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <artifactId>openapi-generator-for-spring-autoconfigure</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- swagger dependencies -->
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>

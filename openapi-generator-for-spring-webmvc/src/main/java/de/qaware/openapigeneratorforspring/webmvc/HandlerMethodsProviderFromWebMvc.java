@@ -1,5 +1,7 @@
-package de.qaware.openapigeneratorforspring.common.paths;
+package de.qaware.openapigeneratorforspring.webmvc;
 
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodWithInfo;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 

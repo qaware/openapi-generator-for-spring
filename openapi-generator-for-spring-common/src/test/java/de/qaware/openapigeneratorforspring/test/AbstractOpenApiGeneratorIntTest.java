@@ -1,5 +1,7 @@
 package de.qaware.openapigeneratorforspring.test;
 
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodWithInfo;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,13 +9,18 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -21,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
+@Import(AbstractOpenApiGeneratorIntTest.TestConfig.class)
 public abstract class AbstractOpenApiGeneratorIntTest {
 
     private static final String RESOURCE_PATH_PREFIX = "/openApiJson/";
@@ -50,6 +58,22 @@ public abstract class AbstractOpenApiGeneratorIntTest {
                 throw new IllegalArgumentException("Unable to find resource '" + path + "'");
             }
             return IOUtils.toString(stream, StandardCharsets.UTF_8);
+        }
+    }
+
+    @TestConfiguration
+    static class TestConfig {
+
+        // TODO Remove this once WebMVC is also separated for int tests
+        @Bean
+        public HandlerMethodsProvider handlerMethodsProviderFromWebMvc(RequestMappingHandlerMapping requestMappingHandlerMapping) {
+            return () -> requestMappingHandlerMapping.getHandlerMethods().entrySet().stream()
+                    .map(entry -> new HandlerMethodWithInfo(
+                            entry.getValue(),
+                            entry.getKey().getPatternsCondition().getPatterns(),
+                            entry.getKey().getMethodsCondition().getMethods()
+                    ))
+                    .collect(Collectors.toList());
         }
     }
 }
