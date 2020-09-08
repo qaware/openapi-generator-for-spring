@@ -8,7 +8,6 @@ import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
@@ -20,6 +19,7 @@ import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.mergeWithExistingMap;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
 @RequiredArgsConstructor
 public class DefaultOperationResponseCustomizer implements OperationCustomizer {
@@ -87,12 +87,12 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
         apiResponseAnnotations.forEachOrdered(annotation -> {
             String responseCode = apiResponseCodeMapper.map(annotation, operationBuilderContext);
             ApiResponse apiResponse = apiResponses.computeIfAbsent(responseCode, ignored -> new ApiResponse());
-            OpenApiStringUtils.setStringIfNotBlank(annotation.description(), apiResponse::setDescription);
+            setStringIfNotBlank(annotation.description(), apiResponse::setDescription);
             mergeWithExistingMap(apiResponse::getHeaders, apiResponse::setHeaders, headerAnnotationMapper.mapArray(annotation.headers(), operationBuilderContext.getReferencedSchemaConsumer()));
             mergeWithExistingMap(apiResponse::getLinks, apiResponse::setLinks, linkAnnotationMapper.mapArray(annotation.links()));
             mergeWithExistingMap(apiResponse::getContent, apiResponse::setContent, contentAnnotationMapper.mapArray(annotation.content(), operationBuilderContext.getReferencedSchemaConsumer()));
             mergeWithExistingMap(apiResponse::getExtensions, apiResponse::setExtensions, extensionAnnotationMapper.mapArray(annotation.extensions()));
-            OpenApiStringUtils.setStringIfNotBlank(annotation.ref(), apiResponse::set$ref);
+            setStringIfNotBlank(annotation.ref(), apiResponse::set$ref);
         });
         return apiResponses;
     }
