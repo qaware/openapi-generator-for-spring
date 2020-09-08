@@ -11,7 +11,7 @@
               "*/*": {
                 "schema": {
                   "type": "string",
-                  "format": "ISO8601"
+                  "format": "date-time"
                 }
               }
             }
@@ -29,7 +29,7 @@
               "*/*": {
                 "schema": {
                   "type": "string",
-                  "format": "ISO8601"
+                  "format": "date-time"
                 }
               }
             }

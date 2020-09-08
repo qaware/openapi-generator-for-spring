@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "openapi-generator-for-spring.schema.type.java8.time",
+      "defaultValue": "ISO8601"
+    }
+  ]
+}

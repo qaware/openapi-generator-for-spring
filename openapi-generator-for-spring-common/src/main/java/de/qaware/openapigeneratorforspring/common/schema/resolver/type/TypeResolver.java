@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 /**
  * Generic type resolver for {@link DefaultSchemaResolver}. Enables full
  * control the recursive resolution of {@link Schema}s. See also {@link
- * AbstractTypeResolver} for non-recursive schema resolution from type.
+ * SimpleTypeResolver} for non-recursive schema resolution from type.
  */
 @SuppressWarnings("squid:S1214") // suppress warning about constant in interface
 public interface TypeResolver extends Ordered {

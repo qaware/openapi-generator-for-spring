@@ -26,7 +26,8 @@ import java.util.List;
 @Import({
         OpenApiGeneratorAnnotationAutoConfiguration.class,
         OpenApiGeneratorUtilAutoConfiguration.class,
-        OpenApiGeneratorSchemaMapperFactoryAutoConfiguration.class
+        OpenApiGeneratorSchemaMapperFactoryAutoConfiguration.class,
+        OpenApiGeneratorSchemaTypeExtensionAutoConfiguration.class
 })
 public class OpenApiGeneratorSchemaAutoConfiguration {
 

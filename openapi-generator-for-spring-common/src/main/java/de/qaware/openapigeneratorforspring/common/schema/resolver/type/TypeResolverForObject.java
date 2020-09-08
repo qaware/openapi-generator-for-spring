@@ -7,13 +7,13 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.I
 
 import javax.annotation.Nullable;
 
-public class TypeResolverForObject extends AbstractTypeResolver {
+public class TypeResolverForObject implements SimpleTypeResolver {
 
     public static final int ORDER = DEFAULT_ORDER;
 
     @Nullable
     @Override
-    protected Schema resolveSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+    public Schema resolveSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
         if (javaType.getRawClass().equals(Object.class)) {
             // accept object schema without any properties as fallback here
             return InitialTypeResolverForObject.OBJECT_SCHEMA_SUPPLIER.get();

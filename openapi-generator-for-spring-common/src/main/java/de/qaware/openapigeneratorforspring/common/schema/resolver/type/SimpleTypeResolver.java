@@ -12,10 +12,10 @@ import java.util.function.Consumer;
  * Simple type resolver hiding away the recursive nature of {@link TypeResolver}
  * by requiring only {@link #resolveSchemaFromType} to be implemented.
  */
-public abstract class AbstractTypeResolver implements TypeResolver {
+public interface SimpleTypeResolver extends TypeResolver {
 
     @Override
-    public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
+    default boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
         Schema schema = resolveSchemaFromType(javaType, annotationsSupplier);
         if (schema != null) {
             schemaConsumer.accept(schema);
@@ -25,5 +25,5 @@ public abstract class AbstractTypeResolver implements TypeResolver {
     }
 
     @Nullable
-    protected abstract Schema resolveSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier);
+    Schema resolveSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier);
 }
