@@ -20,6 +20,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- TODO replace with swagger-annotations -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-core</artifactId>

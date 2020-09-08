@@ -41,6 +41,7 @@ public class OpenApiGenerator {
 
         Map<ReferenceName, Schema> referencedSchemas = referencedSchemaStorage.buildReferencedSchemas();
 
+        // TODO fill other referenced stuff, not just schemas
         if (!referencedSchemas.isEmpty()) {
             Components components = new Components();
             Map<String, io.swagger.v3.oas.models.media.Schema> componentsSchemas = referencedSchemas.entrySet().stream()
