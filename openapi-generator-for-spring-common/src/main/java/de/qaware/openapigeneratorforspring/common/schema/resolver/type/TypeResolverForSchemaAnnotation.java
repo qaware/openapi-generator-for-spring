@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
-public class GenericTypeResolverForSchemaAnnotation implements GenericTypeResolver {
+public class TypeResolverForSchemaAnnotation implements TypeResolver {
 
     // make it higher than others to prefer annotation implementation type
     public static final int ORDER = DEFAULT_ORDER - 100;

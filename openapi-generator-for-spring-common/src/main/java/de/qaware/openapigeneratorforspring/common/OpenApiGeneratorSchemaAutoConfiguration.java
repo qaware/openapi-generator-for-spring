@@ -8,14 +8,14 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaN
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.GenericTypeResolver;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.GenericTypeResolverForCollections;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.GenericTypeResolverForObject;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.GenericTypeResolverForReferenceType;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.GenericTypeResolverForSchemaAnnotation;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.SimpleTypeResolver;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.SimpleTypeResolverForObject;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.SimpleTypeResolverForPrimitiveTypes;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollections;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForObject;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForReferenceType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForSchemaAnnotation;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolverForObject;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolverForPrimitiveTypes;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -36,55 +36,55 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
             OpenApiObjectMapperSupplier openApiObjectMapperSupplier,
             SchemaAnnotationMapperFactory schemaAnnotationMapperFactory,
             AnnotationsSupplierFactory annotationsSupplierFactory,
-            List<GenericTypeResolver> genericTypeResolvers,
-            List<SimpleTypeResolver> simpleTypeResolvers,
+            List<TypeResolver> typeResolvers,
+            List<InitialTypeResolver> initialTypeResolvers,
             List<SchemaCustomizer> schemaCustomizers
     ) {
         return new DefaultSchemaResolver(
                 openApiObjectMapperSupplier, schemaAnnotationMapperFactory, annotationsSupplierFactory,
-                genericTypeResolvers, simpleTypeResolvers, schemaCustomizers
+                typeResolvers, initialTypeResolvers, schemaCustomizers
         );
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public GenericTypeResolverForCollections defaultGenericTypeResolverForCollections() {
-        return new GenericTypeResolverForCollections();
+    public TypeResolverForCollections defaultGenericTypeResolverForCollections() {
+        return new TypeResolverForCollections();
     }
 
 
     @Bean
     @ConditionalOnMissingBean
-    public GenericTypeResolverForReferenceType defaultGenericTypeResolverForReferenceType() {
-        return new GenericTypeResolverForReferenceType();
+    public TypeResolverForReferenceType defaultGenericTypeResolverForReferenceType() {
+        return new TypeResolverForReferenceType();
     }
 
 
     @Bean
     @ConditionalOnMissingBean
-    public GenericTypeResolverForObject defaultGenericTypeResolverForObject() {
-        return new GenericTypeResolverForObject();
+    public TypeResolverForObject defaultGenericTypeResolverForObject() {
+        return new TypeResolverForObject();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public GenericTypeResolverForSchemaAnnotation defaultGenericTypeResolverForSchemaAnnotation(
+    public TypeResolverForSchemaAnnotation defaultGenericTypeResolverForSchemaAnnotation(
             OpenApiObjectMapperSupplier openApiObjectMapperSupplier,
             AnnotationsSupplierFactory annotationsSupplierFactory
     ) {
-        return new GenericTypeResolverForSchemaAnnotation(openApiObjectMapperSupplier, annotationsSupplierFactory);
+        return new TypeResolverForSchemaAnnotation(openApiObjectMapperSupplier, annotationsSupplierFactory);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public SimpleTypeResolverForPrimitiveTypes defaultSimpleTypeResolverForPrimitiveTypes() {
-        return new SimpleTypeResolverForPrimitiveTypes();
+    public InitialTypeResolverForPrimitiveTypes defaultSimpleTypeResolverForPrimitiveTypes() {
+        return new InitialTypeResolverForPrimitiveTypes();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public SimpleTypeResolverForObject defaultSimpleTypeResolverForObject(SchemaNameFactory schemaNameFactory) {
-        return new SimpleTypeResolverForObject(schemaNameFactory);
+    public InitialTypeResolverForObject defaultSimpleTypeResolverForObject(SchemaNameFactory schemaNameFactory) {
+        return new InitialTypeResolverForObject(schemaNameFactory);
     }
 
     @Bean

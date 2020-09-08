@@ -4,27 +4,27 @@ import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaBuilderFromType;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.GenericTypeResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.util.function.Consumer;
 
 @Component
-public class InstantGenericTypeResolver implements GenericTypeResolver {
-
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-
+public class ResponseEntityTypeResolver implements TypeResolver {
     @Override
     public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
-        if (javaType.getRawClass().equals(Instant.class)) {
-            schemaConsumer.accept(new Schema().type("string").format("ISO8601"));
+        if (javaType.getRawClass().equals(ResponseEntity.class)) {
+            JavaType containedType = javaType.containedType(0);
+            schemaBuilderFromType.buildSchemaFromType(containedType, annotationsSupplier, schemaConsumer);
             return true;
         } else {
             return false;
         }
+    }
+
+    @Override
+    public int getOrder() {
+        return DEFAULT_ORDER;
     }
 }

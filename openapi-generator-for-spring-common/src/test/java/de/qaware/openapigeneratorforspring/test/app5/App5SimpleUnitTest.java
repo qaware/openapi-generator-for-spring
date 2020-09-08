@@ -20,12 +20,12 @@ import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSch
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.GenericTypeResolverForCollections;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.GenericTypeResolverForObject;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.GenericTypeResolverForReferenceType;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.GenericTypeResolverForSchemaAnnotation;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.SimpleTypeResolverForObject;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.SimpleTypeResolverForPrimitiveTypes;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollections;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForObject;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForReferenceType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForSchemaAnnotation;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolverForObject;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolverForPrimitiveTypes;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.converter.ResolvedSchema;
@@ -94,14 +94,14 @@ public class App5SimpleUnitTest {
                 annotationsSupplierFactory,
                 // order is important here
                 Arrays.asList(
-                        new GenericTypeResolverForSchemaAnnotation(() -> MAPPER, annotationsSupplierFactory),
-                        new GenericTypeResolverForCollections(),
-                        new GenericTypeResolverForReferenceType(),
-                        new GenericTypeResolverForObject()
+                        new TypeResolverForSchemaAnnotation(() -> MAPPER, annotationsSupplierFactory),
+                        new TypeResolverForCollections(),
+                        new TypeResolverForReferenceType(),
+                        new TypeResolverForObject()
                 ),
                 Arrays.asList(
-                        new SimpleTypeResolverForPrimitiveTypes(),
-                        new SimpleTypeResolverForObject(new DefaultSchemaNameFactory())
+                        new InitialTypeResolverForPrimitiveTypes(),
+                        new InitialTypeResolverForObject(new DefaultSchemaNameFactory())
                 ),
                 Arrays.asList(new SchemaCustomizerForNullable())
         );

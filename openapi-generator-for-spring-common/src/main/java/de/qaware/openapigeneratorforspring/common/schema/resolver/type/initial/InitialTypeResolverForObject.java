@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
+package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
-public class SimpleTypeResolverForObject implements SimpleTypeResolver {
+public class InitialTypeResolverForObject implements InitialTypeResolver {
 
     public static final Supplier<Schema> OBJECT_SCHEMA_SUPPLIER = () -> new Schema().type("object");
 

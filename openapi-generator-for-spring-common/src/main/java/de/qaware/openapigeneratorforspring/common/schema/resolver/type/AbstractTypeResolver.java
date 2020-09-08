@@ -5,24 +5,25 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaBuilderFromType;
 
+import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-public class GenericTypeResolverForObject implements GenericTypeResolver {
-
-    public static final int ORDER = DEFAULT_ORDER;
+/**
+ * Simple type resolver hiding away the recursive nature of {@link TypeResolver}
+ * by requiring only {@link #resolveSchemaFromType} to be implemented.
+ */
+public abstract class AbstractTypeResolver implements TypeResolver {
 
     @Override
     public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
-        if (javaType.getRawClass().equals(Object.class)) {
-            // accept object schema without any properties as fallback here
-            schemaConsumer.accept(SimpleTypeResolverForObject.OBJECT_SCHEMA_SUPPLIER.get());
+        Schema schema = resolveSchemaFromType(javaType, annotationsSupplier);
+        if (schema != null) {
+            schemaConsumer.accept(schema);
             return true;
         }
         return false;
     }
 
-    @Override
-    public int getOrder() {
-        return ORDER;
-    }
+    @Nullable
+    protected abstract Schema resolveSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier);
 }

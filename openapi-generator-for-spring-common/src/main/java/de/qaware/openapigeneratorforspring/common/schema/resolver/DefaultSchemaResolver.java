@@ -11,8 +11,8 @@ import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustom
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.GenericTypeResolver;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.SimpleTypeResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import lombok.RequiredArgsConstructor;
 
@@ -34,8 +34,8 @@ public class DefaultSchemaResolver implements SchemaResolver {
     private final OpenApiObjectMapperSupplier openApiObjectMapperSupplier;
     private final SchemaAnnotationMapperFactory schemaAnnotationMapperFactory;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
-    private final List<GenericTypeResolver> genericTypeResolvers;
-    private final List<SimpleTypeResolver> simpleTypeResolvers;
+    private final List<TypeResolver> typeResolvers;
+    private final List<InitialTypeResolver> initialTypeResolvers;
     private final List<SchemaCustomizer> schemaCustomizers;
 
     @Override
@@ -64,8 +64,8 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
         @Override
         public void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer) {
-            for (GenericTypeResolver genericTypeResolver : genericTypeResolvers) {
-                if (genericTypeResolver.resolveFromType(javaType, annotationsSupplier, this, schemaConsumer)) {
+            for (TypeResolver typeResolver : typeResolvers) {
+                if (typeResolver.resolveFromType(javaType, annotationsSupplier, this, schemaConsumer)) {
                     return;
                 }
             }
@@ -103,8 +103,8 @@ public class DefaultSchemaResolver implements SchemaResolver {
         }
 
         private Schema getSchemaFromSimpleTypeResolvers(JavaType javaType) {
-            for (SimpleTypeResolver simpleTypeResolver : simpleTypeResolvers) {
-                Schema resolvedSchema = simpleTypeResolver.resolveFromType(javaType);
+            for (InitialTypeResolver initialTypeResolver : initialTypeResolvers) {
+                Schema resolvedSchema = initialTypeResolver.resolveFromType(javaType);
                 if (resolvedSchema != null) {
                     return resolvedSchema;
                 }

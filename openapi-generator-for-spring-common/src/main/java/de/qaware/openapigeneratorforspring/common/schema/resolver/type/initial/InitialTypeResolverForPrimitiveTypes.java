@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
+package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class SimpleTypeResolverForPrimitiveTypes implements SimpleTypeResolver {
+public class InitialTypeResolverForPrimitiveTypes implements InitialTypeResolver {
 
     public static final int ORDER = DEFAULT_ORDER;
 

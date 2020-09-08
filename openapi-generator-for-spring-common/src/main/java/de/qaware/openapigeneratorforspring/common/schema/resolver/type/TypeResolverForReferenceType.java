@@ -7,7 +7,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaBuilderF
 
 import java.util.function.Consumer;
 
-public class GenericTypeResolverForReferenceType implements GenericTypeResolver {
+public class TypeResolverForReferenceType implements TypeResolver {
 
     public static final int ORDER = DEFAULT_ORDER;
 
