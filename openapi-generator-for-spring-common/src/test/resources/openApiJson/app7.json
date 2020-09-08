@@ -1,0 +1,52 @@
+{
+  "openapi": "3.0.1",
+  "paths": {
+    "/simple/delete-mapping": {
+      "delete": {
+        "operationId": "deleteMapping",
+        "responses": {
+          "204": {
+            "description": "Default response"
+          }
+        }
+      }
+    },
+    "/simple/get-mapping": {
+      "get": {
+        "operationId": "getMappingReturnString",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simple/post-mapping": {
+      "post": {
+        "operationId": "postMapping",
+        "responses": {
+          "201": {
+            "description": "Default response"
+          }
+        }
+      }
+    },
+    "/simple/put-mapping": {
+      "put": {
+        "operationId": "putMapping",
+        "responses": {
+          "200": {
+            "description": "Default response"
+          }
+        }
+      }
+    }
+  }
+}
