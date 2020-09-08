@@ -1,0 +1,41 @@
+{
+  "openapi": "3.0.1",
+  "paths": {
+    "/simple/get-instant": {
+      "get": {
+        "operationId": "getMappingReturnString",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "ISO8601"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simple/get-response-entity-instant": {
+      "get": {
+        "operationId": "getResponseEntityOfInstant",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "ISO8601"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
