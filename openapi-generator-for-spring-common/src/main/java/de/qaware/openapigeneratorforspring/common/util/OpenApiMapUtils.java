@@ -1,5 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -8,11 +11,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OpenApiMapUtils {
-
-    private OpenApiMapUtils() {
-        // static methods only
-    }
 
     public static <M extends Map<K, V>, K, V> void mergeWithExistingMap(Supplier<? extends M> getter, Consumer<? super M> setter, M toBeMerged) {
         M existingMap = getter.get();

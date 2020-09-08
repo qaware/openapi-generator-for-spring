@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common;
 
+import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
@@ -13,7 +14,8 @@ import org.springframework.context.annotation.Import;
 @Import({
         OpenApiGeneratorReferenceAutoConfiguration.class,
         OpenApiGeneratorPathsAutoConfiguration.class,
-        OpenApiGeneratorUtilAutoConfiguration.class
+        OpenApiGeneratorUtilAutoConfiguration.class,
+        OpenApiGeneratorInfoAutoConfiguration.class
 })
 public class OpenApiGeneratorAutoConfiguration {
 
@@ -27,11 +29,13 @@ public class OpenApiGeneratorAutoConfiguration {
     @ConditionalOnMissingBean
     public OpenApiGenerator openApiGenerator(
             PathsBuilder pathsBuilder,
+            OpenApiInfoSupplier openApiInfoSupplier,
             ReferenceNameFactory referenceNameFactory,
             ReferenceNameConflictResolver referenceNameConflictResolver
     ) {
         return new OpenApiGenerator(
                 pathsBuilder,
+                openApiInfoSupplier,
                 referenceNameFactory,
                 referenceNameConflictResolver
         );

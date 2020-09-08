@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.CONFIG_PROPERTIES_PREFIX;
 
-@ConfigurationProperties(CONFIG_PROPERTIES_PREFIX + "schema.type.java8.time")
+@ConfigurationProperties(CONFIG_PROPERTIES_PREFIX + ".schema.type.java8.time")
 @Getter
 @Setter
 public class Java8TimeTypeResolverConfigurationProperties {

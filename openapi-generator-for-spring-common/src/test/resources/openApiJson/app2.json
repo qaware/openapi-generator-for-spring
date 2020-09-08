@@ -1,5 +1,9 @@
 {
   "openapi": "3.0.1",
+  "info": {
+    "title": "API for App2",
+    "version": "unknown"
+  },
   "paths": {
     "/all-deprecated/get-mapping": {
       "get": {

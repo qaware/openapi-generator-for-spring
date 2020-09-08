@@ -1,5 +1,9 @@
 {
   "openapi": "3.0.1",
+  "info": {
+    "title": "API for App3",
+    "version": "unknown"
+  },
   "paths": {
     "/v1/post-mapping": {
       "post": {

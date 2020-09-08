@@ -5,5 +5,5 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OpenApiConstants {
-    public static final String CONFIG_PROPERTIES_PREFIX = "openapi-generator-for-spring.";
+    public static final String CONFIG_PROPERTIES_PREFIX = "openapi-generator-for-spring";
 }

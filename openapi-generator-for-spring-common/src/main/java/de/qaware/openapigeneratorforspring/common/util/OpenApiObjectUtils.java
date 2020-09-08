@@ -2,16 +2,15 @@ package de.qaware.openapigeneratorforspring.common.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class OpenApiStringUtils {
+public class OpenApiObjectUtils {
 
-    public static boolean setStringIfNotBlank(@Nullable String value, Consumer<String> setter) {
-        if (StringUtils.isNotBlank(value)) {
+    public static <T> boolean setIfNotNull(@Nullable T value, Consumer<T> setter) {
+        if (value != null) {
             setter.accept(value);
             return true;
         }

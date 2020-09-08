@@ -1,5 +1,9 @@
 {
   "openapi": "3.0.1",
+  "info": {
+    "title": "API for App5",
+    "version": "unknown"
+  },
   "paths": {
     "/get1": {
       "get": {

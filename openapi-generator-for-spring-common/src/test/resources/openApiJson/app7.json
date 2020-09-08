@@ -1,5 +1,9 @@
 {
   "openapi": "3.0.1",
+  "info": {
+    "title": "API for App7",
+    "version": "unknown"
+  },
   "paths": {
     "/simple/delete-mapping": {
       "delete": {

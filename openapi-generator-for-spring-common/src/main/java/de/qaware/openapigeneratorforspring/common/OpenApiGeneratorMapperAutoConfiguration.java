@@ -1,10 +1,14 @@
 package de.qaware.openapigeneratorforspring.common;
 
+import de.qaware.openapigeneratorforspring.common.mapper.ContactAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ContentAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultContactAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultContentAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultEncodingAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultExampleObjectAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultHeaderAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultInfoAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultLicenseAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkParameterAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerAnnotationMapper;
@@ -13,6 +17,8 @@ import de.qaware.openapigeneratorforspring.common.mapper.EncodingAnnotationMappe
 import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.InfoAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.LicenseAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkParameterAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
@@ -109,5 +115,32 @@ public class OpenApiGeneratorMapperAutoConfiguration {
             ExtensionAnnotationMapper extensionAnnotationMapper
     ) {
         return new DefaultEncodingAnnotationMapper(headerAnnotationMapper, extensionAnnotationMapper);
+    }
+
+
+    @Bean
+    @ConditionalOnMissingBean
+    public InfoAnnotationMapper defaultInfoAnnotationMapper(
+            ContactAnnotationMapper contactAnnotationMapper,
+            LicenseAnnotationMapper licenseAnnotationMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper
+    ) {
+        return new DefaultInfoAnnotationMapper(contactAnnotationMapper, licenseAnnotationMapper, extensionAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ContactAnnotationMapper defaultContactAnnotationMapper(
+            ExtensionAnnotationMapper extensionAnnotationMapper
+    ) {
+        return new DefaultContactAnnotationMapper(extensionAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public LicenseAnnotationMapper defaultLicenseAnnotationMapper(
+            ExtensionAnnotationMapper extensionAnnotationMapper
+    ) {
+        return new DefaultLicenseAnnotationMapper(extensionAnnotationMapper);
     }
 }

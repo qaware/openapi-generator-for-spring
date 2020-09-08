@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common;
 
+import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolver;
@@ -22,6 +23,7 @@ public class OpenApiGenerator {
 
 
     private final PathsBuilder pathsBuilder;
+    private final OpenApiInfoSupplier openApiInfoSupplier;
 
     private final ReferenceNameFactory referenceNameFactory;
     private final ReferenceNameConflictResolver referenceNameConflictResolver;
@@ -35,9 +37,9 @@ public class OpenApiGenerator {
         Paths paths = pathsBuilder.buildPaths(referencedSchemaConsumer);
 
         OpenAPI openApi = new OpenAPI();
-        if (!paths.isEmpty()) {
-            openApi.setPaths(paths);
-        }
+
+        openApi.setPaths(paths); // always set paths, even if empty to comply with spec
+        openApi.setInfo(openApiInfoSupplier.get());
 
         Map<ReferenceName, Schema> referencedSchemas = referencedSchemaStorage.buildReferencedSchemas();
 
