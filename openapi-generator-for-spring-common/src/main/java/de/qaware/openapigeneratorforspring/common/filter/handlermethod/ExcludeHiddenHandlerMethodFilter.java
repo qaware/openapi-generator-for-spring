@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.filter.operation;
+package de.qaware.openapigeneratorforspring.common.filter.handlermethod;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -9,12 +9,12 @@ import org.springframework.web.method.HandlerMethod;
 import java.lang.reflect.Method;
 
 @RequiredArgsConstructor
-public class ExcludeHiddenOperationFilter implements OperationFilter {
+public class ExcludeHiddenHandlerMethodFilter implements HandlerMethodFilter {
 
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
-    public boolean accept(io.swagger.v3.oas.models.Operation operation, HandlerMethod handlerMethod) {
+    public boolean accept(HandlerMethod handlerMethod) {
         Method method = handlerMethod.getMethod();
         Hidden hiddenOnMethodOrClass = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method)
                 .findFirstAnnotation(Hidden.class);

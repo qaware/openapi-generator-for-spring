@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.paths;
 
+import de.qaware.openapigeneratorforspring.common.filter.handlermethod.HandlerMethodFilter;
 import de.qaware.openapigeneratorforspring.common.filter.operation.OperationFilter;
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
@@ -29,6 +30,7 @@ public class DefaultPathsBuilder implements PathsBuilder {
     private final HandlerMethodsProvider handlerMethodsProvider;
     private final OperationBuilder operationBuilder;
     private final List<PathItemFilter> pathItemFilters;
+    private final List<HandlerMethodFilter> handlerMethodFilters;
     private final List<OperationFilter> operationFilters;
     private final OperationIdConflictResolver operationIdConflictResolver;
 
@@ -52,6 +54,9 @@ public class DefaultPathsBuilder implements PathsBuilder {
                     HandlerMethodWithInfo handlerMethodWithInfo = item.getRight();
                     HandlerMethod handlerMethod = handlerMethodWithInfo.getHandlerMethod();
                     PathItem pathItem = new PathItem();
+                    if (isNotAcceptedByAllHandlerMethodFilters(handlerMethod)) {
+                        return;
+                    }
                     Set<RequestMethod> requestMethods = handlerMethodWithInfo.getRequestMethods();
                     Map<RequestMethod, Operation> operationPerMethod = new EnumMap<>(RequestMethod.class);
                     MultiValueMap<String, OperationWithInfo> operationsByIdPerPathItem = new LinkedMultiValueMap<>();
@@ -85,6 +90,15 @@ public class DefaultPathsBuilder implements PathsBuilder {
 
 
         return paths;
+    }
+
+    private boolean isNotAcceptedByAllHandlerMethodFilters(HandlerMethod handlerMethod) {
+        for (HandlerMethodFilter handlerMethodFilter : handlerMethodFilters) {
+            if (!handlerMethodFilter.accept(handlerMethod)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isAcceptedByAllOperationFilters(Operation operation, HandlerMethod handlerMethod) {

@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common;
 
+import de.qaware.openapigeneratorforspring.common.filter.handlermethod.HandlerMethodFilter;
 import de.qaware.openapigeneratorforspring.common.filter.operation.OperationFilter;
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
@@ -26,8 +27,9 @@ public class OpenApiGeneratorPathsAutoConfiguration {
             OperationBuilder operationBuilder,
             List<PathItemFilter> pathItemFilters,
             List<OperationFilter> operationFilters,
+            List<HandlerMethodFilter> handlerMethodFilters,
             OperationIdConflictResolver operationIdConflictResolver
     ) {
-        return new DefaultPathsBuilder(handlerMethodsProvider, operationBuilder, pathItemFilters, operationFilters, operationIdConflictResolver);
+        return new DefaultPathsBuilder(handlerMethodsProvider, operationBuilder, pathItemFilters, handlerMethodFilters, operationFilters, operationIdConflictResolver);
     }
 }
