@@ -5,13 +5,15 @@ import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotation
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
+import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiEnumUtils.findEnumByToString;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIf;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
 @RequiredArgsConstructor
@@ -47,7 +49,7 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
         if (annotation.allowEmptyValue()) {
             parameter.setAllowEmptyValue(true);
         }
-        setStringIfNotBlank(annotation.style().toString(), style -> parameter.setStyle(getStyleEnum(style)));
+        setIf(annotation.style(), style -> style != ParameterStyle.DEFAULT, style -> parameter.setStyle(findEnumByToString(style, Parameter.StyleEnum.class)));
         if (annotation.allowReserved()) {
             parameter.setAllowReserved(true);
         }
@@ -58,12 +60,5 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
         setStringIfNotBlank(annotation.example(), parameter::setExample);
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(annotation.extensions()), parameter::setExtensions);
         setStringIfNotBlank(annotation.ref(), parameter::set$ref);
-    }
-
-    private Parameter.StyleEnum getStyleEnum(String style) {
-        return Arrays.stream(Parameter.StyleEnum.values())
-                .filter(styleEnum -> styleEnum.toString().equals(style))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No StyleEnum found for '" + style + "'"));
     }
 }

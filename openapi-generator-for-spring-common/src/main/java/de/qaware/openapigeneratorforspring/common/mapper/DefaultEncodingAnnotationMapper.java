@@ -1,16 +1,15 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
 import io.swagger.v3.oas.models.media.Encoding;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Stream;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiEnumUtils.findEnumByToString;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildMapFromArray;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
 
 @RequiredArgsConstructor
@@ -30,8 +29,8 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
     public Encoding map(io.swagger.v3.oas.annotations.media.Encoding encodingAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
         Encoding encoding = new Encoding();
 
-        OpenApiStringUtils.setStringIfNotBlank(encodingAnnotation.contentType(), encoding::setContentType);
-        OpenApiStringUtils.setStringIfNotBlank(encodingAnnotation.style(), style -> encoding.setStyle(mapEncodingStyle(style)));
+        setStringIfNotBlank(encodingAnnotation.contentType(), encoding::setContentType);
+        setStringIfNotBlank(encodingAnnotation.style(), style -> encoding.setStyle(findEnumByToString(style, Encoding.StyleEnum.class)));
 
         if (encodingAnnotation.explode()) {
             encoding.setExplode(true);
@@ -44,13 +43,5 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(encodingAnnotation.extensions()), encoding::setExtensions);
 
         return encoding;
-    }
-
-    private Encoding.StyleEnum mapEncodingStyle(String style) {
-        return Stream.of(Encoding.StyleEnum.values())
-                .filter(e -> e.toString().equals(style))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Cannot find encoding style '" + style
-                        + "' in enum " + Arrays.toString(Encoding.StyleEnum.values())));
     }
 }

@@ -11,11 +11,7 @@ import java.util.function.Consumer;
 public class OpenApiStringUtils {
 
     public static boolean setStringIfNotBlank(@Nullable String value, Consumer<String> setter) {
-        if (StringUtils.isNotBlank(value)) {
-            setter.accept(value);
-            return true;
-        }
-        return false;
+        return OpenApiObjectUtils.setIf(value, StringUtils::isNotBlank, setter);
     }
 
 }
