@@ -53,7 +53,7 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
         if (annotation.allowReserved()) {
             parameter.setAllowReserved(true);
         }
-        parameter.setSchema(schemaAnnotationMapper.buildFromAnnotation(annotation.schema(), referencedSchemaConsumer));
+        schemaAnnotationMapper.buildFromAnnotation(annotation.schema(), referencedSchemaConsumer, parameter::setSchema);
         // TODO handle @ArraySchema as well?
         setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), referencedSchemaConsumer), parameter::setContent);
         setMapIfNotEmpty(exampleObjectAnnotationMapper.mapArray(annotation.examples()), parameter::setExamples);

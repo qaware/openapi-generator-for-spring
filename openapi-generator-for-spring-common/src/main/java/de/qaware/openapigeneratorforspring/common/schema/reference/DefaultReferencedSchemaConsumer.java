@@ -18,8 +18,11 @@ public class DefaultReferencedSchemaConsumer implements ReferencedSchemaConsumer
     private final ReferencedSchemaStorage referencedSchemaStorage;
 
     @Override
-    public void maybeAsReference(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
-        referencedSchemaStorage.storeSchemaMaybeReference(schema, referenceNameSetter);
+    public void maybeAsReference(Schema schema, Consumer<Schema> schemaSetter) {
+        schemaSetter.accept(schema); // immediately apply the schema, as it's not decided if the schema is referenced later at all
+        referencedSchemaStorage.storeSchemaMaybeReference(schema,
+                referenceName -> schemaSetter.accept(new Schema().$ref(referenceName.asReferenceString()))
+        );
     }
 
     @Override

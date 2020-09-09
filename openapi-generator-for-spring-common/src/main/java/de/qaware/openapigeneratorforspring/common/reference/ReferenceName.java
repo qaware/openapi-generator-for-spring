@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
@@ -11,28 +12,22 @@ import java.util.function.Function;
 @ToString
 public class ReferenceName {
     private final Type type;
+    @Getter
     private final String identifier;
 
-    public String asUniqueString() {
-        return type.getPrefix() + identifier;
+    public String asReferenceString() {
+        return type.referencePrefix + identifier;
     }
 
     public ReferenceName withIdentifier(Function<String, String> identifierMapper) {
         return new ReferenceName(type, identifierMapper.apply(identifier));
     }
 
+    @RequiredArgsConstructor
     enum Type {
 
         SCHEMA("#/components/schemas/");
 
-        private final String prefix;
-
-        Type(String prefix) {
-            this.prefix = prefix;
-        }
-
-        public String getPrefix() {
-            return prefix;
-        }
+        private final String referencePrefix;
     }
 }

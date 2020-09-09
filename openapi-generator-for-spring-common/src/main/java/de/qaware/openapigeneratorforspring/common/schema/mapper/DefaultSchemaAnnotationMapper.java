@@ -14,9 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,24 +32,25 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
     private final SchemaResolver schemaResolver;
 
-    @Nullable
     @Override
-    public Schema buildFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
+    public void buildFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation,
+                                    ReferencedSchemaConsumer referencedSchemaConsumer,
+                                    Consumer<Schema> schemaSetter) {
         Schema schema;
         if (!Void.class.equals(schemaAnnotation.implementation())) {
-            schema = schemaResolver.resolveFromClass(schemaAnnotation.implementation(), referencedSchemaConsumer);
+            // reference tracking will be done once the annotation is applied
+            schema = schemaResolver.resolveFromClassWithoutReference(schemaAnnotation.implementation(), referencedSchemaConsumer);
         } else {
             schema = new Schema();
         }
 
         applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer);
 
-        // do not return anything if schema is still empty
         if (schema.isEmpty()) {
-            return null;
+            return;
         }
 
-        return schema;
+        referencedSchemaConsumer.maybeAsReference(schema, schemaSetter);
     }
 
     @Override
@@ -94,7 +95,8 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         Map<String, Schema> schemasMap = OpenApiMapUtils.buildMapFromArray(
                 mappings,
                 DiscriminatorMapping::value,
-                mapping -> schemaResolver.resolveFromClass(mapping.schema(), referencedSchemaConsumer)
+                // cannot reference already here as discriminator mappings must always be referenced
+                mapping -> schemaResolver.resolveFromClassWithoutReference(mapping.schema(), referencedSchemaConsumer)
         );
 
         Discriminator discriminator = new Discriminator()
@@ -105,7 +107,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
                         .map(entry -> ReferencedSchemaConsumer.EntryWithSchema.of(entry, entry.getValue())),
                 entriesWithReferenceNames -> discriminator.setMapping(
                         entriesWithReferenceNames.collect(Collectors.toMap(
-                                entry -> entry.getReferenceName().asUniqueString(),
+                                entry -> entry.getReferenceName().asReferenceString(),
                                 entry -> entry.getEntry().getKey()
                         ))
                 )

@@ -40,19 +40,33 @@ public class DefaultSchemaResolver implements SchemaResolver {
     private final List<SchemaCustomizer> schemaCustomizers;
 
     @Override
-    public Schema resolveFromClass(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer) {
-        return resolveFromType(clazz, annotationsSupplierFactory.createFromAnnotatedElement(clazz), referencedSchemaConsumer);
+    public void resolveFromClass(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer, Consumer<Schema> schemaSetter) {
+        resolveFromTypeWithoutReference(clazz, annotationsSupplierFactory.createFromAnnotatedElement(clazz), referencedSchemaConsumer,
+                schema -> referencedSchemaConsumer.maybeAsReference(schema, schemaSetter)
+        );
     }
 
     @Override
-    public Schema resolveFromType(Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer) {
+    public Schema resolveFromClassWithoutReference(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer) {
+        AtomicReference<Schema> schemaHolder = new AtomicReference<>();
+        resolveFromType(clazz, annotationsSupplierFactory.createFromAnnotatedElement(clazz), referencedSchemaConsumer, schemaHolder::set);
+        return schemaHolder.get();
+    }
+
+    @Override
+    public void resolveFromType(Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer, Consumer<Schema> schemaSetter) {
+        resolveFromTypeWithoutReference(type, annotationsSupplier, referencedSchemaConsumer,
+                schema -> referencedSchemaConsumer.maybeAsReference(schema, schemaSetter)
+        );
+    }
+
+    private void resolveFromTypeWithoutReference(Type type, AnnotationsSupplier annotationsSupplier,
+                                                 ReferencedSchemaConsumer referencedSchemaConsumer, Consumer<Schema> schemaSetter) {
         ObjectMapper mapper = openApiObjectMapperSupplier.get();
         Context context = new Context(mapper, schemaAnnotationMapperFactory.create(this), referencedSchemaConsumer);
         JavaType javaType = mapper.constructType(type);
-        AtomicReference<Schema> schema = new AtomicReference<>();
-        context.buildSchemaFromType(javaType, annotationsSupplier, schema::set);
+        context.buildSchemaFromType(javaType, annotationsSupplier, schemaSetter);
         context.resolveReferencedSchemas();
-        return schema.get();
     }
 
     @RequiredArgsConstructor
@@ -138,22 +152,22 @@ public class DefaultSchemaResolver implements SchemaResolver {
                         } else if (schemaReferenceConsumers.isEmpty()) {
                             throw new IllegalStateException("Encountered schema without any schema consumers");
                         } else if (schemaReferenceConsumers.size() == 1 || StringUtils.isBlank(schema.getName())) {
-                            // already set the schema here to ensure that the returned schema is completely built...
-                            schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(schema));
-                            // ...we allow the referenceSchemaConsumer to turn that schema into a reference later on (maybe)
-                            referencedSchemaConsumer.maybeAsReference(schema, referenceName ->
-                                    // replace already set schema with reference if it was decided later that
+                            // "maybeAsReference" already sets the schema immediately. This ensures that the returned schema
+                            // is completely built before returning and allows "schema equality" comparisons later
+                            // we still allow the referenceSchemaConsumer to turn that schema into a reference later on maybe
+                            referencedSchemaConsumer.maybeAsReference(schema, schemaToBeSet ->
+                                    // this lambda can be called more than once if it was decided later that
                                     // the schema is referenced instead of being inlined
-                                    schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(new Schema().$ref(referenceName.asUniqueString())))
+                                    schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(schemaToBeSet))
                             );
                         } else {
-                            // already set non-unique reference here to have a "comparable" schema of this resolution
-                            // unique reference name will be set after all schemas are collected
+                            // already set (not globally unique) reference here to have a "comparable" schema after this resolution
+                            // globally unique reference name will be set after all schemas are collected
                             Schema schemaForReferenceName = new Schema().$ref(schema.getName());
                             schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(schemaForReferenceName));
                             referencedSchemaConsumer.alwaysAsReference(
                                     schema,
-                                    referenceName -> schemaForReferenceName.set$ref(referenceName.asUniqueString())
+                                    referenceName -> schemaForReferenceName.set$ref(referenceName.asReferenceString())
                             );
                         }
                     }

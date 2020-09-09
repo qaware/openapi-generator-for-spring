@@ -24,6 +24,9 @@ public class DefaultReferenceNameFactory implements ReferenceNameFactory {
         if (StringUtils.isNotBlank(schema.getName())) {
             return schema.getName();
         } else if (StringUtils.isNotBlank(schema.getType())) {
+            if (StringUtils.isNotBlank(schema.getFormat())) {
+                return schema.getType() + "_" + schema.getFormat();
+            }
             return schema.getType();
         } else {
             return "Schema_" + schemaCounter.getAndIncrement();

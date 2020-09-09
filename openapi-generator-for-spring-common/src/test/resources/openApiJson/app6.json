@@ -49,18 +49,27 @@
             "name": "someStringParam1",
             "in": "query",
             "description": "Description for String parameter",
-            "required": true
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "someStringParam2",
             "in": "query",
             "required": true,
-            "deprecated": true
+            "deprecated": true,
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "hiddenParam",
             "in": "query",
-            "required": true
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {

@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
@@ -70,9 +72,9 @@ public class App5SimpleUnitTest {
         DefaultReferenceNameConflictResolver referenceNameConflictResolver = new DefaultReferenceNameConflictResolver();
 
         SchemaAnnotationMapper schemaAnnotationMapper = new SchemaAnnotationMapper() {
-            @Nullable
             @Override
-            public de.qaware.openapigeneratorforspring.common.schema.Schema buildFromAnnotation(Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
+            public void buildFromAnnotation(Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer,
+                                            Consumer<de.qaware.openapigeneratorforspring.common.schema.Schema> schemaSetter) {
                 // not used during schema resolution
                 throw new NotImplementedException("not implemented");
             }
@@ -106,17 +108,19 @@ public class App5SimpleUnitTest {
                 Arrays.asList(new SchemaCustomizerForNullable())
         );
 
-        ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);
+        ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver,
+                (de.qaware.openapigeneratorforspring.common.schema.Schema schema, int numberOfUsages, ReferenceName uniqueReferenceName) -> uniqueReferenceName);
         ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(storage);
 
-        io.swagger.v3.oas.models.media.Schema<?> schema = sut.resolveFromClass(SimpleDto.class, referencedSchemaConsumer);
+        AtomicReference<de.qaware.openapigeneratorforspring.common.schema.Schema> schemaHolder = new AtomicReference<>();
+        sut.resolveFromClass(SomeDto.class, referencedSchemaConsumer, schemaHolder::set);
 
         Map<ReferenceName, de.qaware.openapigeneratorforspring.common.schema.Schema> referencedSchemas = storage.buildReferencedSchemas();
 
         System.out.println("==== Constructed schema");
-        System.out.println(MAPPER.writeValueAsString(schema));
-//        System.out.println("==== Referenced schemas");
-//        System.out.println(MAPPER.writeValueAsString(referencedSchemas.entrySet()));
+        System.out.println(MAPPER.writeValueAsString(schemaHolder.get()));
+        System.out.println("==== Referenced schemas");
+        System.out.println(MAPPER.writeValueAsString(referencedSchemas.entrySet()));
 
     }
 

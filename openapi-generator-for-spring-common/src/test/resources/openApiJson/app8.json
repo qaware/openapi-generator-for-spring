@@ -7,15 +7,31 @@
   "paths": {
     "/simple/get-instant": {
       "get": {
-        "operationId": "getMappingReturnString",
+        "operationId": "getMappingReturnInstant",
         "responses": {
           "200": {
             "description": "Default response",
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "string",
-                  "format": "date-time"
+                  "$ref": "#/components/schemas/string_date-time"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simple/get-instant-2": {
+      "get": {
+        "operationId": "getMappingReturnInstantWithParameter",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/string_date-time"
                 }
               }
             }
@@ -32,13 +48,20 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "string",
-                  "format": "date-time"
+                  "$ref": "#/components/schemas/string_date-time"
                 }
               }
             }
           }
         }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "string_date-time": {
+        "type": "string",
+        "format": "date-time"
       }
     }
   }

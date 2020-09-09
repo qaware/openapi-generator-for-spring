@@ -5,9 +5,12 @@ import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 
 import java.lang.reflect.Type;
+import java.util.function.Consumer;
 
 public interface SchemaResolver {
-    Schema resolveFromType(Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer);
+    void resolveFromType(Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer, Consumer<Schema> schemaSetter);
 
-    Schema resolveFromClass(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer);
+    void resolveFromClass(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer, Consumer<Schema> schemaSetter);
+
+    Schema resolveFromClassWithoutReference(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer);
 }

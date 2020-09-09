@@ -3,7 +3,6 @@ package de.qaware.openapigeneratorforspring.common.operation.response;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
@@ -55,8 +54,8 @@ public class DefaultOperationApiResponseFromMethodCustomizer implements Ordered,
             // TODO check if supplying annotations from type, method and method's declaring class isn't too much searching
             AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(method.getReturnType())
                     .andThen(annotationsSupplierFromMethodWithDeclaringClass);
-            Schema schema = schemaResolver.resolveFromType(method.getGenericReturnType(), annotationsSupplier, operationBuilderContext.getReferencedSchemaConsumer());
-            mediaType.setSchema(schema);
+            schemaResolver.resolveFromType(method.getGenericReturnType(), annotationsSupplier,
+                    operationBuilderContext.getReferencedSchemaConsumer(), mediaType::setSchema);
         }
 
     }

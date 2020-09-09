@@ -12,7 +12,12 @@ import java.time.Instant;
 public class App8SimpleController {
 
     @GetMapping("get-instant")
-    public Instant getMappingReturnString() {
+    public Instant getMappingReturnInstant() {
+        return null;
+    }
+
+    @GetMapping("get-instant-2")
+    public Instant getMappingReturnInstantWithParameter(Instant inputParameter) {
         return null;
     }
 
@@ -20,6 +25,5 @@ public class App8SimpleController {
     public ResponseEntity<Instant> getResponseEntityOfInstant() {
         return null;
     }
-
 }
 

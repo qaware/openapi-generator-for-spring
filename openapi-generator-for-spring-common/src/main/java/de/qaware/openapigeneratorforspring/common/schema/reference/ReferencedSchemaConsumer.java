@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public interface ReferencedSchemaConsumer {
 
-    void maybeAsReference(Schema schema, Consumer<ReferenceName> referenceNameSetter);
+    void maybeAsReference(Schema schema, Consumer<Schema> schemaSetter);
 
     default void alwaysAsReference(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
         alwaysAsReferences(

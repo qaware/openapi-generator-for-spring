@@ -49,7 +49,8 @@ public class OpenApiGenerator {
         if (!referencedSchemas.isEmpty()) {
             Components components = new Components();
             Map<String, io.swagger.v3.oas.models.media.Schema> componentsSchemas = referencedSchemas.entrySet().stream()
-                    .collect(Collectors.toMap(e -> e.getKey().asUniqueString(), Map.Entry::getValue));
+                    // instead of
+                    .collect(Collectors.toMap(e -> e.getKey().getIdentifier(), Map.Entry::getValue));
             components.setSchemas(componentsSchemas);
             openApi.setComponents(components);
         }
