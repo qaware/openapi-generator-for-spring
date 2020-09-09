@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import de.qaware.openapigeneratorforspring.common.annotation.DefaultAnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceDecider;
 import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceNameFactory;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
@@ -109,11 +110,13 @@ public class App5SimpleUnitTest {
         );
 
         ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver,
-                (de.qaware.openapigeneratorforspring.common.schema.Schema schema, int numberOfUsages, ReferenceName uniqueReferenceName) -> uniqueReferenceName);
+//                (de.qaware.openapigeneratorforspring.common.schema.Schema schema, int numberOfUsages, ReferenceName uniqueReferenceName) -> uniqueReferenceName
+                new DefaultReferenceDecider()
+        );
         ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(storage);
 
         AtomicReference<de.qaware.openapigeneratorforspring.common.schema.Schema> schemaHolder = new AtomicReference<>();
-        sut.resolveFromClass(String.class, referencedSchemaConsumer, schemaHolder::set);
+        sut.resolveFromClass(ComplexDto.class, referencedSchemaConsumer, schemaHolder::set);
 
         Map<ReferenceName, de.qaware.openapigeneratorforspring.common.schema.Schema> referencedSchemas = storage.buildReferencedSchemas();
 
@@ -159,6 +162,11 @@ public class App5SimpleUnitTest {
     }
 
     @Value
+    private static class SomeSelfRefDto {
+        SomeSelfRefDto inner;
+    }
+
+    @Value
     @EqualsAndHashCode(callSuper = true)
     private static class SimpleDto extends BaseForSomeDto {
         @Nullable
@@ -190,4 +198,22 @@ public class App5SimpleUnitTest {
         SomeOtherDto someOtherDto;
     }
 
+
+    @Schema(title = "global title")
+    private interface BaseForDto extends BaseForEverything {
+
+    }
+
+    @Value
+    private static class ComplexDto implements BaseForDto {
+        @Schema(description = "description1")
+        ComplexDto other1;
+        @Schema(title = "title override", description = "description2")
+        ComplexDto other2;
+        @Nullable
+        SomeOtherDto someOtherDto;
+        List<ComplexDto> listOfComplexDtos;
+        List<Set<String>> listOfSetOfStrings;
+        Set<List<SimpleDto>> setOfListOfSimpleDtos;
+    }
 }

@@ -16,6 +16,7 @@ public class DefaultOperationParameterNullableCustomizer implements OperationPar
             if (required != null && required) {
                 LOGGER.warn("Method parameter {} marked as required but annotated as nullable. Ignoring annotation.", parameter);
             } else {
+                // TODO is this always right to set it to false?
                 parameter.setRequired(false);
             }
         }

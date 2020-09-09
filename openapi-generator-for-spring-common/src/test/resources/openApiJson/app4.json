@@ -95,6 +95,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "title": "schema title 1",
                   "type": "string"
                 },
                 "example": {

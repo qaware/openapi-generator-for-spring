@@ -14,7 +14,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/string_0"
+              "type": "string",
+              "nullable": true
             }
           },
           {
@@ -77,14 +78,6 @@
             "description": "Default response"
           }
         }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "string_0": {
-        "type": "string",
-        "nullable": true
       }
     }
   }
