@@ -22,16 +22,24 @@
         }
       }
     },
-    "/simple/get-instant-2": {
+    "/simple/get-instant-2/{pathParam}": {
       "get": {
         "operationId": "getMappingReturnInstantWithParameter",
         "parameters": [
           {
-            "name": "inputParameter",
+            "name": "inputParameter1",
             "in": "query",
             "required": false,
             "schema": {
               "$ref": "#/components/schemas/inputParameter"
+            }
+          },
+          {
+            "name": "pathParam",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/string_date-time"
             }
           }
         ],
@@ -58,7 +66,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/string_date-time"
+                  "$ref": "#/components/schemas/responseEntitySchema"
                 }
               }
             }
@@ -74,6 +82,10 @@
         "format": "date-time"
       },
       "string_date-time": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "responseEntitySchema": {
         "type": "string",
         "format": "date-time"
       }
