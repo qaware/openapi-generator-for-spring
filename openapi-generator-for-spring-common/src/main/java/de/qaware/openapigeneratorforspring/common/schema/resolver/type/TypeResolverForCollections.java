@@ -17,6 +17,7 @@ public class TypeResolverForCollections implements TypeResolver {
             // TODO adapt annotations supplier to nested getContentType, consider @ArraySchema
             Schema containerSchema = new Schema();
             containerSchema.setType("array");
+            // TODO append annotationSupplier with contained generic type!
             schemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, schema -> {
                         containerSchema.setItems(schema);
                         schemaConsumer.accept(containerSchema);

@@ -65,9 +65,10 @@ public class InitialTypeResolverForPrimitiveTypes implements InitialTypeResolver
 
     @Nullable
     @Override
-    public Schema resolveFromType(JavaType javaType) {
+    public InitialSchema resolveFromType(JavaType javaType) {
         return Optional.ofNullable(PRIMITIVE_TYPE_CLASS_TO_SCHEMA.get(javaType.getRawClass()))
                 .map(Supplier::get)
+                .map(InitialSchema::of)
                 .orElse(null);
     }
 

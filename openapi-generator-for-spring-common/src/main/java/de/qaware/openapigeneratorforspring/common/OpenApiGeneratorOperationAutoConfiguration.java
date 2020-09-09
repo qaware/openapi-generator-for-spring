@@ -195,8 +195,11 @@ public class OpenApiGeneratorOperationAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationParameterSchemaCustomizer defaultOperationParameterSchemaCustomizer(SchemaResolver schemaResolver) {
-        return new DefaultOperationParameterSchemaCustomizer(schemaResolver);
+    public DefaultOperationParameterSchemaCustomizer defaultOperationParameterSchemaCustomizer(
+            SchemaResolver schemaResolver,
+            AnnotationsSupplierFactory annotationsSupplierFactory
+    ) {
+        return new DefaultOperationParameterSchemaCustomizer(schemaResolver, annotationsSupplierFactory);
     }
 
     @Bean

@@ -113,7 +113,7 @@ public class App5SimpleUnitTest {
         ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(storage);
 
         AtomicReference<de.qaware.openapigeneratorforspring.common.schema.Schema> schemaHolder = new AtomicReference<>();
-        sut.resolveFromClass(SomeDto.class, referencedSchemaConsumer, schemaHolder::set);
+        sut.resolveFromClass(String.class, referencedSchemaConsumer, schemaHolder::set);
 
         Map<ReferenceName, de.qaware.openapigeneratorforspring.common.schema.Schema> referencedSchemas = storage.buildReferencedSchemas();
 

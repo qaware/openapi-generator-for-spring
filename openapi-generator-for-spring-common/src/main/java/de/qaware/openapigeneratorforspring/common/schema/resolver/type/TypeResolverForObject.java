@@ -3,22 +3,24 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaBuilderFromType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolverForObject;
 
-import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
-public class TypeResolverForObject implements SimpleTypeResolver {
+public class TypeResolverForObject implements TypeResolver {
 
     public static final int ORDER = DEFAULT_ORDER;
 
-    @Nullable
     @Override
-    public Schema resolveSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+    public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
         if (javaType.getRawClass().equals(Object.class)) {
             // accept object schema without any properties as fallback here
-            return InitialTypeResolverForObject.OBJECT_SCHEMA_SUPPLIER.get();
+            // to prevent traversing to meaningless properties of "Object"
+            schemaConsumer.accept(InitialTypeResolverForObject.OBJECT_SCHEMA_SUPPLIER.get());
+            return true;
         }
-        return null;
+        return false;
     }
 
     @Override

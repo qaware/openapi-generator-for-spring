@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8;
 
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.SimpleTypeResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver;
 
-public interface Java8TimeTypeResolver extends SimpleTypeResolver {
+public interface Java8TimeTypeResolver extends InitialTypeResolver {
 }

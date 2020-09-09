@@ -13,6 +13,7 @@ import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotation
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -70,39 +71,41 @@ public class DefaultSchemaResolver implements SchemaResolver {
     }
 
     @RequiredArgsConstructor
-    private class Context implements SchemaBuilderFromType {
+    private class Context {
 
         private final ObjectMapper mapper;
         private final SchemaAnnotationMapper schemaAnnotationMapper;
         private final ReferencedSchemaConsumer referencedSchemaConsumer;
         private final ReferencedSchemas referencedSchemas = new ReferencedSchemas();
 
-        @Override
-        public void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer) {
+        void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer) {
             for (TypeResolver typeResolver : typeResolvers) {
-                if (typeResolver.resolveFromType(javaType, annotationsSupplier, this, schemaConsumer)) {
+                if (typeResolver.resolveFromType(javaType, annotationsSupplier, this::buildSchemaFromType, schemaConsumer)) {
                     return;
                 }
             }
 
-            Schema newSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
-            List<Consumer<Schema>> schemaReferenceSetters = referencedSchemas.findSchemaReferenceIgnoringProperties(newSchema);
+            InitialSchema initialSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
+            Schema schemaWithoutProperties = initialSchema.getSchema();
+            List<Consumer<Schema>> schemaReferenceSetters = referencedSchemas.findSchemaReferenceIgnoringProperties(schemaWithoutProperties);
             if (schemaReferenceSetters != null) {
-                // we've seen this newSchema before, then simply reference it lazily
+                // we've seen this initialSchema before, then simply reference it lazily
                 schemaReferenceSetters.add(schemaConsumer);
             } else {
-                // important to add the newSchema first before traversing the nested properties
+                // important to add the schemaWithoutProperties first before traversing the nested properties (if any)
                 // this prevents infinite loops when types refer to themselves
-                referencedSchemas.addNewSchemaReference(newSchema, schemaConsumer);
-                addPropertiesToSchema(javaType, newSchema);
+                referencedSchemas.addNewSchemaReference(schemaWithoutProperties, schemaConsumer);
+                if (initialSchema.isHasNestedProperties()) {
+                    addPropertiesToSchema(javaType, schemaWithoutProperties);
+                }
             }
         }
 
-        public Schema buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-            Schema schema = getSchemaFromSimpleTypeResolvers(javaType);
+        private InitialSchema buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+            InitialSchema initialSchema = getSchemaFromInitialTypeResolvers(javaType);
 
             for (SchemaCustomizer schemaCustomizer : schemaCustomizers) {
-                schemaCustomizer.customize(schema, javaType, annotationsSupplier);
+                schemaCustomizer.customize(initialSchema.getSchema(), javaType, annotationsSupplier);
             }
 
             // applying the schemaAnnotationMapper is treated specially here:
@@ -112,22 +115,22 @@ public class DefaultSchemaResolver implements SchemaResolver {
             annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
                     .collect(Collectors.toCollection(LinkedList::new))
                     .descendingIterator()
-                    .forEachRemaining(schemaAnnotation -> schemaAnnotationMapper.applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer));
+                    .forEachRemaining(schemaAnnotation -> schemaAnnotationMapper.applyFromAnnotation(initialSchema.getSchema(), schemaAnnotation, referencedSchemaConsumer));
 
-            return schema;
+            return initialSchema;
         }
 
-        private Schema getSchemaFromSimpleTypeResolvers(JavaType javaType) {
+        private InitialSchema getSchemaFromInitialTypeResolvers(JavaType javaType) {
             for (InitialTypeResolver initialTypeResolver : initialTypeResolvers) {
-                Schema resolvedSchema = initialTypeResolver.resolveFromType(javaType);
-                if (resolvedSchema != null) {
-                    return resolvedSchema;
+                InitialSchema initialSchema = initialTypeResolver.resolveFromType(javaType);
+                if (initialSchema != null) {
+                    return initialSchema;
                 }
             }
-            throw new IllegalStateException("No simple type resolver found for " + javaType);
+            throw new IllegalStateException("No initial type resolver found for " + javaType);
         }
 
-        public void addPropertiesToSchema(JavaType javaType, Schema schema) {
+        private void addPropertiesToSchema(JavaType javaType, Schema schema) {
             BeanDescription beanDescriptionForType = mapper.getSerializationConfig().introspect(javaType);
             Set<String> ignoredPropertyNames = beanDescriptionForType.getIgnoredPropertyNames();
             beanDescriptionForType.findProperties().stream()
@@ -142,7 +145,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     });
         }
 
-        public void resolveReferencedSchemas() {
+        void resolveReferencedSchemas() {
             referencedSchemas.items.forEach(
                     referencedSchema -> {
                         Schema schema = referencedSchema.schema;

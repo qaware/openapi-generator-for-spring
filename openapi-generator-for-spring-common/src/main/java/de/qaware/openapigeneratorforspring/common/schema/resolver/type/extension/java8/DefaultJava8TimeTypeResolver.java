@@ -1,7 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8;
 
 import com.fasterxml.jackson.databind.JavaType;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolverConfigurationProperties.Format;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ public class DefaultJava8TimeTypeResolver implements Java8TimeTypeResolver {
 
     @Nullable
     @Override
-    public Schema resolveSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+    public InitialSchema resolveFromType(JavaType javaType) {
         Class<?> rawClass = javaType.getRawClass();
         Format format = properties.getFormat();
         Schema schema = createSchemaWithType(format);
@@ -29,11 +28,11 @@ public class DefaultJava8TimeTypeResolver implements Java8TimeTypeResolver {
         // TODO maybe improve with static map and add more types?
         if (rawClass.equals(Instant.class)) {
             if (format == ISO8601) {
-                return schema.format("date-time");
+                return InitialSchema.of(schema.format("date-time"));
             }
-            return schema;
+            return InitialSchema.of(schema);
         } else if (rawClass.equals(Duration.class)) {
-            return schema;
+            return InitialSchema.of(schema);
         }
         return null;
     }

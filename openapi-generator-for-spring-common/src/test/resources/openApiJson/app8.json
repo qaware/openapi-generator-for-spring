@@ -25,6 +25,16 @@
     "/simple/get-instant-2": {
       "get": {
         "operationId": "getMappingReturnInstantWithParameter",
+        "parameters": [
+          {
+            "name": "inputParameter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/inputParameter"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Default response",
@@ -59,6 +69,10 @@
   },
   "components": {
     "schemas": {
+      "inputParameter": {
+        "type": "string",
+        "format": "date-time"
+      },
       "string_date-time": {
         "type": "string",
         "format": "date-time"

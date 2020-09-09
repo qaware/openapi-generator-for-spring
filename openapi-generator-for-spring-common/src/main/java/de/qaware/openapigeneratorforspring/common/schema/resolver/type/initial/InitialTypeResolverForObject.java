@@ -20,10 +20,13 @@ public class InitialTypeResolverForObject implements InitialTypeResolver {
 
     @Nullable
     @Override
-    public Schema resolveFromType(JavaType javaType) {
+    public InitialSchema resolveFromType(JavaType javaType) {
         Schema schema = OBJECT_SCHEMA_SUPPLIER.get();
         schema.setName(schemaNameFactory.createFromType(javaType));
-        return schema;
+        return InitialSchema.builder()
+                .schema(schema)
+                .hasNestedProperties(true)
+                .build();
     }
 
     @Override
