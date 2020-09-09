@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.common;
 
 import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
+import de.qaware.openapigeneratorforspring.common.reference.ReferenceDecider;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
@@ -27,10 +28,11 @@ public class OpenApiGenerator {
 
     private final ReferenceNameFactory referenceNameFactory;
     private final ReferenceNameConflictResolver referenceNameConflictResolver;
+    private final ReferenceDecider referenceDecider;
 
     public OpenAPI generateOpenApi() {
 
-        ReferencedSchemaStorage referencedSchemaStorage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver);
+        ReferencedSchemaStorage referencedSchemaStorage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver, referenceDecider);
 
         ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(referencedSchemaStorage);
 

@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public interface ReferencedSchemaStorage {
-    void storeSchema(Schema schema, Consumer<ReferenceName> referenceNameConsumer);
+    void storeSchemaMaybeReference(Schema schema, Consumer<ReferenceName> referenceNameConsumer);
+
+    void storeSchemaAlwaysReference(Schema schema, Consumer<ReferenceName> referenceNameConsumer);
 
     Map<ReferenceName, Schema> buildReferencedSchemas();
 }

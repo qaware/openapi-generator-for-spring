@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.schema.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
+import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -17,7 +18,12 @@ public class DefaultReferencedSchemaConsumer implements ReferencedSchemaConsumer
     private final ReferencedSchemaStorage referencedSchemaStorage;
 
     @Override
-    public <T> void consumeMany(Stream<EntryWithSchema<T>> entriesWithSchemasStream, Consumer<Stream<EntryWithReferenceName<T>>> referenceNameSetters) {
+    public void maybeAsReference(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
+        referencedSchemaStorage.storeSchemaMaybeReference(schema, referenceNameSetter);
+    }
+
+    @Override
+    public <T> void alwaysAsReferences(Stream<EntryWithSchema<T>> entriesWithSchemasStream, Consumer<Stream<EntryWithReferenceName<T>>> referenceNameSetters) {
 
         List<EntryWithSchema<T>> entriesWithSchemas = entriesWithSchemasStream.collect(Collectors.toList());
         List<EntryWithReferenceName<T>> result = new ArrayList<>(Collections.nCopies(entriesWithSchemas.size(), null));
@@ -25,12 +31,12 @@ public class DefaultReferencedSchemaConsumer implements ReferencedSchemaConsumer
         for (int i = 0; i < entriesWithSchemas.size(); i++) {
             EntryWithSchema<T> entryWithSchema = entriesWithSchemas.get(i);
             Consumer<ReferenceName> referenceNameConsumer = new ReferenceNameConsumerForIndexedResult<>(i, result, entryWithSchema.getEntry());
-            referencedSchemaStorage.storeSchema(
+            referencedSchemaStorage.storeSchemaAlwaysReference(
                     entryWithSchema.getSchema(),
                     referenceName -> {
                         referenceNameConsumer.accept(referenceName);
-                        boolean allEntriesPresent = result.stream().noneMatch(Objects::isNull);
-                        if (allEntriesPresent) {
+                        boolean allResultsAreNotNull = result.stream().noneMatch(Objects::isNull);
+                        if (allResultsAreNotNull) {
                             referenceNameSetters.accept(result.stream());
                         }
                     }

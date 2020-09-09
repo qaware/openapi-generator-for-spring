@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class InitialTypeResolverForPrimitiveTypes implements InitialTypeResolver {
@@ -65,8 +66,9 @@ public class InitialTypeResolverForPrimitiveTypes implements InitialTypeResolver
     @Nullable
     @Override
     public Schema resolveFromType(JavaType javaType) {
-        Supplier<Schema> schemaSupplier = PRIMITIVE_TYPE_CLASS_TO_SCHEMA.get(javaType.getRawClass());
-        return schemaSupplier == null ? null : schemaSupplier.get();
+        return Optional.ofNullable(PRIMITIVE_TYPE_CLASS_TO_SCHEMA.get(javaType.getRawClass()))
+                .map(Supplier::get)
+                .orElse(null);
     }
 
     @Override

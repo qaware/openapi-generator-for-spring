@@ -1,18 +1,24 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
-import lombok.Value;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-@Value
+import java.util.function.Function;
+
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class ReferenceName {
-    Type type;
-    String identifier;
+    private final Type type;
+    private final String identifier;
 
     public String asUniqueString() {
         return type.getPrefix() + identifier;
     }
 
-    public ReferenceName withIdentifier(String newIdentifier) {
-        return new ReferenceName(type, newIdentifier);
+    public ReferenceName withIdentifier(Function<String, String> identifierMapper) {
+        return new ReferenceName(type, identifierMapper.apply(identifier));
     }
 
     enum Type {

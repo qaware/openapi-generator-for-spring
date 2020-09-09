@@ -15,6 +15,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResol
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
@@ -130,14 +131,28 @@ public class DefaultSchemaResolver implements SchemaResolver {
         public void resolveReferencedSchemas() {
             referencedSchemas.items.forEach(
                     referencedSchema -> {
-                        if (referencedSchema.referenceConsumers.size() == 1 || referencedSchema.schema.getName() == null) {
-                            // TODO make handling of "name == null" more flexible?
-                            referencedSchema.referenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(referencedSchema.schema));
+                        Schema schema = referencedSchema.schema;
+                        List<Consumer<Schema>> schemaReferenceConsumers = referencedSchema.referenceConsumers;
+                        if (schema.isEmpty()) {
+                            throw new IllegalStateException("Encountered completely empty schema");
+                        } else if (schemaReferenceConsumers.isEmpty()) {
+                            throw new IllegalStateException("Encountered schema without any schema consumers");
+                        } else if (schemaReferenceConsumers.size() == 1 || StringUtils.isBlank(schema.getName())) {
+                            // already set the schema here to ensure that the returned schema is completely built...
+                            schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(schema));
+                            // ...we allow the referenceSchemaConsumer to turn that schema into a reference later on (maybe)
+                            referencedSchemaConsumer.maybeAsReference(schema, referenceName ->
+                                    // replace already set schema with reference if it was decided later that
+                                    // the schema is referenced instead of being inlined
+                                    schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(new Schema().$ref(referenceName.asUniqueString())))
+                            );
                         } else {
-                            Schema schemaForReferenceName = new Schema();
-                            referencedSchema.referenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(schemaForReferenceName));
-                            referencedSchemaConsumer.consume(
-                                    referencedSchema.schema,
+                            // already set non-unique reference here to have a "comparable" schema of this resolution
+                            // unique reference name will be set after all schemas are collected
+                            Schema schemaForReferenceName = new Schema().$ref(schema.getName());
+                            schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(schemaForReferenceName));
+                            referencedSchemaConsumer.alwaysAsReference(
+                                    schema,
                                     referenceName -> schemaForReferenceName.set$ref(referenceName.asUniqueString())
                             );
                         }

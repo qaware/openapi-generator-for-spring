@@ -45,7 +45,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer);
 
         // do not return anything if schema is still empty
-        if (new Schema().equals(schema)) {
+        if (schema.isEmpty()) {
             return null;
         }
 
@@ -100,13 +100,13 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         Discriminator discriminator = new Discriminator()
                 .propertyName(propertyName);
 
-        referencedSchemaConsumer.consumeMany(
+        referencedSchemaConsumer.alwaysAsReferences(
                 schemasMap.entrySet().stream()
                         .map(entry -> ReferencedSchemaConsumer.EntryWithSchema.of(entry, entry.getValue())),
                 entriesWithReferenceNames -> discriminator.setMapping(
                         entriesWithReferenceNames.collect(Collectors.toMap(
-                                entry -> entry.getEntry().getKey(),
-                                entry -> entry.getReferenceName().asUniqueString()
+                                entry -> entry.getReferenceName().asUniqueString(),
+                                entry -> entry.getEntry().getKey()
                         ))
                 )
         );
