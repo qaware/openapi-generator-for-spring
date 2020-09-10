@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver;
 
-import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
@@ -11,12 +10,12 @@ import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustom
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
@@ -24,8 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -34,6 +32,7 @@ import java.util.stream.Collectors;
 public class DefaultSchemaResolver implements SchemaResolver {
 
     private final OpenApiObjectMapperSupplier openApiObjectMapperSupplier;
+    private final SchemaPropertiesResolver schemaPropertiesResolver;
     private final SchemaAnnotationMapperFactory schemaAnnotationMapperFactory;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
     private final List<TypeResolver> typeResolvers;
@@ -87,16 +86,18 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
             InitialSchema initialSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
             Schema schemaWithoutProperties = initialSchema.getSchema();
-            List<Consumer<Schema>> schemaReferenceSetters = referencedSchemas.findSchemaReferenceIgnoringProperties(schemaWithoutProperties);
+            List<Consumer<Schema>> schemaReferenceSetters = referencedSchemas.findSchemaReference(schemaWithoutProperties);
             if (schemaReferenceSetters != null) {
                 // we've seen this initialSchema before, then simply reference it lazily
                 schemaReferenceSetters.add(schemaConsumer);
             } else {
+                Map<String, AnnotatedMember> properties = schemaPropertiesResolver.findProperties(javaType);
+                boolean hasProperties = !properties.isEmpty() && !initialSchema.isIgnoreNestedProperties();
                 // important to add the schemaWithoutProperties first before traversing the nested properties (if any)
                 // this prevents infinite loops when types refer to themselves
-                referencedSchemas.addNewSchemaReference(schemaWithoutProperties, schemaConsumer, recursionDepth == 0);
-                if (initialSchema.isHasNestedProperties()) {
-                    addPropertiesToSchema(javaType, schemaWithoutProperties, recursionDepth);
+                referencedSchemas.addNewSchemaReference(schemaWithoutProperties, schemaConsumer, recursionDepth == 0, hasProperties);
+                if (hasProperties) {
+                    addPropertiesToSchema(properties, schemaWithoutProperties, recursionDepth);
                 }
             }
         }
@@ -112,9 +113,9 @@ public class DefaultSchemaResolver implements SchemaResolver {
             // 1) It can only be built with an existing SchemaResolver (this class!)
             //    so that would end up in a circular loop if it wasn't resolved by using the schemaAnnotationMapperFactory
             // 2) Using it requires a referencedSchemaConsumer, something which is only present on invocation
-            LinkedList<io.swagger.v3.oas.annotations.media.Schema> schemaAnnotations = annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
-                    .collect(Collectors.toCollection(LinkedList::new));
-            schemaAnnotations
+            annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
+                    // apply in reverse order
+                    .collect(Collectors.toCollection(LinkedList::new))
                     .descendingIterator()
                     .forEachRemaining(schemaAnnotation -> schemaAnnotationMapper.applyFromAnnotation(initialSchema.getSchema(), schemaAnnotation, referencedSchemaConsumer));
 
@@ -131,21 +132,15 @@ public class DefaultSchemaResolver implements SchemaResolver {
             throw new IllegalStateException("No initial type resolver found for " + javaType);
         }
 
-        private void addPropertiesToSchema(JavaType javaType, Schema schema, int recursionDepth) {
-            BeanDescription beanDescriptionForType = mapper.getSerializationConfig().introspect(javaType);
-            Set<String> ignoredPropertyNames = beanDescriptionForType.getIgnoredPropertyNames();
-            beanDescriptionForType.findProperties().stream()
-                    .filter(property -> !ignoredPropertyNames.contains(property.getName()))
-                    .filter(property -> property.getAccessor() != null) // safe-guard weird types
-                    .forEachOrdered(property -> {
-                        AnnotatedMember member = property.getAccessor();
-                        AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMember(member)
-                                .andThen(annotationsSupplierFactory.createFromAnnotatedElement(member.getType().getRawClass()));
-                        buildSchemaFromType(member.getType(), annotationsSupplier,
-                                propertySchema -> schema.addProperties(property.getName(), propertySchema),
-                                recursionDepth + 1
-                        );
-                    });
+        private void addPropertiesToSchema(Map<String, AnnotatedMember> properties, Schema schema, int recursionDepth) {
+            properties.forEach((propertyName, member) -> {
+                AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMember(member)
+                        .andThen(annotationsSupplierFactory.createFromAnnotatedElement(member.getType().getRawClass()));
+                buildSchemaFromType(member.getType(), annotationsSupplier,
+                        propertySchema -> schema.addProperties(propertyName, propertySchema),
+                        recursionDepth + 1
+                );
+            });
         }
 
         void resolveReferencedSchemas() {
@@ -156,29 +151,31 @@ public class DefaultSchemaResolver implements SchemaResolver {
                         if (schema.isEmpty()) {
                             throw new IllegalStateException("Encountered completely empty schema");
                         } else if (schemaReferenceConsumers.isEmpty()) {
-                            throw new IllegalStateException("Encountered schema without any schema consumers");
-                        } else if (schemaReferenceConsumers.size() == 1 || StringUtils.isBlank(schema.getName())) {
-                            // "maybeAsReference" already sets the schema immediately. This ensures that the returned schema
-                            // is completely built before returning and allows "schema equality" comparisons later
-                            // we still allow the referenceSchemaConsumer to turn that schema into a reference later on maybe
-                            if (referencedSchema.isTopLevel) {
-                                schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(schema));
-                            } else {
-                                referencedSchemaConsumer.maybeAsReference(schema, maybeReferenceSchema ->
-                                        // this lambda can be called again if it was decided later that
-                                        // the schema is referenced instead of being inlined
-                                        schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(maybeReferenceSchema))
-                                );
-                            }
-                        } else {
+                            throw new IllegalStateException("Encountered schema without any schema consumers, that's strange");
+                        } else if (schemaReferenceConsumers.size() > 1 && referencedSchema.hasProperties) {
                             // already set (not globally unique) reference here to have a "comparable" schema after this resolution
                             // globally unique reference name will be set after all schemas are collected
                             schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(schema));
                             referencedSchemaConsumer.alwaysAsReference(schema, referenceName ->
-                                    // globally unique reference name is known finally, then set it finally
+                                    // globally unique reference name is known finally, then set it at all places
                                     schemaReferenceConsumers.forEach(schemaConsumer ->
-                                            schemaConsumer.accept(new Schema().$ref(referenceName.asReferenceString())))
+                                            schemaConsumer.accept(new Schema().$ref(referenceName.asReferenceString()))
+                                    )
                             );
+                        } else {
+                            if (referencedSchema.isTopLevel) {
+                                // just one reference and on top-level,
+                                // so that will be given to referencedSchemaConsumer later
+                                schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(schema));
+                            } else {
+                                // "maybeAsReference" sets the schema immediately by calling the schemaSetter. This ensures that the returned schema
+                                // is completely built before returning and allows proper "schema equality" comparisons later
+                                referencedSchemaConsumer.maybeAsReference(schema, maybeReferencedSchema ->
+                                        // the consumer might be called again if it was decided later that
+                                        // the schema is referenced instead of being inlined
+                                        schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(maybeReferencedSchema)
+                                        ));
+                            }
                         }
                     }
             );
@@ -191,38 +188,39 @@ public class DefaultSchemaResolver implements SchemaResolver {
         public static class ReferencedSchema {
             private final Schema schema;
             private final boolean isTopLevel;
+            private final boolean hasProperties;
             private final List<Consumer<Schema>> referenceConsumers;
         }
 
         private final List<ReferencedSchema> items = new ArrayList<>();
 
         @Nullable
-        public List<Consumer<Schema>> findSchemaReferenceIgnoringProperties(Schema schema) {
+        public List<Consumer<Schema>> findSchemaReference(Schema schema) {
+            // safe-guard against wrong implementation of GenericTypeResolvers
+            // they must defer setting properties until resolveReferencedSchemas is called
+            if (schema.getProperties() != null) {
+                throw new IllegalStateException("To be added schema has non-null properties");
+            }
+            items.stream().map(referencedSchema -> referencedSchema.schema).forEach(existingSchema -> {
+                if (existingSchema.getProperties() != null) {
+                    throw new IllegalStateException("Existing referenced schema has non-null properties");
+                }
+            });
+
             return items.stream()
-                    .filter(referencedSchema -> {
-                        // Schema.equals ignores the name, that's why we check it here manually
-                        if (!Objects.equals(referencedSchema.schema.getName(), schema.getName())) {
-                            return false;
-                        }
-                        // safe-guard against wrong implementation of GenericTypeResolvers
-                        // they must defer setting properties until resolveReferencedSchemas is called
-                        if (schema.getProperties() != null) {
-                            throw new IllegalStateException("To be added schema has non-null properties");
-                        }
-                        if (referencedSchema.schema.getProperties() != null) {
-                            throw new IllegalStateException("Existing referenced schema has non-null properties");
-                        }
-                        return referencedSchema.schema.equals(schema);
+                    .filter(referencedSchema -> referencedSchema.schema.equals(schema)) // schema name is not part of "equals"!
+                    .reduce((a, b) -> {
+                        throw new IllegalStateException("Found two entries for " + schema + ": " + a + " vs. " + b);
                     })
-                    .findFirst()
                     .map(referencedSchema -> referencedSchema.referenceConsumers)
                     .orElse(null);
         }
 
-        public void addNewSchemaReference(Schema schema, Consumer<Schema> firstSchemaConsumer, boolean isTopLevel) {
+        public void addNewSchemaReference(Schema schema, Consumer<Schema> firstSchemaConsumer, boolean isTopLevel, boolean hasProperties) {
             ReferencedSchema referencedSchema = new ReferencedSchema(
                     schema,
                     isTopLevel,
+                    hasProperties,
                     new ArrayList<>(Collections.singleton(firstSchemaConsumer))
             );
             items.add(referencedSchema);

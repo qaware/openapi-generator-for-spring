@@ -95,8 +95,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "schema title 1",
-                  "type": "string"
+                  "$ref": "#/components/schemas/schema-example-object-1"
                 },
                 "example": {
                   "summary": "summary example1",
@@ -197,6 +196,14 @@
             "x-nameless-property-1": "value2"
           }
         }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "schema-example-object-1": {
+        "title": "schema title 1",
+        "type": "string"
       }
     }
   }

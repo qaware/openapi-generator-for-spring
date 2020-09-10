@@ -8,6 +8,10 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaN
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.DefaultSchemaPropertiesResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilter;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilterForIgnoredMembers;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollections;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForObject;
@@ -35,6 +39,7 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public SchemaResolver defaultSchemaResolver(
             OpenApiObjectMapperSupplier openApiObjectMapperSupplier,
+            SchemaPropertiesResolver schemaPropertiesResolver,
             SchemaAnnotationMapperFactory schemaAnnotationMapperFactory,
             AnnotationsSupplierFactory annotationsSupplierFactory,
             List<TypeResolver> typeResolvers,
@@ -42,7 +47,7 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
             List<SchemaCustomizer> schemaCustomizers
     ) {
         return new DefaultSchemaResolver(
-                openApiObjectMapperSupplier, schemaAnnotationMapperFactory, annotationsSupplierFactory,
+                openApiObjectMapperSupplier, schemaPropertiesResolver, schemaAnnotationMapperFactory, annotationsSupplierFactory,
                 typeResolvers, initialTypeResolvers, schemaCustomizers
         );
     }
@@ -100,4 +105,18 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
         return new DefaultSchemaNameFactory();
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public SchemaPropertiesResolver defaultSchemaPropertiesResolver(
+            OpenApiObjectMapperSupplier objectMapperSupplier,
+            List<SchemaPropertyFilter> schemaPropertyFilters
+    ) {
+        return new DefaultSchemaPropertiesResolver(objectMapperSupplier, schemaPropertyFilters);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SchemaPropertyFilterForIgnoredMembers defaultSchemaPropertyFilterForIgnoredMembers() {
+        return new SchemaPropertyFilterForIgnoredMembers();
+    }
 }

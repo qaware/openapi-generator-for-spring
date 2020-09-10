@@ -73,10 +73,9 @@ public class DefaultReferencedSchemaStorage implements ReferencedSchemaStorage {
                             } else {
                                 // required setters are empty, so we may reference it here -> ask decider about it
                                 // note that optionalSetters are never empty here, as both "store" methods add at least one entry
-                                ReferenceName maybeReferenceName = referenceDecider.decide(schema, optionalSetters.size(), uniqueReferenceName);
-                                if (maybeReferenceName != null) {
-                                    optionalSetters.forEach(optionalSetter -> optionalSetter.accept(maybeReferenceName));
-                                    addToReferencedSchemas(referencedSchemas, maybeReferenceName, schema);
+                                if (referenceDecider.turnIntoReference(schema, optionalSetters.size())) {
+                                    optionalSetters.forEach(optionalSetter -> optionalSetter.accept(uniqueReferenceName));
+                                    addToReferencedSchemas(referencedSchemas, uniqueReferenceName, schema);
                                 }
                             }
                         }));

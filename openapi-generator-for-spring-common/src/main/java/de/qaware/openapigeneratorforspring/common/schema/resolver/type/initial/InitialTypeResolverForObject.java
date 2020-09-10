@@ -13,7 +13,7 @@ public class InitialTypeResolverForObject implements InitialTypeResolver {
 
     public static final Supplier<Schema> OBJECT_SCHEMA_SUPPLIER = () -> new Schema().type("object");
 
-    // this resolver does not have any condition, so run this always later then the other resolvers
+    // this resolver does not have any condition, so run this always later then the other resolvers as a fallback
     public static final int ORDER = DEFAULT_ORDER + 100;
 
     private final SchemaNameFactory schemaNameFactory;
@@ -25,7 +25,7 @@ public class InitialTypeResolverForObject implements InitialTypeResolver {
         schema.setName(schemaNameFactory.createFromType(javaType));
         return InitialSchema.builder()
                 .schema(schema)
-                .hasNestedProperties(true)
+                .ignoreNestedProperties(false)
                 .build();
     }
 

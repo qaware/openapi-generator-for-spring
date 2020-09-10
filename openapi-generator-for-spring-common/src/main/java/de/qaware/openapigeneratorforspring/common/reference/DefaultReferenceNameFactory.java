@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class DefaultReferenceNameFactory implements ReferenceNameFactory {
 
+    private static final String IDENTIFIER_SEPARATOR = "_";
     private final AtomicInteger schemaCounter = new AtomicInteger();
 
     @Override
@@ -24,10 +25,11 @@ public class DefaultReferenceNameFactory implements ReferenceNameFactory {
         if (StringUtils.isNotBlank(schema.getName())) {
             return schema.getName();
         } else if (StringUtils.isNotBlank(schema.getType())) {
+            String maybeNullableType = (Boolean.TRUE.equals(schema.getNullable()) ? "nullable" + IDENTIFIER_SEPARATOR : "") + schema.getType();
             if (StringUtils.isNotBlank(schema.getFormat())) {
-                return schema.getType() + "_" + schema.getFormat();
+                return maybeNullableType + IDENTIFIER_SEPARATOR + schema.getFormat();
             }
-            return schema.getType();
+            return maybeNullableType;
         } else {
             return "Schema_" + schemaCounter.getAndIncrement();
         }

@@ -1,20 +1,18 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
-
-import javax.annotation.Nullable;
+import org.apache.commons.lang3.StringUtils;
 
 public class DefaultReferenceDecider implements ReferenceDecider {
-    @Nullable
     @Override
-    public ReferenceName decide(Schema schema, int numberOfUsages, ReferenceName uniqueReferenceName) {
+    public boolean turnIntoReference(Schema schema, int numberOfUsages) {
         if (onlyTypeIsSet(schema)) {
-            return null;
+            return false;
         }
-        if (numberOfUsages > 1) {
-            return uniqueReferenceName;
+        if (StringUtils.isNotBlank(schema.getName())) {
+            return true;
         }
-        return null;
+        return numberOfUsages > 1;
     }
 
     private boolean onlyTypeIsSet(Schema schema) {

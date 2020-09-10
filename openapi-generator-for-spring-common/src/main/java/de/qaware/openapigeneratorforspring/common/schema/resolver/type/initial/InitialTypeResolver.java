@@ -26,6 +26,7 @@ public interface InitialTypeResolver extends Ordered {
         }
 
         private final Schema schema;
-        private final boolean hasNestedProperties;
+        @Builder.Default
+        private final boolean ignoreNestedProperties = true;
     }
 }

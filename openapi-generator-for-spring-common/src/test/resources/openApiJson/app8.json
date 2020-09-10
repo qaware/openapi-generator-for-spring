@@ -31,8 +31,7 @@
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string",
-              "format": "date-time"
+              "$ref": "#/components/schemas/inputParameter"
             }
           },
           {
@@ -78,6 +77,10 @@
   },
   "components": {
     "schemas": {
+      "inputParameter": {
+        "type": "string",
+        "format": "date-time"
+      },
       "string_date-time": {
         "type": "string",
         "format": "date-time"

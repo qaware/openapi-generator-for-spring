@@ -21,6 +21,8 @@ import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSch
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.DefaultSchemaPropertiesResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilterForIgnoredMembers;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollections;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForObject;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForReferenceType;
@@ -93,7 +95,9 @@ public class App5SimpleUnitTest {
 
         DefaultAnnotationsSupplierFactory annotationsSupplierFactory = new DefaultAnnotationsSupplierFactory();
         SchemaResolver sut = new DefaultSchemaResolver(
-                () -> MAPPER, schemaResolver -> schemaAnnotationMapper,
+                () -> MAPPER,
+                new DefaultSchemaPropertiesResolver(() -> MAPPER, Arrays.asList(new SchemaPropertyFilterForIgnoredMembers())),
+                schemaResolver -> schemaAnnotationMapper,
                 annotationsSupplierFactory,
                 // order is important here
                 Arrays.asList(
