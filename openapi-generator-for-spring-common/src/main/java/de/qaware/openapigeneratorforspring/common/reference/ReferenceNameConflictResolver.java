@@ -1,11 +1,14 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
 
-import de.qaware.openapigeneratorforspring.common.schema.Schema;
-
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public interface ReferenceNameConflictResolver {
-    // TODO generalize for other things than Schema
-    List<ReferenceName> resolveConflict(List<Schema> schemasWithSameReferenceName, ReferenceName originalReferenceName);
+public interface ReferenceNameConflictResolver<T> {
+    default List<ReferenceName> resolveConflict(List<T> itemsWithSameReferenceName, ReferenceName originalReferenceName) {
+        return IntStream.range(0, itemsWithSameReferenceName.size()).boxed()
+                .map(i -> originalReferenceName.withIdentifier(identifier -> identifier + "_" + i))
+                .collect(Collectors.toList());
+    }
 }

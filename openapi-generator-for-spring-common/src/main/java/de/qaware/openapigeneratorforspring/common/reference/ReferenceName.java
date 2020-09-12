@@ -26,7 +26,8 @@ public class ReferenceName {
     @RequiredArgsConstructor
     enum Type {
 
-        SCHEMA("#/components/schemas/");
+        SCHEMA("#/components/schemas/"),
+        API_RESPONSE("#/components/responses/");
 
         private final String referencePrefix;
     }

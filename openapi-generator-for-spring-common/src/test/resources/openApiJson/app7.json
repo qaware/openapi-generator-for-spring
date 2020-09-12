@@ -10,7 +10,7 @@
         "operationId": "deleteMapping",
         "responses": {
           "204": {
-            "description": "Default response"
+            "$ref": "#/components/responses/200_201_204"
           }
         }
       }
@@ -37,7 +37,7 @@
         "operationId": "postMapping",
         "responses": {
           "201": {
-            "description": "Default response"
+            "$ref": "#/components/responses/200_201_204"
           }
         }
       }
@@ -47,9 +47,16 @@
         "operationId": "putMapping",
         "responses": {
           "200": {
-            "description": "Default response"
+            "$ref": "#/components/responses/200_201_204"
           }
         }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "200_201_204": {
+        "description": "Default response"
       }
     }
   }

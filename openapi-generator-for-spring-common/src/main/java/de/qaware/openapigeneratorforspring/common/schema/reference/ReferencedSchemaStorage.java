@@ -11,5 +11,5 @@ public interface ReferencedSchemaStorage {
 
     void storeSchemaAlwaysReference(Schema schema, Consumer<ReferenceName> referenceNameConsumer);
 
-    Map<ReferenceName, Schema> buildReferencedSchemas();
+    Map<String, Schema> buildReferencedSchemas();
 }

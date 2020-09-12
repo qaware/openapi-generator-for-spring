@@ -10,14 +10,7 @@
         "operationId": "allDeprecatedGetMapping",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           }
         },
         "deprecated": true
@@ -28,7 +21,7 @@
         "operationId": "allDeprecatedPostMapping",
         "responses": {
           "200": {
-            "description": "Default response"
+            "$ref": "#/components/responses/200_201_204"
           }
         },
         "deprecated": true
@@ -39,14 +32,7 @@
         "operationId": "deprecatedGetMapping",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           }
         },
         "deprecated": true
@@ -57,7 +43,7 @@
         "operationId": "deprecatedPostMapping",
         "responses": {
           "200": {
-            "description": "Default response"
+            "$ref": "#/components/responses/200_201_204"
           }
         },
         "deprecated": true
@@ -74,14 +60,7 @@
         "operationId": "getMappingOperation1",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -92,14 +71,7 @@
         "operationId": "getMappingOperation2",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -117,14 +89,7 @@
         "operationId": "getMappingOperation3",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -134,14 +99,7 @@
         "operationId": "getMappingOperation4",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           }
         },
         "servers": [
@@ -175,7 +133,7 @@
         "operationId": "deleteMapping",
         "responses": {
           "204": {
-            "description": "Default response"
+            "$ref": "#/components/responses/200_201_204"
           }
         }
       }
@@ -185,14 +143,7 @@
         "operationId": "getMappingReturnString",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -202,7 +153,7 @@
         "operationId": "postMapping",
         "responses": {
           "201": {
-            "description": "Default response"
+            "$ref": "#/components/responses/200_201_204"
           }
         }
       }
@@ -212,9 +163,26 @@
         "operationId": "putMapping",
         "responses": {
           "200": {
-            "description": "Default response"
+            "$ref": "#/components/responses/200_201_204"
           }
         }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "200": {
+        "description": "Default response",
+        "content": {
+          "*/*": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "200_201_204": {
+        "description": "Default response"
       }
     }
   }

@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.test.app3;
 
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponseFromMethodCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesFromMethodCustomizer;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Configuration;
 public class App3Configuration {
 
     @Bean
-    public OperationApiResponseFromMethodCustomizer methodResponseApiResponseCustomizer() {
-        return new NoopOperationApiResponseFromMethodCustomizer();
+    public OperationApiResponsesFromMethodCustomizer methodResponseApiResponseCustomizer() {
+        return new NoopOperationApiResponsesFromMethodCustomizer();
     }
 
-    private static class NoopOperationApiResponseFromMethodCustomizer implements OperationApiResponseFromMethodCustomizer {
+    private static class NoopOperationApiResponsesFromMethodCustomizer implements OperationApiResponsesFromMethodCustomizer {
 
         @Override
         public void customize(ApiResponses apiResponses, OperationBuilderContext operationBuilderContext) {

@@ -10,14 +10,7 @@
         "operationId": "getMappingWithString",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -95,14 +88,7 @@
         "operationId": "getMappingReturnsObjectButSchemaSaysItsString",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -218,6 +204,16 @@
         },
         "description": "nestedOtherDescription"
       },
+      "App5Controller.SimpleDto_0": {
+        "title": "global title",
+        "type": "object",
+        "properties": {
+          "property1": {
+            "$ref": "#/components/schemas/nullable_string"
+          }
+        },
+        "description": "global description"
+      },
       "App5Controller.ComplexDto_1": {
         "title": "global title",
         "type": "object",
@@ -258,15 +254,13 @@
         },
         "description": "description1"
       },
-      "App5Controller.SimpleDto_0": {
-        "title": "global title",
+      "App5Controller.SimpleDto_1": {
         "type": "object",
         "properties": {
           "property1": {
             "$ref": "#/components/schemas/nullable_string"
           }
-        },
-        "description": "global description"
+        }
       },
       "App5Controller.ComplexDto_0": {
         "title": "global title",
@@ -307,12 +301,16 @@
           }
         },
         "description": "nestedDescription"
-      },
-      "App5Controller.SimpleDto_1": {
-        "type": "object",
-        "properties": {
-          "property1": {
-            "$ref": "#/components/schemas/nullable_string"
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Default response",
+        "content": {
+          "*/*": {
+            "schema": {
+              "type": "string"
+            }
           }
         }
       }

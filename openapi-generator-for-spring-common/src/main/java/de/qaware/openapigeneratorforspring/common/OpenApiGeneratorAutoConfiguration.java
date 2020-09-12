@@ -1,10 +1,12 @@
 package de.qaware.openapigeneratorforspring.common;
 
 import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
+import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceDeciderForApiResponse;
+import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceNameConflictResolverForApiResponse;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceDecider;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
+import de.qaware.openapigeneratorforspring.common.schema.reference.ReferenceDeciderForSchema;
+import de.qaware.openapigeneratorforspring.common.schema.reference.ReferenceNameConflictResolverForSchema;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -32,15 +34,19 @@ public class OpenApiGeneratorAutoConfiguration {
             PathsBuilder pathsBuilder,
             OpenApiInfoSupplier openApiInfoSupplier,
             ReferenceNameFactory referenceNameFactory,
-            ReferenceNameConflictResolver referenceNameConflictResolver,
-            ReferenceDecider referenceDecider
+            ReferenceNameConflictResolverForSchema referenceNameConflictResolverForSchema,
+            ReferenceDeciderForSchema referenceDeciderForSchema,
+            ReferenceNameConflictResolverForApiResponse referenceNameConflictResolverForApiResponse,
+            ReferenceDeciderForApiResponse referenceDeciderForApiResponse
     ) {
         return new OpenApiGenerator(
                 pathsBuilder,
                 openApiInfoSupplier,
                 referenceNameFactory,
-                referenceNameConflictResolver,
-                referenceDecider
+                referenceNameConflictResolverForSchema,
+                referenceDeciderForSchema,
+                referenceNameConflictResolverForApiResponse,
+                referenceDeciderForApiResponse
         );
     }
 }

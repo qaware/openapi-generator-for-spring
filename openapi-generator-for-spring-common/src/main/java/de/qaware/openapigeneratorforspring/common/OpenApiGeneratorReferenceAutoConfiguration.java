@@ -1,11 +1,10 @@
 package de.qaware.openapigeneratorforspring.common;
 
-import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceDecider;
-import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceNameFactory;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceDecider;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
+import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferenceDeciderForSchema;
+import de.qaware.openapigeneratorforspring.common.schema.reference.ReferenceDeciderForSchema;
+import de.qaware.openapigeneratorforspring.common.schema.reference.ReferenceNameConflictResolverForSchema;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
@@ -18,14 +17,15 @@ public class OpenApiGeneratorReferenceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    ReferenceNameConflictResolver defaultReferenceNameConflictResolver() {
-        return new DefaultReferenceNameConflictResolver();
+    ReferenceNameConflictResolverForSchema defaultReferenceNameConflictResolverForSchema() {
+        return new ReferenceNameConflictResolverForSchema() {
+        };
     }
 
     @Bean
     @ConditionalOnMissingBean
-    ReferenceDecider defaultReferenceDecider() {
-        return new DefaultReferenceDecider();
+    ReferenceDeciderForSchema defaultReferenceDeciderForSchema() {
+        return new DefaultReferenceDeciderForSchema();
     }
 
 }

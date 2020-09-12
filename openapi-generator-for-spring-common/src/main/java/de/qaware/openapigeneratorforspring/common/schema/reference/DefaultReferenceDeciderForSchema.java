@@ -1,9 +1,10 @@
-package de.qaware.openapigeneratorforspring.common.reference;
+package de.qaware.openapigeneratorforspring.common.schema.reference;
 
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import org.apache.commons.lang3.StringUtils;
 
-public class DefaultReferenceDecider implements ReferenceDecider {
+public class DefaultReferenceDeciderForSchema implements ReferenceDeciderForSchema {
+
     @Override
     public boolean turnIntoReference(Schema schema, int numberOfUsages) {
         if (onlyTypeIsSet(schema)) {

@@ -10,14 +10,7 @@
         "operationId": "getMappingReturnInstant",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/string_date-time"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -45,14 +38,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/string_date-time"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -62,14 +48,7 @@
         "operationId": "getResponseEntityOfInstant",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/responseEntitySchema"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -88,6 +67,18 @@
       "responseEntitySchema": {
         "type": "string",
         "format": "date-time"
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Default response",
+        "content": {
+          "*/*": {
+            "schema": {
+              "$ref": "#/components/schemas/string_date-time"
+            }
+          }
+        }
       }
     }
   }

@@ -1,43 +1,38 @@
 package de.qaware.openapigeneratorforspring.common.schema.reference;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceDecider;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class DefaultReferencedSchemaStorage implements ReferencedSchemaStorage {
 
     private final ReferenceNameFactory referenceNameFactory;
-    private final ReferenceNameConflictResolver referenceNameConflictResolver;
-    private final ReferenceDecider referenceDecider;
+    private final ReferenceNameConflictResolverForSchema referenceNameConflictResolver;
+    private final ReferenceDeciderForSchema referenceDecider;
 
     private final List<SchemaWithSetters> entries = new ArrayList<>();
 
     @Override
     public void storeSchemaMaybeReference(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
-        SchemaWithSetters entry = getEntryOrAddNew(schema);
-        entry.getReferenceNameOptionalSetters().add(referenceNameSetter);
+        getEntryOrAddNew(schema).getReferenceNameOptionalSetters().add(referenceNameSetter);
     }
 
     @Override
     public void storeSchemaAlwaysReference(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
-        SchemaWithSetters entry = getEntryOrAddNew(schema);
-        entry.getReferenceNameRequiredSetters().add(referenceNameSetter);
+        getEntryOrAddNew(schema).getReferenceNameRequiredSetters().add(referenceNameSetter);
     }
 
     private SchemaWithSetters getEntryOrAddNew(Schema schema) {
@@ -50,48 +45,34 @@ public class DefaultReferencedSchemaStorage implements ReferencedSchemaStorage {
     }
 
     @Override
-    public Map<ReferenceName, Schema> buildReferencedSchemas() {
-        Map<ReferenceName, Schema> referencedSchemas = new HashMap<>();
-
+    public Map<String, Schema> buildReferencedSchemas() {
+        Map<String, Schema> referencedSchemas = new HashMap<>();
         entries.stream()
-                .collect(Collectors.groupingBy(entry -> referenceNameFactory.create(entry.getSchema())))
+                .filter(entry -> {
+                    if (entry.getReferenceNameRequiredSetters().isEmpty()) {
+                        // note that optionalSetters are never empty here, as both "store" methods add at least one entry
+                        return referenceDecider.turnIntoReference(entry.getSchema(), entry.getReferenceNameOptionalSetters().size());
+                    }
+                    // we have required setters, so always reference the item
+                    return true;
+                })
+                .collect(Collectors.groupingBy(entry -> referenceNameFactory.create(entry.getSchema(), entry.getSchema().getName())))
                 .forEach((referenceName, groupedSchemasWithSetters) ->
-                        buildUniqueReferenceNames(groupedSchemasWithSetters, referenceName).forEach(schemaWithSettersAndUniqueReferenceName -> {
-                            ReferenceName uniqueReferenceName = schemaWithSettersAndUniqueReferenceName.getUniqueReferenceName();
-                            SchemaWithSetters schemaWithSetters = schemaWithSettersAndUniqueReferenceName.getSchemaWithSetters();
+                        buildUniqueReferenceNames(groupedSchemasWithSetters, referenceName).forEach((uniqueReferenceName, schemaWithSetters) -> {
                             Schema schema = schemaWithSetters.getSchema();
-
                             List<Consumer<ReferenceName>> requiredSetters = schemaWithSetters.getReferenceNameRequiredSetters();
                             List<Consumer<ReferenceName>> optionalSetters = schemaWithSetters.getReferenceNameOptionalSetters();
-
-                            if (!requiredSetters.isEmpty()) {
-                                // we're required to set reference names
-                                requiredSetters.forEach(requiredSetter -> requiredSetter.accept(uniqueReferenceName));
-                                // then also propagate that reference to the optional setters (if any)
-                                optionalSetters.forEach(optionalSetter -> optionalSetter.accept(uniqueReferenceName));
-                                addToReferencedSchemas(referencedSchemas, uniqueReferenceName, schema);
-                            } else {
-                                // required setters are empty, so we may reference it here -> ask decider about it
-                                // note that optionalSetters are never empty here, as both "store" methods add at least one entry
-                                if (referenceDecider.turnIntoReference(schema, optionalSetters.size())) {
-                                    optionalSetters.forEach(optionalSetter -> optionalSetter.accept(uniqueReferenceName));
-                                    addToReferencedSchemas(referencedSchemas, uniqueReferenceName, schema);
-                                }
-                            }
+                            requiredSetters.forEach(requiredSetter -> requiredSetter.accept(uniqueReferenceName));
+                            optionalSetters.forEach(optionalSetter -> optionalSetter.accept(uniqueReferenceName));
+                            referencedSchemas.put(uniqueReferenceName.getIdentifier(), schema);
                         }));
         return referencedSchemas;
     }
 
-    private void addToReferencedSchemas(Map<ReferenceName, Schema> referencedSchemas, ReferenceName referenceName, Schema schema) {
-        referencedSchemas.merge(referenceName, schema, (a, b) -> {
-            throw new IllegalStateException("Encountered conflicting reference name " + referenceName + ": " + a + " vs. " + b);
-        });
-    }
-
-    private Stream<SchemaWithSettersAndUniqueReferenceName> buildUniqueReferenceNames(List<SchemaWithSetters> schemasWithSetters, ReferenceName referenceName) {
+    private Map<ReferenceName, SchemaWithSetters> buildUniqueReferenceNames(List<SchemaWithSetters> schemasWithSetters, ReferenceName referenceName) {
         if (schemasWithSetters.size() == 1) {
             // special case: no conflicts need to be resolved as there's only one schema for this reference name
-            return Stream.of(SchemaWithSettersAndUniqueReferenceName.of(referenceName, schemasWithSetters.get(0)));
+            return Collections.singletonMap(referenceName, schemasWithSetters.get(0));
         }
 
         List<Schema> schemasWithSameReferenceName = schemasWithSetters.stream()
@@ -103,20 +84,12 @@ public class DefaultReferencedSchemaStorage implements ReferencedSchemaStorage {
             // TODO improve error message information here
             throw new IllegalStateException("The reference name conflict resolver did not return expected number of unique reference names");
         }
-        if (new HashSet<>(uniqueReferenceNames).size() != uniqueReferenceNames.size()) {
-            throw new IllegalStateException("Reference names from conflict resolver are not unique: " + uniqueReferenceNames);
-        }
 
-        // zip those those arrays
+        // zip those those arrays into map
         return IntStream.range(0, schemasWithSetters.size()).boxed()
-                .map(i -> SchemaWithSettersAndUniqueReferenceName.of(uniqueReferenceNames.get(i), schemasWithSetters.get(i)));
-    }
-
-    @RequiredArgsConstructor(staticName = "of")
-    @Getter
-    private static class SchemaWithSettersAndUniqueReferenceName {
-        private final ReferenceName uniqueReferenceName;
-        private final SchemaWithSetters schemaWithSetters;
+                .collect(Collectors.toMap(uniqueReferenceNames::get, schemasWithSetters::get, (a, b) -> {
+                    throw new IllegalStateException("Found non-unique reference name from conflict resolver: " + a + " vs. " + b);
+                }));
     }
 
     @Getter

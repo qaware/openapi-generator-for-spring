@@ -10,7 +10,7 @@
         "operationId": "getMapping1",
         "responses": {
           "503": {
-            "description": "Something went really wrong from base"
+            "$ref": "#/components/responses/503"
           },
           "210": {
             "description": "Really cool response code from base"
@@ -19,7 +19,7 @@
             "description": "Some more responses 1 from base base"
           },
           "411": {
-            "description": "Some more responses 2 from base base"
+            "$ref": "#/components/responses/411"
           },
           "310": {
             "description": "Some more responses 1"
@@ -48,7 +48,7 @@
         "operationId": "getMapping2",
         "responses": {
           "503": {
-            "description": "Something went really wrong from base"
+            "$ref": "#/components/responses/503"
           },
           "210": {
             "description": "All ok overwrite base"
@@ -57,7 +57,7 @@
             "description": "Some response overwrite base base"
           },
           "411": {
-            "description": "Some more responses 2 from base base"
+            "$ref": "#/components/responses/411"
           },
           "201": {
             "description": "Custom default description for response",
@@ -204,6 +204,14 @@
       "schema-example-object-1": {
         "title": "schema title 1",
         "type": "string"
+      }
+    },
+    "responses": {
+      "411": {
+        "description": "Some more responses 2 from base base"
+      },
+      "503": {
+        "description": "Something went really wrong from base"
       }
     }
   }
