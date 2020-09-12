@@ -66,7 +66,6 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
         return new DefaultApiResponseCodeMapper(annotationsSupplierFactory);
     }
 
-
     @Bean
     @ConditionalOnMissingBean
     public ReferenceNameConflictResolverForApiResponse defaultReferenceNameConflictResolverForApiResponse() {

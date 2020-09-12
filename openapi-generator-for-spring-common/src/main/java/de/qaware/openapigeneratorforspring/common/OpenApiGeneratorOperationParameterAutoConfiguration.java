@@ -18,6 +18,8 @@ import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterNullableCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterSchemaCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceDeciderForParameter;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceNameConflictResolverForParameter;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -118,5 +120,19 @@ public class OpenApiGeneratorOperationParameterAutoConfiguration {
             DefaultParameterBuilderFromSpringWebAnnotation defaultParameterBuilderFromSpringWebAnnotation
     ) {
         return new DefaultParameterMethodConverterFromRequestParamAnnotation(defaultParameterBuilderFromSpringWebAnnotation);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ReferenceNameConflictResolverForParameter defaultReferenceNameConflictResolverForParameter() {
+        return new ReferenceNameConflictResolverForParameter() {
+        };
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ReferenceDeciderForParameter defaultReferenceDeciderForParameter() {
+        return new ReferenceDeciderForParameter() {
+        };
     }
 }

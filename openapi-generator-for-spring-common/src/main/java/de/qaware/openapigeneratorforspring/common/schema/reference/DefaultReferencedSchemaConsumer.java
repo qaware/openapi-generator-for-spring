@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.schema.reference;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import lombok.RequiredArgsConstructor;
 
@@ -10,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
@@ -31,31 +31,20 @@ public class DefaultReferencedSchemaConsumer implements ReferencedSchemaConsumer
         List<EntryWithSchema<T>> entriesWithSchemas = entriesWithSchemasStream.collect(Collectors.toList());
         List<EntryWithReferenceName<T>> result = new ArrayList<>(Collections.nCopies(entriesWithSchemas.size(), null));
 
-        for (int i = 0; i < entriesWithSchemas.size(); i++) {
+        // using an IntStream here makes the index final and can then be captured in nested lambdas
+        IntStream.range(0, entriesWithSchemas.size()).forEach(i -> {
             EntryWithSchema<T> entryWithSchema = entriesWithSchemas.get(i);
-            Consumer<ReferenceName> referenceNameConsumer = new ReferenceNameConsumerForIndexedResult<>(i, result, entryWithSchema.getEntry());
             referencedSchemaStorage.storeSchemaAlwaysReference(
                     entryWithSchema.getSchema(),
                     referenceName -> {
-                        referenceNameConsumer.accept(referenceName);
-                        boolean allResultsAreNotNull = result.stream().noneMatch(Objects::isNull);
-                        if (allResultsAreNotNull) {
+                        result.set(i, EntryWithReferenceName.of(entryWithSchema.getEntry(), referenceName));
+                        // trigger once result is completely filled (= all entries are not null anymore)
+                        boolean resultIsCompletelyFilled = result.stream().noneMatch(Objects::isNull);
+                        if (resultIsCompletelyFilled) {
                             referenceNameSetters.accept(result.stream());
                         }
                     }
             );
-        }
-    }
-
-    @RequiredArgsConstructor
-    private static class ReferenceNameConsumerForIndexedResult<T> implements Consumer<ReferenceName> {
-        private final int i;
-        private final List<EntryWithReferenceName<T>> result;
-        private final T entry;
-
-        @Override
-        public void accept(ReferenceName referenceName) {
-            result.set(i, EntryWithReferenceName.of(entry, referenceName));
-        }
+        });
     }
 }

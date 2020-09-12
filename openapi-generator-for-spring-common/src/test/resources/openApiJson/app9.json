@@ -1,0 +1,78 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App9",
+    "version": "unknown"
+  },
+  "paths": {
+    "/get-1": {
+      "get": {
+        "operationId": "getMapping1",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/param1"
+          },
+          {
+            "$ref": "#/components/parameters/param2"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "/get-2": {
+      "get": {
+        "operationId": "getMapping2",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/param1"
+          },
+          {
+            "$ref": "#/components/parameters/param2"
+          },
+          {
+            "name": "param3",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "200": {
+        "description": "Default response"
+      }
+    },
+    "parameters": {
+      "param1": {
+        "name": "param1",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "param2": {
+        "name": "param2",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

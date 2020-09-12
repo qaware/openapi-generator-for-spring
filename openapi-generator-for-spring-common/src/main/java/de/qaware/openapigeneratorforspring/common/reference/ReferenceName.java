@@ -27,7 +27,8 @@ public class ReferenceName {
     enum Type {
 
         SCHEMA("#/components/schemas/"),
-        API_RESPONSE("#/components/responses/");
+        API_RESPONSE("#/components/responses/"),
+        PARAMETER("#/components/parameters/");;
 
         private final String referencePrefix;
     }

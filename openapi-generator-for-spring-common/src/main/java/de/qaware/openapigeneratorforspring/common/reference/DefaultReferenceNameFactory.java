@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.common.reference;
 
 
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,6 +19,7 @@ public class DefaultReferenceNameFactory implements ReferenceNameFactory {
     private static final String NULLABLE_PREFIX = "nullable";
     private final AtomicInteger schemaCounter = new AtomicInteger();
     private final AtomicInteger apiResponseCounter = new AtomicInteger();
+    private final AtomicInteger parameterCounter = new AtomicInteger();
 
     @Override
     public ReferenceName create(Object object, @Nullable String suggestedIdentifier) {
@@ -27,8 +29,15 @@ public class DefaultReferenceNameFactory implements ReferenceNameFactory {
             return new ReferenceName(ReferenceName.Type.SCHEMA, getIdentifierForSchema(schema, suggestedIdentifier));
         } else if (object instanceof ApiResponse) {
             return new ReferenceName(ReferenceName.Type.API_RESPONSE, getIdentifierForApiResponse(suggestedIdentifier));
+        } else if (object instanceof Parameter) {
+            return new ReferenceName(ReferenceName.Type.PARAMETER, getIdentifierForParameter(suggestedIdentifier));
         }
         throw new IllegalStateException("Unknown object to create reference name for " + object.getClass());
+    }
+
+    private String getIdentifierForParameter(@Nullable String suggestedIdentifier) {
+        return StringUtils.isNotBlank(suggestedIdentifier) ? suggestedIdentifier
+                : "Parameter" + IDENTIFIER_SEPARATOR + parameterCounter.getAndIncrement();
     }
 
     private String getIdentifierForApiResponse(@Nullable String suggestedIdentifier) {

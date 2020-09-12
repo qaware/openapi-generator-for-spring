@@ -1,6 +1,12 @@
 package de.qaware.openapigeneratorforspring.common;
 
 import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.DefaultReferencedParameterStorage;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.DefaultReferencedParametersConsumer;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceDeciderForParameter;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceNameConflictResolverForParameter;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferencedParameterStorage;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferencedParametersConsumer;
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.DefaultReferencedApiResponseStorage;
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.DefaultReferencedApiResponsesConsumer;
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceDeciderForApiResponse;
@@ -19,6 +25,7 @@ import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSch
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -42,6 +49,8 @@ public class OpenApiGenerator {
     private final ReferenceNameConflictResolverForApiResponse referenceNameConflictResolverForApiResponse;
     private final ReferenceDeciderForApiResponse referenceDeciderForApiResponse;
 
+    private final ReferenceNameConflictResolverForParameter referenceNameConflictResolverForParameter;
+    private final ReferenceDeciderForParameter referenceDeciderForParameter;
 
     public OpenAPI generateOpenApi() {
 
@@ -52,7 +61,10 @@ public class OpenApiGenerator {
         ReferencedApiResponseStorage referencedApiResponseStorage = new DefaultReferencedApiResponseStorage(referenceNameFactory, referenceNameConflictResolverForApiResponse, referenceDeciderForApiResponse);
         ReferencedApiResponsesConsumer referencedApiResponsesConsumer = new DefaultReferencedApiResponsesConsumer(referencedApiResponseStorage);
 
-        Paths paths = pathsBuilder.buildPaths(referencedSchemaConsumer, referencedApiResponsesConsumer);
+        ReferencedParameterStorage referencedParameterStorage = new DefaultReferencedParameterStorage(referenceNameFactory, referenceNameConflictResolverForParameter, referenceDeciderForParameter);
+        ReferencedParametersConsumer referencedParametersConsumer = new DefaultReferencedParametersConsumer(referencedParameterStorage);
+
+        Paths paths = pathsBuilder.buildPaths(referencedSchemaConsumer, referencedApiResponsesConsumer, referencedParametersConsumer);
 
         OpenAPI openApi = new OpenAPI();
 
@@ -62,10 +74,12 @@ public class OpenApiGenerator {
         // TODO generalize to other reference components
         Map<String, Schema> referencedSchemas = referencedSchemaStorage.buildReferencedSchemas();
         Map<String, ApiResponse> referencedApiResponses = referencedApiResponseStorage.buildReferencedApiResponses();
+        Map<String, Parameter> referencedParameters = referencedParameterStorage.buildReferencedParameters();
 
         Components components = new Components();
         setMapIfNotEmpty(referencedSchemas.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)), components::setSchemas);
         setMapIfNotEmpty(referencedApiResponses, components::setResponses);
+        setMapIfNotEmpty(referencedParameters, components::setParameters);
         if (!components.equals(new Components())) {
             openApi.setComponents(components);
         }

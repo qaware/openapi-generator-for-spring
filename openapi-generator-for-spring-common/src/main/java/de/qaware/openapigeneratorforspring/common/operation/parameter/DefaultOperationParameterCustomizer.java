@@ -6,6 +6,7 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderCont
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferencedParametersConsumer;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -69,13 +70,19 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
             }
         }
 
-        setCollectionIfNotEmpty(parameters, operation::setParameters);
+        setParametersToOperation(operation, parameters, operationBuilderContext);
     }
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
         List<Parameter> parameters = getParametersFromHandlerMethod(operationBuilderContext);
-        setCollectionIfNotEmpty(parameters, operation::setParameters);
+        setParametersToOperation(operation, parameters, operationBuilderContext);
+    }
+
+    private static void setParametersToOperation(Operation operation, List<Parameter> parameters, OperationBuilderContext operationBuilderContext) {
+        ReferencedParametersConsumer referencedParametersConsumer = operationBuilderContext.getReferencedParametersConsumer();
+        // TODO make setters joinable somehow?
+        setCollectionIfNotEmpty(parameters, p -> referencedParametersConsumer.maybeAsReferences(p, operation::setParameters));
     }
 
     private List<Parameter> getParametersFromHandlerMethod(OperationBuilderContext operationBuilderContext) {

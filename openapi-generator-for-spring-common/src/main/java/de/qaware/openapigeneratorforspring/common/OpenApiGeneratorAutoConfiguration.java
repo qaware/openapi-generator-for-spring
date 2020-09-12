@@ -1,6 +1,8 @@
 package de.qaware.openapigeneratorforspring.common;
 
 import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceDeciderForParameter;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceNameConflictResolverForParameter;
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceDeciderForApiResponse;
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceNameConflictResolverForApiResponse;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
@@ -37,7 +39,9 @@ public class OpenApiGeneratorAutoConfiguration {
             ReferenceNameConflictResolverForSchema referenceNameConflictResolverForSchema,
             ReferenceDeciderForSchema referenceDeciderForSchema,
             ReferenceNameConflictResolverForApiResponse referenceNameConflictResolverForApiResponse,
-            ReferenceDeciderForApiResponse referenceDeciderForApiResponse
+            ReferenceDeciderForApiResponse referenceDeciderForApiResponse,
+            ReferenceNameConflictResolverForParameter referenceNameConflictResolverForParameter,
+            ReferenceDeciderForParameter referenceDeciderForParameter
     ) {
         return new OpenApiGenerator(
                 pathsBuilder,
@@ -46,7 +50,9 @@ public class OpenApiGeneratorAutoConfiguration {
                 referenceNameConflictResolverForSchema,
                 referenceDeciderForSchema,
                 referenceNameConflictResolverForApiResponse,
-                referenceDeciderForApiResponse
+                referenceDeciderForApiResponse,
+                referenceNameConflictResolverForParameter,
+                referenceDeciderForParameter
         );
     }
 }
