@@ -56,7 +56,7 @@ public class ReferencedSchemaHandlerImpl implements ReferencedItemHandler<Schema
 
     @Override
     public void applyToComponents(Components components) {
-        Map<String, Schema> referencedSchemas = referencedSchemaStorage.buildReferencedSchemas();
+        Map<String, Schema> referencedSchemas = referencedSchemaStorage.buildReferencedItems();
         setMapIfNotEmpty(referencedSchemas.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)), components::setSchemas);
     }
 }

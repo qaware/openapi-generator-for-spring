@@ -30,6 +30,6 @@ public class ReferencedParametersHandlerImpl implements ReferencedItemHandler<Li
 
     @Override
     public void applyToComponents(Components components) {
-        setMapIfNotEmpty(referencedParameterStorage.buildReferencedParameters(), components::setParameters);
+        setMapIfNotEmpty(referencedParameterStorage.buildReferencedItems(), components::setParameters);
     }
 }

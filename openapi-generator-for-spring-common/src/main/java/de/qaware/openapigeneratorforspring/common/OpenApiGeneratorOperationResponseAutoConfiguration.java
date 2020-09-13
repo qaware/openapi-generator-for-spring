@@ -13,10 +13,11 @@ import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOper
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOperationResponseCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesFromMethodCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.response.reference.DefaultReferenceNameFactoryForApiResponse;
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceDeciderForApiResponse;
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceNameConflictResolverForApiResponse;
+import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceNameFactoryForApiResponse;
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferencedApiResponsesHandlerFactory;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -71,17 +72,24 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ReferencedApiResponsesHandlerFactory referencedApiResponsesHandlerFactory(
-            ReferenceNameFactory referenceNameFactory,
-            ReferenceNameConflictResolverForApiResponse referenceNameConflictResolver,
-            ReferenceDeciderForApiResponse referenceDecider
+            ReferenceDeciderForApiResponse referenceDecider,
+            ReferenceNameFactoryForApiResponse referenceNameFactory,
+            ReferenceNameConflictResolverForApiResponse referenceNameConflictResolver
     ) {
-        return new ReferencedApiResponsesHandlerFactory(referenceNameFactory, referenceNameConflictResolver, referenceDecider);
+        return new ReferencedApiResponsesHandlerFactory(referenceDecider, referenceNameFactory, referenceNameConflictResolver);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ReferenceNameFactoryForApiResponse defaultReferenceNameFactoryForApiResponse() {
+        return new DefaultReferenceNameFactoryForApiResponse();
     }
 
     @Bean
     @ConditionalOnMissingBean
     public ReferenceNameConflictResolverForApiResponse defaultReferenceNameConflictResolverForApiResponse() {
         return new ReferenceNameConflictResolverForApiResponse() {
+            // use default implementation
         };
     }
 
@@ -89,6 +97,7 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
     @ConditionalOnMissingBean
     public ReferenceDeciderForApiResponse defaultReferenceDeciderForApiResponse() {
         return new ReferenceDeciderForApiResponse() {
+            // use default implementation
         };
     }
 }

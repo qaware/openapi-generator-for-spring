@@ -28,6 +28,6 @@ public class ReferencedApiResponsesHandlerImpl implements ReferencedItemHandler<
 
     @Override
     public void applyToComponents(Components components) {
-        setMapIfNotEmpty(referencedApiResponseStorage.buildReferencedApiResponses(), components::setResponses);
+        setMapIfNotEmpty(referencedApiResponseStorage.buildReferencedItems(), components::setResponses);
     }
 }

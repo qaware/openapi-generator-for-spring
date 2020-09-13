@@ -8,11 +8,12 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import de.qaware.openapigeneratorforspring.common.annotation.DefaultAnnotationsSupplierFactory;
-import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForNullable;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferenceDeciderForSchema;
+import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferenceNameFactoryForSchema;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferenceNameConflictResolverForSchema;
+import de.qaware.openapigeneratorforspring.common.schema.reference.ReferenceNameFactoryForSchema;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaHandlerImpl;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaStorage;
@@ -69,7 +70,7 @@ public class App5SimpleUnitTest {
     @Test
     public void resolveSchemaWithResolver() throws Exception {
 
-        DefaultReferenceNameFactory referenceNameFactory = new DefaultReferenceNameFactory();
+        ReferenceNameFactoryForSchema referenceNameFactory = new DefaultReferenceNameFactoryForSchema();
         ReferenceNameConflictResolverForSchema referenceNameConflictResolver = new ReferenceNameConflictResolverForSchema() {
         };
 
@@ -112,16 +113,18 @@ public class App5SimpleUnitTest {
                 Arrays.asList(new SchemaCustomizerForNullable())
         );
 
-        ReferencedSchemaStorage storage = new ReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver,
-//                (de.qaware.openapigeneratorforspring.common.schema.Schema schema, int numberOfUsages, ReferenceName uniqueReferenceName) -> uniqueReferenceName
-                new DefaultReferenceDeciderForSchema()
+        ReferencedSchemaStorage storage = new ReferencedSchemaStorage(
+                // (de.qaware.openapigeneratorforspring.common.schema.Schema schema, int numberOfUsages, ReferenceName uniqueReferenceName) -> uniqueReferenceName
+                new DefaultReferenceDeciderForSchema(),
+                referenceNameFactory,
+                referenceNameConflictResolver
         );
         ReferencedSchemaConsumer referencedSchemaConsumer = new ReferencedSchemaHandlerImpl(storage);
 
         AtomicReference<de.qaware.openapigeneratorforspring.common.schema.Schema> schemaHolder = new AtomicReference<>();
         sut.resolveFromClass(ComplexDto.class, referencedSchemaConsumer, schemaHolder::set);
 
-        Map<String, de.qaware.openapigeneratorforspring.common.schema.Schema> referencedSchemas = storage.buildReferencedSchemas();
+        Map<String, de.qaware.openapigeneratorforspring.common.schema.Schema> referencedSchemas = storage.buildReferencedItems();
 
         System.out.println("==== Constructed schema");
         System.out.println(MAPPER.writeValueAsString(schemaHolder.get()));

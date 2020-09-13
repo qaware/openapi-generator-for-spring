@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,8 @@ public class ReferenceName {
         return new ReferenceName(type, identifierMapper.apply(identifier));
     }
 
-    @RequiredArgsConstructor
-    enum Type {
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    public enum Type {
 
         SCHEMA("#/components/schemas/"),
         API_RESPONSE("#/components/responses/"),

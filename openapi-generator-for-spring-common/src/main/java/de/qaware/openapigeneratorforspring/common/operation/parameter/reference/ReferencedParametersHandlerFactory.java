@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.reference;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemHandlerFactory;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -11,13 +10,13 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class ReferencedParametersHandlerFactory implements ReferencedItemHandlerFactory<List<Parameter>> {
-    private final ReferenceNameFactory referenceNameFactory;
-    private final ReferenceNameConflictResolverForParameter referenceNameConflictResolver;
     private final ReferenceDeciderForParameter referenceDecider;
+    private final ReferenceNameFactoryForParameter referenceNameFactory;
+    private final ReferenceNameConflictResolverForParameter referenceNameConflictResolver;
 
     @Override
     public ReferencedItemHandler<List<Parameter>> create() {
-        ReferencedParameterStorage storage = new ReferencedParameterStorage(referenceNameFactory, referenceNameConflictResolver, referenceDecider);
+        ReferencedParameterStorage storage = new ReferencedParameterStorage(referenceDecider, referenceNameFactory, referenceNameConflictResolver);
         return new ReferencedParametersHandlerImpl(storage);
     }
 
