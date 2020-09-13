@@ -20,6 +20,8 @@ import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceDeciderForParameter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceNameConflictResolverForParameter;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferencedParametersHandlerFactory;
+import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -120,6 +122,16 @@ public class OpenApiGeneratorOperationParameterAutoConfiguration {
             DefaultParameterBuilderFromSpringWebAnnotation defaultParameterBuilderFromSpringWebAnnotation
     ) {
         return new DefaultParameterMethodConverterFromRequestParamAnnotation(defaultParameterBuilderFromSpringWebAnnotation);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ReferencedParametersHandlerFactory referencedParametersHandlerFactory(
+            ReferenceNameFactory referenceNameFactory,
+            ReferenceNameConflictResolverForParameter referenceNameConflictResolver,
+            ReferenceDeciderForParameter referenceDecider
+    ) {
+        return new ReferencedParametersHandlerFactory(referenceNameFactory, referenceNameConflictResolver, referenceDecider);
     }
 
     @Bean

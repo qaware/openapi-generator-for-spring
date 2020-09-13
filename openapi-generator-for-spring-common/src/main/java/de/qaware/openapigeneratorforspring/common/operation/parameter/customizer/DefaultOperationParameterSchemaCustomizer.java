@@ -3,6 +3,7 @@ package de.qaware.openapigeneratorforspring.common.operation.parameter.customize
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,8 @@ public class DefaultOperationParameterSchemaCustomizer implements OperationParam
         // TODO handle explode setting of annotation?
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(methodParameter)
                 .andThen(annotationsSupplierFactory.createFromAnnotatedElement(methodParameter.getType()));
-        schemaResolver.resolveFromType(methodParameter.getType(), annotationsSupplier, operationBuilderContext.getReferencedSchemaConsumer(),
+        ReferencedSchemaConsumer referencedSchemaConsumer = operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedSchemaConsumer.class);
+        schemaResolver.resolveFromType(methodParameter.getType(), annotationsSupplier, referencedSchemaConsumer,
                 parameter::setSchema
         );
     }

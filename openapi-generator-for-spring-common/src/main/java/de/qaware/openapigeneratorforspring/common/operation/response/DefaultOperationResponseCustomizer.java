@@ -50,9 +50,10 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
         for (OperationApiResponsesCustomizer customizer : operationApiResponsesCustomizers) {
             customizer.customize(apiResponses, operationBuilderContext);
         }
-        ReferencedApiResponsesConsumer referencedApiResponsesConsumer = operationBuilderContext.getReferencedApiResponsesConsumer();
+        ReferencedApiResponsesConsumer referencedApiResponsesConsumer = operationBuilderContext.getReferencedItemConsumerSupplier()
+                .get(ReferencedApiResponsesConsumer.class);
         setMapIfNotEmpty(apiResponses,
-                responses -> referencedApiResponsesConsumer.maybeAsReferences(responses, operation::setResponses)
+                responses -> referencedApiResponsesConsumer.maybeAsReference(responses, operation::setResponses)
         );
     }
 

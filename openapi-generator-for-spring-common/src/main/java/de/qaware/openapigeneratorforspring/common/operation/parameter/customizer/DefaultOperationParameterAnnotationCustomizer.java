@@ -3,6 +3,7 @@ package de.qaware.openapigeneratorforspring.common.operation.parameter.customize
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.ParameterAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,7 +15,8 @@ public class DefaultOperationParameterAnnotationCustomizer implements OperationP
     public void customize(io.swagger.v3.oas.models.parameters.Parameter parameter, java.lang.reflect.Parameter methodParameter, AnnotationsSupplier parameterAnnotationsSupplier, OperationBuilderContext operationBuilderContext) {
         Parameter parameterAnnotation = parameterAnnotationsSupplier.findFirstAnnotation(Parameter.class);
         if (parameterAnnotation != null) {
-            parameterAnnotationMapper.applyFromAnnotation(parameter, parameterAnnotation, operationBuilderContext.getReferencedSchemaConsumer());
+            ReferencedSchemaConsumer referencedSchemaConsumer = operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedSchemaConsumer.class);
+            parameterAnnotationMapper.applyFromAnnotation(parameter, parameterAnnotation, referencedSchemaConsumer);
         }
     }
 }

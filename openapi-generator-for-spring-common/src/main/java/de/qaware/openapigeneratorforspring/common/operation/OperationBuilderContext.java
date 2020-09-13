@@ -1,14 +1,12 @@
 package de.qaware.openapigeneratorforspring.common.operation;
 
-import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferencedParametersConsumer;
-import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferencedApiResponsesConsumer;
-import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
-import lombok.Value;
+import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Value
+@RequiredArgsConstructor
+@Getter
 public class OperationBuilderContext {
-    OperationInfo operationInfo;
-    ReferencedSchemaConsumer referencedSchemaConsumer;
-    ReferencedApiResponsesConsumer referencedApiResponsesConsumer;
-    ReferencedParametersConsumer referencedParametersConsumer;
+    private final OperationInfo operationInfo;
+    private final ReferencedItemConsumerSupplier referencedItemConsumerSupplier;
 }

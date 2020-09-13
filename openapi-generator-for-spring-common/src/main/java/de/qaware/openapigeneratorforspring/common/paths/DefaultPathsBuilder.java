@@ -8,9 +8,7 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderCont
 import de.qaware.openapigeneratorforspring.common.operation.OperationInfo;
 import de.qaware.openapigeneratorforspring.common.operation.OperationWithInfo;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
-import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferencedParametersConsumer;
-import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferencedApiResponsesConsumer;
-import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
@@ -37,11 +35,7 @@ public class DefaultPathsBuilder implements PathsBuilder {
     private final OperationIdConflictResolver operationIdConflictResolver;
 
     @Override
-    public Paths buildPaths(
-            ReferencedSchemaConsumer referencedSchemaConsumer,
-            ReferencedApiResponsesConsumer referencedApiResponsesConsumer,
-            ReferencedParametersConsumer referencedParametersConsumer
-    ) {
+    public Paths buildPaths(ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
 
         List<HandlerMethodWithInfo> handlerMethods = handlerMethodsProvider.getHandlerMethods();
 
@@ -68,10 +62,7 @@ public class DefaultPathsBuilder implements PathsBuilder {
                     MultiValueMap<String, OperationWithInfo> operationsByIdPerPathItem = new LinkedMultiValueMap<>();
                     requestMethods.forEach(requestMethod -> {
                         OperationInfo operationInfo = OperationInfo.of(handlerMethod, requestMethod, pathPattern);
-                        OperationBuilderContext operationBuilderContext = new OperationBuilderContext(
-                                operationInfo,
-                                referencedSchemaConsumer, referencedApiResponsesConsumer, referencedParametersConsumer
-                        );
+                        OperationBuilderContext operationBuilderContext = new OperationBuilderContext(operationInfo, referencedItemConsumerSupplier);
                         Operation operation = operationBuilder.buildOperation(operationBuilderContext);
                         if (isAcceptedByAllOperationFilters(operation, handlerMethod)) {
                             String operationId = operation.getOperationId();

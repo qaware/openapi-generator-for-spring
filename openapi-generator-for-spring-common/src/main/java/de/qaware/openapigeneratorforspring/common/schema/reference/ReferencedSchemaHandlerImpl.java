@@ -1,19 +1,24 @@
 package de.qaware.openapigeneratorforspring.common.schema.reference;
 
+import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
+import io.swagger.v3.oas.models.Components;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
+
 @RequiredArgsConstructor
-public class DefaultReferencedSchemaConsumer implements ReferencedSchemaConsumer {
+public class ReferencedSchemaHandlerImpl implements ReferencedItemHandler<Schema>, ReferencedSchemaConsumer {
 
     private final ReferencedSchemaStorage referencedSchemaStorage;
 
@@ -26,7 +31,8 @@ public class DefaultReferencedSchemaConsumer implements ReferencedSchemaConsumer
     }
 
     @Override
-    public <T> void alwaysAsReferences(Stream<EntryWithSchema<T>> entriesWithSchemasStream, Consumer<Stream<EntryWithReferenceName<T>>> referenceNameSetters) {
+    public <T> void alwaysAsReferences(Stream<EntryWithSchema<T>> entriesWithSchemasStream,
+                                       Consumer<Stream<EntryWithReferenceName<T>>> referenceNameSetters) {
 
         List<EntryWithSchema<T>> entriesWithSchemas = entriesWithSchemasStream.collect(Collectors.toList());
         List<EntryWithReferenceName<T>> result = new ArrayList<>(Collections.nCopies(entriesWithSchemas.size(), null));
@@ -46,5 +52,11 @@ public class DefaultReferencedSchemaConsumer implements ReferencedSchemaConsumer
                     }
             );
         });
+    }
+
+    @Override
+    public void applyToComponents(Components components) {
+        Map<String, Schema> referencedSchemas = referencedSchemaStorage.buildReferencedSchemas();
+        setMapIfNotEmpty(referencedSchemas.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)), components::setSchemas);
     }
 }

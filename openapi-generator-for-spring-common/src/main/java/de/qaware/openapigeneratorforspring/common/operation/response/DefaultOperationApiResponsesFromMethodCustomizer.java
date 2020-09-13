@@ -3,6 +3,7 @@ package de.qaware.openapigeneratorforspring.common.operation.response;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
@@ -55,7 +56,7 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Ordered
             AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(method.getReturnType())
                     .andThen(annotationsSupplierFromMethodWithDeclaringClass);
             schemaResolver.resolveFromType(method.getGenericReturnType(), annotationsSupplier,
-                    operationBuilderContext.getReferencedSchemaConsumer(), mediaType::setSchema);
+                    operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedSchemaConsumer.class), mediaType::setSchema);
         }
 
     }

@@ -7,6 +7,7 @@ import de.qaware.openapigeneratorforspring.common.operation.customizer.Operation
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferencedParametersConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -57,14 +58,14 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
         for (Parameter parameterFromMethod : getParametersFromHandlerMethod(operationBuilderContext)) {
             io.swagger.v3.oas.annotations.Parameter parameterAnnotation = parameterAnnotationMap.remove(parameterFromMethod.getName());
             if (parameterAnnotation != null) {
-                parameterAnnotationMapper.applyFromAnnotation(parameterFromMethod, parameterAnnotation, operationBuilderContext.getReferencedSchemaConsumer());
+                parameterAnnotationMapper.applyFromAnnotation(parameterFromMethod, parameterAnnotation, operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedSchemaConsumer.class));
             }
             parameters.add(parameterFromMethod);
         }
 
         // add leftover parameters from annotation only afterwards
         for (io.swagger.v3.oas.annotations.Parameter parameterAnnotation : parameterAnnotationMap.values()) {
-            Parameter parameter = parameterAnnotationMapper.buildFromAnnotation(parameterAnnotation, operationBuilderContext.getReferencedSchemaConsumer());
+            Parameter parameter = parameterAnnotationMapper.buildFromAnnotation(parameterAnnotation, operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedSchemaConsumer.class));
             if (parameter != null) {
                 parameters.add(parameter);
             }
@@ -80,9 +81,9 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
     }
 
     private static void setParametersToOperation(Operation operation, List<Parameter> parameters, OperationBuilderContext operationBuilderContext) {
-        ReferencedParametersConsumer referencedParametersConsumer = operationBuilderContext.getReferencedParametersConsumer();
+        ReferencedParametersConsumer referencedParametersConsumer = operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedParametersConsumer.class);
         // TODO make setters joinable somehow?
-        setCollectionIfNotEmpty(parameters, p -> referencedParametersConsumer.maybeAsReferences(p, operation::setParameters));
+        setCollectionIfNotEmpty(parameters, p -> referencedParametersConsumer.maybeAsReference(p, operation::setParameters));
     }
 
     private List<Parameter> getParametersFromHandlerMethod(OperationBuilderContext operationBuilderContext) {

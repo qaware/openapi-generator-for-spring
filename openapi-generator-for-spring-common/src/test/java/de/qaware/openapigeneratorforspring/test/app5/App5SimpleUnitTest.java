@@ -12,10 +12,9 @@ import de.qaware.openapigeneratorforspring.common.reference.DefaultReferenceName
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForNullable;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferenceDeciderForSchema;
-import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferencedSchemaConsumer;
-import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferencedSchemaStorage;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferenceNameConflictResolverForSchema;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaHandlerImpl;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaStorage;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaResolver;
@@ -113,11 +112,11 @@ public class App5SimpleUnitTest {
                 Arrays.asList(new SchemaCustomizerForNullable())
         );
 
-        ReferencedSchemaStorage storage = new DefaultReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver,
+        ReferencedSchemaStorage storage = new ReferencedSchemaStorage(referenceNameFactory, referenceNameConflictResolver,
 //                (de.qaware.openapigeneratorforspring.common.schema.Schema schema, int numberOfUsages, ReferenceName uniqueReferenceName) -> uniqueReferenceName
                 new DefaultReferenceDeciderForSchema()
         );
-        ReferencedSchemaConsumer referencedSchemaConsumer = new DefaultReferencedSchemaConsumer(storage);
+        ReferencedSchemaConsumer referencedSchemaConsumer = new ReferencedSchemaHandlerImpl(storage);
 
         AtomicReference<de.qaware.openapigeneratorforspring.common.schema.Schema> schemaHolder = new AtomicReference<>();
         sut.resolveFromClass(ComplexDto.class, referencedSchemaConsumer, schemaHolder::set);

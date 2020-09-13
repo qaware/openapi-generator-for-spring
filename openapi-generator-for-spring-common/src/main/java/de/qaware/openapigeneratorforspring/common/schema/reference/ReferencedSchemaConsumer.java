@@ -1,15 +1,14 @@
 package de.qaware.openapigeneratorforspring.common.schema.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
+import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerForType;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import lombok.Value;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public interface ReferencedSchemaConsumer {
-
-    void maybeAsReference(Schema schema, Consumer<Schema> schemaSetter);
+public interface ReferencedSchemaConsumer extends ReferencedItemConsumerForType<Schema> {
 
     default void alwaysAsReference(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
         alwaysAsReferences(

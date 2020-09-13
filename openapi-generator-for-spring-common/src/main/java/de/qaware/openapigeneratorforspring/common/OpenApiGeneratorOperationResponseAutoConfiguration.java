@@ -15,6 +15,8 @@ import de.qaware.openapigeneratorforspring.common.operation.response.OperationAp
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesFromMethodCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceDeciderForApiResponse;
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceNameConflictResolverForApiResponse;
+import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferencedApiResponsesHandlerFactory;
+import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -64,6 +66,16 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
     @ConditionalOnMissingBean
     public ApiResponseCodeMapper defaultApiResponseCodeMapper(AnnotationsSupplierFactory annotationsSupplierFactory) {
         return new DefaultApiResponseCodeMapper(annotationsSupplierFactory);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ReferencedApiResponsesHandlerFactory referencedApiResponsesHandlerFactory(
+            ReferenceNameFactory referenceNameFactory,
+            ReferenceNameConflictResolverForApiResponse referenceNameConflictResolver,
+            ReferenceDeciderForApiResponse referenceDecider
+    ) {
+        return new ReferencedApiResponsesHandlerFactory(referenceNameFactory, referenceNameConflictResolver, referenceDecider);
     }
 
     @Bean
