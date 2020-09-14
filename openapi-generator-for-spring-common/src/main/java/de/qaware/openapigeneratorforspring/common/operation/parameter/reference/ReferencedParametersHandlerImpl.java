@@ -13,7 +13,7 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.se
 
 @RequiredArgsConstructor
 public class ReferencedParametersHandlerImpl implements ReferencedItemHandler<List<Parameter>>, ReferencedParametersConsumer {
-    private final ReferencedParameterStorage referencedParameterStorage;
+    private final ReferencedParameterStorage storage;
 
     @Override
     public void maybeAsReference(List<Parameter> parameters, Consumer<List<Parameter>> parametersSetter) {
@@ -21,7 +21,7 @@ public class ReferencedParametersHandlerImpl implements ReferencedItemHandler<Li
         // we use the fact that we can modify each parameter via index if it's supposed to be changed to a reference
         // using an IntStream here makes i effectively final and thus can be captured in nested lambda
         IntStream.range(0, parameters.size()).forEach(i ->
-                referencedParameterStorage.storeParameterMaybeReference(
+                storage.storeMaybeReference(
                         parameters.get(i),
                         referenceName -> parameters.set(i, new Parameter().$ref(referenceName.asReferenceString()))
                 )
@@ -30,6 +30,6 @@ public class ReferencedParametersHandlerImpl implements ReferencedItemHandler<Li
 
     @Override
     public void applyToComponents(Components components) {
-        setMapIfNotEmpty(referencedParameterStorage.buildReferencedItems(), components::setParameters);
+        setMapIfNotEmpty(storage.buildReferencedItems(), components::setParameters);
     }
 }

@@ -20,12 +20,12 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.se
 @RequiredArgsConstructor
 public class ReferencedSchemaHandlerImpl implements ReferencedItemHandler<Schema>, ReferencedSchemaConsumer {
 
-    private final ReferencedSchemaStorage referencedSchemaStorage;
+    private final ReferencedSchemaStorage storage;
 
     @Override
     public void maybeAsReference(Schema schema, Consumer<Schema> schemaSetter) {
         schemaSetter.accept(schema); // immediately apply the schema, as it's not decided if the schema is referenced later at all
-        referencedSchemaStorage.storeSchemaMaybeReference(schema,
+        storage.storeMaybeReference(schema,
                 referenceName -> schemaSetter.accept(new Schema().$ref(referenceName.asReferenceString()))
         );
     }
@@ -40,7 +40,7 @@ public class ReferencedSchemaHandlerImpl implements ReferencedItemHandler<Schema
         // using an IntStream here makes the index final and can then be captured in nested lambdas
         IntStream.range(0, entriesWithSchemas.size()).forEach(i -> {
             EntryWithSchema<T> entryWithSchema = entriesWithSchemas.get(i);
-            referencedSchemaStorage.storeSchemaAlwaysReference(
+            storage.storeAlwaysReference(
                     entryWithSchema.getSchema(),
                     referenceName -> {
                         result.set(i, EntryWithReferenceName.of(entryWithSchema.getEntry(), referenceName));
@@ -56,7 +56,7 @@ public class ReferencedSchemaHandlerImpl implements ReferencedItemHandler<Schema
 
     @Override
     public void applyToComponents(Components components) {
-        Map<String, Schema> referencedSchemas = referencedSchemaStorage.buildReferencedItems();
+        Map<String, Schema> referencedSchemas = storage.buildReferencedItems();
         setMapIfNotEmpty(referencedSchemas.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)), components::setSchemas);
     }
 }

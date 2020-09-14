@@ -12,7 +12,7 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.se
 
 @RequiredArgsConstructor
 public class ReferencedApiResponsesHandlerImpl implements ReferencedItemHandler<ApiResponses>, ReferencedApiResponsesConsumer {
-    private final ReferencedApiResponseStorage referencedApiResponseStorage;
+    private final ReferencedApiResponseStorage storage;
 
     @Override
     public void maybeAsReference(ApiResponses apiResponses, Consumer<ApiResponses> apiResponsesSetter) {
@@ -20,7 +20,7 @@ public class ReferencedApiResponsesHandlerImpl implements ReferencedItemHandler<
         // exploit the fact that we've access to the full map of apiResponses
         // that means we can modify the reference, and don't need to call apiResponsesSetter again
         apiResponses.forEach((responseCode, apiResponse) ->
-                referencedApiResponseStorage.storeApiResponseMaybeReference(responseCode, apiResponse,
+                storage.storeMaybeReference(responseCode, apiResponse,
                         referenceName -> apiResponses.put(responseCode, new ApiResponse().$ref(referenceName.asReferenceString()))
                 )
         );
@@ -28,6 +28,6 @@ public class ReferencedApiResponsesHandlerImpl implements ReferencedItemHandler<
 
     @Override
     public void applyToComponents(Components components) {
-        setMapIfNotEmpty(referencedApiResponseStorage.buildReferencedItems(), components::setResponses);
+        setMapIfNotEmpty(storage.buildReferencedItems(), components::setResponses);
     }
 }

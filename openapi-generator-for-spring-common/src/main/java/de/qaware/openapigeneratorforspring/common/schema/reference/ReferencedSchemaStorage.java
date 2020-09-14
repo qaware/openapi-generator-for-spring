@@ -6,7 +6,6 @@ import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDec
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameConflictResolverForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameFactoryForType;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
-import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -15,38 +14,38 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class ReferencedSchemaStorage extends AbstractReferencedItemStorage<Schema, ReferencedSchemaStorage.ReferencableSchemaEntry> {
+public class ReferencedSchemaStorage extends AbstractReferencedItemStorage<Schema, ReferencedSchemaStorage.Entry> {
 
     // TODO must not be public
     public ReferencedSchemaStorage(ReferenceDeciderForType<Schema> referenceDecider,
                                    ReferenceNameFactoryForType<Schema> referenceNameFactory,
                                    ReferenceNameConflictResolverForType<Schema> referenceNameConflictResolver) {
-        super(referenceDecider, referenceNameFactory, referenceNameConflictResolver, ReferencableSchemaEntry::new);
+        super(referenceDecider, referenceNameFactory, referenceNameConflictResolver, Entry::new);
     }
 
-    void storeSchemaAlwaysReference(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
-        getEntryOrAddNew(schema).referenceNameRequiredSetters.add(referenceNameSetter);
+    void storeAlwaysReference(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
+        getEntryOrAddNew(schema).addRequiredSetter(referenceNameSetter);
     }
 
-    void storeSchemaMaybeReference(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
-        getEntryOrAddNew(schema).referenceNameOptionalSetters.add(referenceNameSetter);
+    void storeMaybeReference(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
+        getEntryOrAddNew(schema).addSetter(referenceNameSetter);
     }
 
-    @RequiredArgsConstructor
-    static class ReferencableSchemaEntry implements AbstractReferencedItemStorage.ReferencableEntry<Schema> {
+    static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<Schema> {
 
-        private final Schema schema;
         private final List<Consumer<ReferenceName>> referenceNameRequiredSetters = new ArrayList<>();
-        private final List<Consumer<ReferenceName>> referenceNameOptionalSetters = new ArrayList<>();
 
-        @Override
-        public Schema getItem() {
-            return schema;
+        protected Entry(Schema item) {
+            super(item);
+        }
+
+        public void addRequiredSetter(Consumer<ReferenceName> referenceNameSetter) {
+            referenceNameRequiredSetters.add(referenceNameSetter);
         }
 
         @Override
         public boolean matches(Schema schema) {
-            return Objects.equals(this.schema.getName(), schema.getName()) && this.schema.equals(schema);
+            return Objects.equals(getItem().getName(), schema.getName()) && getItem().equals(schema);
         }
 
         @Override
@@ -56,19 +55,18 @@ public class ReferencedSchemaStorage extends AbstractReferencedItemStorage<Schem
 
         @Override
         public int getNumberOfUsages() {
-            // this method is only queried when referenceNameRequiredSetters is empty
-            return referenceNameRequiredSetters.size() + referenceNameOptionalSetters.size();
+            return super.getNumberOfUsages() + referenceNameRequiredSetters.size();
         }
 
         @Nullable
         @Override
         public String getSuggestedIdentifier() {
-            return schema.getName();
+            return getItem().getName();
         }
 
         @Override
         public Stream<Consumer<ReferenceName>> getReferenceNameSetters() {
-            return Stream.concat(referenceNameRequiredSetters.stream(), referenceNameOptionalSetters.stream());
+            return Stream.concat(super.getReferenceNameSetters(), referenceNameRequiredSetters.stream());
         }
     }
 }

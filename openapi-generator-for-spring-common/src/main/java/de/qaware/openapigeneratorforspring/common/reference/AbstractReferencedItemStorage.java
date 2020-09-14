@@ -4,6 +4,7 @@ import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDec
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameConflictResolverForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameFactoryForType;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
@@ -111,5 +112,31 @@ public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferen
 
         Stream<Consumer<ReferenceName>> getReferenceNameSetters();
 
+    }
+
+    @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+    public static abstract class AbstractReferencableEntry<T> implements ReferencableEntry<T> {
+        @Getter
+        private final T item;
+        private final List<Consumer<ReferenceName>> referenceNameSetters = new ArrayList<>();
+
+        @Override
+        public boolean matches(T item) {
+            return this.item.equals(item);
+        }
+
+        public void addSetter(Consumer<ReferenceName> referenceNameSetter) {
+            referenceNameSetters.add(referenceNameSetter);
+        }
+
+        @Override
+        public int getNumberOfUsages() {
+            return referenceNameSetters.size();
+        }
+
+        @Override
+        public Stream<Consumer<ReferenceName>> getReferenceNameSetters() {
+            return referenceNameSetters.stream();
+        }
     }
 }
