@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.operation.response.reference;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemHandler;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;

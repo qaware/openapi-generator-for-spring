@@ -1,10 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.operation.response.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.AbstractReferencedItemStorage;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceDeciderForType;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolverForType;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactoryForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameConflictResolverForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameFactoryForType;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class ReferencedApiResponseStorage extends AbstractReferencedItemStorage<
 
     void storeApiResponseMaybeReference(String responseCode, ApiResponse apiResponse, Consumer<ReferenceName> referenceNameConsumer) {
         getEntryOrAddNew(apiResponse)
-                .withResponseCode(responseCode)
+                .addResponseCode(responseCode)
                 .referenceNameSetters.add(referenceNameConsumer);
     }
 
@@ -37,7 +37,7 @@ public class ReferencedApiResponseStorage extends AbstractReferencedItemStorage<
         private final Set<String> responseCodes = new HashSet<>();
         private final List<Consumer<ReferenceName>> referenceNameSetters = new ArrayList<>();
 
-        public ReferencableApiResponseEntry withResponseCode(String responseCode) {
+        public ReferencableApiResponseEntry addResponseCode(String responseCode) {
             responseCodes.add(responseCode);
             return this;
         }

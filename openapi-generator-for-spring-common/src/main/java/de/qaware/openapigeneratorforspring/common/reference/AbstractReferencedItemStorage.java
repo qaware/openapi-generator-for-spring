@@ -1,5 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameConflictResolverForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameFactoryForType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 

@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.reference;
+package de.qaware.openapigeneratorforspring.common.reference.fortype;
 
 import java.util.function.Consumer;
 

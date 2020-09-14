@@ -1,5 +1,7 @@
-package de.qaware.openapigeneratorforspring.common.reference;
+package de.qaware.openapigeneratorforspring.common.reference.fortype;
 
+
+import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 
 import java.util.List;
 import java.util.stream.Collectors;

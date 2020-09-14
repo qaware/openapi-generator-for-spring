@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.reference;
+package de.qaware.openapigeneratorforspring.common.reference.fortype;
 
 public interface ReferenceDeciderForType<T> {
     default boolean turnIntoReference(T item, int numberOfUsages) {

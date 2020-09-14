@@ -1,10 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.schema.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.AbstractReferencedItemStorage;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceDeciderForType;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameConflictResolverForType;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceNameFactoryForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameConflictResolverForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameFactoryForType;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import lombok.RequiredArgsConstructor;
 

@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.schema.reference;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemHandler;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import io.swagger.v3.oas.models.Components;
 import lombok.RequiredArgsConstructor;
