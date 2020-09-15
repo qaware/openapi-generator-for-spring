@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.common;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultDeprecatedOperationCustomizer;
@@ -10,11 +11,13 @@ import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOp
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationServersCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationSummaryAndDescriptionCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationTagsCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultRequestBodyOperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdProvider;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvider;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -82,5 +85,15 @@ public class OpenApiGeneratorOperationAutoConfiguration {
     @ConditionalOnMissingBean
     public DefaultOperationIdCustomizer defaultOperationIdCustomizer(OperationIdProvider operationIdProvider) {
         return new DefaultOperationIdCustomizer(operationIdProvider);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultRequestBodyOperationCustomizer defaultRequestBodyOperationCustomizer(
+            RequestBodyAnnotationMapper requestBodyAnnotationMapper,
+            AnnotationsSupplierFactory annotationsSupplierFactory,
+            SchemaResolver schemaResolver
+    ) {
+        return new DefaultRequestBodyOperationCustomizer(requestBodyAnnotationMapper, annotationsSupplierFactory, schemaResolver);
     }
 }

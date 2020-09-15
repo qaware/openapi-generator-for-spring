@@ -56,7 +56,9 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Ordered
             AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(method.getReturnType())
                     .andThen(annotationsSupplierFromMethodWithDeclaringClass);
             schemaResolver.resolveFromType(method.getGenericReturnType(), annotationsSupplier,
-                    operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedSchemaConsumer.class), mediaType::setSchema);
+                    operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedSchemaConsumer.class),
+                    mediaType::setSchema
+            );
         }
 
     }

@@ -16,6 +16,16 @@
             "$ref": "#/components/parameters/param2"
           }
         ],
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/App9Controller.SomeDto"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/200"
@@ -38,10 +48,20 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/App9Controller.SomeDto"
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/200"
@@ -51,6 +71,19 @@
     }
   },
   "components": {
+    "schemas": {
+      "App9Controller.SomeDto": {
+        "type": "object",
+        "properties": {
+          "param1": {
+            "type": "string"
+          },
+          "param2": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "responses": {
       "200": {
         "description": "Default response"

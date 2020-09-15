@@ -77,6 +77,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         List<Object> allowableValues = Stream.of(annotation.allowableValues())
                 .map(parsableValueMapper::parse)
                 .collect(Collectors.toList());
+        // TODO fix generic problem here
         setCollectionIfNotEmpty(allowableValues, schema::setEnum);
 
         setStringIfNotBlank(annotation.defaultValue(), value -> schema.setDefault(parsableValueMapper.parse(value)));

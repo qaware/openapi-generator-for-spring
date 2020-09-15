@@ -11,6 +11,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.DefaultInfoAnnotationMa
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLicenseAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkParameterAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultRequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerVariableAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.EncodingAnnotationMapper;
@@ -22,6 +23,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.LicenseAnnotationMapper
 import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkParameterAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerVariableAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
@@ -142,5 +144,14 @@ public class OpenApiGeneratorMapperAutoConfiguration {
             ExtensionAnnotationMapper extensionAnnotationMapper
     ) {
         return new DefaultLicenseAnnotationMapper(extensionAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RequestBodyAnnotationMapper defaultRequestBodyAnnotationMapper(
+            ContentAnnotationMapper contentAnnotationMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper
+    ) {
+        return new DefaultRequestBodyAnnotationMapper(contentAnnotationMapper, extensionAnnotationMapper);
     }
 }
