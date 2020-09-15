@@ -3,6 +3,8 @@ package de.qaware.openapigeneratorforspring.common.operation.parameter;
 import de.qaware.openapigeneratorforspring.common.mapper.ContentAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
+import de.qaware.openapigeneratorforspring.common.reference.example.ReferencedExamplesConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import io.swagger.v3.oas.annotations.enums.ParameterStyle;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiEnumUtils.findEnumByToString;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIf;
@@ -26,9 +29,9 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
 
     @Nullable
     @Override
-    public Parameter buildFromAnnotation(io.swagger.v3.oas.annotations.Parameter parameterAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
+    public Parameter buildFromAnnotation(io.swagger.v3.oas.annotations.Parameter parameterAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         Parameter parameter = new Parameter();
-        applyFromAnnotation(parameter, parameterAnnotation, referencedSchemaConsumer);
+        applyFromAnnotation(parameter, parameterAnnotation, referencedItemConsumerSupplier);
         if (parameter.equals(new Parameter())) {
             return null;
         }
@@ -36,7 +39,7 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
     }
 
     @Override
-    public void applyFromAnnotation(Parameter parameter, io.swagger.v3.oas.annotations.Parameter annotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
+    public void applyFromAnnotation(Parameter parameter, io.swagger.v3.oas.annotations.Parameter annotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         setStringIfNotBlank(annotation.name(), parameter::setName);
         setStringIfNotBlank(annotation.in().toString(), parameter::setIn);
         setStringIfNotBlank(annotation.description(), parameter::setDescription);
@@ -53,10 +56,14 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
         if (annotation.allowReserved()) {
             parameter.setAllowReserved(true);
         }
+        ReferencedSchemaConsumer referencedSchemaConsumer = referencedItemConsumerSupplier.get(ReferencedSchemaConsumer.class);
         schemaAnnotationMapper.buildFromAnnotation(annotation.schema(), referencedSchemaConsumer, parameter::setSchema);
         // TODO handle @ArraySchema as well?
-        setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), referencedSchemaConsumer), parameter::setContent);
-        setMapIfNotEmpty(exampleObjectAnnotationMapper.mapArray(annotation.examples()), parameter::setExamples);
+        setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), referencedItemConsumerSupplier), parameter::setContent);
+        ReferencedExamplesConsumer referencedExamplesConsumer = referencedItemConsumerSupplier.get(ReferencedExamplesConsumer.class);
+        setCollectionIfNotEmpty(exampleObjectAnnotationMapper.mapArray(annotation.examples()),
+                examples -> referencedExamplesConsumer.maybeAsReference(examples, parameter::setExamples)
+        );
         setStringIfNotBlank(annotation.example(), parameter::setExample);
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(annotation.extensions()), parameter::setExtensions);
         setStringIfNotBlank(annotation.ref(), parameter::set$ref);

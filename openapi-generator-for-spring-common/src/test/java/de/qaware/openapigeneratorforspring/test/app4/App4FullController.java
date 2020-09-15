@@ -57,11 +57,15 @@ public class App4FullController {
             },
             content = {
                     @Content(mediaType = "application/json",
-                            examples = @ExampleObject(summary = "summary example1", value = "some example value 1",
-                                    extensions = @Extension(name = "extension-example-object-1", properties = @ExtensionProperty(name = "name1", value = "value2")),
-                                    ref = "RefToExampleObject1",
-                                    description = "example description 1"
-                            ),
+                            examples = {
+                                    @ExampleObject(summary = "summary example1", value = "some example value 1",
+                                            extensions = @Extension(name = "extension-example-object-1", properties = @ExtensionProperty(name = "name1", value = "value2")),
+                                            ref = "RefToExampleObject1",
+                                            description = "example description 1"
+                                    ),
+                                    @ExampleObject(name = "MyExampleName", summary = "summary example2", externalValue = "http://some-url1"),
+                                    @ExampleObject(summary = "summary example3", externalValue = "http://some-url2")
+                            },
                             schema = @Schema(name = "schema-example-object-1", title = "schema title 1", implementation = String.class),
                             encoding = {
                                     @Encoding(name = "propertyInSchema1", contentType = "application/json", style = "form", explode = true, allowReserved = true),
@@ -74,8 +78,8 @@ public class App4FullController {
                             extensions = @Extension(name = "extension-content-1", properties = @ExtensionProperty(name = "name1", value = "value2"))
                     ),
                     @Content(mediaType = "text/plain", examples = {
-                            @ExampleObject(name = "example2", summary = "summary example2", externalValue = "http://some-url1"),
-                            @ExampleObject(name = "example3", summary = "summary example3", externalValue = "http://some-url2")
+                            @ExampleObject(name = "MyExampleName", summary = "summary example2", externalValue = "http://some-url1"),
+                            @ExampleObject(summary = "summary example3", externalValue = "http://some-url2")
                     }
                     )
             },

@@ -1,5 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
+import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
+import de.qaware.openapigeneratorforspring.common.reference.example.ReferencedExamplesConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -8,6 +10,7 @@ import io.swagger.v3.oas.models.media.MediaType;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildMapFromArray;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
@@ -20,30 +23,35 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
     private final ExampleObjectAnnotationMapper exampleObjectAnnotationMapper;
 
     @Override
-    public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations, ReferencedSchemaConsumer referencedSchemaConsumer) {
+    public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         return buildMapFromArray(
                 contentAnnotations,
                 io.swagger.v3.oas.annotations.media.Content::mediaType,
-                annotation -> map(annotation, referencedSchemaConsumer),
+                annotation -> map(annotation, referencedItemConsumerSupplier),
                 Content::new
         );
     }
 
     @Override
-    public MediaType map(io.swagger.v3.oas.annotations.media.Content contentAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
+    public MediaType map(io.swagger.v3.oas.annotations.media.Content contentAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         MediaType mediaType = new MediaType();
-        setExampleOrExamples(mediaType, contentAnnotation.examples());
-        setMapIfNotEmpty(encodingAnnotationMapper.mapArray(contentAnnotation.encoding(), referencedSchemaConsumer), mediaType::setEncoding);
+        setExampleOrExamples(mediaType, contentAnnotation.examples(), referencedItemConsumerSupplier);
+        setMapIfNotEmpty(encodingAnnotationMapper.mapArray(contentAnnotation.encoding(), referencedItemConsumerSupplier), mediaType::setEncoding);
+        ReferencedSchemaConsumer referencedSchemaConsumer = referencedItemConsumerSupplier.get(ReferencedSchemaConsumer.class);
         schemaAnnotationMapper.buildFromAnnotation(contentAnnotation.schema(), referencedSchemaConsumer, mediaType::setSchema);
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(contentAnnotation.extensions()), mediaType::setExtensions);
         return mediaType;
     }
 
-    private void setExampleOrExamples(MediaType mediaType, ExampleObject[] exampleObjectAnnotations) {
+    private void setExampleOrExamples(MediaType mediaType, ExampleObject[] exampleObjectAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+        ReferencedExamplesConsumer referencedExamplesConsumer = referencedItemConsumerSupplier.get(ReferencedExamplesConsumer.class);
         if (exampleObjectAnnotations.length == 1 && StringUtils.isBlank(exampleObjectAnnotations[0].name())) {
-            mediaType.setExample(exampleObjectAnnotationMapper.map(exampleObjectAnnotations[0]));
+            // one should not set the full example object here, just the value
+            mediaType.setExample(exampleObjectAnnotationMapper.map(exampleObjectAnnotations[0]).getValue());
         } else {
-            setMapIfNotEmpty(exampleObjectAnnotationMapper.mapArray(exampleObjectAnnotations), mediaType::setExamples);
+            setCollectionIfNotEmpty(exampleObjectAnnotationMapper.mapArray(exampleObjectAnnotations),
+                    examples -> referencedExamplesConsumer.maybeAsReference(examples, mediaType::setExamples)
+            );
         }
     }
 }

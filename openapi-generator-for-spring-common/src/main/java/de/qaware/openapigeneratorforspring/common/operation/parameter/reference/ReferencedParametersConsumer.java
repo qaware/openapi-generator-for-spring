@@ -5,5 +5,5 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 
 import java.util.List;
 
-public interface ReferencedParametersConsumer extends ReferencedItemConsumerForType<List<Parameter>> {
+public interface ReferencedParametersConsumer extends ReferencedItemConsumerForType<List<Parameter>, List<Parameter>> {
 }

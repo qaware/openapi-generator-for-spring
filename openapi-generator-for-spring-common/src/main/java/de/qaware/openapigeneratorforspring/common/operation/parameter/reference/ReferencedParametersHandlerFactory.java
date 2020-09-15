@@ -9,13 +9,13 @@ import org.springframework.core.ResolvableType;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class ReferencedParametersHandlerFactory implements ReferencedItemHandlerFactory<List<Parameter>> {
+public class ReferencedParametersHandlerFactory implements ReferencedItemHandlerFactory<List<Parameter>, List<Parameter>> {
     private final ReferenceDeciderForParameter referenceDecider;
     private final ReferenceNameFactoryForParameter referenceNameFactory;
     private final ReferenceNameConflictResolverForParameter referenceNameConflictResolver;
 
     @Override
-    public ReferencedItemHandler<List<Parameter>> create() {
+    public ReferencedItemHandler<List<Parameter>, List<Parameter>> create() {
         ReferencedParameterStorage storage = new ReferencedParameterStorage(referenceDecider, referenceNameFactory, referenceNameConflictResolver);
         return new ReferencedParametersHandlerImpl(storage);
     }

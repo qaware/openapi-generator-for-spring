@@ -7,14 +7,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ResolvableType;
 
 @RequiredArgsConstructor
-public class ReferencedApiResponsesHandlerFactory implements ReferencedItemHandlerFactory<ApiResponses> {
+public class ReferencedApiResponsesHandlerFactory implements ReferencedItemHandlerFactory<ApiResponses, ApiResponses> {
 
     private final ReferenceDeciderForApiResponse referenceDecider;
     private final ReferenceNameFactoryForApiResponse referenceNameFactory;
     private final ReferenceNameConflictResolverForApiResponse referenceNameConflictResolver;
 
     @Override
-    public ReferencedItemHandler<ApiResponses> create() {
+    public ReferencedItemHandler<ApiResponses, ApiResponses> create() {
         ReferencedApiResponseStorage storage = new ReferencedApiResponseStorage(referenceDecider, referenceNameFactory, referenceNameConflictResolver);
         return new ReferencedApiResponsesHandlerImpl(storage);
     }

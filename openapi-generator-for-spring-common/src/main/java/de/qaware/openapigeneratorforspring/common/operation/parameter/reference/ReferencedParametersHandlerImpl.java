@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
-public class ReferencedParametersHandlerImpl implements ReferencedItemHandler<List<Parameter>>, ReferencedParametersConsumer {
+public class ReferencedParametersHandlerImpl implements ReferencedItemHandler<List<Parameter>, List<Parameter>>, ReferencedParametersConsumer {
     private final ReferencedParameterStorage storage;
 
     @Override

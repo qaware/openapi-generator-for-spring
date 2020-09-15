@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
-public class ReferencedSchemaHandlerImpl implements ReferencedItemHandler<Schema>, ReferencedSchemaConsumer {
+public class ReferencedSchemaHandlerImpl implements ReferencedItemHandler<Schema, Schema>, ReferencedSchemaConsumer {
 
     private final ReferencedSchemaStorage storage;
 

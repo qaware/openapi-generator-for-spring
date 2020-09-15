@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
-public class ReferencedApiResponsesHandlerImpl implements ReferencedItemHandler<ApiResponses>, ReferencedApiResponsesConsumer {
+public class ReferencedApiResponsesHandlerImpl implements ReferencedItemHandler<ApiResponses, ApiResponses>, ReferencedApiResponsesConsumer {
     private final ReferencedApiResponseStorage storage;
 
     @Override

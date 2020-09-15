@@ -97,13 +97,21 @@
                 "schema": {
                   "$ref": "#/components/schemas/schema-example-object-1"
                 },
-                "example": {
-                  "summary": "summary example1",
-                  "description": "example description 1",
-                  "value": "some example value 1",
-                  "$ref": "#/components/examples/RefToExampleObject1",
-                  "x-extension-example-object-1": {
-                    "name1": "value2"
+                "examples": {
+                  "Example1": {
+                    "$ref": "#/components/examples/Example2"
+                  },
+                  "MyExampleName": {
+                    "$ref": "#/components/examples/MyExampleName"
+                  },
+                  "Example0": {
+                    "summary": "summary example1",
+                    "description": "example description 1",
+                    "value": "some example value 1",
+                    "$ref": "#/components/examples/RefToExampleObject1",
+                    "x-extension-example-object-1": {
+                      "name1": "value2"
+                    }
                   }
                 },
                 "encoding": {
@@ -134,13 +142,11 @@
               },
               "text/plain": {
                 "examples": {
-                  "example2": {
-                    "summary": "summary example2",
-                    "externalValue": "http://some-url1"
+                  "MyExampleName": {
+                    "$ref": "#/components/examples/MyExampleName"
                   },
-                  "example3": {
-                    "summary": "summary example3",
-                    "externalValue": "http://some-url2"
+                  "Example2": {
+                    "$ref": "#/components/examples/Example2"
                   }
                 }
               },
@@ -212,6 +218,16 @@
       },
       "503": {
         "description": "Something went really wrong from base"
+      }
+    },
+    "examples": {
+      "MyExampleName": {
+        "summary": "summary example2",
+        "externalValue": "http://some-url1"
+      },
+      "Example2": {
+        "summary": "summary example3",
+        "externalValue": "http://some-url2"
       }
     }
   }

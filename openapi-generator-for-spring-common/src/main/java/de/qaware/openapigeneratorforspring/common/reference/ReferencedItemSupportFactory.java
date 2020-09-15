@@ -12,15 +12,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class ReferencedItemSupportFactory {
 
-    private final List<ReferencedItemHandlerFactory<?>> factories;
+    private final List<ReferencedItemHandlerFactory<?, ?>> factories;
 
     public ReferencedItemSupport create() {
 
-        List<Pair<ResolvableType, ? extends ReferencedItemHandler<?>>> itemHandlersByItemClass = factories.stream()
+        List<Pair<ResolvableType, ? extends ReferencedItemHandler<?, ?>>> itemHandlersByItemClass = factories.stream()
                 .map(factory -> Pair.of(factory.getResolvableTypeOfItem(), factory.create()))
                 .collect(Collectors.toList());
 
@@ -29,15 +30,16 @@ public class ReferencedItemSupportFactory {
             public ReferencedItemConsumerSupplier getReferencedItemConsumerSupplier() {
                 return new ReferencedItemConsumerSupplier() {
                     @Override
-                    public <T extends ReferencedItemConsumerForType<?>> T get(Class<T> consumerClazz) {
+                    public <T extends ReferencedItemConsumerForType<?, ?>> T get(Class<T> consumerClazz) {
                         ResolvableType resolvableTypeForItem = Arrays.stream(ResolvableType.forClass(consumerClazz).getInterfaces())
                                 .filter(resolvableType -> ReferencedItemConsumerForType.class.equals(resolvableType.resolve()))
-                                .flatMap(resolvableType -> Arrays.stream(resolvableType.getGenerics()))
+                                .map(resolvableType -> Arrays.stream(resolvableType.getGenerics()).findFirst())
+                                .flatMap(optionalGeneric -> optionalGeneric.map(Stream::of).orElse(Stream.empty()))
                                 .reduce((a, b) -> {
-                                    throw new IllegalStateException("Found more than one generic argument: " + a + " vs. " + b);
+                                    throw new IllegalStateException("Found more than one first generic argument: " + a + " vs. " + b);
                                 })
-                                .orElseThrow(() -> new IllegalStateException("Cannot find generic argument on " + consumerClazz));
-                        ReferencedItemHandler<?> referencedItemHandler = itemHandlersByItemClass.stream()
+                                .orElseThrow(() -> new IllegalStateException("Cannot find first generic argument on " + consumerClazz));
+                        ReferencedItemHandler<?, ?> referencedItemHandler = itemHandlersByItemClass.stream()
                                 .filter(entry -> entry.getKey().isAssignableFrom(resolvableTypeForItem))
                                 .reduce((a, b) -> {
                                     throw new IllegalStateException("Found more than one handler for " + resolvableTypeForItem);

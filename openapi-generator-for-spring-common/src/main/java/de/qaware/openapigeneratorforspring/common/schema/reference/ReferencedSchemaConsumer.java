@@ -8,7 +8,7 @@ import lombok.Value;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public interface ReferencedSchemaConsumer extends ReferencedItemConsumerForType<Schema> {
+public interface ReferencedSchemaConsumer extends ReferencedItemConsumerForType<Schema, Schema> {
 
     default void alwaysAsReference(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
         alwaysAsReferences(

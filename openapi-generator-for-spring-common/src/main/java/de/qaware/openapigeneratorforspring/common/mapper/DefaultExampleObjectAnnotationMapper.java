@@ -4,9 +4,10 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.models.examples.Example;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildMapFromArray;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
@@ -17,12 +18,10 @@ public class DefaultExampleObjectAnnotationMapper implements ExampleObjectAnnota
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
 
     @Override
-    public Map<String, Example> mapArray(ExampleObject[] exampleObjectAnnotations) {
-        return buildMapFromArray(
-                exampleObjectAnnotations,
-                ExampleObject::name,
-                this::map
-        );
+    public List<ExampleWithOptionalName> mapArray(ExampleObject[] exampleObjectAnnotations) {
+        return Arrays.stream(exampleObjectAnnotations)
+                .map(annotation -> new ExampleWithOptionalName(map(annotation), annotation.name()))
+                .collect(Collectors.toList());
     }
 
     @Override

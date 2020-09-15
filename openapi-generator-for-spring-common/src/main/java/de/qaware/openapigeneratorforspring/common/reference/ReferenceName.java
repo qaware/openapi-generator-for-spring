@@ -29,7 +29,8 @@ public class ReferenceName {
 
         SCHEMA("#/components/schemas/"),
         API_RESPONSE("#/components/responses/"),
-        PARAMETER("#/components/parameters/");;
+        PARAMETER("#/components/parameters/"),
+        EXAMPLE("#/components/examples/");
 
         private final String referencePrefix;
     }

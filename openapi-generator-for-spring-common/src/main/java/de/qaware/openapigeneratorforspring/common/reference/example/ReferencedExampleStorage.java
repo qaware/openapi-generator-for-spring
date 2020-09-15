@@ -6,6 +6,7 @@ import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDec
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameConflictResolverForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameFactoryForType;
 import io.swagger.v3.oas.models.examples.Example;
+import lombok.Getter;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -18,7 +19,7 @@ public class ReferencedExampleStorage extends AbstractReferencedItemStorage<Exam
 
     void storeMaybeReference(String name, Example example, Consumer<ReferenceName> referenceNameConsumer) {
         getEntryOrAddNew(example)
-                .withName(name)
+                .withSuggestedIdentifier(name)
                 .addSetter(referenceNameConsumer);
     }
 
@@ -28,17 +29,12 @@ public class ReferencedExampleStorage extends AbstractReferencedItemStorage<Exam
         }
 
         @Nullable
-        private String name;
+        @Getter
+        private String suggestedIdentifier;
 
-        public Entry withName(String name) {
-            this.name = name;
+        public Entry withSuggestedIdentifier(String name) {
+            this.suggestedIdentifier = name;
             return this; // fluent API
-        }
-
-        @Nullable
-        @Override
-        public String getSuggestedIdentifier() {
-            return name;
         }
     }
 }

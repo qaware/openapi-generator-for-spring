@@ -10,13 +10,16 @@ import de.qaware.openapigeneratorforspring.common.schema.reference.ReferenceName
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaHandlerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
+@Import(OpenApiGeneratorReferenceExampleAutoConfiguration.class)
 public class OpenApiGeneratorReferenceAutoConfiguration {
+
     @Bean
     @ConditionalOnMissingBean
-    public ReferencedItemSupportFactory referencedItemSupportFactory(List<ReferencedItemHandlerFactory<?>> referencedItemHandlerFactories) {
+    public ReferencedItemSupportFactory referencedItemSupportFactory(List<ReferencedItemHandlerFactory<?, ?>> referencedItemHandlerFactories) {
         return new ReferencedItemSupportFactory(referencedItemHandlerFactories);
     }
 
@@ -38,7 +41,7 @@ public class OpenApiGeneratorReferenceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    ReferenceNameConflictResolverForSchema defaultReferenceNameConflictResolverForSchema() {
+    public ReferenceNameConflictResolverForSchema defaultReferenceNameConflictResolverForSchema() {
         return new ReferenceNameConflictResolverForSchema() {
             // use default implementation
         };
@@ -46,7 +49,7 @@ public class OpenApiGeneratorReferenceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    ReferenceDeciderForSchema defaultReferenceDeciderForSchema() {
+    public ReferenceDeciderForSchema defaultReferenceDeciderForSchema() {
         return new DefaultReferenceDeciderForSchema();
     }
 

@@ -4,5 +4,5 @@ import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedIt
 
 @FunctionalInterface
 public interface ReferencedItemConsumerSupplier {
-    <T extends ReferencedItemConsumerForType<?>> T get(Class<T> referencedItemConsumerClazz);
+    <T extends ReferencedItemConsumerForType<?, ?>> T get(Class<T> referencedItemConsumerClazz);
 }

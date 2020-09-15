@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
+import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
@@ -15,16 +16,16 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
     private final SchemaAnnotationMapper schemaAnnotationMapper;
 
     @Override
-    public Map<String, Header> mapArray(io.swagger.v3.oas.annotations.headers.Header[] headerAnnotations, ReferencedSchemaConsumer referencedSchemaConsumer) {
+    public Map<String, Header> mapArray(io.swagger.v3.oas.annotations.headers.Header[] headerAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         return buildMapFromArray(
                 headerAnnotations,
                 io.swagger.v3.oas.annotations.headers.Header::name,
-                annotation -> map(annotation, referencedSchemaConsumer)
+                annotation -> map(annotation, referencedItemConsumerSupplier)
         );
     }
 
     @Override
-    public Header map(io.swagger.v3.oas.annotations.headers.Header headerAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
+    public Header map(io.swagger.v3.oas.annotations.headers.Header headerAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         Header header = new Header();
         OpenApiStringUtils.setStringIfNotBlank(headerAnnotation.description(), header::setDescription);
         if (headerAnnotation.deprecated()) {
@@ -33,6 +34,7 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
         if (headerAnnotation.required()) {
             header.setRequired(true);
         }
+        ReferencedSchemaConsumer referencedSchemaConsumer = referencedItemConsumerSupplier.get(ReferencedSchemaConsumer.class);
         schemaAnnotationMapper.buildFromAnnotation(headerAnnotation.schema(), referencedSchemaConsumer, header::setSchema);
         OpenApiStringUtils.setStringIfNotBlank(headerAnnotation.ref(), header::set$ref);
         return header;
