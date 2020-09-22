@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.common;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizer;
+import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForDeprecated;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForNullable;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaNameFactory;
@@ -97,6 +98,12 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public SchemaCustomizerForNullable defaultSchemaCustomizerForNullable() {
         return new SchemaCustomizerForNullable();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SchemaCustomizerForDeprecated defaultSchemaCustomizerForDeprecated() {
+        return new SchemaCustomizerForDeprecated();
     }
 
     @Bean

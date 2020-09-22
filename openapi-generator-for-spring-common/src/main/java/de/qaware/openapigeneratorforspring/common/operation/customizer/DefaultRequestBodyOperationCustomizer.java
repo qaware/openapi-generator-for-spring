@@ -58,38 +58,49 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
         OperationInfo operationInfo = operationBuilderContext.getOperationInfo();
         ReferencedSchemaConsumer referencedSchemaConsumer = operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedSchemaConsumer.class);
         return Stream.of(operationInfo.getHandlerMethod().getMethod().getParameters())
-                .flatMap(
-                        methodParameter -> {
-                            AnnotationsSupplier annotationsSupplierFromMethodParameter = annotationsSupplierFactory.createFromAnnotatedElement(methodParameter);
-                            return annotationsSupplierFromMethodParameter.findAnnotations(org.springframework.web.bind.annotation.RequestBody.class)
-                                    .findFirst() // should not happen to find multiple annotations on parameter
-                                    .map(requestBodyAnnotation -> {
-                                        RequestBody requestBody = new RequestBody();
-                                        // TODO check @Nullable on method parameter?
-                                        requestBody.setRequired(requestBodyAnnotation.required());
-                                        Content content = getConsumesContentType(operationInfo).stream().collect(Collectors.toMap(
-                                                x -> x,
-                                                contentType -> {
-                                                    MediaType mediaType = new MediaType();
-                                                    schemaResolver.resolveFromType(methodParameter.getType(),
-                                                            // TODO check annotations supplier building here
-                                                            annotationsSupplierFromMethodParameter,
-                                                            referencedSchemaConsumer,
-                                                            mediaType::setSchema
-                                                    );
-                                                    return mediaType;
-                                                },
-                                                (a, b) -> {
-                                                    throw new IllegalStateException("Found conflicting content types: " + a + " vs. " + b);
-                                                },
-                                                Content::new
-                                        ));
-                                        setMapIfNotEmpty(content, requestBody::setContent);
-                                        return requestBody;
-                                    })
-                                    .map(Stream::of).orElse(Stream.empty()); // Optional.toStream()
-                        }
-                )
+                .flatMap(methodParameter -> {
+                    AnnotationsSupplier annotationsSupplierFromMethodParameter = annotationsSupplierFactory.createFromAnnotatedElement(methodParameter);
+                    return annotationsSupplierFromMethodParameter.findAnnotations(org.springframework.web.bind.annotation.RequestBody.class)
+                            .reduce((a, b) -> {
+                                throw new IllegalStateException("Found more than one RequestBody annotation on parameter: " + a + " vs. " + b);
+                            })
+                            .map(springRequestBodyAnnotation -> {
+                                RequestBody requestBody = new RequestBody();
+                                // TODO check @Nullable on method parameter?
+                                requestBody.setRequired(springRequestBodyAnnotation.required());
+                                Content content = getConsumesContentType(operationInfo).stream().collect(Collectors.toMap(
+                                        x -> x,
+                                        contentType -> {
+                                            MediaType mediaType = new MediaType();
+                                            schemaResolver.resolveFromType(methodParameter.getType(),
+                                                    // the schema resolver should also consider annotations on the type itself
+                                                    // however, annotations being present on the parameter itself should take precedence
+                                                    annotationsSupplierFromMethodParameter
+                                                            .andThen(annotationsSupplierFactory.createFromAnnotatedElement(methodParameter.getType())),
+                                                    referencedSchemaConsumer,
+                                                    mediaType::setSchema
+                                            );
+                                            return mediaType;
+                                        },
+                                        (a, b) -> {
+                                            throw new IllegalStateException("Found conflicting content types: " + a + " vs. " + b);
+                                        },
+                                        Content::new
+                                ));
+                                setMapIfNotEmpty(content, requestBody::setContent);
+
+                                // also check if swagger annotation is present, which should take precedence (so apply later)
+                                io.swagger.v3.oas.annotations.parameters.RequestBody requestBodyAnnotation = annotationsSupplierFromMethodParameter.findFirstAnnotation(io.swagger.v3.oas.annotations.parameters.RequestBody.class);
+                                if (requestBodyAnnotation != null) {
+                                    requestBodyAnnotationMapper.applyFromAnnotation(requestBody, requestBodyAnnotation,
+                                            operationBuilderContext.getReferencedItemConsumerSupplier()
+                                    );
+                                }
+
+                                return requestBody;
+                            })
+                            .map(Stream::of).orElse(Stream.empty()); // Optional.toStream()
+                })
                 .reduce((a, b) -> {
                     // TODO check if multiple usages of @RequestBody are allowed by Spring Web
                     throw new IllegalStateException("Found more than one @RequestBody annotation on " + operationInfo);

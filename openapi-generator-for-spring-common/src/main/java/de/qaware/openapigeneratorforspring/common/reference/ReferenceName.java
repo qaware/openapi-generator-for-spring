@@ -30,7 +30,8 @@ public class ReferenceName {
         SCHEMA("#/components/schemas/"),
         API_RESPONSE("#/components/responses/"),
         PARAMETER("#/components/parameters/"),
-        EXAMPLE("#/components/examples/");
+        EXAMPLE("#/components/examples/"),
+        REQUEST_BODY("#/components/requestBodies/");
 
         private final String referencePrefix;
     }

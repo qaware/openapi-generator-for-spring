@@ -20,7 +20,7 @@
           "content": {
             "text/plain": {
               "schema": {
-                "$ref": "#/components/schemas/App9Controller.SomeDto"
+                "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
               }
             }
           },
@@ -48,7 +48,7 @@
             "in": "query",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/App9Controller.SomeDto"
+              "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
             }
           }
         ],
@@ -93,10 +93,11 @@
       "put": {
         "operationId": "mapping4",
         "requestBody": {
+          "description": "Some body description",
           "content": {
             "application/json": {
               "schema": {
-                "type": "string"
+                "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
               }
             }
           },
@@ -117,7 +118,44 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/App9Controller.SomeDto"
+                "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "/mapping-6": {
+      "get": {
+        "operationId": "mapping6",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/param1"
+          },
+          {
+            "$ref": "#/components/parameters/param2"
+          },
+          {
+            "name": "param3",
+            "in": "query",
+            "required": true,
+            "deprecated": true,
+            "schema": {
+              "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
               }
             }
           },
@@ -133,16 +171,9 @@
   },
   "components": {
     "schemas": {
-      "App9Controller.SomeDto": {
+      "App9Controller.SomeDeprecatedDto": {
         "type": "object",
-        "properties": {
-          "param1": {
-            "type": "string"
-          },
-          "param2": {
-            "type": "string"
-          }
-        }
+        "deprecated": true
       }
     },
     "responses": {

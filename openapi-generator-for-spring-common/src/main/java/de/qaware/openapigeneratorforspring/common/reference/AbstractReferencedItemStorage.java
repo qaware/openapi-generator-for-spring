@@ -45,7 +45,7 @@ public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferen
     }
 
     public Map<String, T> buildReferencedItems() {
-        Map<String, T> referencedApiResponses = new HashMap<>();
+        Map<String, T> referencedItems = new HashMap<>();
         entries.stream()
                 .filter(entry -> entry.isReferenceRequired() || referenceDecider.turnIntoReference(entry.getItem(), entry.getNumberOfUsages()))
                 .collect(Collectors.groupingBy(this::createNonUniqueReferenceName))
@@ -53,10 +53,10 @@ public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferen
                         buildUniqueReferenceNames(referenceName, entriesGroupedByReferenceName).forEach(
                                 (uniqueReferenceName, entry) -> {
                                     entry.getReferenceNameSetters().forEach(setter -> setter.accept(uniqueReferenceName));
-                                    referencedApiResponses.put(uniqueReferenceName.getIdentifier(), entry.getItem());
+                                    referencedItems.put(uniqueReferenceName.getIdentifier(), entry.getItem());
                                 })
                 );
-        return referencedApiResponses;
+        return referencedItems;
     }
 
     private ReferenceName createNonUniqueReferenceName(E entry) {

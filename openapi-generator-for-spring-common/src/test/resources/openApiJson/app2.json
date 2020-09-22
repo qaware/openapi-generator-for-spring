@@ -10,7 +10,7 @@
         "operationId": "allDeprecatedGetMapping",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
+            "$ref": "#/components/responses/200_0"
           }
         },
         "deprecated": true
@@ -32,7 +32,7 @@
         "operationId": "deprecatedGetMapping",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
+            "$ref": "#/components/responses/200_0"
           }
         },
         "deprecated": true
@@ -60,7 +60,7 @@
         "operationId": "getMappingOperation1",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
+            "$ref": "#/components/responses/200_1"
           }
         }
       }
@@ -71,7 +71,7 @@
         "operationId": "getMappingOperation2",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
+            "$ref": "#/components/responses/200_1"
           }
         }
       }
@@ -89,7 +89,7 @@
         "operationId": "getMappingOperation3",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
+            "$ref": "#/components/responses/200_1"
           }
         }
       }
@@ -99,7 +99,7 @@
         "operationId": "getMappingOperation4",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
+            "$ref": "#/components/responses/200_1"
           }
         },
         "servers": [
@@ -143,7 +143,7 @@
         "operationId": "getMappingReturnString",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
+            "$ref": "#/components/responses/200_1"
           }
         }
       }
@@ -170,13 +170,29 @@
     }
   },
   "components": {
+    "schemas": {
+      "string": {
+        "type": "string",
+        "deprecated": true
+      }
+    },
     "responses": {
-      "200": {
+      "200_1": {
         "description": "Default response",
         "content": {
           "*/*": {
             "schema": {
               "type": "string"
+            }
+          }
+        }
+      },
+      "200_0": {
+        "description": "Default response",
+        "content": {
+          "*/*": {
+            "schema": {
+              "$ref": "#/components/schemas/string"
             }
           }
         }
