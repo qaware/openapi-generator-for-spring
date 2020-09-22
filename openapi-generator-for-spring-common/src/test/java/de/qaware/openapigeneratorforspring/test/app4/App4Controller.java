@@ -23,7 +23,7 @@ public class App4Controller extends App4BaseController {
     }
 
 
-    @GetMapping("/get2")
+    @GetMapping(value = "/get2", produces = "text/plain")
     @ApiResponse(description = "Custom default description for response")
     @ApiResponse(responseCode = "210", description = "All ok overwrite base")
     @Operation(responses = {

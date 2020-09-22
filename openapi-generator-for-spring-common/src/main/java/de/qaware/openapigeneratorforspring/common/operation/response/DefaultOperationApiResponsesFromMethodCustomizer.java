@@ -10,7 +10,6 @@ import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.Ordered;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,11 +72,14 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Ordered
     }
 
     private static List<String> getProducesContentType(AnnotationsSupplier annotationsSupplierFromMethodWithDeclaringClass) {
-        RequestMapping requestMappingAnnotation = annotationsSupplierFromMethodWithDeclaringClass.findFirstAnnotation(RequestMapping.class);
-        if (requestMappingAnnotation == null || ArrayUtils.isEmpty(requestMappingAnnotation.produces())) {
-            return Collections.singletonList(org.springframework.http.MediaType.ALL_VALUE);
-        }
-        return Arrays.asList(requestMappingAnnotation.produces());
+        // TODO check if that logic here correctly mimics the way Spring is treating the "produces" property
+        return annotationsSupplierFromMethodWithDeclaringClass
+                .findAnnotations(RequestMapping.class)
+                .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.produces()))
+                .findFirst()
+                .map(requestMappingAnnotation -> Arrays.asList(requestMappingAnnotation.produces()))
+                // fallback to "all value" if nothing has been specified
+                .orElse(Collections.singletonList(org.springframework.http.MediaType.ALL_VALUE));
     }
 
     @Override

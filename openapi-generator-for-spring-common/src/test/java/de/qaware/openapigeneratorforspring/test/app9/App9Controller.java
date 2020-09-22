@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.test.app9;
 
 import lombok.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,11 @@ public class App9Controller {
 
     @GetMapping(value = "get-2")
     public void getMapping2(@RequestParam String param1, @RequestParam String param2, @RequestParam SomeDto param3, @RequestBody String requestBody) {
+
+    }
+
+    @PostMapping(value = "get-3", consumes = "application/json")
+    public void getMapping3(@RequestBody(required = false) String requestBody) {
 
     }
 

@@ -12,7 +12,7 @@ import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Arrays;
@@ -98,12 +98,15 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
     }
 
     private List<String> getConsumesContentType(OperationInfo operationInfo) {
-        AnnotationsSupplier annotationsSupplierFromMethodWithDeclaringClass = annotationsSupplierFactory.createFromMethodWithDeclaringClass(operationInfo.getHandlerMethod().getMethod());
-        RequestMapping requestMappingAnnotation = annotationsSupplierFromMethodWithDeclaringClass.findFirstAnnotation(RequestMapping.class);
-        if (requestMappingAnnotation == null || ArrayUtils.isEmpty(requestMappingAnnotation.consumes())) {
-            return Collections.singletonList(org.springframework.http.MediaType.ALL_VALUE);
-        }
-        return Arrays.asList(requestMappingAnnotation.consumes());
+        // TODO check if that logic here correctly mimics the way Spring is treating the "consumes" property
+        // Spring uses it to conditionally check if that handler method is supposed to accept that request,
+        // and we need an information on what is supposed to be sent from the client for that method
+        return annotationsSupplierFactory.createFromMethodWithDeclaringClass(operationInfo.getHandlerMethod().getMethod())
+                .findAnnotations(RequestMapping.class)
+                .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.consumes()))
+                .findFirst()
+                .map(requestMappingAnnotation -> Arrays.asList(requestMappingAnnotation.consumes()))
+                .orElse(Collections.singletonList(org.springframework.http.MediaType.ALL_VALUE));
     }
 
     @Override

@@ -33,7 +33,7 @@
           "201": {
             "description": "Default response",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "string"
                 }
@@ -62,7 +62,7 @@
           "201": {
             "description": "Custom default description for response",
             "content": {
-              "*/*": {
+              "text/plain": {
                 "schema": {
                   "type": "string"
                 }
