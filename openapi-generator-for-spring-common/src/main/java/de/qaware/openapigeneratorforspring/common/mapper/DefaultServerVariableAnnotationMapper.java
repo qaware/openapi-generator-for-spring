@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildMapFromArray;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromArray;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
@@ -18,7 +18,7 @@ public class DefaultServerVariableAnnotationMapper implements ServerVariableAnno
 
     @Override
     public ServerVariables mapArray(io.swagger.v3.oas.annotations.servers.ServerVariable[] serverVariablesAnnotations) {
-        return buildMapFromArray(
+        return buildStringMapFromArray(
                 serverVariablesAnnotations,
                 io.swagger.v3.oas.annotations.servers.ServerVariable::name,
                 this::map,

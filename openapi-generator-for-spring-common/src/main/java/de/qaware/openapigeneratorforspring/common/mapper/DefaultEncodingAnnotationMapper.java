@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Map;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiEnumUtils.findEnumByToString;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildMapFromArray;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromArray;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
@@ -20,7 +20,7 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
 
     @Override
     public Map<String, Encoding> mapArray(io.swagger.v3.oas.annotations.media.Encoding[] encodingAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
-        return buildMapFromArray(encodingAnnotations, io.swagger.v3.oas.annotations.media.Encoding::name,
+        return buildStringMapFromArray(encodingAnnotations, io.swagger.v3.oas.annotations.media.Encoding::name,
                 encodingAnnotation -> map(encodingAnnotation, referencedItemConsumerSupplier)
         );
     }

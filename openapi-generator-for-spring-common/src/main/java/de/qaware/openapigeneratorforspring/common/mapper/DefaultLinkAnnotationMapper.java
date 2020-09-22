@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildMapFromArray;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromArray;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
@@ -20,7 +20,7 @@ public class DefaultLinkAnnotationMapper implements LinkAnnotationMapper {
 
     @Override
     public Map<String, Link> mapArray(io.swagger.v3.oas.annotations.links.Link[] linkAnnotations) {
-        return buildMapFromArray(
+        return buildStringMapFromArray(
                 linkAnnotations,
                 io.swagger.v3.oas.annotations.links.Link::name,
                 this::map

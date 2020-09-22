@@ -5,9 +5,9 @@
     "version": "unknown"
   },
   "paths": {
-    "/get-1": {
+    "/mapping-1": {
       "get": {
-        "operationId": "getMapping1",
+        "operationId": "mapping1",
         "parameters": [
           {
             "$ref": "#/components/parameters/param1"
@@ -33,9 +33,9 @@
         }
       }
     },
-    "/get-2": {
+    "/mapping-2": {
       "get": {
-        "operationId": "getMapping2",
+        "operationId": "mapping2",
         "parameters": [
           {
             "$ref": "#/components/parameters/param1"
@@ -69,9 +69,9 @@
         }
       }
     },
-    "/get-3": {
+    "/mapping-3": {
       "post": {
-        "operationId": "getMapping3",
+        "operationId": "mapping3",
         "requestBody": {
           "content": {
             "application/json": {
@@ -81,6 +81,47 @@
             }
           },
           "required": false
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "/mapping-4": {
+      "put": {
+        "operationId": "mapping4",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "/mapping-5": {
+      "put": {
+        "operationId": "mapping5",
+        "requestBody": {
+          "description": "Some other body description",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/App9Controller.SomeDto"
+              }
+            }
+          },
+          "required": true
         },
         "responses": {
           "200": {

@@ -4,13 +4,13 @@ import io.swagger.v3.oas.annotations.links.LinkParameter;
 
 import java.util.Map;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildMapFromArray;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromArray;
 
 public class DefaultLinkParameterAnnotationMapper implements LinkParameterAnnotationMapper {
 
     @Override
     public Map<String, String> mapArray(LinkParameter[] linkParameterAnnotations) {
-        return buildMapFromArray(
+        return buildStringMapFromArray(
                 linkParameterAnnotations,
                 LinkParameter::name,
                 this::map

@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildMapFromArray;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromArray;
 
 @RequiredArgsConstructor
 public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
@@ -17,7 +17,7 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
 
     @Override
     public Map<String, Header> mapArray(io.swagger.v3.oas.annotations.headers.Header[] headerAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
-        return buildMapFromArray(
+        return buildStringMapFromArray(
                 headerAnnotations,
                 io.swagger.v3.oas.annotations.headers.Header::name,
                 annotation -> map(annotation, referencedItemConsumerSupplier)
