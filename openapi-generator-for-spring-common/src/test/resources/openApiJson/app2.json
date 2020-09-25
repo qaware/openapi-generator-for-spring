@@ -171,7 +171,7 @@
   },
   "components": {
     "schemas": {
-      "string": {
+      "deprecated_string": {
         "type": "string",
         "deprecated": true
       }
@@ -192,7 +192,7 @@
         "content": {
           "*/*": {
             "schema": {
-              "$ref": "#/components/schemas/string"
+              "$ref": "#/components/schemas/deprecated_string"
             }
           }
         }

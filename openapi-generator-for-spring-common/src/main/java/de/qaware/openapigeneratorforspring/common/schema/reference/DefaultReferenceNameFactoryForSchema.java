@@ -10,9 +10,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.lang.Boolean.TRUE;
+
 public class DefaultReferenceNameFactoryForSchema implements ReferenceNameFactoryForSchema {
 
     private static final String NULLABLE_PREFIX = "nullable";
+    private static final String DEPRECATED_PREFIX = "deprecated";
+
 
     private final AtomicInteger counter = new AtomicInteger();
 
@@ -27,8 +31,11 @@ public class DefaultReferenceNameFactoryForSchema implements ReferenceNameFactor
         if (StringUtils.isNotBlank(suggestedIdentifier)) {
             identifierComponents.add(suggestedIdentifier);
         } else if (StringUtils.isNotBlank(schema.getType())) {
-            if (Boolean.TRUE.equals(schema.getNullable())) {
+            if (TRUE.equals(schema.getNullable())) {
                 identifierComponents.add(NULLABLE_PREFIX);
+            }
+            if (TRUE.equals(schema.getDeprecated())) {
+                identifierComponents.add(DEPRECATED_PREFIX);
             }
             identifierComponents.add(schema.getType());
             if (StringUtils.isNotBlank(schema.getFormat())) {
