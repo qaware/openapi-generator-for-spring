@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.filter.handlermethod;
 
-import org.springframework.web.method.HandlerMethod;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodWithInfo;
 
 public interface HandlerMethodFilter {
-    boolean accept(HandlerMethod handlerMethod);
+    boolean accept(HandlerMethodWithInfo handlerMethodWithInfo);
 }

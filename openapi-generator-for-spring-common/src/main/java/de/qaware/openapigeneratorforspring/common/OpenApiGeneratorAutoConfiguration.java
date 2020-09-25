@@ -9,6 +9,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 @Configuration
 @Import({
         OpenApiGeneratorReferenceAutoConfiguration.class,
@@ -29,12 +34,20 @@ public class OpenApiGeneratorAutoConfiguration {
     public OpenApiGenerator openApiGenerator(
             PathsBuilder pathsBuilder,
             OpenApiInfoSupplier openApiInfoSupplier,
-            ReferencedItemSupportFactory referencedItemSupportFactory
+            ReferencedItemSupportFactory referencedItemSupportFactory,
+            Optional<List<OpenApiCustomizer>> optionalOpenApiCustomizers
     ) {
         return new OpenApiGenerator(
                 pathsBuilder,
                 openApiInfoSupplier,
-                referencedItemSupportFactory
+                referencedItemSupportFactory,
+                optionalOpenApiCustomizers.orElse(Collections.emptyList())
         );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OpenApiResourceParameterProvider defaultOpenApiResourceParameterProvider(HttpServletRequest httpServletRequest) {
+        return new DefaultOpenApiResourceParameterProvider(httpServletRequest);
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.IOException;
@@ -44,8 +45,12 @@ public abstract class AbstractOpenApiGeneratorIntTest {
 
     @Test
     public void getOpenApiAsJson() throws Exception {
+        assertResponseBodyMatchesOpenApiJson(expectedJsonFile, mockMvc.perform(get("/v3/api-docs")));
+    }
+
+    public static void assertResponseBodyMatchesOpenApiJson(String expectedJsonFile, ResultActions performResult) throws Exception {
         String expectedJson = readFileAsString(RESOURCE_PATH_PREFIX + expectedJsonFile);
-        MvcResult mvcResult = mockMvc.perform(get("/v3/api-docs"))
+        MvcResult mvcResult = performResult
                 .andExpect(status().isOk())
                 .andReturn();
         String actualJson = mvcResult.getResponse().getContentAsString();

@@ -8,6 +8,8 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Paths;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public class OpenApiGenerator {
 
@@ -15,6 +17,7 @@ public class OpenApiGenerator {
     private final PathsBuilder pathsBuilder;
     private final OpenApiInfoSupplier openApiInfoSupplier;
     private final ReferencedItemSupportFactory referencedItemSupportFactory;
+    private final List<OpenApiCustomizer> openApiCustomizers;
 
 
     public OpenAPI generateOpenApi() {
@@ -24,6 +27,7 @@ public class OpenApiGenerator {
         openApi.setPaths(paths); // always set paths, even if empty to comply with spec
         openApi.setInfo(openApiInfoSupplier.get()); // always set info to comply with spec
         openApi.setComponents(referencedItemSupport.buildComponents());
+        openApiCustomizers.forEach(customizer -> customizer.customize(openApi));
         return openApi;
     }
 }

@@ -1,10 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.filter.handlermethod;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodWithInfo;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.Method;
 
@@ -14,8 +14,8 @@ public class ExcludeHiddenHandlerMethodFilter implements HandlerMethodFilter {
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
-    public boolean accept(HandlerMethod handlerMethod) {
-        Method method = handlerMethod.getMethod();
+    public boolean accept(HandlerMethodWithInfo handlerMethodWithInfo) {
+        Method method = handlerMethodWithInfo.getHandlerMethod().getMethod();
         Hidden hiddenOnMethodOrClass = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method)
                 .findFirstAnnotation(Hidden.class);
         if (hiddenOnMethodOrClass != null) {

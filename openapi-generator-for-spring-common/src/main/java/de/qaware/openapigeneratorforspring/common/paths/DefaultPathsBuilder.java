@@ -52,15 +52,17 @@ public class DefaultPathsBuilder implements PathsBuilder {
                 .forEachOrdered(item -> {
                     String pathPattern = item.getLeft();
                     HandlerMethodWithInfo handlerMethodWithInfo = item.getRight();
-                    HandlerMethod handlerMethod = handlerMethodWithInfo.getHandlerMethod();
-                    PathItem pathItem = new PathItem();
-                    if (isNotAcceptedByAllHandlerMethodFilters(handlerMethod)) {
+                    if (isNotAcceptedByAllHandlerMethodFilters(handlerMethodWithInfo)) {
                         return;
                     }
+
+                    PathItem pathItem = new PathItem();
                     Set<RequestMethod> requestMethods = handlerMethodWithInfo.getRequestMethods();
                     Map<RequestMethod, Operation> operationPerMethod = new EnumMap<>(RequestMethod.class);
                     MultiValueMap<String, OperationWithInfo> operationsByIdPerPathItem = new LinkedMultiValueMap<>();
+
                     requestMethods.forEach(requestMethod -> {
+                        HandlerMethod handlerMethod = handlerMethodWithInfo.getHandlerMethod();
                         OperationInfo operationInfo = OperationInfo.of(handlerMethod, requestMethod, pathPattern);
                         OperationBuilderContext operationBuilderContext = new OperationBuilderContext(operationInfo, referencedItemConsumerSupplier);
                         Operation operation = operationBuilder.buildOperation(operationBuilderContext);
@@ -92,7 +94,7 @@ public class DefaultPathsBuilder implements PathsBuilder {
         return paths;
     }
 
-    private boolean isNotAcceptedByAllHandlerMethodFilters(HandlerMethod handlerMethod) {
+    private boolean isNotAcceptedByAllHandlerMethodFilters(HandlerMethodWithInfo handlerMethod) {
         for (HandlerMethodFilter handlerMethodFilter : handlerMethodFilters) {
             if (!handlerMethodFilter.accept(handlerMethod)) {
                 return true;
