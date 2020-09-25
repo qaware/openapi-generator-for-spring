@@ -17,14 +17,7 @@
           }
         ],
         "requestBody": {
-          "content": {
-            "text/plain": {
-              "schema": {
-                "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
-              }
-            }
-          },
-          "required": true
+          "$ref": "#/components/requestBodies/RequestBody_0"
         },
         "responses": {
           "200": {
@@ -152,14 +145,7 @@
           }
         ],
         "requestBody": {
-          "content": {
-            "text/plain": {
-              "schema": {
-                "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
-              }
-            }
-          },
-          "required": true
+          "$ref": "#/components/requestBodies/RequestBody_0"
         },
         "responses": {
           "200": {
@@ -197,6 +183,18 @@
         "schema": {
           "type": "string"
         }
+      }
+    },
+    "requestBodies": {
+      "RequestBody_0": {
+        "content": {
+          "text/plain": {
+            "schema": {
+              "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
+            }
+          }
+        },
+        "required": true
       }
     }
   }

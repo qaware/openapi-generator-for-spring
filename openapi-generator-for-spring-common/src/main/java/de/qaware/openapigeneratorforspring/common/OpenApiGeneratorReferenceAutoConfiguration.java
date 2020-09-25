@@ -14,7 +14,10 @@ import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
-@Import(OpenApiGeneratorReferenceExampleAutoConfiguration.class)
+@Import({
+        OpenApiGeneratorReferenceExampleAutoConfiguration.class,
+        OpenApiGeneratorReferenceRequestBodyAutoConfiguration.class
+})
 public class OpenApiGeneratorReferenceAutoConfiguration {
 
     @Bean

@@ -5,6 +5,7 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.OperationInfo;
+import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferencedRequestBodyConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import io.swagger.v3.oas.models.Operation;
@@ -33,7 +34,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        setRequestBody(buildRequestBodyFromMethod(operationBuilderContext), operation);
+        setRequestBody(buildRequestBodyFromMethod(operationBuilderContext), operation, operationBuilderContext);
     }
 
     @Override
@@ -43,15 +44,15 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
         requestBodyAnnotationMapper.applyFromAnnotation(requestBody, operationAnnotation.requestBody(),
                 operationBuilderContext.getReferencedItemConsumerSupplier()
         );
-        setRequestBody(requestBody, operation);
+        setRequestBody(requestBody, operation, operationBuilderContext);
     }
 
-    private void setRequestBody(RequestBody requestBody, Operation operation) {
+    private void setRequestBody(RequestBody requestBody, Operation operation, OperationBuilderContext operationBuilderContext) {
         if (new RequestBody().equals(requestBody)) {
             return;
         }
-        // TODO add referenced item consumer for request body
-        operation.setRequestBody(requestBody);
+        operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedRequestBodyConsumer.class)
+                .maybeAsReference(requestBody, operation::setRequestBody);
     }
 
     private RequestBody buildRequestBodyFromMethod(OperationBuilderContext operationBuilderContext) {
