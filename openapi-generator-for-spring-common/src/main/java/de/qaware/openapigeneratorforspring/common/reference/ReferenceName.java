@@ -31,7 +31,9 @@ public class ReferenceName {
         API_RESPONSE("#/components/responses/"),
         PARAMETER("#/components/parameters/"),
         EXAMPLE("#/components/examples/"),
-        REQUEST_BODY("#/components/requestBodies/");
+        REQUEST_BODY("#/components/requestBodies/"),
+        HEADER("#/components/headers/"),
+        ;
 
         private final String referencePrefix;
     }

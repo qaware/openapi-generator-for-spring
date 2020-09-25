@@ -17,8 +17,8 @@ public class ReferencedRequestBodyStorage extends AbstractReferencedItemStorage<
         super(referenceDecider, referenceNameFactory, referenceNameConflictResolver, Entry::new);
     }
 
-    void storeMaybeReference(RequestBody example, Consumer<ReferenceName> referenceNameConsumer) {
-        getEntryOrAddNew(example).addSetter(referenceNameConsumer);
+    void storeMaybeReference(RequestBody requestBody, Consumer<ReferenceName> referenceNameConsumer) {
+        getEntryOrAddNew(requestBody).addSetter(referenceNameConsumer);
     }
 
     static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<RequestBody> {

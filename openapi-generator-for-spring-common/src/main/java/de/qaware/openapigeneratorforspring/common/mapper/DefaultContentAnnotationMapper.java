@@ -44,13 +44,13 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
     }
 
     private void setExampleOrExamples(MediaType mediaType, ExampleObject[] exampleObjectAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
-        ReferencedExamplesConsumer referencedExamplesConsumer = referencedItemConsumerSupplier.get(ReferencedExamplesConsumer.class);
         if (exampleObjectAnnotations.length == 1 && StringUtils.isBlank(exampleObjectAnnotations[0].name())) {
             // one should not set the full example object here, just the value
             mediaType.setExample(exampleObjectAnnotationMapper.map(exampleObjectAnnotations[0]).getValue());
         } else {
             setCollectionIfNotEmpty(exampleObjectAnnotationMapper.mapArray(exampleObjectAnnotations),
-                    examples -> referencedExamplesConsumer.maybeAsReference(examples, mediaType::setExamples)
+                    examples -> referencedItemConsumerSupplier.get(ReferencedExamplesConsumer.class)
+                            .maybeAsReference(examples, mediaType::setExamples)
             );
         }
     }

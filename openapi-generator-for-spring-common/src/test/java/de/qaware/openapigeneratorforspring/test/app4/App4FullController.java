@@ -23,10 +23,10 @@ public class App4FullController {
             responseCode = "200",
             description = "All ok",
             headers = {
-                    @Header(name = "header1", description = "Description header 1", ref = "RefToHeader1"),
+                    @Header(name = "header1", description = "Description header 1"),
                     @Header(name = "header2", description = "Description header 2",
                             required = true, deprecated = true,
-                            schema = @Schema(implementation = String.class, ref = "RefToSchemaOfHeader2")
+                            schema = @Schema(implementation = String.class)
                     )
             },
             links = {
@@ -60,7 +60,6 @@ public class App4FullController {
                             examples = {
                                     @ExampleObject(summary = "summary example1", value = "some example value 1",
                                             extensions = @Extension(name = "extension-example-object-1", properties = @ExtensionProperty(name = "name1", value = "value2")),
-                                            ref = "RefToExampleObject1",
                                             description = "example description 1"
                                     ),
                                     @ExampleObject(name = "MyExampleName", summary = "summary example2", externalValue = "http://some-url1"),
@@ -92,10 +91,33 @@ public class App4FullController {
                                     "  \"key2\": \"value2\"\n" +
                                     "}", parseValue = true)
                     })
-            },
-            ref = "RefToApiReponse2"
+            }
     )
     public String getMapping3() {
+        return null;
+    }
+
+    @GetMapping("/get4")
+    @ApiResponse(
+            headers = {
+                    @Header(name = "header1", description = "Description header 1"),
+                    @Header(name = "header2", description = "Description header 2",
+                            required = true,
+                            schema = @Schema(implementation = String.class)
+                    )
+            },
+            content = {
+                    @Content(mediaType = "application/json",
+                            encoding = {
+                                    @Encoding(
+                                            name = "propertyInSchema2", contentType = "text/plain", style = "form", explode = true, allowReserved = true,
+                                            headers = @Header(name = "header3", description = "Description header 3")
+                                    )
+                            }
+                    )
+            }
+    )
+    public String getMapping4() {
         return null;
     }
 }

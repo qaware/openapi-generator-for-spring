@@ -1,11 +1,13 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
+import de.qaware.openapigeneratorforspring.common.reference.header.ReferencedHeadersConsumer;
 import io.swagger.v3.oas.models.media.Encoding;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiEnumUtils.findEnumByToString;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromArray;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
@@ -39,7 +41,10 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
             encoding.setAllowReserved(true);
         }
 
-        setMapIfNotEmpty(headerAnnotationMapper.mapArray(encodingAnnotation.headers(), referencedItemConsumerSupplier), encoding::setHeaders);
+        setCollectionIfNotEmpty(headerAnnotationMapper.mapArray(encodingAnnotation.headers(), referencedItemConsumerSupplier),
+                headers -> referencedItemConsumerSupplier.get(ReferencedHeadersConsumer.class)
+                        .maybeAsReference(headers, encoding::setHeaders)
+        );
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(encodingAnnotation.extensions()), encoding::setExtensions);
 
         return encoding;

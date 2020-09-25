@@ -7,21 +7,19 @@ import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
 import io.swagger.v3.oas.models.headers.Header;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
-
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromArray;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
     private final SchemaAnnotationMapper schemaAnnotationMapper;
 
     @Override
-    public Map<String, Header> mapArray(io.swagger.v3.oas.annotations.headers.Header[] headerAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
-        return buildStringMapFromArray(
-                headerAnnotations,
-                io.swagger.v3.oas.annotations.headers.Header::name,
-                annotation -> map(annotation, referencedItemConsumerSupplier)
-        );
+    public List<HeaderWithOptionalName> mapArray(io.swagger.v3.oas.annotations.headers.Header[] headerAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+        return Arrays.stream(headerAnnotations)
+                .map(annotation -> new HeaderWithOptionalName(map(annotation, referencedItemConsumerSupplier), annotation.name()))
+                .collect(Collectors.toList());
     }
 
     @Override

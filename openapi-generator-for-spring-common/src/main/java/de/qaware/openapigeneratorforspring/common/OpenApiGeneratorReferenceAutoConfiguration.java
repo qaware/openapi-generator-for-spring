@@ -16,7 +16,8 @@ import java.util.List;
 
 @Import({
         OpenApiGeneratorReferenceExampleAutoConfiguration.class,
-        OpenApiGeneratorReferenceRequestBodyAutoConfiguration.class
+        OpenApiGeneratorReferenceHeaderAutoConfiguration.class,
+        OpenApiGeneratorReferenceRequestBodyAutoConfiguration.class,
 })
 public class OpenApiGeneratorReferenceAutoConfiguration {
 

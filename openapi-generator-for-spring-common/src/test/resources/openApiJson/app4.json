@@ -79,17 +79,16 @@
           "200": {
             "description": "All ok",
             "headers": {
-              "header1": {
-                "description": "Description header 1",
-                "$ref": "#/components/headers/RefToHeader1"
-              },
               "header2": {
                 "description": "Description header 2",
                 "required": true,
                 "deprecated": true,
                 "schema": {
-                  "$ref": "#/components/schemas/RefToSchemaOfHeader2"
+                  "type": "string"
                 }
+              },
+              "header1": {
+                "$ref": "#/components/headers/header1"
               }
             },
             "content": {
@@ -108,7 +107,6 @@
                     "summary": "summary example1",
                     "description": "example description 1",
                     "value": "some example value 1",
-                    "$ref": "#/components/examples/RefToExampleObject1",
                     "x-extension-example-object-1": {
                       "name1": "value2"
                     }
@@ -125,7 +123,7 @@
                     "contentType": "text/plain",
                     "headers": {
                       "header3": {
-                        "description": "Description header 3"
+                        "$ref": "#/components/headers/header3"
                       }
                     },
                     "style": "form",
@@ -191,7 +189,6 @@
                 }
               }
             },
-            "$ref": "#/components/responses/RefToApiReponse2",
             "x-nameless-property-2": {
               "key1": "value1",
               "key2": "value2"
@@ -200,6 +197,50 @@
               "name1": "value2"
             },
             "x-nameless-property-1": "value2"
+          }
+        }
+      }
+    },
+    "/get4": {
+      "get": {
+        "operationId": "getMapping4",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "headers": {
+              "header2": {
+                "description": "Description header 2",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "header1": {
+                "$ref": "#/components/headers/header1"
+              }
+            },
+            "content": {
+              "application/json": {
+                "encoding": {
+                  "propertyInSchema2": {
+                    "contentType": "text/plain",
+                    "headers": {
+                      "header3": {
+                        "$ref": "#/components/headers/header3"
+                      }
+                    },
+                    "style": "form",
+                    "explode": true,
+                    "allowReserved": true
+                  }
+                }
+              },
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -228,6 +269,14 @@
       "Example2": {
         "summary": "summary example3",
         "externalValue": "http://some-url2"
+      }
+    },
+    "headers": {
+      "header3": {
+        "description": "Description header 3"
+      },
+      "header1": {
+        "description": "Description header 1"
       }
     }
   }
