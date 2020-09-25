@@ -2,11 +2,9 @@ package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.OpenApiCustomizer;
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
-import de.qaware.openapigeneratorforspring.common.OpenApiResource;
 import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemSupportFactory;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,12 +22,6 @@ import java.util.Optional;
         OpenApiGeneratorInfoAutoConfiguration.class
 })
 public class OpenApiGeneratorAutoConfiguration {
-
-    @Bean
-    @ConditionalOnMissingBean
-    public OpenApiResource openApiResource(OpenApiGenerator openApiGenerator, OpenApiObjectMapperSupplier openApiObjectMapperSupplier) {
-        return new OpenApiResource(openApiGenerator, openApiObjectMapperSupplier);
-    }
 
     @Bean
     @ConditionalOnMissingBean

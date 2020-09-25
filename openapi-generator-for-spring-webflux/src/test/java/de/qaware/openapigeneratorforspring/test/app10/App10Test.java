@@ -12,7 +12,7 @@ import static de.qaware.openapigeneratorforspring.test.AbstractOpenApiGeneratorI
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@AutoConfigureWebTestClient
+@AutoConfigureWebTestClient(timeout = "40000000")
 public class App10Test {
 
     @Autowired
@@ -21,14 +21,21 @@ public class App10Test {
     @Test
     public void testWithQueryParam() throws Exception {
         assertResponseBodyMatchesOpenApiJson("app10_admin.json",
-                webTestClient.get().uri("/v3/api-docs").attribute("pathPrefix", "/admin")
+                webTestClient.get().uri(uriBuilder -> uriBuilder
+                        .path("/v3/api-docs")
+                        .queryParam("pathPrefix", "/admin")
+                        .build()
+                )
         );
     }
 
     @Test
     public void testWithHeaderParam() throws Exception {
         assertResponseBodyMatchesOpenApiJson("app10_user.json",
-                webTestClient.get().uri("/v3/api-docs").header("X-Path-Prefix", "/user")
+                webTestClient.get().uri(uriBuilder -> uriBuilder
+                        .path("/v3/api-docs")
+                        .build()
+                ).header("X-Path-Prefix", "/user")
         );
     }
 }

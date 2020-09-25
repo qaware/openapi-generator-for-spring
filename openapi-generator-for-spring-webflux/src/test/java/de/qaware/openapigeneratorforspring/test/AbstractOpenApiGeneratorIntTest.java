@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@AutoConfigureWebTestClient
+@AutoConfigureWebTestClient(timeout = "40000000")
 public abstract class AbstractOpenApiGeneratorIntTest {
 
     private static final String RESOURCE_PATH_PREFIX = "/openApiJson/";
@@ -45,7 +45,12 @@ public abstract class AbstractOpenApiGeneratorIntTest {
                 .expectBody().returnResult()
                 .getResponseBody();
         assertThat(responseBody).isNotNull();
-        JSONAssert.assertEquals(expectedJson, new String(responseBody), true);
+        String actualJson = new String(responseBody);
+        try {
+            JSONAssert.assertEquals(expectedJson, actualJson, true);
+        } catch (AssertionError e) {
+            throw new AssertionError("JSON Expected: " + expectedJson + " Actual: " + actualJson, e);
+        }
     }
 
     public static String readFileAsString(String path) throws IOException {
