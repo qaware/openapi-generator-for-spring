@@ -12,13 +12,13 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OpenApiResource openApiResource(OpenApiGenerator openApiGenerator, OpenApiObjectMapperSupplier openApiObjectMapperSupplier) {
-        return new OpenApiResource(openApiGenerator, openApiObjectMapperSupplier);
+    public OpenApiResourceForWebFlux openApiResource(OpenApiGenerator openApiGenerator, OpenApiObjectMapperSupplier openApiObjectMapperSupplier) {
+        return new OpenApiResourceForWebFlux(openApiGenerator, openApiObjectMapperSupplier);
     }
 
     @Bean
     public HandlerMethodsProvider handlerMethodsProviderFromWebMvc(RequestMappingHandlerMapping requestMappingHandlerMapping) {
-        return new HandlerMethodsProviderFromWebFlux(requestMappingHandlerMapping);
+        return new HandlerMethodsProviderForWebFlux(requestMappingHandlerMapping);
     }
 
     @Bean

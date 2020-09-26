@@ -1,16 +1,15 @@
-package de.qaware.openapigeneratorforspring.webflux;
+package de.qaware.openapigeneratorforspring.webmvc;
 
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodWithInfo;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.util.pattern.PathPattern;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class HandlerMethodsProviderFromWebFlux implements HandlerMethodsProvider {
+public class HandlerMethodsProviderForWebMvc implements HandlerMethodsProvider {
 
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
 
@@ -19,9 +18,7 @@ public class HandlerMethodsProviderFromWebFlux implements HandlerMethodsProvider
         return requestMappingHandlerMapping.getHandlerMethods().entrySet().stream()
                 .map(entry -> new HandlerMethodWithInfo(
                         entry.getValue(),
-                        entry.getKey().getPatternsCondition().getPatterns().stream()
-                                .map(PathPattern::toString)
-                                .collect(Collectors.toSet()),
+                        entry.getKey().getPatternsCondition().getPatterns(),
                         entry.getKey().getMethodsCondition().getMethods()
                 ))
                 .collect(Collectors.toList());

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collections;
 import java.util.List;
 
-import static de.qaware.openapigeneratorforspring.webflux.OpenApiResource.SERVER_HTTP_REQUEST_THREAD_LOCAL;
+import static de.qaware.openapigeneratorforspring.webflux.OpenApiResourceForWebFlux.SERVER_HTTP_REQUEST_THREAD_LOCAL;
 
 @RequiredArgsConstructor
 public class OpenApiResourceParameterProviderForWebFlux implements OpenApiResourceParameterProvider {

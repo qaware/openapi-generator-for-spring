@@ -12,13 +12,13 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 public class OpenApiGeneratorWebMvcAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
-    public OpenApiResource openApiResource(OpenApiGenerator openApiGenerator, OpenApiObjectMapperSupplier openApiObjectMapperSupplier) {
-        return new OpenApiResource(openApiGenerator, openApiObjectMapperSupplier);
+    public OpenApiResourceForWebMvc openApiResource(OpenApiGenerator openApiGenerator, OpenApiObjectMapperSupplier openApiObjectMapperSupplier) {
+        return new OpenApiResourceForWebMvc(openApiGenerator, openApiObjectMapperSupplier);
     }
 
     @Bean
     public HandlerMethodsProvider handlerMethodsProviderFromWebMvc(RequestMappingHandlerMapping requestMappingHandlerMapping) {
-        return new HandlerMethodsProviderFromWebMvc(requestMappingHandlerMapping);
+        return new HandlerMethodsProviderForWebMvc(requestMappingHandlerMapping);
     }
 
     @Bean

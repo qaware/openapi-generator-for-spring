@@ -8,11 +8,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 
-public class OpenApiResource extends AbstractOpenApiResource {
+public class OpenApiResourceForWebFlux extends AbstractOpenApiResource {
 
     static final ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_THREAD_LOCAL = new ThreadLocal<>();
 
-    public OpenApiResource(OpenApiGenerator openApiGenerator, OpenApiObjectMapperSupplier objectMapperSupplier) {
+    public OpenApiResourceForWebFlux(OpenApiGenerator openApiGenerator, OpenApiObjectMapperSupplier objectMapperSupplier) {
         super(openApiGenerator, objectMapperSupplier);
     }
 
