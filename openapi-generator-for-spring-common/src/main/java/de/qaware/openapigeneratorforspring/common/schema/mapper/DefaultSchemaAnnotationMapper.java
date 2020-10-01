@@ -107,9 +107,9 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         referencedSchemaConsumer.alwaysAsReferences(
                 schemasMap.entrySet().stream()
                         .map(entry -> ReferencedSchemaConsumer.EntryWithSchema.of(entry, entry.getValue())),
-                entriesWithReferenceNames -> discriminator.setMapping(
-                        entriesWithReferenceNames.collect(Collectors.toMap(
-                                entry -> entry.getReferenceName().asReferenceString(),
+                entries -> discriminator.setMapping(
+                        entries.collect(Collectors.toMap(
+                                ReferencedSchemaConsumer.EntryWithReferenceIdentifier::getReferenceIdentifier,
                                 entry -> entry.getEntry().getKey()
                         ))
                 )

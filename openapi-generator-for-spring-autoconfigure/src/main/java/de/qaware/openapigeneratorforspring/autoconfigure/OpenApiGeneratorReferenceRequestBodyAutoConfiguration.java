@@ -1,9 +1,9 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
-import de.qaware.openapigeneratorforspring.common.reference.requestbody.DefaultReferenceNameFactoryForRequestBody;
+import de.qaware.openapigeneratorforspring.common.reference.requestbody.DefaultReferenceIdentifierFactoryForRequestBody;
 import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferenceDeciderForRequestBody;
-import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferenceNameConflictResolverForRequestBody;
-import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferenceNameFactoryForRequestBody;
+import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferenceIdentifierConflictResolverForRequestBody;
+import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferenceIdentifierFactoryForRequestBody;
 import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferencedRequestBodyHandlerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -14,22 +14,22 @@ public class OpenApiGeneratorReferenceRequestBodyAutoConfiguration {
     @ConditionalOnMissingBean
     public ReferencedRequestBodyHandlerFactory referencedRequestBodyHandlerFactory(
             ReferenceDeciderForRequestBody referenceDecider,
-            ReferenceNameFactoryForRequestBody referenceNameFactory,
-            ReferenceNameConflictResolverForRequestBody referenceNameConflictResolver
+            ReferenceIdentifierFactoryForRequestBody referenceIdentifierFactory,
+            ReferenceIdentifierConflictResolverForRequestBody referenceIdentifierConflictResolver
     ) {
-        return new ReferencedRequestBodyHandlerFactory(referenceDecider, referenceNameFactory, referenceNameConflictResolver);
+        return new ReferencedRequestBodyHandlerFactory(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceNameFactoryForRequestBody defaultReferenceNameFactoryForRequestBody() {
-        return new DefaultReferenceNameFactoryForRequestBody();
+    public ReferenceIdentifierFactoryForRequestBody defaultReferenceIdentifierFactoryForRequestBody() {
+        return new DefaultReferenceIdentifierFactoryForRequestBody();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceNameConflictResolverForRequestBody defaultReferenceNameConflictResolverForRequestBody() {
-        return new ReferenceNameConflictResolverForRequestBody() {
+    public ReferenceIdentifierConflictResolverForRequestBody defaultReferenceIdentifierConflictResolverForRequestBody() {
+        return new ReferenceIdentifierConflictResolverForRequestBody() {
             // use default implementation
         };
     }

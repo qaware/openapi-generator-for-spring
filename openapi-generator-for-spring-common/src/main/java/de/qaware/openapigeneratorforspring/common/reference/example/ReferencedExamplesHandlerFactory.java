@@ -13,13 +13,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ReferencedExamplesHandlerFactory implements ReferencedItemHandlerFactory<List<ExampleWithOptionalName>, Map<String, Example>> {
     private final ReferenceDeciderForExample referenceDecider;
-    private final ReferenceNameFactoryForExample referenceNameFactory;
-    private final ReferenceNameConflictResolverForExample referenceNameConflictResolver;
+    private final ReferenceIdentifierFactoryForExample referenceIdentifierFactory;
+    private final ReferenceIdentifierConflictResolverForExample referenceIdentifierConflictResolver;
 
     @Override
     public ReferencedItemHandler<List<ExampleWithOptionalName>, Map<String, Example>> create() {
-        ReferencedExampleStorage storage = new ReferencedExampleStorage(referenceDecider, referenceNameFactory, referenceNameConflictResolver);
-        return new ReferencedExamplesHandlerImpl(storage, referenceNameFactory);
+        ReferencedExampleStorage storage = new ReferencedExampleStorage(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
+        return new ReferencedExamplesHandlerImpl(storage, referenceIdentifierFactory);
     }
 
     @Override

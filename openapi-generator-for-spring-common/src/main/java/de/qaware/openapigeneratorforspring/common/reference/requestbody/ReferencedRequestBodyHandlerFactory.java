@@ -9,12 +9,12 @@ import org.springframework.core.ResolvableType;
 @RequiredArgsConstructor
 public class ReferencedRequestBodyHandlerFactory implements ReferencedItemHandlerFactory<RequestBody, RequestBody> {
     private final ReferenceDeciderForRequestBody referenceDecider;
-    private final ReferenceNameFactoryForRequestBody referenceNameFactory;
-    private final ReferenceNameConflictResolverForRequestBody referenceNameConflictResolver;
+    private final ReferenceIdentifierFactoryForRequestBody referenceIdentifierFactory;
+    private final ReferenceIdentifierConflictResolverForRequestBody referenceIdentifierConflictResolver;
 
     @Override
     public ReferencedItemHandler<RequestBody, RequestBody> create() {
-        ReferencedRequestBodyStorage storage = new ReferencedRequestBodyStorage(referenceDecider, referenceNameFactory, referenceNameConflictResolver);
+        ReferencedRequestBodyStorage storage = new ReferencedRequestBodyStorage(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
         return new ReferencedRequestBodyHandlerImpl(storage);
     }
 

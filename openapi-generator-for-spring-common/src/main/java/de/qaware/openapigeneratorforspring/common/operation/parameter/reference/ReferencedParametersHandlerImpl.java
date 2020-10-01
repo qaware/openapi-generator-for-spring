@@ -23,7 +23,7 @@ public class ReferencedParametersHandlerImpl implements ReferencedItemHandler<Li
         IntStream.range(0, parameters.size()).forEach(i ->
                 storage.storeMaybeReference(
                         parameters.get(i),
-                        referenceName -> parameters.set(i, Parameter.builder().ref(referenceName.asReferenceString()).build())
+                        referenceIdentifier -> parameters.set(i, Parameter.builder().ref(referenceIdentifier).build())
                 )
         );
     }

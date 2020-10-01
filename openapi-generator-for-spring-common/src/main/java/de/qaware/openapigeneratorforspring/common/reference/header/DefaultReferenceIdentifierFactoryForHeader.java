@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class DefaultReferenceNameFactoryForHeader implements ReferenceNameFactoryForHeader {
+public class DefaultReferenceIdentifierFactoryForHeader implements ReferenceIdentifierFactoryForHeader {
 
     private final AtomicInteger counter = new AtomicInteger();
 

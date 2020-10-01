@@ -151,11 +151,11 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     throw new IllegalStateException("Encountered schema without any schema consumers, that's strange");
                 } else if (schemaReferenceConsumersSize > 1 && referencedSchema.hasProperties) {
                     // already set (not globally unique) reference here to have a "comparable" schema after this resolution
-                    // globally unique reference name will be set after all schemas are collected
+                    // globally unique reference identifier will be set after all schemas are collected
                     referencedSchema.consumeSchema(schema);
-                    referencedSchemaConsumer.alwaysAsReference(schema, referenceName ->
-                            // globally unique reference name is known finally, then set it at all places
-                            referencedSchema.consumeSchema(Schema.builder().ref(referenceName.asReferenceString()).build())
+                    referencedSchemaConsumer.alwaysAsReference(schema, referenceIdentifier ->
+                            // globally unique reference identifier is known finally, then set it at all places
+                            referencedSchema.consumeSchema(Schema.builder().ref(referenceIdentifier).build())
                     );
                 } else {
                     if (referencedSchema.isTopLevel) {

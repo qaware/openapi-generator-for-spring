@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameConflictResolverForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameFactoryForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +24,10 @@ public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferen
 
     private static final String IDENTIFIER_SEPARATOR = "_";
 
-    private final ReferenceName.Type referenceNameType;
+    private final ReferenceType referenceType;
     private final ReferenceDeciderForType<T> referenceDecider;
-    private final ReferenceNameFactoryForType<T> referenceNameFactory;
-    private final ReferenceNameConflictResolverForType<T> referenceNameConflictResolver;
+    private final ReferenceIdentifierFactoryForType<T> referenceIdentifierFactory;
+    private final ReferenceIdentifierConflictResolverForType<T> referenceIdentifierConflictResolver;
     private final Function<T, E> entryConstructor;
 
     private final List<E> entries = new ArrayList<>();
@@ -49,49 +49,48 @@ public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferen
         Map<String, T> referencedItems = new HashMap<>();
         entries.stream()
                 .filter(entry -> entry.isReferenceRequired() || referenceDecider.turnIntoReference(entry.getItem(), entry.getNumberOfUsages()))
-                .collect(Collectors.groupingBy(this::createNonUniqueReferenceName))
-                .forEach((referenceName, entriesGroupedByReferenceName) ->
-                        buildUniqueReferenceNames(referenceName, entriesGroupedByReferenceName).forEach(
-                                (uniqueReferenceName, entry) -> {
-                                    entry.getReferenceNameSetters().forEach(setter -> setter.accept(uniqueReferenceName));
-                                    referencedItems.put(uniqueReferenceName.getIdentifier(), entry.getItem());
+                .collect(Collectors.groupingBy(this::createNonUniqueReferenceIdentifier))
+                .forEach((referenceIdentifier, entriesGroupedByIdentifier) ->
+                        buildUniqueReferenceIdentifiers(referenceIdentifier, entriesGroupedByIdentifier).forEach(
+                                (uniqueIdentifier, entry) -> {
+                                    String prefixedIdentifier = referenceType.getReferencePrefix() + uniqueIdentifier;
+                                    entry.getReferenceIdentifierSetters().forEach(setter -> setter.accept(prefixedIdentifier));
+                                    referencedItems.put(uniqueIdentifier, entry.getItem());
                                 })
                 );
         return referencedItems;
     }
 
-    private ReferenceName createNonUniqueReferenceName(E entry) {
-        String identifier = referenceNameFactory.buildIdentifierComponents(entry.getItem(), entry.getSuggestedIdentifier()).stream()
+    private String createNonUniqueReferenceIdentifier(E entry) {
+        return referenceIdentifierFactory.buildIdentifierComponents(entry.getItem(), entry.getSuggestedIdentifier()).stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(IDENTIFIER_SEPARATOR));
-        // at this point, the identifier may not be unique
-        return new ReferenceName(referenceNameType, identifier);
     }
 
-    private Map<ReferenceName, ReferencableEntry<T>> buildUniqueReferenceNames(ReferenceName referenceName, List<E> entriesGroupedByReferenceName) {
-        if (entriesGroupedByReferenceName.size() == 1) {
-            // special case: no conflicts need to be resolved as there's only one item for this reference name
-            return Collections.singletonMap(referenceName, entriesGroupedByReferenceName.get(0));
+    private Map<String, ReferencableEntry<T>> buildUniqueReferenceIdentifiers(String referenceIdentifier, List<E> entriesGroupedByIdentifier) {
+        if (entriesGroupedByIdentifier.size() == 1) {
+            // special case: no conflicts need to be resolved as there's only one item for this identifier
+            return Collections.singletonMap(referenceIdentifier, entriesGroupedByIdentifier.get(0));
         }
 
-        List<T> itemsWithSameReferenceName = entriesGroupedByReferenceName.stream()
+        List<T> itemsWithSameIdentifier = entriesGroupedByIdentifier.stream()
                 .map(ReferencableEntry::getItem)
                 .collect(Collectors.toList());
 
-        List<ReferenceName> uniqueReferenceNames = referenceNameConflictResolver.resolveConflict(itemsWithSameReferenceName, referenceName);
-        if (uniqueReferenceNames.size() != itemsWithSameReferenceName.size()) {
-            throw new IllegalStateException(String.format("Conflict resolver %s did not return expected number %d but %d unique reference names for items referenced by %s",
-                    referenceNameConflictResolver.getClass().getSimpleName(), itemsWithSameReferenceName.size(), uniqueReferenceNames.size(), referenceName));
+        List<String> uniqueIdentifiers = referenceIdentifierConflictResolver.resolveConflict(itemsWithSameIdentifier, referenceIdentifier);
+        if (uniqueIdentifiers.size() != itemsWithSameIdentifier.size()) {
+            throw new IllegalStateException(String.format("Conflict resolver %s did not return expected number %d but %d unique reference identifiers for items referenced by %s",
+                    referenceIdentifierConflictResolver.getClass().getSimpleName(), itemsWithSameIdentifier.size(), uniqueIdentifiers.size(), referenceIdentifier));
         }
 
         // zip items into map
-        return IntStream.range(0, entriesGroupedByReferenceName.size()).boxed()
+        return IntStream.range(0, entriesGroupedByIdentifier.size()).boxed()
                 .collect(Collectors.toMap(
-                        uniqueReferenceNames::get,
-                        entriesGroupedByReferenceName::get,
+                        uniqueIdentifiers::get,
+                        entriesGroupedByIdentifier::get,
                         (a, b) -> {
-                            throw new IllegalStateException(String.format("Found non-unique reference name from conflict resolver %s: %s vs. %s",
-                                    referenceNameConflictResolver.getClass().getSimpleName(), a, b));
+                            throw new IllegalStateException(String.format("Found non-unique reference identifier from conflict resolver %s: %s vs. %s",
+                                    referenceIdentifierConflictResolver.getClass().getSimpleName(), a, b));
                         })
                 );
     }
@@ -110,7 +109,7 @@ public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferen
         @Nullable
         String getSuggestedIdentifier();
 
-        Stream<Consumer<ReferenceName>> getReferenceNameSetters();
+        Stream<Consumer<String>> getReferenceIdentifierSetters();
 
     }
 
@@ -118,25 +117,25 @@ public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferen
     public static abstract class AbstractReferencableEntry<T> implements ReferencableEntry<T> {
         @Getter
         private final T item;
-        private final List<Consumer<ReferenceName>> referenceNameSetters = new ArrayList<>();
+        private final List<Consumer<String>> referenceIdentifierSetters = new ArrayList<>();
 
         @Override
         public boolean matches(T item) {
             return this.item.equals(item);
         }
 
-        public void addSetter(Consumer<ReferenceName> referenceNameSetter) {
-            referenceNameSetters.add(referenceNameSetter);
+        public void addSetter(Consumer<String> setter) {
+            referenceIdentifierSetters.add(setter);
         }
 
         @Override
         public int getNumberOfUsages() {
-            return referenceNameSetters.size();
+            return referenceIdentifierSetters.size();
         }
 
         @Override
-        public Stream<Consumer<ReferenceName>> getReferenceNameSetters() {
-            return referenceNameSetters.stream();
+        public Stream<Consumer<String>> getReferenceIdentifierSetters() {
+            return referenceIdentifierSetters.stream();
         }
     }
 }

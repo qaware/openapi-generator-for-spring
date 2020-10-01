@@ -1,10 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.reference.requestbody;
 
 import de.qaware.openapigeneratorforspring.common.reference.AbstractReferencedItemStorage;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
+import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameConflictResolverForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameFactoryForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 
 import javax.annotation.Nullable;
@@ -13,12 +13,12 @@ import java.util.function.Consumer;
 
 public class ReferencedRequestBodyStorage extends AbstractReferencedItemStorage<RequestBody, ReferencedRequestBodyStorage.Entry> {
 
-    ReferencedRequestBodyStorage(ReferenceDeciderForType<RequestBody> referenceDecider, ReferenceNameFactoryForType<RequestBody> referenceNameFactory, ReferenceNameConflictResolverForType<RequestBody> referenceNameConflictResolver) {
-        super(ReferenceName.Type.REQUEST_BODY, referenceDecider, referenceNameFactory, referenceNameConflictResolver, Entry::new);
+    ReferencedRequestBodyStorage(ReferenceDeciderForType<RequestBody> referenceDecider, ReferenceIdentifierFactoryForType<RequestBody> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<RequestBody> referenceIdentifierConflictResolver) {
+        super(ReferenceType.REQUEST_BODY, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Entry::new);
     }
 
-    void storeMaybeReference(RequestBody requestBody, Consumer<ReferenceName> referenceNameConsumer) {
-        getEntryOrAddNew(requestBody).addSetter(referenceNameConsumer);
+    void storeMaybeReference(RequestBody requestBody, Consumer<String> setter) {
+        getEntryOrAddNew(requestBody).addSetter(setter);
     }
 
     static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<RequestBody> {
@@ -29,7 +29,7 @@ public class ReferencedRequestBodyStorage extends AbstractReferencedItemStorage<
         @Nullable
         @Override
         public String getSuggestedIdentifier() {
-            // TODO is there are good way for request body reference name?
+            // TODO is there are good way for request body reference identifier?
             return null;
         }
     }

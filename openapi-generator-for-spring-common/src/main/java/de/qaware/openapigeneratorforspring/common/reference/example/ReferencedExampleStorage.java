@@ -1,10 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.reference.example;
 
 import de.qaware.openapigeneratorforspring.common.reference.AbstractReferencedItemStorage;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
+import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameConflictResolverForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameFactoryForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.example.Example;
 import lombok.Getter;
 
@@ -13,14 +13,14 @@ import java.util.function.Consumer;
 
 public class ReferencedExampleStorage extends AbstractReferencedItemStorage<Example, ReferencedExampleStorage.Entry> {
 
-    ReferencedExampleStorage(ReferenceDeciderForType<Example> referenceDecider, ReferenceNameFactoryForType<Example> referenceNameFactory, ReferenceNameConflictResolverForType<Example> referenceNameConflictResolver) {
-        super(ReferenceName.Type.EXAMPLE, referenceDecider, referenceNameFactory, referenceNameConflictResolver, Entry::new);
+    ReferencedExampleStorage(ReferenceDeciderForType<Example> referenceDecider, ReferenceIdentifierFactoryForType<Example> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Example> referenceIdentifierConflictResolver) {
+        super(ReferenceType.EXAMPLE, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Entry::new);
     }
 
-    void storeMaybeReference(String name, Example example, Consumer<ReferenceName> referenceNameConsumer) {
+    void storeMaybeReference(String name, Example example, Consumer<String> setter) {
         getEntryOrAddNew(example)
                 .withSuggestedIdentifier(name)
-                .addSetter(referenceNameConsumer);
+                .addSetter(setter);
     }
 
     static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<Example> {

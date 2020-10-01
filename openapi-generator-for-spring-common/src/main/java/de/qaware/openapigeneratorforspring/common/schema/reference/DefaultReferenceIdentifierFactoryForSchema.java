@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Boolean.TRUE;
 
-public class DefaultReferenceNameFactoryForSchema implements ReferenceNameFactoryForSchema {
+public class DefaultReferenceIdentifierFactoryForSchema implements ReferenceIdentifierFactoryForSchema {
 
     private static final String NULLABLE_PREFIX = "nullable";
     private static final String DEPRECATED_PREFIX = "deprecated";

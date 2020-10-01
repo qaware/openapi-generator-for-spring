@@ -1,10 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.operation.response.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.AbstractReferencedItemStorage;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
+import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameConflictResolverForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameFactoryForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 
 import javax.annotation.Nullable;
@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 
 public class ReferencedApiResponseStorage extends AbstractReferencedItemStorage<ApiResponse, ReferencedApiResponseStorage.Entry> {
 
-    ReferencedApiResponseStorage(ReferenceDeciderForType<ApiResponse> referenceDecider, ReferenceNameFactoryForType<ApiResponse> referenceNameFactory, ReferenceNameConflictResolverForType<ApiResponse> referenceNameConflictResolver) {
-        super(ReferenceName.Type.API_RESPONSE, referenceDecider, referenceNameFactory, referenceNameConflictResolver, Entry::new);
+    ReferencedApiResponseStorage(ReferenceDeciderForType<ApiResponse> referenceDecider, ReferenceIdentifierFactoryForType<ApiResponse> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<ApiResponse> referenceIdentifierConflictResolver) {
+        super(ReferenceType.API_RESPONSE, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Entry::new);
     }
 
-    void storeMaybeReference(String responseCode, ApiResponse apiResponse, Consumer<ReferenceName> referenceNameConsumer) {
+    void storeMaybeReference(String responseCode, ApiResponse apiResponse, Consumer<String> setter) {
         getEntryOrAddNew(apiResponse)
                 .addResponseCode(responseCode)
-                .addSetter(referenceNameConsumer);
+                .addSetter(setter);
     }
 
     static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<ApiResponse> {

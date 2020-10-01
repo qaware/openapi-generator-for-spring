@@ -19,8 +19,8 @@ public class ReferencedRequestBodyHandlerImpl implements
     @Override
     public void maybeAsReference(RequestBody requestBody, Consumer<RequestBody> requestBodySetter) {
         requestBodySetter.accept(requestBody);
-        storage.storeMaybeReference(requestBody, referenceName ->
-                requestBodySetter.accept(RequestBody.builder().ref(referenceName.asReferenceString()).build())
+        storage.storeMaybeReference(requestBody, referenceIdentifier ->
+                requestBodySetter.accept(RequestBody.builder().ref(referenceIdentifier).build())
         );
     }
 

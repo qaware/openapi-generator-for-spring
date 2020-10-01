@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class DefaultReferenceNameFactoryForApiResponse implements ReferenceNameFactoryForApiResponse {
+public class DefaultReferenceIdentifierFactoryForApiResponse implements ReferenceIdentifierFactoryForApiResponse {
 
     private final AtomicInteger counter = new AtomicInteger();
 

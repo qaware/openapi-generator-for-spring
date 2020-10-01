@@ -1,0 +1,8 @@
+package de.qaware.openapigeneratorforspring.common.operation.response.reference;
+
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
+import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
+
+public interface ReferenceIdentifierConflictResolverForApiResponse extends ReferenceIdentifierConflictResolverForType<ApiResponse> {
+
+}

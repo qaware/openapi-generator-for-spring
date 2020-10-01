@@ -21,12 +21,12 @@ public class ReferencedExamplesHandlerImpl implements
         ReferencedExamplesConsumer {
 
     private final ReferencedExampleStorage storage;
-    private final ReferenceNameFactoryForExample referenceNameFactory;
+    private final ReferenceIdentifierFactoryForExample referenceIdentifierFactory;
 
     @Override
     public void maybeAsReference(List<ExampleObjectAnnotationMapper.ExampleWithOptionalName> examples, Consumer<Map<String, Example>> examplesSetter) {
         // if the provided example doesn't have a name,
-        // we use the suggested identifier from the reference name factory
+        // we use the suggested identifier from the factory
         Map<String, Example> examplesMap = examples.stream()
                 .map(exampleWithOptionalName -> Pair.of(
                         getExampleName(exampleWithOptionalName.getName()),
@@ -38,13 +38,13 @@ public class ReferencedExamplesHandlerImpl implements
         examplesSetter.accept(examplesMap);
         examplesMap.forEach((name, example) ->
                 storage.storeMaybeReference(name, example,
-                        referenceName -> examplesMap.put(name, Example.builder().ref(referenceName.asReferenceString()).build())
+                        referenceIdentifier -> examplesMap.put(name, Example.builder().ref(referenceIdentifier).build())
                 )
         );
     }
 
     private String getExampleName(@Nullable String exampleName) {
-        return referenceNameFactory.buildSuggestedIdentifier(exampleName);
+        return referenceIdentifierFactory.buildSuggestedIdentifier(exampleName);
     }
 
     @Override

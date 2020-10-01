@@ -10,12 +10,12 @@ import org.springframework.core.ResolvableType;
 public class ReferencedSchemaHandlerFactory implements ReferencedItemHandlerFactory<Schema, Schema> {
 
     private final ReferenceDeciderForSchema referenceDecider;
-    private final ReferenceNameFactoryForSchema referenceNameFactory;
-    private final ReferenceNameConflictResolverForSchema referenceNameConflictResolver;
+    private final ReferenceIdentifierFactoryForSchema referenceIdentifierFactory;
+    private final ReferenceIdentifierConflictResolverForSchema referenceIdentifierConflictResolver;
 
     @Override
     public ReferencedItemHandler<Schema, Schema> create() {
-        ReferencedSchemaStorage storage = new ReferencedSchemaStorage(referenceDecider, referenceNameFactory, referenceNameConflictResolver);
+        ReferencedSchemaStorage storage = new ReferencedSchemaStorage(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
         return new ReferencedSchemaHandlerImpl(storage);
     }
 

@@ -1,9 +1,9 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
-import de.qaware.openapigeneratorforspring.common.reference.header.DefaultReferenceNameFactoryForHeader;
+import de.qaware.openapigeneratorforspring.common.reference.header.DefaultReferenceIdentifierFactoryForHeader;
 import de.qaware.openapigeneratorforspring.common.reference.header.ReferenceDeciderForHeader;
-import de.qaware.openapigeneratorforspring.common.reference.header.ReferenceNameConflictResolverForHeader;
-import de.qaware.openapigeneratorforspring.common.reference.header.ReferenceNameFactoryForHeader;
+import de.qaware.openapigeneratorforspring.common.reference.header.ReferenceIdentifierConflictResolverForHeader;
+import de.qaware.openapigeneratorforspring.common.reference.header.ReferenceIdentifierFactoryForHeader;
 import de.qaware.openapigeneratorforspring.common.reference.header.ReferencedHeadersHandlerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -14,22 +14,22 @@ public class OpenApiGeneratorReferenceHeaderAutoConfiguration {
     @ConditionalOnMissingBean
     public ReferencedHeadersHandlerFactory referencedHeadersHandlerFactory(
             ReferenceDeciderForHeader referenceDecider,
-            ReferenceNameFactoryForHeader referenceNameFactory,
-            ReferenceNameConflictResolverForHeader referenceNameConflictResolver
+            ReferenceIdentifierFactoryForHeader referenceIdentifierFactory,
+            ReferenceIdentifierConflictResolverForHeader referenceIdentifierConflictResolver
     ) {
-        return new ReferencedHeadersHandlerFactory(referenceDecider, referenceNameFactory, referenceNameConflictResolver);
+        return new ReferencedHeadersHandlerFactory(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceNameFactoryForHeader defaultReferenceNameFactoryForHeader() {
-        return new DefaultReferenceNameFactoryForHeader();
+    public ReferenceIdentifierFactoryForHeader defaultReferenceIdentifierFactoryForHeader() {
+        return new DefaultReferenceIdentifierFactoryForHeader();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceNameConflictResolverForHeader defaultReferenceNameConflictResolverForHeader() {
-        return new ReferenceNameConflictResolverForHeader() {
+    public ReferenceIdentifierConflictResolverForHeader defaultReferenceIdentifierConflictResolverForHeader() {
+        return new ReferenceIdentifierConflictResolverForHeader() {
             // use default implementation
         };
     }

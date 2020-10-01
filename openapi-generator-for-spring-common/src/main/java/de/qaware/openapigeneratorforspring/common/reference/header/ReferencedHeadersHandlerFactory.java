@@ -13,13 +13,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ReferencedHeadersHandlerFactory implements ReferencedItemHandlerFactory<List<HeaderWithOptionalName>, Map<String, Header>> {
     private final ReferenceDeciderForHeader referenceDecider;
-    private final ReferenceNameFactoryForHeader referenceNameFactory;
-    private final ReferenceNameConflictResolverForHeader referenceNameConflictResolver;
+    private final ReferenceIdentifierFactoryForHeader referenceIdentifierFactory;
+    private final ReferenceIdentifierConflictResolverForHeader referenceIdentifierConflictResolver;
 
     @Override
     public ReferencedItemHandler<List<HeaderWithOptionalName>, Map<String, Header>> create() {
-        ReferencedHeaderStorage storage = new ReferencedHeaderStorage(referenceDecider, referenceNameFactory, referenceNameConflictResolver);
-        return new ReferencedHeadersHandlerImpl(storage, referenceNameFactory);
+        ReferencedHeaderStorage storage = new ReferencedHeaderStorage(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
+        return new ReferencedHeadersHandlerImpl(storage, referenceIdentifierFactory);
     }
 
     @Override

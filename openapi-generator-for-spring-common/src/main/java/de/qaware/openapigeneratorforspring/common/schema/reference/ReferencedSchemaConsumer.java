@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.schema.reference;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemConsumerForType;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.Value;
@@ -10,21 +9,21 @@ import java.util.stream.Stream;
 
 public interface ReferencedSchemaConsumer extends ReferencedItemConsumerForType<Schema, Schema> {
 
-    default void alwaysAsReference(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
+    default void alwaysAsReference(Schema schema, Consumer<String> setter) {
         alwaysAsReferences(
                 Stream.of(new EntryWithSchema<Void>(null, schema)), // null entry is not used here
-                referenceNames -> {
-                    EntryWithReferenceName<Void> objectEntryWithReferenceName = referenceNames
+                entries -> {
+                    EntryWithReferenceIdentifier<Void> entryWithReferenceIdentifier = entries
                             .reduce((a, b) -> {
                                 throw new IllegalStateException("Expected one element, not more than one");
                             })
                             .orElseThrow(() -> new IllegalStateException("Expected one element, not zero"));
-                    referenceNameSetter.accept(objectEntryWithReferenceName.getReferenceName());
+                    setter.accept(entryWithReferenceIdentifier.getReferenceIdentifier());
                 }
         );
     }
 
-    <T> void alwaysAsReferences(Stream<EntryWithSchema<T>> entriesWithSchemas, Consumer<Stream<EntryWithReferenceName<T>>> referenceNameSetters);
+    <T> void alwaysAsReferences(Stream<EntryWithSchema<T>> entriesWithSchemas, Consumer<Stream<EntryWithReferenceIdentifier<T>>> setters);
 
     @Value(staticConstructor = "of")
     class EntryWithSchema<T> {
@@ -33,8 +32,8 @@ public interface ReferencedSchemaConsumer extends ReferencedItemConsumerForType<
     }
 
     @Value(staticConstructor = "of")
-    class EntryWithReferenceName<T> {
+    class EntryWithReferenceIdentifier<T> {
         T entry;
-        ReferenceName referenceName;
+        String referenceIdentifier;
     }
 }

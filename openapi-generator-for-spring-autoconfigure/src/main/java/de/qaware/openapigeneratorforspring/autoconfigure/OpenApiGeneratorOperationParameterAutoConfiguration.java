@@ -18,10 +18,10 @@ import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterNullableCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterSchemaCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.DefaultReferenceNameFactoryForParameter;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.DefaultReferenceIdentifierFactoryForParameter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceDeciderForParameter;
-import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceNameConflictResolverForParameter;
-import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceNameFactoryForParameter;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceIdentifierConflictResolverForParameter;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceIdentifierFactoryForParameter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferencedParametersHandlerFactory;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
@@ -128,24 +128,24 @@ public class OpenApiGeneratorOperationParameterAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ReferencedParametersHandlerFactory referencedParametersHandlerFactory(
-            ReferenceNameFactoryForParameter referenceNameFactory,
-            ReferenceNameConflictResolverForParameter referenceNameConflictResolver,
+            ReferenceIdentifierFactoryForParameter referenceIdentifierFactory,
+            ReferenceIdentifierConflictResolverForParameter referenceIdentifierConflictResolver,
             ReferenceDeciderForParameter referenceDecider
     ) {
-        return new ReferencedParametersHandlerFactory(referenceDecider, referenceNameFactory, referenceNameConflictResolver);
+        return new ReferencedParametersHandlerFactory(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
     }
 
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceNameFactoryForParameter defaultReferenceNameFactoryForParameter() {
-        return new DefaultReferenceNameFactoryForParameter();
+    public ReferenceIdentifierFactoryForParameter defaultReferenceIdentifierFactoryForParameter() {
+        return new DefaultReferenceIdentifierFactoryForParameter();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceNameConflictResolverForParameter defaultReferenceNameConflictResolverForParameter() {
-        return new ReferenceNameConflictResolverForParameter() {
+    public ReferenceIdentifierConflictResolverForParameter defaultReferenceIdentifierConflictResolverForParameter() {
+        return new ReferenceIdentifierConflictResolverForParameter() {
         };
     }
 

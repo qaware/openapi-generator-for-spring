@@ -21,7 +21,7 @@ public class ReferencedApiResponsesHandlerImpl implements ReferencedItemHandler<
         // that means we can modify the reference, and don't need to call apiResponsesSetter again
         apiResponses.forEach((responseCode, apiResponse) ->
                 storage.storeMaybeReference(responseCode, apiResponse,
-                        referenceName -> apiResponses.put(responseCode, ApiResponse.builder().ref(referenceName.asReferenceString()).build())
+                        referenceIdentifier -> apiResponses.put(responseCode, ApiResponse.builder().ref(referenceIdentifier).build())
                 )
         );
     }

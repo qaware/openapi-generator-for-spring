@@ -11,12 +11,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReferencedParametersHandlerFactory implements ReferencedItemHandlerFactory<List<Parameter>, List<Parameter>> {
     private final ReferenceDeciderForParameter referenceDecider;
-    private final ReferenceNameFactoryForParameter referenceNameFactory;
-    private final ReferenceNameConflictResolverForParameter referenceNameConflictResolver;
+    private final ReferenceIdentifierFactoryForParameter referenceIdentifierFactory;
+    private final ReferenceIdentifierConflictResolverForParameter referenceIdentifierConflictResolver;
 
     @Override
     public ReferencedItemHandler<List<Parameter>, List<Parameter>> create() {
-        ReferencedParameterStorage storage = new ReferencedParameterStorage(referenceDecider, referenceNameFactory, referenceNameConflictResolver);
+        ReferencedParameterStorage storage = new ReferencedParameterStorage(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
         return new ReferencedParametersHandlerImpl(storage);
     }
 

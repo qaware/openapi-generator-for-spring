@@ -21,12 +21,12 @@ public class ReferencedHeadersHandlerImpl implements
         ReferencedHeadersConsumer {
 
     private final ReferencedHeaderStorage storage;
-    private final ReferenceNameFactoryForHeader referenceNameFactory;
+    private final ReferenceIdentifierFactoryForHeader referenceIdentifierFactory;
 
     @Override
     public void maybeAsReference(List<HeaderWithOptionalName> headers, Consumer<Map<String, Header>> headersSetter) {
         // if the provided header doesn't have a name,
-        // we use the suggested identifier from the reference name factory
+        // we use the suggested identifier from the factory
         Map<String, Header> headersMap = headers.stream()
                 .map(headerWithOptionalName -> Pair.of(
                         getHeaderName(headerWithOptionalName.getName()),
@@ -38,13 +38,13 @@ public class ReferencedHeadersHandlerImpl implements
         headersSetter.accept(headersMap);
         headersMap.forEach((name, header) ->
                 storage.storeMaybeReference(name, header,
-                        referenceName -> headersMap.put(name, Header.builder().ref(referenceName.asReferenceString()).build())
+                        referenceIdentifier -> headersMap.put(name, Header.builder().ref(referenceIdentifier).build())
                 )
         );
     }
 
     private String getHeaderName(@Nullable String headerName) {
-        return referenceNameFactory.buildSuggestedIdentifier(headerName);
+        return referenceIdentifierFactory.buildSuggestedIdentifier(headerName);
     }
 
     @Override

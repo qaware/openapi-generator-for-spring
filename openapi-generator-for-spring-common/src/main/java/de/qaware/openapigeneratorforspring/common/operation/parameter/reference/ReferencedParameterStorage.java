@@ -1,10 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.AbstractReferencedItemStorage;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
+import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameConflictResolverForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameFactoryForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 
 import javax.annotation.Nullable;
@@ -12,12 +12,12 @@ import java.util.function.Consumer;
 
 public class ReferencedParameterStorage extends AbstractReferencedItemStorage<Parameter, ReferencedParameterStorage.Entry> {
 
-    ReferencedParameterStorage(ReferenceDeciderForType<Parameter> referenceDecider, ReferenceNameFactoryForType<Parameter> referenceNameFactory, ReferenceNameConflictResolverForType<Parameter> referenceNameConflictResolver) {
-        super(ReferenceName.Type.PARAMETER, referenceDecider, referenceNameFactory, referenceNameConflictResolver, Entry::new);
+    ReferencedParameterStorage(ReferenceDeciderForType<Parameter> referenceDecider, ReferenceIdentifierFactoryForType<Parameter> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Parameter> referenceIdentifierConflictResolver) {
+        super(ReferenceType.PARAMETER, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Entry::new);
     }
 
-    void storeMaybeReference(Parameter parameter, Consumer<ReferenceName> referenceNameConsumer) {
-        getEntryOrAddNew(parameter).addSetter(referenceNameConsumer);
+    void storeMaybeReference(Parameter parameter, Consumer<String> setter) {
+        getEntryOrAddNew(parameter).addSetter(setter);
     }
 
     static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<Parameter> {
