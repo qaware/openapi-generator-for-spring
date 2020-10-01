@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.reference.header;
 
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper.HeaderWithOptionalName;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.header.Header;
 import lombok.RequiredArgsConstructor;

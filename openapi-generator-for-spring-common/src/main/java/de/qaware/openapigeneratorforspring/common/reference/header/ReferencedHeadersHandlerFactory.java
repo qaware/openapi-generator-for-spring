@@ -1,12 +1,13 @@
 package de.qaware.openapigeneratorforspring.common.reference.header;
 
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper.HeaderWithOptionalName;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandlerFactory;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandlerFactory;
 import de.qaware.openapigeneratorforspring.model.header.Header;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ResolvableType;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,11 @@ public class ReferencedHeadersHandlerFactory implements ReferencedItemHandlerFac
 
     @Override
     public ReferencedItemHandler<List<HeaderWithOptionalName>, Map<String, Header>> create() {
-        ReferencedHeaderStorage storage = new ReferencedHeaderStorage(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
+        ReferencedHeaderStorage storage = new ReferencedHeaderStorage(
+                referenceDecider,
+                (header, headerName) -> Collections.singletonList(referenceIdentifierFactory.buildSuggestedIdentifier(headerName)),
+                referenceIdentifierConflictResolver
+        );
         return new ReferencedHeadersHandlerImpl(storage, referenceIdentifierFactory);
     }
 

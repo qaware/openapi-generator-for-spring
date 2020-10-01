@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.response.reference;
 
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandlerFactory;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandlerFactory;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ResolvableType;

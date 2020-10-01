@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemSupportFactory;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandlerFactory;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandlerFactory;
 import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferenceDeciderForSchema;
 import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferenceIdentifierFactoryForSchema;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferenceDeciderForSchema;

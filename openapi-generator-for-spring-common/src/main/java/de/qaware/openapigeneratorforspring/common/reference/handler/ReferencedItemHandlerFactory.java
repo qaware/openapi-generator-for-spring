@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.reference.fortype;
+package de.qaware.openapigeneratorforspring.common.reference.handler;
 
 import org.springframework.core.ResolvableType;
 

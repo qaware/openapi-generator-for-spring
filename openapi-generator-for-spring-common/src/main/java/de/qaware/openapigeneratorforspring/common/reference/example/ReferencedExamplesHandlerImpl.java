@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.reference.example;
 
 import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.example.Example;
 import lombok.RequiredArgsConstructor;
