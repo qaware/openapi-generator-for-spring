@@ -17,6 +17,7 @@ public class OpenApiGeneratorWebMvcAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public HandlerMethodsProvider handlerMethodsProviderFromWebMvc(RequestMappingHandlerMapping requestMappingHandlerMapping) {
         return new HandlerMethodsProviderForWebMvc(requestMappingHandlerMapping);
     }

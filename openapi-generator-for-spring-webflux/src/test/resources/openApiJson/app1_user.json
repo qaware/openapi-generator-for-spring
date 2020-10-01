@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "API for App10",
+    "title": "API for App1",
     "version": "unknown"
   },
   "paths": {
@@ -10,14 +10,7 @@
         "operationId": "userMapping1",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "description": "Default response"
           }
         }
       }

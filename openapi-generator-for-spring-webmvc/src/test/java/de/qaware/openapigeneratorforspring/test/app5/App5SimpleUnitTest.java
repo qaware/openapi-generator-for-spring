@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.DefaultAnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForNullable;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
@@ -40,13 +41,16 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Test;
 
 import javax.annotation.Nullable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
@@ -121,16 +125,39 @@ public class App5SimpleUnitTest {
         );
         ReferencedSchemaConsumer referencedSchemaConsumer = new ReferencedSchemaHandlerImpl(storage);
 
-        AtomicReference<de.qaware.openapigeneratorforspring.common.schema.Schema> schemaHolder = new AtomicReference<>();
-        sut.resolveFromClass(ComplexDto.class, referencedSchemaConsumer, schemaHolder::set);
+        List<de.qaware.openapigeneratorforspring.common.schema.Schema> constructedSchemas = new ArrayList<>();
+        Method someMethod1 = getClass().getMethod("someMethod1");
+        Method someMethod2 = getClass().getMethod("someMethod2");
+        AnnotationsSupplier noopAnnotationsSupplier = new AnnotationsSupplier() {
+            @Override
+            public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
+                return Stream.empty();
+            }
+        };
+        sut.resolveFromType(someMethod1.getGenericReturnType(), noopAnnotationsSupplier, referencedSchemaConsumer, constructedSchemas::add);
+        sut.resolveFromType(someMethod2.getGenericReturnType(), noopAnnotationsSupplier, referencedSchemaConsumer, constructedSchemas::add);
 
+        sut.resolveFromClass(SomeSelfRefDto.class, referencedSchemaConsumer, constructedSchemas::add);
         Map<String, de.qaware.openapigeneratorforspring.common.schema.Schema> referencedSchemas = storage.buildReferencedItems();
 
-        System.out.println("==== Constructed schema");
-        System.out.println(MAPPER.writeValueAsString(schemaHolder.get()));
+        System.out.println("==== Constructed schemas: ");
+        System.out.println(MAPPER.writeValueAsString(constructedSchemas));
         System.out.println("==== Referenced schemas");
         System.out.println(MAPPER.writeValueAsString(referencedSchemas.entrySet()));
 
+    }
+
+    @Value
+    private static class VerySimpleDto {
+        String property1;
+    }
+
+    public List<VerySimpleDto> someMethod1() {
+        return null;
+    }
+
+    public Optional<VerySimpleDto> someMethod2() {
+        return null;
     }
 
     @Schema(description = "global description", title = "should never appear")

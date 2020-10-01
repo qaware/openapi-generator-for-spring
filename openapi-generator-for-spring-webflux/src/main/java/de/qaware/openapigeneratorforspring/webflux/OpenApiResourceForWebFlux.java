@@ -10,6 +10,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 public class OpenApiResourceForWebFlux extends AbstractOpenApiResource {
 
+    /**
+     * Using this thread local only works if the OpenApi model is built within
+     * one thread (or the thread local state must be copied into possible
+     * child threads).
+     *
+     * <p> This should be considered a workaround as WebFlux doesn't
+     * offer good alternatives to {@code @RequestScope} beans (yet?).
+     */
     static final ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_THREAD_LOCAL = new ThreadLocal<>();
 
     public OpenApiResourceForWebFlux(OpenApiGenerator openApiGenerator, OpenApiObjectMapperSupplier objectMapperSupplier) {

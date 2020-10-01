@@ -1,0 +1,61 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App3",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping-2": {
+      "put": {
+        "operationId": "mapping2",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/App3Controller.SomeDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mapping-3": {
+      "post": {
+        "operationId": "mapping3",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/App3Controller.SomeDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "App3Controller.SomeDto": {
+        "type": "object",
+        "properties": {
+          "stringProperty1": {
+            "type": "string"
+          },
+          "booleanProperty2": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

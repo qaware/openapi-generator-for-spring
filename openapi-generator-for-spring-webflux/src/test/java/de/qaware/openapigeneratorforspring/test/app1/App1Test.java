@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.test.app10;
+package de.qaware.openapigeneratorforspring.test.app1;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,14 +13,14 @@ import static de.qaware.openapigeneratorforspring.test.AbstractOpenApiGeneratorI
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @AutoConfigureWebTestClient(timeout = "40000000")
-public class App10Test {
+public class App1Test {
 
     @Autowired
     protected WebTestClient webTestClient;
 
     @Test
     public void testWithQueryParam() throws Exception {
-        assertResponseBodyMatchesOpenApiJson("app10_admin.json",
+        assertResponseBodyMatchesOpenApiJson("app1_admin.json",
                 webTestClient.get().uri(uriBuilder -> uriBuilder
                         .path("/v3/api-docs")
                         .queryParam("pathPrefix", "/admin")
@@ -31,7 +31,7 @@ public class App10Test {
 
     @Test
     public void testWithHeaderParam() throws Exception {
-        assertResponseBodyMatchesOpenApiJson("app10_user.json",
+        assertResponseBodyMatchesOpenApiJson("app1_user.json",
                 webTestClient.get().uri(uriBuilder -> uriBuilder
                         .path("/v3/api-docs")
                         .build()

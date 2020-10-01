@@ -1,17 +1,17 @@
-package de.qaware.openapigeneratorforspring.test.app10;
+package de.qaware.openapigeneratorforspring.test.app1;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class App10Controller {
+public class App1Controller {
     @GetMapping("admin/mapping-1")
-    public String adminMapping1() {
-        return null;
+    public void adminMapping1() {
+
     }
 
     @GetMapping("user/mapping-1")
-    public String userMapping1() {
-        return null;
+    public void userMapping1() {
+
     }
 }
