@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 @RequiredArgsConstructor
-public class DefaultPathsBuilder implements PathsBuilder {
+public class PathsBuilder {
 
     private final HandlerMethodsProvider handlerMethodsProvider;
     private final OperationBuilder operationBuilder;
@@ -34,7 +34,6 @@ public class DefaultPathsBuilder implements PathsBuilder {
     private final List<OperationFilter> operationFilters;
     private final OperationIdConflictResolver operationIdConflictResolver;
 
-    @Override
     public Paths buildPaths(ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
 
         List<HandlerMethodWithInfo> handlerMethods = handlerMethodsProvider.getHandlerMethods();
