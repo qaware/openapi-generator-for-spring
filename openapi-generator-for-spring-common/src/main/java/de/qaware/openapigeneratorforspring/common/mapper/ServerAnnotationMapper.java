@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import io.swagger.v3.oas.models.servers.Server;
+import de.qaware.openapigeneratorforspring.model.server.Server;
 
 import java.util.List;
 import java.util.Optional;

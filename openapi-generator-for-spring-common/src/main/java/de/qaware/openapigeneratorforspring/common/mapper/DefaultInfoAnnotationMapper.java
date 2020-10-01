@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import io.swagger.v3.oas.models.info.Info;
+import de.qaware.openapigeneratorforspring.model.info.Info;
 import lombok.RequiredArgsConstructor;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
@@ -14,14 +14,14 @@ public class DefaultInfoAnnotationMapper implements InfoAnnotationMapper {
 
     @Override
     public Info map(io.swagger.v3.oas.annotations.info.Info infoAnnotation) {
-        Info info = new Info();
-        setStringIfNotBlank(infoAnnotation.title(), info::setTitle);
-        setStringIfNotBlank(infoAnnotation.description(), info::setDescription);
-        setStringIfNotBlank(infoAnnotation.termsOfService(), info::setTermsOfService);
-        info.setContact(contactAnnotationMapper.map(infoAnnotation.contact()));
-        info.setLicense(licenseAnnotationMapper.map(infoAnnotation.license()));
-        setStringIfNotBlank(infoAnnotation.version(), info::setVersion);
-        setMapIfNotEmpty(extensionAnnotationMapper.mapArray(infoAnnotation.extensions()), info::setExtensions);
-        return info;
+        Info.InfoBuilder infoBuilder = Info.builder();
+        setStringIfNotBlank(infoAnnotation.title(), infoBuilder::title);
+        setStringIfNotBlank(infoAnnotation.description(), infoBuilder::description);
+        setStringIfNotBlank(infoAnnotation.termsOfService(), infoBuilder::termsOfService);
+        infoBuilder.contact(contactAnnotationMapper.map(infoAnnotation.contact()));
+        infoBuilder.license(licenseAnnotationMapper.map(infoAnnotation.license()));
+        setStringIfNotBlank(infoAnnotation.version(), infoBuilder::version);
+        setMapIfNotEmpty(extensionAnnotationMapper.mapArray(infoAnnotation.extensions()), infoBuilder::extensions);
+        return infoBuilder.build();
     }
 }

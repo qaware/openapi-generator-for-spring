@@ -2,8 +2,8 @@ package de.qaware.openapigeneratorforspring.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
+import de.qaware.openapigeneratorforspring.model.OpenApi;
 import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.models.OpenAPI;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +19,7 @@ public abstract class AbstractOpenApiResource {
     private final OpenApiObjectMapperSupplier objectMapperSupplier;
 
     protected String getOpenApiAsJson() throws JsonProcessingException {
-        OpenAPI openApi = openApiGenerator.generateOpenApi();
+        OpenApi openApi = openApiGenerator.generateOpenApi();
         return objectMapperSupplier.get().writeValueAsString(openApi);
     }
 }

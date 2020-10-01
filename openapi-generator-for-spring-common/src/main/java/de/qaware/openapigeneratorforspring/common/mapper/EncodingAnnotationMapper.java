@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
-import io.swagger.v3.oas.models.media.Encoding;
+import de.qaware.openapigeneratorforspring.model.media.Encoding;
 
 import java.util.Map;
 

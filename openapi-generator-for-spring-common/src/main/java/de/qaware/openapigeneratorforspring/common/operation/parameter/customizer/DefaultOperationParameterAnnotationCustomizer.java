@@ -11,7 +11,7 @@ public class DefaultOperationParameterAnnotationCustomizer implements OperationP
     private final ParameterAnnotationMapper parameterAnnotationMapper;
 
     @Override
-    public void customize(io.swagger.v3.oas.models.parameters.Parameter parameter, java.lang.reflect.Parameter methodParameter, AnnotationsSupplier parameterAnnotationsSupplier, OperationBuilderContext operationBuilderContext) {
+    public void customize(de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter, java.lang.reflect.Parameter methodParameter, AnnotationsSupplier parameterAnnotationsSupplier, OperationBuilderContext operationBuilderContext) {
         Parameter parameterAnnotation = parameterAnnotationsSupplier.findFirstAnnotation(Parameter.class);
         if (parameterAnnotation != null) {
             parameterAnnotationMapper.applyFromAnnotation(parameter, parameterAnnotation, operationBuilderContext.getReferencedItemConsumerSupplier());

@@ -3,13 +3,13 @@ package de.qaware.openapigeneratorforspring.common.schema.mapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
-import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
+import de.qaware.openapigeneratorforspring.model.media.Discriminator;
+import de.qaware.openapigeneratorforspring.model.media.Schema;
 import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
-import io.swagger.v3.oas.models.media.Discriminator;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +41,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
             // reference tracking will be done once the annotation is applied
             schema = schemaResolver.resolveFromClassWithoutReference(schemaAnnotation.implementation(), referencedSchemaConsumer);
         } else {
-            schema = new Schema();
+            schema = Schema.builder().build();
         }
 
         applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer);
@@ -60,7 +60,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         setStringIfNotBlank(annotation.title(), schema::setTitle);
         setStringIfNotBlank(annotation.description(), schema::setDescription);
         setStringIfNotBlank(annotation.format(), schema::setFormat);
-        setStringIfNotBlank(annotation.ref(), schema::set$ref);
+        setStringIfNotBlank(annotation.ref(), schema::setRef);
 
         if (annotation.nullable()) {
             schema.setNullable(true);
@@ -77,10 +77,9 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         List<Object> allowableValues = Stream.of(annotation.allowableValues())
                 .map(parsableValueMapper::parse)
                 .collect(Collectors.toList());
-        // TODO fix generic problem here
-        setCollectionIfNotEmpty(allowableValues, schema::setEnum);
+        setCollectionIfNotEmpty(allowableValues, schema::set_enum);
 
-        setStringIfNotBlank(annotation.defaultValue(), value -> schema.setDefault(parsableValueMapper.parse(value)));
+        setStringIfNotBlank(annotation.defaultValue(), value -> schema.set_default(parsableValueMapper.parse(value)));
 
         setDiscriminator(schema, annotation, referencedSchemaConsumer);
 
@@ -101,8 +100,9 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
                 mapping -> schemaResolver.resolveFromClassWithoutReference(mapping.schema(), referencedSchemaConsumer)
         );
 
-        Discriminator discriminator = new Discriminator()
-                .propertyName(propertyName);
+        Discriminator discriminator = Discriminator.builder()
+                .propertyName(propertyName)
+                .build();
 
         referencedSchemaConsumer.alwaysAsReferences(
                 schemasMap.entrySet().stream()

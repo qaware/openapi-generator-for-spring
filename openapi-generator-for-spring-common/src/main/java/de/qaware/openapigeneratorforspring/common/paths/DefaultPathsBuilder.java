@@ -9,9 +9,9 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationInfo;
 import de.qaware.openapigeneratorforspring.common.operation.OperationWithInfo;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.PathItem;
-import io.swagger.v3.oas.models.Paths;
+import de.qaware.openapigeneratorforspring.model.operation.Operation;
+import de.qaware.openapigeneratorforspring.model.path.PathItem;
+import de.qaware.openapigeneratorforspring.model.path.Paths;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.LinkedMultiValueMap;
@@ -78,7 +78,7 @@ public class DefaultPathsBuilder implements PathsBuilder {
 
                     if (isAcceptedByAllPathFilters(pathItem, pathPattern, operationPerMethod)) {
                         operationsById.addAll(operationsByIdPerPathItem);
-                        paths.addPathItem(pathPattern, pathItem);
+                        paths.put(pathPattern, pathItem);
                     }
                 });
 

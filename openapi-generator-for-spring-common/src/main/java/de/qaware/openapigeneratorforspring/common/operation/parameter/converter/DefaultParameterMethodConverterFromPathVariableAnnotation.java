@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.converter;
 
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.models.parameters.Parameter;
 import org.springframework.web.bind.annotation.PathVariable;
 
 public class DefaultParameterMethodConverterFromPathVariableAnnotation extends ParameterMethodConverterFromAnnotation<PathVariable> {

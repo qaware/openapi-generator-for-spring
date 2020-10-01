@@ -2,7 +2,7 @@ package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import io.swagger.v3.oas.models.Operation;
+import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Method;
@@ -20,7 +20,7 @@ public class DefaultDeprecatedOperationCustomizer implements OperationCustomizer
         Deprecated deprecatedOnMethodOrClass = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method)
                 .findFirstAnnotation(Deprecated.class);
         if (deprecatedOnMethodOrClass != null) {
-            operation.deprecated(true);
+            operation.setDeprecated(true);
         }
     }
 

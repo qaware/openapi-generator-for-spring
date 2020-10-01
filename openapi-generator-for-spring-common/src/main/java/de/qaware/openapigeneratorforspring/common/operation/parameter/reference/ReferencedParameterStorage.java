@@ -5,7 +5,7 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameConflictResolverForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameFactoryForType;
-import io.swagger.v3.oas.models.parameters.Parameter;
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;

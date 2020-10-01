@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.customizer;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import io.swagger.v3.oas.models.parameters.Parameter;
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;

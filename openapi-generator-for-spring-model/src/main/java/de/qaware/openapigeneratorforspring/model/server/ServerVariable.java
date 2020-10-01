@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.model.server;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.qaware.openapigeneratorforspring.model.extension.HasExtensions;
 import lombok.Data;
 
@@ -13,7 +14,9 @@ import java.util.Map;
  */
 @Data
 public class ServerVariable implements HasExtensions {
+    @JsonProperty("enum")
     private List<String> _enum;
+    @JsonProperty("default")
     private String _default;
     private String description;
     private Map<String, Object> extensions;

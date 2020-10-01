@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import io.swagger.v3.oas.models.links.Link;
+import de.qaware.openapigeneratorforspring.model.link.Link;
 
 import java.util.Map;
 

@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
-import io.swagger.v3.oas.models.headers.Header;
+import de.qaware.openapigeneratorforspring.model.header.Header;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

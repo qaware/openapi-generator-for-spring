@@ -2,7 +2,7 @@ package de.qaware.openapigeneratorforspring.common.reference.header;
 
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper.HeaderWithOptionalName;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemConsumerForType;
-import io.swagger.v3.oas.models.headers.Header;
+import de.qaware.openapigeneratorforspring.model.header.Header;
 
 import java.util.List;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.filter.pathitem;
 
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.PathItem;
+import de.qaware.openapigeneratorforspring.model.operation.Operation;
+import de.qaware.openapigeneratorforspring.model.path.PathItem;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Map;

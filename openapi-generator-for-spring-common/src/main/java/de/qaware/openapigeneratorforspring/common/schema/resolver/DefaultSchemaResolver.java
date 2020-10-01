@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
-import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
@@ -15,6 +14,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResol
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
+import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
@@ -135,7 +135,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                 AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMember(member)
                         .andThen(annotationsSupplierFactory.createFromAnnotatedElement(member.getType().getRawClass()));
                 buildSchemaFromType(member.getType(), annotationsSupplier,
-                        propertySchema -> schema.addProperties(propertyName, propertySchema),
+                        propertySchema -> schema.addProperty(propertyName, propertySchema),
                         recursionDepth + 1
                 );
             });
@@ -155,7 +155,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     referencedSchema.consumeSchema(schema);
                     referencedSchemaConsumer.alwaysAsReference(schema, referenceName ->
                             // globally unique reference name is known finally, then set it at all places
-                            referencedSchema.consumeSchema(new Schema().$ref(referenceName.asReferenceString()))
+                            referencedSchema.consumeSchema(Schema.builder().ref(referenceName.asReferenceString()).build())
                     );
                 } else {
                     if (referencedSchema.isTopLevel) {

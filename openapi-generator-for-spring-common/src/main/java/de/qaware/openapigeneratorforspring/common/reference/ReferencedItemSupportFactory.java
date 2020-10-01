@@ -3,7 +3,7 @@ package de.qaware.openapigeneratorforspring.common.reference;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemConsumerForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandlerFactory;
-import io.swagger.v3.oas.models.Components;
+import de.qaware.openapigeneratorforspring.model.Components;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.core.ResolvableType;

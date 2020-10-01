@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.schema.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
-import de.qaware.openapigeneratorforspring.common.schema.Schema;
-import io.swagger.v3.oas.models.Components;
+import de.qaware.openapigeneratorforspring.model.Components;
+import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class ReferencedSchemaHandlerImpl implements ReferencedItemHandler<Schema
     public void maybeAsReference(Schema schema, Consumer<Schema> schemaSetter) {
         schemaSetter.accept(schema); // immediately apply the schema, as it's not decided if the schema is referenced later at all
         storage.storeMaybeReference(schema,
-                referenceName -> schemaSetter.accept(new Schema().$ref(referenceName.asReferenceString()))
+                referenceName -> schemaSetter.accept(Schema.builder().ref(referenceName.asReferenceString()).build())
         );
     }
 

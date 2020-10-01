@@ -2,7 +2,7 @@ package de.qaware.openapigeneratorforspring.common.operation.parameter.reference
 
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandlerFactory;
-import io.swagger.v3.oas.models.parameters.Parameter;
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ResolvableType;
 

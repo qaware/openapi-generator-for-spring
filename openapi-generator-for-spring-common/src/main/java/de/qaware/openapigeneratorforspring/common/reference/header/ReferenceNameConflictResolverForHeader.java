@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.reference.header;
 
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceNameConflictResolverForType;
-import io.swagger.v3.oas.models.headers.Header;
+import de.qaware.openapigeneratorforspring.model.header.Header;
 
 public interface ReferenceNameConflictResolverForHeader extends ReferenceNameConflictResolverForType<Header> {
 

@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.MediaType;
+import de.qaware.openapigeneratorforspring.model.media.Content;
+import de.qaware.openapigeneratorforspring.model.media.MediaType;
 
 public interface ContentAnnotationMapper {
     Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier);

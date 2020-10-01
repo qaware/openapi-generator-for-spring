@@ -3,7 +3,7 @@ package de.qaware.openapigeneratorforspring.common.operation;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
-import io.swagger.v3.oas.models.Operation;
+import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Method;

@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import io.swagger.v3.oas.models.servers.ServerVariable;
-import io.swagger.v3.oas.models.servers.ServerVariables;
+import de.qaware.openapigeneratorforspring.model.server.ServerVariable;
+import de.qaware.openapigeneratorforspring.model.server.ServerVariables;
 
 public interface ServerVariableAnnotationMapper {
     ServerVariables mapArray(io.swagger.v3.oas.annotations.servers.ServerVariable[] serverVariablesAnnotations);

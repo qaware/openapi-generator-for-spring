@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
-import io.swagger.v3.oas.models.parameters.Parameter;
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 
 import javax.annotation.Nullable;
 

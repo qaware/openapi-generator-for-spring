@@ -3,10 +3,10 @@ package de.qaware.openapigeneratorforspring.common.info;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.mapper.InfoAnnotationMapper;
+import de.qaware.openapigeneratorforspring.model.info.Contact;
+import de.qaware.openapigeneratorforspring.model.info.Info;
+import de.qaware.openapigeneratorforspring.model.info.License;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -38,10 +38,11 @@ public class DefaultOpenApiInfoSupplier implements OpenApiInfoSupplier, Applicat
             return Optional.ofNullable(annotationsSupplier.findFirstAnnotation(OpenAPIDefinition.class))
                     .map(OpenAPIDefinition::info)
                     .map(infoAnnotationMapper::map)
-                    .orElseGet(() -> new Info()
+                    .orElseGet(() -> Info.builder()
                             .title("API for " + springBootApplicationClass.getSimpleName())
+                            .build()
                     );
-        }).orElseGet(Info::new); // this fallback should never happen, it means we're not running with Spring Boot
+        }).orElseGet(() -> Info.builder().build()); // this fallback should never happen, it means we're not running with Spring Boot
 
         info.setVersion(openApiVersionSupplier.get());
 

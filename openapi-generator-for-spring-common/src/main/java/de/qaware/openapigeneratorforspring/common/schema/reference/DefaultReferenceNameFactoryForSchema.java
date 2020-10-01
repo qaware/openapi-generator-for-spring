@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.schema.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
-import de.qaware.openapigeneratorforspring.common.schema.Schema;
+import de.qaware.openapigeneratorforspring.model.media.Schema;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;

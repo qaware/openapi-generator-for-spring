@@ -2,7 +2,7 @@ package de.qaware.openapigeneratorforspring.common.operation.parameter.customize
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import io.swagger.v3.oas.models.parameters.Parameter;
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 
 public interface OperationParameterCustomizer {
     default void customize(Parameter parameter, AnnotationsSupplier parameterAnnotationsSupplier) {

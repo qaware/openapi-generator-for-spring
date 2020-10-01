@@ -2,8 +2,8 @@ package de.qaware.openapigeneratorforspring.common.reference.header;
 
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper.HeaderWithOptionalName;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.headers.Header;
+import de.qaware.openapigeneratorforspring.model.Components;
+import de.qaware.openapigeneratorforspring.model.header.Header;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -38,7 +38,7 @@ public class ReferencedHeadersHandlerImpl implements
         headersSetter.accept(headersMap);
         headersMap.forEach((name, header) ->
                 storage.storeMaybeReference(name, header,
-                        referenceName -> headersMap.put(name, new Header().$ref(referenceName.asReferenceString()))
+                        referenceName -> headersMap.put(name, Header.builder().ref(referenceName.asReferenceString()).build())
                 )
         );
     }

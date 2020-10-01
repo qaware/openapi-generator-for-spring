@@ -11,6 +11,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>de.qaware.openapi-generator-for-spring</groupId>
+            <artifactId>openapi-generator-for-spring-model</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
@@ -18,10 +23,6 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-models</artifactId>
         </dependency>
 
         <dependency>

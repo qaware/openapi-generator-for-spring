@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import io.swagger.v3.oas.models.info.Contact;
+
+import de.qaware.openapigeneratorforspring.model.info.Contact;
 
 import javax.annotation.Nullable;
 

@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
-import de.qaware.openapigeneratorforspring.common.schema.Schema;
+import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.core.Ordered;

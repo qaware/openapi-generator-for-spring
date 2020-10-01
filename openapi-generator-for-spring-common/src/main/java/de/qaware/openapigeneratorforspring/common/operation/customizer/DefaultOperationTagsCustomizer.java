@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import io.swagger.v3.oas.models.Operation;
+import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;

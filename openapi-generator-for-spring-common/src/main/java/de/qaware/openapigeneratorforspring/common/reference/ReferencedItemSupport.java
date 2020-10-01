@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
-import io.swagger.v3.oas.models.Components;
+import de.qaware.openapigeneratorforspring.model.Components;
 
 import javax.annotation.Nullable;
 

@@ -3,7 +3,7 @@ package de.qaware.openapigeneratorforspring.common.reference.example;
 import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotationMapper.ExampleWithOptionalName;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandlerFactory;
-import io.swagger.v3.oas.models.examples.Example;
+import de.qaware.openapigeneratorforspring.model.example.Example;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ResolvableType;
 

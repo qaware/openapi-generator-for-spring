@@ -2,7 +2,7 @@ package de.qaware.openapigeneratorforspring.test.app3;
 
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesFromMethodCustomizer;
-import io.swagger.v3.oas.models.responses.ApiResponses;
+import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

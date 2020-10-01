@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
-import de.qaware.openapigeneratorforspring.common.schema.Schema;
+import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -21,7 +21,7 @@ public class InitialTypeResolverForPrimitiveTypes implements InitialTypeResolver
     }
 
     private static Supplier<Schema> getSchemaSupplier(String type, @Nullable String format) {
-        return () -> new Schema().type(type).format(format);
+        return () -> Schema.builder().type(type).format(format).build();
     }
 
     private static Supplier<Schema> getStringSchemaSupplier(@Nullable String format) {

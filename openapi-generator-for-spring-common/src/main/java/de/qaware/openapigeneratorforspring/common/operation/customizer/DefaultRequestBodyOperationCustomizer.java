@@ -8,10 +8,10 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationInfo;
 import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferencedRequestBodyConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.MediaType;
-import io.swagger.v3.oas.models.parameters.RequestBody;
+import de.qaware.openapigeneratorforspring.model.media.Content;
+import de.qaware.openapigeneratorforspring.model.media.MediaType;
+import de.qaware.openapigeneratorforspring.model.operation.Operation;
+import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,7 +48,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
     }
 
     private void setRequestBody(RequestBody requestBody, Operation operation, OperationBuilderContext operationBuilderContext) {
-        if (new RequestBody().equals(requestBody)) {
+        if (requestBody.isEmpty()) {
             return;
         }
         operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedRequestBodyConsumer.class)
@@ -66,7 +66,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
                                 throw new IllegalStateException("Found more than one RequestBody annotation on parameter: " + a + " vs. " + b);
                             })
                             .map(springRequestBodyAnnotation -> {
-                                RequestBody requestBody = new RequestBody();
+                                RequestBody requestBody = RequestBody.builder().build();
                                 // TODO check @Nullable on method parameter?
                                 requestBody.setRequired(springRequestBodyAnnotation.required());
                                 Content content = getConsumesContentType(operationInfo).stream().collect(Collectors.toMap(
@@ -106,7 +106,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
                     // TODO check if multiple usages of @RequestBody are allowed by Spring Web
                     throw new IllegalStateException("Found more than one @RequestBody annotation on " + operationInfo);
                 })
-                .orElseGet(RequestBody::new);
+                .orElseGet(() -> RequestBody.builder().build());
     }
 
     private List<String> getConsumesContentType(OperationInfo operationInfo) {

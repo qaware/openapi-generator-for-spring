@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
 import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
-import io.swagger.v3.oas.models.servers.ServerVariable;
-import io.swagger.v3.oas.models.servers.ServerVariables;
+import de.qaware.openapigeneratorforspring.model.server.ServerVariable;
+import de.qaware.openapigeneratorforspring.model.server.ServerVariables;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
@@ -29,9 +29,9 @@ public class DefaultServerVariableAnnotationMapper implements ServerVariableAnno
     @Override
     public ServerVariable map(io.swagger.v3.oas.annotations.servers.ServerVariable serverVariableAnnotation) {
         ServerVariable serverVariable = new ServerVariable();
-        OpenApiStringUtils.setStringIfNotBlank(serverVariableAnnotation.defaultValue(), serverVariable::setDefault);
+        OpenApiStringUtils.setStringIfNotBlank(serverVariableAnnotation.defaultValue(), serverVariable::set_default);
         OpenApiStringUtils.setStringIfNotBlank(serverVariableAnnotation.description(), serverVariable::setDescription);
-        setCollectionIfNotEmpty(Arrays.asList(serverVariableAnnotation.allowableValues()), serverVariable::setEnum);
+        setCollectionIfNotEmpty(Arrays.asList(serverVariableAnnotation.allowableValues()), serverVariable::set_enum);
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(serverVariableAnnotation.extensions()), serverVariable::setExtensions);
         return serverVariable;
     }

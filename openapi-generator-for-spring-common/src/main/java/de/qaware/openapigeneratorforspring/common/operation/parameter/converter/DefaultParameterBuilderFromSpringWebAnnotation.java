@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.converter;
 
 
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.models.parameters.Parameter;
 import org.springframework.web.bind.annotation.ValueConstants;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
@@ -10,9 +10,10 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils
 public class DefaultParameterBuilderFromSpringWebAnnotation {
 
     Parameter build(ParameterIn in, String name, boolean required) {
-        Parameter parameter = new Parameter()
+        Parameter parameter = Parameter.builder()
                 .in(in.toString())
-                .required(required);
+                .required(required)
+                .build();
         setStringIfNotBlank(name, parameter::setName);
         return parameter;
     }

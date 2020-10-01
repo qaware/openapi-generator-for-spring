@@ -1,13 +1,13 @@
 package de.qaware.openapigeneratorforspring.model.parameter;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.qaware.openapigeneratorforspring.model.example.Example;
 import de.qaware.openapigeneratorforspring.model.extension.HasExtensions;
 import de.qaware.openapigeneratorforspring.model.media.Content;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
+import de.qaware.openapigeneratorforspring.model.reference.HasReference;
+import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
@@ -17,16 +17,17 @@ import java.util.Map;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#parameterObject"
  */
 @Data
-public class Parameter implements HasExtensions {
+@Builder
+public class Parameter implements HasExtensions, HasReference {
     private String name;
     private String in;
     private String description;
     private Boolean required;
     private Boolean deprecated;
     private Boolean allowEmptyValue;
-    private String $ref;
+    private String ref;
 
-    private StyleEnum style;
+    private String style;
     private Boolean explode;
     private Boolean allowReserved;
     private Schema schema;
@@ -35,22 +36,9 @@ public class Parameter implements HasExtensions {
     private Content content;
     private Map<String, Object> extensions;
 
-    /**
-     * Gets or Sets style
-     */
-    @RequiredArgsConstructor
-    public enum StyleEnum {
-        MATRIX("matrix"),
-        LABEL("label"),
-        FORM("form"),
-        SIMPLE("simple"),
-        SPACEDELIMITED("spaceDelimited"),
-        PIPEDELIMITED("pipeDelimited"),
-        DEEPOBJECT("deepObject");
-
-        @JsonValue
-        @Getter
-        private final String value;
+    @JsonIgnore
+    public boolean isEmpty() {
+        return builder().build().equals(this);
     }
 }
 

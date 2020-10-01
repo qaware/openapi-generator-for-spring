@@ -2,8 +2,8 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaBuilderFromType;
+import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 import java.util.function.Consumer;
 
@@ -22,7 +22,7 @@ public class TypeResolverForCollections implements TypeResolver {
 
     static void continueWithInnerType(JavaType innerType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
         // TODO adapt annotations supplier to nested getContentType, consider @ArraySchema?
-        Schema arraySchema = new Schema().type("array");
+        Schema arraySchema = Schema.builder().type("array").build();
         // TODO append annotationSupplier with contained generic type!
         schemaBuilderFromType.buildSchemaFromType(innerType, annotationsSupplier, schema -> {
                     arraySchema.setItems(schema);

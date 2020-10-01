@@ -7,14 +7,13 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsum
 import de.qaware.openapigeneratorforspring.common.reference.example.ReferencedExamplesConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterStyle;
-import io.swagger.v3.oas.models.parameters.Parameter;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiEnumUtils.findEnumByToString;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIf;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
@@ -30,9 +29,9 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
     @Nullable
     @Override
     public Parameter buildFromAnnotation(io.swagger.v3.oas.annotations.Parameter parameterAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
-        Parameter parameter = new Parameter();
+        Parameter parameter = Parameter.builder().build();
         applyFromAnnotation(parameter, parameterAnnotation, referencedItemConsumerSupplier);
-        if (parameter.equals(new Parameter())) {
+        if (parameter.isEmpty()) {
             return null;
         }
         return parameter;
@@ -52,7 +51,7 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
         if (annotation.allowEmptyValue()) {
             parameter.setAllowEmptyValue(true);
         }
-        setIf(annotation.style(), style -> style != ParameterStyle.DEFAULT, style -> parameter.setStyle(findEnumByToString(style, Parameter.StyleEnum.class)));
+        setIf(annotation.style(), style -> style != ParameterStyle.DEFAULT, style -> parameter.setStyle(style.toString()));
         if (annotation.allowReserved()) {
             parameter.setAllowReserved(true);
         }
@@ -66,6 +65,6 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
         );
         setStringIfNotBlank(annotation.example(), parameter::setExample);
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(annotation.extensions()), parameter::setExtensions);
-        setStringIfNotBlank(annotation.ref(), parameter::set$ref);
+        setStringIfNotBlank(annotation.ref(), parameter::setRef);
     }
 }

@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.converter;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import io.swagger.v3.oas.models.parameters.Parameter;
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import org.springframework.core.Ordered;
 
 import javax.annotation.Nullable;

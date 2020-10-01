@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.parameters.Parameter;
+import de.qaware.openapigeneratorforspring.model.Components;
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class ReferencedParametersHandlerImpl implements ReferencedItemHandler<Li
         IntStream.range(0, parameters.size()).forEach(i ->
                 storage.storeMaybeReference(
                         parameters.get(i),
-                        referenceName -> parameters.set(i, new Parameter().$ref(referenceName.asReferenceString()))
+                        referenceName -> parameters.set(i, Parameter.builder().ref(referenceName.asReferenceString()).build())
                 )
         );
     }

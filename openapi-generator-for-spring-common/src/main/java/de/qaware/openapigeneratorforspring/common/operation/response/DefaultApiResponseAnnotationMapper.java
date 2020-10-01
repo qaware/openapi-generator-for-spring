@@ -7,8 +7,8 @@ import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.common.reference.header.ReferencedHeadersConsumer;
+import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.models.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -32,7 +32,9 @@ public class DefaultApiResponseAnnotationMapper implements ApiResponseAnnotation
         ApiResponses apiResponses = new ApiResponses();
         apiResponseAnnotations.forEach(annotation -> {
             String responseCode = apiResponseCodeMapper.map(annotation, operationBuilderContext);
-            io.swagger.v3.oas.models.responses.ApiResponse apiResponse = apiResponses.computeIfAbsent(responseCode, ignored -> new io.swagger.v3.oas.models.responses.ApiResponse());
+            de.qaware.openapigeneratorforspring.model.response.ApiResponse apiResponse = apiResponses.computeIfAbsent(responseCode,
+                    ignored -> de.qaware.openapigeneratorforspring.model.response.ApiResponse.builder().build()
+            );
             setStringIfNotBlank(annotation.description(), apiResponse::setDescription);
             setCollectionIfNotEmpty(headerAnnotationMapper.mapArray(annotation.headers(), referencedItemConsumerSupplier),
                     headers -> referencedItemConsumerSupplier.get(ReferencedHeadersConsumer.class)
@@ -43,7 +45,7 @@ public class DefaultApiResponseAnnotationMapper implements ApiResponseAnnotation
             mergeWithExistingMap(apiResponse::getLinks, apiResponse::setLinks, linkAnnotationMapper.mapArray(annotation.links()));
             mergeWithExistingMap(apiResponse::getContent, apiResponse::setContent, contentAnnotationMapper.mapArray(annotation.content(), referencedItemConsumerSupplier));
             mergeWithExistingMap(apiResponse::getExtensions, apiResponse::setExtensions, extensionAnnotationMapper.mapArray(annotation.extensions()));
-            setStringIfNotBlank(annotation.ref(), apiResponse::set$ref);
+            setStringIfNotBlank(annotation.ref(), apiResponse::setRef);
         });
         return apiResponses;
     }

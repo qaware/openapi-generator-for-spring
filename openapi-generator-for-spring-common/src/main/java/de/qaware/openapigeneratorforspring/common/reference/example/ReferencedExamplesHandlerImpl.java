@@ -2,8 +2,8 @@ package de.qaware.openapigeneratorforspring.common.reference.example;
 
 import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.examples.Example;
+import de.qaware.openapigeneratorforspring.model.Components;
+import de.qaware.openapigeneratorforspring.model.example.Example;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -38,7 +38,7 @@ public class ReferencedExamplesHandlerImpl implements
         examplesSetter.accept(examplesMap);
         examplesMap.forEach((name, example) ->
                 storage.storeMaybeReference(name, example,
-                        referenceName -> examplesMap.put(name, new Example().$ref(referenceName.asReferenceString()))
+                        referenceName -> examplesMap.put(name, Example.builder().ref(referenceName.asReferenceString()).build())
                 )
         );
     }

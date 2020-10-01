@@ -3,7 +3,7 @@ package de.qaware.openapigeneratorforspring.common.reference.header;
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper.HeaderWithOptionalName;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemHandlerFactory;
-import io.swagger.v3.oas.models.headers.Header;
+import de.qaware.openapigeneratorforspring.model.header.Header;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ResolvableType;
 

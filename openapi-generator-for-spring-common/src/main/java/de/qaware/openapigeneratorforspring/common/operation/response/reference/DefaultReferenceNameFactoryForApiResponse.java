@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.response.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
-import io.swagger.v3.oas.models.responses.ApiResponse;
+import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;

@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import io.swagger.v3.oas.models.links.Link;
+import de.qaware.openapigeneratorforspring.model.link.Link;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
@@ -39,7 +39,7 @@ public class DefaultLinkAnnotationMapper implements LinkAnnotationMapper {
         );
         setStringIfNotBlank(linkAnnotation.description(), link::setDescription);
 
-        setStringIfNotBlank(linkAnnotation.ref(), link::set$ref);
+        setStringIfNotBlank(linkAnnotation.ref(), link::setRef);
 
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(linkAnnotation.extensions()), link::setExtensions
         );

@@ -2,9 +2,9 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.extensio
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.schema.Schema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaBuilderFromType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
+import de.qaware.openapigeneratorforspring.model.media.Schema;
 import org.springframework.http.ResponseEntity;
 
 import java.util.function.Consumer;

@@ -2,7 +2,7 @@ package de.qaware.openapigeneratorforspring.common.operation.parameter.customize
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import io.swagger.v3.oas.models.parameters.Parameter;
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -15,7 +15,7 @@ public class DefaultOperationParameterMethodNameCustomizer implements OperationP
         String parameterName = parameter.getName();
         String methodParameterName = methodParameter.getName();
         if (parameterName == null) {
-            parameter.name(methodParameterName);
+            parameter.setName(methodParameterName);
         } else if (!parameterName.equals(methodParameterName)) {
             LOGGER.warn("Parameter name {} different from parameter variable name {}", parameterName, methodParameterName);
         }

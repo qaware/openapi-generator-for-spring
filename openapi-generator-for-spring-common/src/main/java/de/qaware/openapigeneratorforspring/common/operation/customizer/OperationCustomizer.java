@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import io.swagger.v3.oas.models.Operation;
+import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import org.springframework.core.Ordered;
 
 @SuppressWarnings("squid:S1214") // suppress warning about constant in interface

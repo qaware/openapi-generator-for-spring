@@ -4,7 +4,7 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsum
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
-import io.swagger.v3.oas.models.headers.Header;
+import de.qaware.openapigeneratorforspring.model.header.Header;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
@@ -24,7 +24,7 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
 
     @Override
     public Header map(io.swagger.v3.oas.annotations.headers.Header headerAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
-        Header header = new Header();
+        Header header = Header.builder().build();
         OpenApiStringUtils.setStringIfNotBlank(headerAnnotation.description(), header::setDescription);
         if (headerAnnotation.deprecated()) {
             header.setDeprecated(true);
@@ -34,7 +34,7 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
         }
         ReferencedSchemaConsumer referencedSchemaConsumer = referencedItemConsumerSupplier.get(ReferencedSchemaConsumer.class);
         schemaAnnotationMapper.buildFromAnnotation(headerAnnotation.schema(), referencedSchemaConsumer, header::setSchema);
-        OpenApiStringUtils.setStringIfNotBlank(headerAnnotation.ref(), header::set$ref);
+        OpenApiStringUtils.setStringIfNotBlank(headerAnnotation.ref(), header::setRef);
         return header;
     }
 }

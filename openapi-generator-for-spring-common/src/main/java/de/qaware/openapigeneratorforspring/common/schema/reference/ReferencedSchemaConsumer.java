@@ -2,7 +2,7 @@ package de.qaware.openapigeneratorforspring.common.schema.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemConsumerForType;
-import de.qaware.openapigeneratorforspring.common.schema.Schema;
+import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.Value;
 
 import java.util.function.Consumer;
