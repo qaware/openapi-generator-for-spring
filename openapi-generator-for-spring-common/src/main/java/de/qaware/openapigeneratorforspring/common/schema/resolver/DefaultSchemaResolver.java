@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,7 +55,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
     private Schema resolveFromTypeWithoutReference(Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer) {
         ObjectMapper mapper = openApiObjectMapperSupplier.get();
-        Context context = new Context(mapper, schemaAnnotationMapperFactory.create(this), referencedSchemaConsumer);
+        Context context = new Context(schemaAnnotationMapperFactory.create(this), referencedSchemaConsumer);
         JavaType javaType = mapper.constructType(type);
         AtomicReference<Schema> schemaHolder = new AtomicReference<>();
         context.buildSchemaFromType(javaType, annotationsSupplier, schemaHolder::set, 0);
@@ -67,7 +66,6 @@ public class DefaultSchemaResolver implements SchemaResolver {
     @RequiredArgsConstructor
     private class Context {
 
-        private final ObjectMapper mapper;
         private final SchemaAnnotationMapper schemaAnnotationMapper;
         private final ReferencedSchemaConsumer referencedSchemaConsumer;
         private final ReferencedSchemas referencedSchemas = new ReferencedSchemas();
@@ -144,55 +142,55 @@ public class DefaultSchemaResolver implements SchemaResolver {
         }
 
         void resolveReferencedSchemas() {
-            referencedSchemas.items.forEach(
-                    referencedSchema -> {
-                        Schema schema = referencedSchema.schema;
-                        List<Consumer<Schema>> schemaReferenceConsumers = referencedSchema.referenceConsumers;
-                        if (schema.isEmpty()) {
-                            throw new IllegalStateException("Encountered completely empty schema");
-                        } else if (schemaReferenceConsumers.isEmpty()) {
-                            throw new IllegalStateException("Encountered schema without any schema consumers, that's strange");
-                        } else if (schemaReferenceConsumers.size() > 1 && referencedSchema.hasProperties) {
-                            // already set (not globally unique) reference here to have a "comparable" schema after this resolution
-                            // globally unique reference name will be set after all schemas are collected
-                            schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(schema));
-                            referencedSchemaConsumer.alwaysAsReference(schema, referenceName ->
-                                    // globally unique reference name is known finally, then set it at all places
-                                    schemaReferenceConsumers.forEach(schemaConsumer ->
-                                            schemaConsumer.accept(new Schema().$ref(referenceName.asReferenceString()))
-                                    )
-                            );
-                        } else {
-                            if (referencedSchema.isTopLevel) {
-                                // just one reference and on top-level,
-                                // so that will be given to referencedSchemaConsumer later
-                                schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(schema));
-                            } else {
-                                // "maybeAsReference" sets the schema immediately by calling the schemaSetter. This ensures that the returned schema
-                                // is completely built before returning and allows proper "schema equality" comparisons later
-                                referencedSchemaConsumer.maybeAsReference(schema, maybeReferencedSchema ->
-                                        // the consumer might be called again if it was decided later that
-                                        // the schema is referenced instead of being inlined
-                                        schemaReferenceConsumers.forEach(schemaConsumer -> schemaConsumer.accept(maybeReferencedSchema)
-                                        ));
-                            }
-                        }
+            referencedSchemas.items.descendingIterator().forEachRemaining(referencedSchema -> {
+                Schema schema = referencedSchema.schema;
+                int schemaReferenceConsumersSize = referencedSchema.referenceConsumers.size();
+                if (schema.isEmpty()) {
+                    throw new IllegalStateException("Encountered completely empty schema");
+                } else if (schemaReferenceConsumersSize == 0) {
+                    throw new IllegalStateException("Encountered schema without any schema consumers, that's strange");
+                } else if (schemaReferenceConsumersSize > 1 && referencedSchema.hasProperties) {
+                    // already set (not globally unique) reference here to have a "comparable" schema after this resolution
+                    // globally unique reference name will be set after all schemas are collected
+                    referencedSchema.consumeSchema(schema);
+                    referencedSchemaConsumer.alwaysAsReference(schema, referenceName ->
+                            // globally unique reference name is known finally, then set it at all places
+                            referencedSchema.consumeSchema(new Schema().$ref(referenceName.asReferenceString()))
+                    );
+                } else {
+                    if (referencedSchema.isTopLevel) {
+                        // just one reference and on top-level,
+                        // so that will be given to referencedSchemaConsumer later
+                        referencedSchema.consumeSchema(schema);
+                    } else {
+                        // "maybeAsReference" sets the schema immediately by calling consumeSchema. This ensures that the returned schema
+                        // is completely built before returning and allows proper "schema equality" comparisons later
+                        // the consumeSchema might be called again if it was decided later that
+                        // the schema is referenced instead of being inlined
+                        referencedSchemaConsumer.maybeAsReference(schema, referencedSchema::consumeSchema);
                     }
-            );
+                }
+            });
         }
     }
 
     private static class ReferencedSchemas {
 
         @RequiredArgsConstructor
-        public static class ReferencedSchema {
+        private static class ReferencedSchema {
             private final Schema schema;
             private final boolean isTopLevel;
             private final boolean hasProperties;
-            private final List<Consumer<Schema>> referenceConsumers;
+            private final LinkedList<Consumer<Schema>> referenceConsumers;
+
+            void consumeSchema(Schema newSchema) {
+                // as schemas are referenced and the storage compares schema including properties,
+                // it's important to run the consumers such that the last encountered consumer is accepted first
+                referenceConsumers.descendingIterator().forEachRemaining(schemaConsumer -> schemaConsumer.accept(newSchema));
+            }
         }
 
-        private final List<ReferencedSchema> items = new ArrayList<>();
+        private final LinkedList<ReferencedSchema> items = new LinkedList<>();
 
         @Nullable
         public List<Consumer<Schema>> findSchemaReference(Schema schema) {
@@ -221,7 +219,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     schema,
                     isTopLevel,
                     hasProperties,
-                    new ArrayList<>(Collections.singleton(firstSchemaConsumer))
+                    new LinkedList<>(Collections.singleton(firstSchemaConsumer))
             );
             items.add(referencedSchema);
         }

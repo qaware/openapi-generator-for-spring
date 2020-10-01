@@ -14,18 +14,21 @@ public class TypeResolverForCollections implements TypeResolver {
     @Override
     public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
         if (javaType.isCollectionLikeType()) {
-            // TODO adapt annotations supplier to nested getContentType, consider @ArraySchema
-            Schema containerSchema = new Schema();
-            containerSchema.setType("array");
-            // TODO append annotationSupplier with contained generic type!
-            schemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, schema -> {
-                        containerSchema.setItems(schema);
-                        schemaConsumer.accept(containerSchema);
-                    }
-            );
+            continueWithInnerType(javaType.getContentType(), annotationsSupplier, schemaBuilderFromType, schemaConsumer);
             return true;
         }
         return false;
+    }
+
+    static void continueWithInnerType(JavaType innerType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
+        // TODO adapt annotations supplier to nested getContentType, consider @ArraySchema?
+        Schema arraySchema = new Schema().type("array");
+        // TODO append annotationSupplier with contained generic type!
+        schemaBuilderFromType.buildSchemaFromType(innerType, annotationsSupplier, schema -> {
+                    arraySchema.setItems(schema);
+                    schemaConsumer.accept(arraySchema);
+                }
+        );
     }
 
     @Override
