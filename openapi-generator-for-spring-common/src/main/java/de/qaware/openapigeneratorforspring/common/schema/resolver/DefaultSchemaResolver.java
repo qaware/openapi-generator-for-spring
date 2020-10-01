@@ -39,11 +39,6 @@ public class DefaultSchemaResolver implements SchemaResolver {
     private final List<SchemaCustomizer> schemaCustomizers;
 
     @Override
-    public void resolveFromClass(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer, Consumer<Schema> schemaSetter) {
-        referencedSchemaConsumer.maybeAsReference(resolveFromClassWithoutReference(clazz, referencedSchemaConsumer), schemaSetter);
-    }
-
-    @Override
     public Schema resolveFromClassWithoutReference(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer) {
         return resolveFromTypeWithoutReference(clazz, annotationsSupplierFactory.createFromAnnotatedElement(clazz), referencedSchemaConsumer);
     }

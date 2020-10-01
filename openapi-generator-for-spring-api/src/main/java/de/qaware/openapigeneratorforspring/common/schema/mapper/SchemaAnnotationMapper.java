@@ -5,6 +5,10 @@ import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 import java.util.function.Consumer;
 
+/**
+ * Mapper for Schema annotation. Created by
+ * {@link SchemaAnnotationMapperFactory}.
+ */
 public interface SchemaAnnotationMapper {
     void buildFromAnnotation(
             io.swagger.v3.oas.annotations.media.Schema schemaAnnotation,

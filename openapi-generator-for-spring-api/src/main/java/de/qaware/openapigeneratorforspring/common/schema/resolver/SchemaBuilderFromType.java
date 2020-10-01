@@ -6,7 +6,6 @@ import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 import java.util.function.Consumer;
 
-@FunctionalInterface
 public interface SchemaBuilderFromType {
     void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer);
 }
