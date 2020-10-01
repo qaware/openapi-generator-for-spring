@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.reference.requestbody;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,11 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DefaultReferenceNameFactoryForRequestBody implements ReferenceNameFactoryForRequestBody {
 
     private final AtomicInteger counter = new AtomicInteger();
-
-    @Override
-    public ReferenceName.Type getReferenceNameType() {
-        return ReferenceName.Type.REQUEST_BODY;
-    }
 
     @Override
     public List<Object> buildIdentifierComponents(RequestBody item, @Nullable String suggestedIdentifier) {

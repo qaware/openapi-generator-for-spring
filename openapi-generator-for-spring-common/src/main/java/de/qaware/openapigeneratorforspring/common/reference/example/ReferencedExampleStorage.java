@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 public class ReferencedExampleStorage extends AbstractReferencedItemStorage<Example, ReferencedExampleStorage.Entry> {
 
     ReferencedExampleStorage(ReferenceDeciderForType<Example> referenceDecider, ReferenceNameFactoryForType<Example> referenceNameFactory, ReferenceNameConflictResolverForType<Example> referenceNameConflictResolver) {
-        super(referenceDecider, referenceNameFactory, referenceNameConflictResolver, Entry::new);
+        super(ReferenceName.Type.EXAMPLE, referenceDecider, referenceNameFactory, referenceNameConflictResolver, Entry::new);
     }
 
     void storeMaybeReference(String name, Example example, Consumer<ReferenceName> referenceNameConsumer) {

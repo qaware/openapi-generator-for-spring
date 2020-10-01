@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.operation.response.reference;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,11 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DefaultReferenceNameFactoryForApiResponse implements ReferenceNameFactoryForApiResponse {
 
     private final AtomicInteger counter = new AtomicInteger();
-
-    @Override
-    public ReferenceName.Type getReferenceNameType() {
-        return ReferenceName.Type.API_RESPONSE;
-    }
 
     @Override
     public List<Object> buildIdentifierComponents(ApiResponse item, @Nullable String suggestedIdentifier) {

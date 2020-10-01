@@ -33,10 +33,17 @@
         <module>openapi-generator-for-spring-webflux</module>
         <module>openapi-generator-for-spring-autoconfigure</module>
         <module>openapi-generator-for-spring-model</module>
+        <module>openapi-generator-for-spring-api</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <artifactId>openapi-generator-for-spring-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>de.qaware.openapi-generator-for-spring</groupId>
                 <artifactId>openapi-generator-for-spring-model</artifactId>

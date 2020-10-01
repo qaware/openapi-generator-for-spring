@@ -24,6 +24,7 @@ public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferen
 
     private static final String IDENTIFIER_SEPARATOR = "_";
 
+    private final ReferenceName.Type referenceNameType;
     private final ReferenceDeciderForType<T> referenceDecider;
     private final ReferenceNameFactoryForType<T> referenceNameFactory;
     private final ReferenceNameConflictResolverForType<T> referenceNameConflictResolver;
@@ -63,9 +64,8 @@ public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferen
         String identifier = referenceNameFactory.buildIdentifierComponents(entry.getItem(), entry.getSuggestedIdentifier()).stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(IDENTIFIER_SEPARATOR));
-        ReferenceName.Type type = referenceNameFactory.getReferenceNameType();
         // at this point, the identifier may not be unique
-        return new ReferenceName(type, identifier);
+        return new ReferenceName(referenceNameType, identifier);
     }
 
     private Map<ReferenceName, ReferencableEntry<T>> buildUniqueReferenceNames(ReferenceName referenceName, List<E> entriesGroupedByReferenceName) {

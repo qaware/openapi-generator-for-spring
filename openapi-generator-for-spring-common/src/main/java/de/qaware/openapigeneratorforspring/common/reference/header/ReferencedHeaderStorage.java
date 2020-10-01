@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 public class ReferencedHeaderStorage extends AbstractReferencedItemStorage<Header, ReferencedHeaderStorage.Entry> {
 
     ReferencedHeaderStorage(ReferenceDeciderForType<Header> referenceDecider, ReferenceNameFactoryForType<Header> referenceNameFactory, ReferenceNameConflictResolverForType<Header> referenceNameConflictResolver) {
-        super(referenceDecider, referenceNameFactory, referenceNameConflictResolver, Entry::new);
+        super(ReferenceName.Type.HEADER, referenceDecider, referenceNameFactory, referenceNameConflictResolver, Entry::new);
     }
 
     void storeMaybeReference(String name, Header header, Consumer<ReferenceName> referenceNameConsumer) {

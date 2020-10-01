@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.reference;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,11 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class DefaultReferenceNameFactoryForParameter implements ReferenceNameFactoryForParameter {
     private final AtomicInteger counter = new AtomicInteger();
-
-    @Override
-    public ReferenceName.Type getReferenceNameType() {
-        return ReferenceName.Type.PARAMETER;
-    }
 
     @Override
     public List<Object> buildIdentifierComponents(Parameter item, @Nullable String suggestedIdentifier) {

@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
+
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemConsumerForType;
 
 @FunctionalInterface

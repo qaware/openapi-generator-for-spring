@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.schema.reference;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceName;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,13 +16,7 @@ public class DefaultReferenceNameFactoryForSchema implements ReferenceNameFactor
     private static final String NULLABLE_PREFIX = "nullable";
     private static final String DEPRECATED_PREFIX = "deprecated";
 
-
     private final AtomicInteger counter = new AtomicInteger();
-
-    @Override
-    public ReferenceName.Type getReferenceNameType() {
-        return ReferenceName.Type.SCHEMA;
-    }
 
     @Override
     public List<Object> buildIdentifierComponents(Schema schema, @Nullable String suggestedIdentifier) {

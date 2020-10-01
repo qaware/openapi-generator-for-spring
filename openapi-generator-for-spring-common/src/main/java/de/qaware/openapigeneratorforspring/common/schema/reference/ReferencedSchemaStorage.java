@@ -16,11 +16,10 @@ import java.util.stream.Stream;
 
 public class ReferencedSchemaStorage extends AbstractReferencedItemStorage<Schema, ReferencedSchemaStorage.Entry> {
 
-    // TODO must not be public
-    public ReferencedSchemaStorage(ReferenceDeciderForType<Schema> referenceDecider,
-                                   ReferenceNameFactoryForType<Schema> referenceNameFactory,
-                                   ReferenceNameConflictResolverForType<Schema> referenceNameConflictResolver) {
-        super(referenceDecider, referenceNameFactory, referenceNameConflictResolver, Entry::new);
+    ReferencedSchemaStorage(ReferenceDeciderForType<Schema> referenceDecider,
+                            ReferenceNameFactoryForType<Schema> referenceNameFactory,
+                            ReferenceNameConflictResolverForType<Schema> referenceNameConflictResolver) {
+        super(ReferenceName.Type.SCHEMA, referenceDecider, referenceNameFactory, referenceNameConflictResolver, Entry::new);
     }
 
     void storeAlwaysReference(Schema schema, Consumer<ReferenceName> referenceNameSetter) {
