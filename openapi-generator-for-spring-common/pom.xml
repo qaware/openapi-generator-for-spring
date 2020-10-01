@@ -15,11 +15,9 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
 
-
-        <!-- TODO replace with swagger-annotations -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-core</artifactId>
+            <artifactId>swagger-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -29,6 +27,16 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
 
         <!-- TODO consider making this dependency optional? -->
