@@ -19,27 +19,27 @@ public class ReferencedSchemaStorage extends AbstractReferencedItemStorage<Schem
     ReferencedSchemaStorage(ReferenceDeciderForType<Schema> referenceDecider,
                             ReferenceIdentifierFactoryForType<Schema> referenceIdentifierFactory,
                             ReferenceIdentifierConflictResolverForType<Schema> referenceIdentifierConflictResolver) {
-        super(ReferenceType.SCHEMA, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Entry::new);
+        super(ReferenceType.SCHEMA, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Schema::new, Entry::new);
     }
 
-    void storeAlwaysReference(Schema schema, Consumer<String> setter) {
+    void storeAlwaysReference(Schema schema, Consumer<Schema> setter) {
         getEntryOrAddNew(schema).addRequiredSetter(setter);
     }
 
-    void storeMaybeReference(Schema schema, Consumer<String> setter) {
+    void storeMaybeReference(Schema schema, Consumer<Schema> setter) {
         getEntryOrAddNew(schema).addSetter(setter);
     }
 
     static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<Schema> {
 
-        private final List<Consumer<String>> referenceIdentifierRequiredSetters = new ArrayList<>();
+        private final List<Consumer<Schema>> referenceRequiredSetters = new ArrayList<>();
 
         protected Entry(Schema item) {
             super(item);
         }
 
-        public void addRequiredSetter(Consumer<String> setter) {
-            referenceIdentifierRequiredSetters.add(setter);
+        public void addRequiredSetter(Consumer<Schema> setter) {
+            referenceRequiredSetters.add(setter);
         }
 
         @Override
@@ -49,12 +49,7 @@ public class ReferencedSchemaStorage extends AbstractReferencedItemStorage<Schem
 
         @Override
         public boolean isReferenceRequired() {
-            return !referenceIdentifierRequiredSetters.isEmpty();
-        }
-
-        @Override
-        public int getNumberOfUsages() {
-            return super.getNumberOfUsages() + referenceIdentifierRequiredSetters.size();
+            return !referenceRequiredSetters.isEmpty();
         }
 
         @Nullable
@@ -64,8 +59,8 @@ public class ReferencedSchemaStorage extends AbstractReferencedItemStorage<Schem
         }
 
         @Override
-        public Stream<Consumer<String>> getReferenceIdentifierSetters() {
-            return Stream.concat(super.getReferenceIdentifierSetters(), referenceIdentifierRequiredSetters.stream());
+        public Stream<Consumer<Schema>> getReferenceSetters() {
+            return Stream.concat(super.getReferenceSetters(), referenceRequiredSetters.stream());
         }
     }
 }

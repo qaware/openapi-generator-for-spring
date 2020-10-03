@@ -14,10 +14,10 @@ import java.util.function.Consumer;
 public class ReferencedExampleStorage extends AbstractReferencedItemStorage<Example, ReferencedExampleStorage.Entry> {
 
     ReferencedExampleStorage(ReferenceDeciderForType<Example> referenceDecider, ReferenceIdentifierFactoryForType<Example> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Example> referenceIdentifierConflictResolver) {
-        super(ReferenceType.EXAMPLE, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Entry::new);
+        super(ReferenceType.EXAMPLE, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Example::new, Entry::new);
     }
 
-    void storeMaybeReference(String name, Example example, Consumer<String> setter) {
+    void storeMaybeReference(String name, Example example, Consumer<Example> setter) {
         getEntryOrAddNew(example)
                 .withSuggestedIdentifier(name)
                 .addSetter(setter);

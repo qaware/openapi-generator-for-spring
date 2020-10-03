@@ -15,10 +15,10 @@ import java.util.function.Consumer;
 public class ReferencedHeaderStorage extends AbstractReferencedItemStorage<Header, ReferencedHeaderStorage.Entry> {
 
     ReferencedHeaderStorage(ReferenceDeciderForType<Header> referenceDecider, ReferenceIdentifierFactoryForType<Header> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Header> referenceIdentifierConflictResolver) {
-        super(ReferenceType.HEADER, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Entry::new);
+        super(ReferenceType.HEADER, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Header::new, Entry::new);
     }
 
-    void storeMaybeReference(String name, Header header, Consumer<String> setter) {
+    void storeMaybeReference(String name, Header header, Consumer<Header> setter) {
         getEntryOrAddNew(header)
                 .withSuggestedIdentifier(name)
                 .addSetter(setter);

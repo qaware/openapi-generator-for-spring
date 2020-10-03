@@ -66,7 +66,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
                                 throw new IllegalStateException("Found more than one RequestBody annotation on parameter: " + a + " vs. " + b);
                             })
                             .map(springRequestBodyAnnotation -> {
-                                RequestBody requestBody = RequestBody.builder().build();
+                                RequestBody requestBody = new RequestBody();
                                 // TODO check @Nullable on method parameter?
                                 requestBody.setRequired(springRequestBodyAnnotation.required());
                                 Content content = getConsumesContentType(operationInfo).stream().collect(Collectors.toMap(
@@ -106,7 +106,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
                     // TODO check if multiple usages of @RequestBody are allowed by Spring Web
                     throw new IllegalStateException("Found more than one @RequestBody annotation on " + operationInfo);
                 })
-                .orElseGet(() -> RequestBody.builder().build());
+                .orElseGet(RequestBody::new);
     }
 
     private List<String> getConsumesContentType(OperationInfo operationInfo) {

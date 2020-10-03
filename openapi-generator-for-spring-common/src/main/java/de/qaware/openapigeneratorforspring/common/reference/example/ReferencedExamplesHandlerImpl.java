@@ -37,9 +37,7 @@ public class ReferencedExamplesHandlerImpl implements
                 }));
         examplesSetter.accept(examplesMap);
         examplesMap.forEach((name, example) ->
-                storage.storeMaybeReference(name, example,
-                        referenceIdentifier -> examplesMap.put(name, Example.builder().ref(referenceIdentifier).build())
-                )
+                storage.storeMaybeReference(name, example, exampleReference -> examplesMap.put(name, exampleReference))
         );
     }
 

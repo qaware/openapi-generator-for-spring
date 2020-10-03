@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.model.security;
 
-import de.qaware.openapigeneratorforspring.model.extension.HasExtensions;
-import de.qaware.openapigeneratorforspring.model.reference.HasReference;
+import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
+import de.qaware.openapigeneratorforspring.model.trait.HasReference;
 import lombok.Data;
 
 import java.util.Map;
@@ -12,7 +12,7 @@ import java.util.Map;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#securitySchemeObject"
  */
 @Data
-public class SecurityScheme implements HasExtensions, HasReference {
+public class SecurityScheme implements HasExtensions, HasReference<SecurityScheme> {
     private String type;
     private String description;
     private String name;
@@ -23,5 +23,10 @@ public class SecurityScheme implements HasExtensions, HasReference {
     private OAuthFlows flows;
     private String openIdConnectUrl;
     private Map<String, Object> extensions;
+
+    @Override
+    public SecurityScheme createInstance() {
+        return new SecurityScheme();
+    }
 }
 

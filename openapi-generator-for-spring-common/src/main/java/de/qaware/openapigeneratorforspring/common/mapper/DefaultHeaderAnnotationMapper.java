@@ -24,7 +24,7 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
 
     @Override
     public Header map(io.swagger.v3.oas.annotations.headers.Header headerAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
-        Header header = Header.builder().build();
+        Header header = new Header();
         OpenApiStringUtils.setStringIfNotBlank(headerAnnotation.description(), header::setDescription);
         if (headerAnnotation.deprecated()) {
             header.setDeprecated(true);

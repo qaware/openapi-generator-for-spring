@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.model.server;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.qaware.openapigeneratorforspring.model.extension.HasExtensions;
+import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
 import lombok.Data;
 
 import java.util.List;

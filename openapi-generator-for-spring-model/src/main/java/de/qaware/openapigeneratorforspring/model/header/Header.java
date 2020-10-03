@@ -1,11 +1,10 @@
 package de.qaware.openapigeneratorforspring.model.header;
 
 import de.qaware.openapigeneratorforspring.model.example.Example;
-import de.qaware.openapigeneratorforspring.model.extension.HasExtensions;
 import de.qaware.openapigeneratorforspring.model.media.Content;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
-import de.qaware.openapigeneratorforspring.model.reference.HasReference;
-import lombok.Builder;
+import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
+import de.qaware.openapigeneratorforspring.model.trait.HasReference;
 import lombok.Data;
 
 import java.util.Map;
@@ -16,8 +15,7 @@ import java.util.Map;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#headerObject"
  */
 @Data
-@Builder
-public class Header implements HasExtensions, HasReference {
+public class Header implements HasExtensions, HasReference<Header> {
     private String description;
     private String ref;
     private Boolean required;
@@ -29,5 +27,10 @@ public class Header implements HasExtensions, HasReference {
     private Object example;
     private Content content;
     private Map<String, Object> extensions;
+
+    @Override
+    public Header createInstance() {
+        return new Header();
+    }
 }
 

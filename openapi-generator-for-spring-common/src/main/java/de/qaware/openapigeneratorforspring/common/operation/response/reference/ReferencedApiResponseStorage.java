@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 public class ReferencedApiResponseStorage extends AbstractReferencedItemStorage<ApiResponse, ReferencedApiResponseStorage.Entry> {
 
     ReferencedApiResponseStorage(ReferenceDeciderForType<ApiResponse> referenceDecider, ReferenceIdentifierFactoryForType<ApiResponse> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<ApiResponse> referenceIdentifierConflictResolver) {
-        super(ReferenceType.API_RESPONSE, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Entry::new);
+        super(ReferenceType.API_RESPONSE, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, ApiResponse::new, Entry::new);
     }
 
-    void storeMaybeReference(String responseCode, ApiResponse apiResponse, Consumer<String> setter) {
+    void storeMaybeReference(String responseCode, ApiResponse apiResponse, Consumer<ApiResponse> setter) {
         getEntryOrAddNew(apiResponse)
                 .addResponseCode(responseCode)
                 .addSetter(setter);

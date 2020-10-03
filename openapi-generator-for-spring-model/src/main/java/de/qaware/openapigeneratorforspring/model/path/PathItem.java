@@ -1,9 +1,9 @@
 package de.qaware.openapigeneratorforspring.model.path;
 
-import de.qaware.openapigeneratorforspring.model.extension.HasExtensions;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import de.qaware.openapigeneratorforspring.model.server.Server;
+import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
 import lombok.Data;
 
 import java.util.List;

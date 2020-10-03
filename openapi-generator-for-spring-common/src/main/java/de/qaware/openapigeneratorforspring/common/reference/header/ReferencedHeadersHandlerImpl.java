@@ -37,9 +37,7 @@ public class ReferencedHeadersHandlerImpl implements
                 }));
         headersSetter.accept(headersMap);
         headersMap.forEach((name, header) ->
-                storage.storeMaybeReference(name, header,
-                        referenceIdentifier -> headersMap.put(name, Header.builder().ref(referenceIdentifier).build())
-                )
+                storage.storeMaybeReference(name, header, headerReference -> headersMap.put(name, headerReference))
         );
     }
 

@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.model.media;
 
 import de.qaware.openapigeneratorforspring.model.example.Example;
-import de.qaware.openapigeneratorforspring.model.extension.HasExtensions;
+import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
 import lombok.Data;
 
 import java.util.Map;

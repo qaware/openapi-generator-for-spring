@@ -14,10 +14,10 @@ import java.util.function.Consumer;
 public class ReferencedRequestBodyStorage extends AbstractReferencedItemStorage<RequestBody, ReferencedRequestBodyStorage.Entry> {
 
     ReferencedRequestBodyStorage(ReferenceDeciderForType<RequestBody> referenceDecider, ReferenceIdentifierFactoryForType<RequestBody> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<RequestBody> referenceIdentifierConflictResolver) {
-        super(ReferenceType.REQUEST_BODY, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Entry::new);
+        super(ReferenceType.REQUEST_BODY, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, RequestBody::new, Entry::new);
     }
 
-    void storeMaybeReference(RequestBody requestBody, Consumer<String> setter) {
+    void storeMaybeReference(RequestBody requestBody, Consumer<RequestBody> setter) {
         getEntryOrAddNew(requestBody).addSetter(setter);
     }
 

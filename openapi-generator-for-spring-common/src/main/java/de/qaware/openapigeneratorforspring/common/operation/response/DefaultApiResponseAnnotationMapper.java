@@ -33,7 +33,7 @@ public class DefaultApiResponseAnnotationMapper implements ApiResponseAnnotation
         apiResponseAnnotations.forEach(annotation -> {
             String responseCode = apiResponseCodeMapper.map(annotation, operationBuilderContext);
             de.qaware.openapigeneratorforspring.model.response.ApiResponse apiResponse = apiResponses.computeIfAbsent(responseCode,
-                    ignored -> de.qaware.openapigeneratorforspring.model.response.ApiResponse.builder().build()
+                    ignored -> new de.qaware.openapigeneratorforspring.model.response.ApiResponse()
             );
             setStringIfNotBlank(annotation.description(), apiResponse::setDescription);
             setCollectionIfNotEmpty(headerAnnotationMapper.mapArray(annotation.headers(), referencedItemConsumerSupplier),

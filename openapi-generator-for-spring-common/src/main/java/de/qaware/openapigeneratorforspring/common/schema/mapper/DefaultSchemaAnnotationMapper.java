@@ -5,7 +5,6 @@ import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAn
 import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
 import de.qaware.openapigeneratorforspring.model.media.Discriminator;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import io.swagger.v3.oas.annotations.media.DiscriminatorMapping;
@@ -14,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -93,29 +93,18 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
             return;
         }
 
-        Map<String, Schema> schemasMap = OpenApiMapUtils.buildStringMapFromArray(
-                mappings,
-                DiscriminatorMapping::value,
-                // cannot reference already here as discriminator mappings must always be referenced
-                mapping -> schemaResolver.resolveFromClassWithoutReference(mapping.schema(), referencedSchemaConsumer)
+        Map<String, String> schemaReferenceMapping = new HashMap<>();
+        schema.setDiscriminator(
+                Discriminator.builder()
+                        .propertyName(propertyName)
+                        .mapping(schemaReferenceMapping)
+                        .build()
         );
 
-        Discriminator discriminator = Discriminator.builder()
-                .propertyName(propertyName)
-                .build();
-
-        referencedSchemaConsumer.alwaysAsReferences(
-                schemasMap.entrySet().stream()
-                        .map(entry -> ReferencedSchemaConsumer.EntryWithSchema.of(entry, entry.getValue())),
-                entries -> discriminator.setMapping(
-                        entries.collect(Collectors.toMap(
-                                ReferencedSchemaConsumer.EntryWithReferenceIdentifier::getReferenceIdentifier,
-                                entry -> entry.getEntry().getKey()
-                        ))
-                )
-        );
-
-        schema.setDiscriminator(discriminator);
+        for (DiscriminatorMapping mapping : mappings) {
+            Schema mappingSchema = schemaResolver.resolveFromClassWithoutReference(mapping.schema(), referencedSchemaConsumer);
+            referencedSchemaConsumer.alwaysAsReference(mappingSchema, schemaReference -> schemaReferenceMapping.put(mapping.value(), schemaReference.getRef()));
+        }
     }
 
     private void setAccessMode(AccessMode accessMode, Schema schema) {

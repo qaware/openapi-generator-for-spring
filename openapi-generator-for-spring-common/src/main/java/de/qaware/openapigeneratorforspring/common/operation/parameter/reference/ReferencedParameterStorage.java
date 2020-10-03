@@ -13,10 +13,10 @@ import java.util.function.Consumer;
 public class ReferencedParameterStorage extends AbstractReferencedItemStorage<Parameter, ReferencedParameterStorage.Entry> {
 
     ReferencedParameterStorage(ReferenceDeciderForType<Parameter> referenceDecider, ReferenceIdentifierFactoryForType<Parameter> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Parameter> referenceIdentifierConflictResolver) {
-        super(ReferenceType.PARAMETER, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Entry::new);
+        super(ReferenceType.PARAMETER, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Parameter::new, Entry::new);
     }
 
-    void storeMaybeReference(Parameter parameter, Consumer<String> setter) {
+    void storeMaybeReference(Parameter parameter, Consumer<Parameter> setter) {
         getEntryOrAddNew(parameter).addSetter(setter);
     }
 

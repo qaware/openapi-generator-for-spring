@@ -148,9 +148,9 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     // already set (not globally unique) reference here to have a "comparable" schema after this resolution
                     // globally unique reference identifier will be set after all schemas are collected
                     referencedSchema.consumeSchema(schema);
-                    referencedSchemaConsumer.alwaysAsReference(schema, referenceIdentifier ->
+                    referencedSchemaConsumer.alwaysAsReference(schema,
                             // globally unique reference identifier is known finally, then set it at all places
-                            referencedSchema.consumeSchema(Schema.builder().ref(referenceIdentifier).build())
+                            referencedSchema::consumeSchema
                     );
                 } else {
                     if (referencedSchema.isTopLevel) {

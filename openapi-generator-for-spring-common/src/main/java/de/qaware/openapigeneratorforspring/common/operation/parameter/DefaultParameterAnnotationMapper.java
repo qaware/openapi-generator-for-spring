@@ -29,7 +29,7 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
     @Nullable
     @Override
     public Parameter buildFromAnnotation(io.swagger.v3.oas.annotations.Parameter parameterAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
-        Parameter parameter = Parameter.builder().build();
+        Parameter parameter = new Parameter();
         applyFromAnnotation(parameter, parameterAnnotation, referencedItemConsumerSupplier);
         if (parameter.isEmpty()) {
             return null;

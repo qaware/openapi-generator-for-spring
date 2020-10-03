@@ -10,10 +10,9 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils
 public class DefaultParameterBuilderFromSpringWebAnnotation {
 
     Parameter build(ParameterIn in, String name, boolean required) {
-        Parameter parameter = Parameter.builder()
-                .in(in.toString())
-                .required(required)
-                .build();
+        Parameter parameter = new Parameter();
+        parameter.setIn(in.toString());
+        parameter.setRequired(required);
         setStringIfNotBlank(name, parameter::setName);
         return parameter;
     }

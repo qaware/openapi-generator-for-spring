@@ -33,7 +33,7 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Ordered
         Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
         String responseCodeFromMethod = defaultApiResponseCodeMapper.getResponseCodeFromMethod(method);
         ApiResponse defaultApiResponse = apiResponses.computeIfAbsent(responseCodeFromMethod,
-                ignored -> ApiResponse.builder().build()
+                ignored -> new ApiResponse()
         );
 
         if (StringUtils.isBlank(defaultApiResponse.getDescription())) {

@@ -10,8 +10,6 @@ import java.util.LinkedHashMap;
  *
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#callbackObject"
  */
-
 public class Callback extends LinkedHashMap<String, PathItem> {
 
 }
-

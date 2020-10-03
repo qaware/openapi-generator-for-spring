@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.model.extension;
+package de.qaware.openapigeneratorforspring.model.trait;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 

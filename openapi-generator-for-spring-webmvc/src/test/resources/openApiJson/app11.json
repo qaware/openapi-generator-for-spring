@@ -1,0 +1,76 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App11",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping-1": {
+      "get": {
+        "operationId": "adminMapping1",
+        "parameters": [
+          {
+            "name": "param1",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/App11Controller.Pet"
+            }
+          },
+          {
+            "name": "monsterDto",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/App11Controller.MonsterDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default response"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "App11Controller.CatDto": {
+        "type": "object",
+        "properties": {
+          "catProperty": {
+            "type": "string"
+          }
+        }
+      },
+      "App11Controller.DogDto": {
+        "type": "object",
+        "properties": {
+          "dogProperty": {
+            "type": "string"
+          }
+        }
+      },
+      "App11Controller.Pet": {
+        "type": "object",
+        "discriminator": {
+          "propertyName": "petType",
+          "mapping": {
+            "cat": "#/components/schemas/App11Controller.CatDto",
+            "dog": "#/components/schemas/App11Controller.DogDto",
+            "monster": "#/components/schemas/App11Controller.MonsterDto"
+          }
+        }
+      },
+      "App11Controller.MonsterDto": {
+        "type": "object",
+        "properties": {
+          "monsterProperty": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

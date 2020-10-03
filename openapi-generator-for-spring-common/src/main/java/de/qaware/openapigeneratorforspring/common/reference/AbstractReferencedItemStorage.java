@@ -3,6 +3,7 @@ package de.qaware.openapigeneratorforspring.common.reference;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
+import de.qaware.openapigeneratorforspring.model.trait.HasReference;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +16,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferencedItemStorage.ReferencableEntry<T>> {
+public abstract class AbstractReferencedItemStorage<T extends HasReference<T>, E extends AbstractReferencedItemStorage.ReferencableEntry<T>> {
 
     private static final String IDENTIFIER_SEPARATOR = "_";
 
@@ -28,6 +30,7 @@ public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferen
     private final ReferenceDeciderForType<T> referenceDecider;
     private final ReferenceIdentifierFactoryForType<T> referenceIdentifierFactory;
     private final ReferenceIdentifierConflictResolverForType<T> referenceIdentifierConflictResolver;
+    private final Supplier<T> itemConstructor;
     private final Function<T, E> entryConstructor;
 
     private final List<E> entries = new ArrayList<>();
@@ -48,13 +51,13 @@ public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferen
     public Map<String, T> buildReferencedItems() {
         Map<String, T> referencedItems = new HashMap<>();
         entries.stream()
-                .filter(entry -> entry.isReferenceRequired() || referenceDecider.turnIntoReference(entry.getItem(), entry.getNumberOfUsages()))
+                .filter(entry -> entry.isReferenceRequired() || referenceDecider.turnIntoReference(entry.getItem(), entry.getReferenceSetters().count()))
                 .collect(Collectors.groupingBy(this::createNonUniqueReferenceIdentifier))
                 .forEach((referenceIdentifier, entriesGroupedByIdentifier) ->
                         buildUniqueReferenceIdentifiers(referenceIdentifier, entriesGroupedByIdentifier).forEach(
                                 (uniqueIdentifier, entry) -> {
-                                    String prefixedIdentifier = referenceType.getReferencePrefix() + uniqueIdentifier;
-                                    entry.getReferenceIdentifierSetters().forEach(setter -> setter.accept(prefixedIdentifier));
+                                    String referencePath = referenceType.getReferencePrefix() + uniqueIdentifier;
+                                    entry.getReferenceSetters().forEach(setter -> setter.accept(itemConstructor.get().createReference(referencePath)));
                                     referencedItems.put(uniqueIdentifier, entry.getItem());
                                 })
                 );
@@ -104,12 +107,10 @@ public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferen
             return false;
         }
 
-        int getNumberOfUsages();
-
         @Nullable
         String getSuggestedIdentifier();
 
-        Stream<Consumer<String>> getReferenceIdentifierSetters();
+        Stream<Consumer<T>> getReferenceSetters();
 
     }
 
@@ -117,25 +118,19 @@ public abstract class AbstractReferencedItemStorage<T, E extends AbstractReferen
     public static abstract class AbstractReferencableEntry<T> implements ReferencableEntry<T> {
         @Getter
         private final T item;
-        private final List<Consumer<String>> referenceIdentifierSetters = new ArrayList<>();
+        private final List<Consumer<T>> referenceSetters = new ArrayList<>();
 
         @Override
         public boolean matches(T item) {
             return this.item.equals(item);
         }
 
-        public void addSetter(Consumer<String> setter) {
-            referenceIdentifierSetters.add(setter);
+        public void addSetter(Consumer<T> setter) {
+            referenceSetters.add(setter);
         }
 
-        @Override
-        public int getNumberOfUsages() {
-            return referenceIdentifierSetters.size();
-        }
-
-        @Override
-        public Stream<Consumer<String>> getReferenceIdentifierSetters() {
-            return referenceIdentifierSetters.stream();
+        public Stream<Consumer<T>> getReferenceSetters() {
+            return referenceSetters.stream();
         }
     }
 }

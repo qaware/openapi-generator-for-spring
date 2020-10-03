@@ -26,7 +26,7 @@ public class DefaultExampleObjectAnnotationMapper implements ExampleObjectAnnota
 
     @Override
     public Example map(ExampleObject exampleObjectAnnotation) {
-        Example example = Example.builder().build();
+        Example example = new Example();
         setStringIfNotBlank(exampleObjectAnnotation.summary(), example::setSummary);
         setStringIfNotBlank(exampleObjectAnnotation.description(), example::setDescription);
         setStringIfNotBlank(exampleObjectAnnotation.value(),

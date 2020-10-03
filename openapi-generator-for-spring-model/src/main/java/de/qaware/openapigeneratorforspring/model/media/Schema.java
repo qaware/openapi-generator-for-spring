@@ -3,11 +3,15 @@ package de.qaware.openapigeneratorforspring.model.media;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.qaware.openapigeneratorforspring.model.ExternalDocumentation;
-import de.qaware.openapigeneratorforspring.model.extension.HasExtensions;
-import de.qaware.openapigeneratorforspring.model.reference.HasReference;
+import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
+import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
+import de.qaware.openapigeneratorforspring.model.trait.HasReference;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.With;
 
 import java.math.BigDecimal;
@@ -22,7 +26,9 @@ import java.util.Map;
  */
 @Data
 @Builder
-public class Schema implements HasExtensions, HasReference {
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class Schema implements HasExtensions, HasReference<Schema>, HasIsEmpty<Schema> {
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     private String name;
@@ -72,9 +78,9 @@ public class Schema implements HasExtensions, HasReference {
         properties.put(propertyName, propertySchema);
     }
 
-    @JsonIgnore
-    public boolean isEmpty() {
-        return builder().build().equals(this);
+    @Override
+    public Schema createInstance() {
+        return new Schema();
     }
 }
 

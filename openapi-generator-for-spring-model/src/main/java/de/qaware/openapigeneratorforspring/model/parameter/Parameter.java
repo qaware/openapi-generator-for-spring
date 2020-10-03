@@ -1,12 +1,11 @@
 package de.qaware.openapigeneratorforspring.model.parameter;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.qaware.openapigeneratorforspring.model.example.Example;
-import de.qaware.openapigeneratorforspring.model.extension.HasExtensions;
 import de.qaware.openapigeneratorforspring.model.media.Content;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
-import de.qaware.openapigeneratorforspring.model.reference.HasReference;
-import lombok.Builder;
+import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
+import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
+import de.qaware.openapigeneratorforspring.model.trait.HasReference;
 import lombok.Data;
 
 import java.util.Map;
@@ -17,8 +16,7 @@ import java.util.Map;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#parameterObject"
  */
 @Data
-@Builder
-public class Parameter implements HasExtensions, HasReference {
+public class Parameter implements HasExtensions, HasReference<Parameter>, HasIsEmpty<Parameter> {
     private String name;
     private String in;
     private String description;
@@ -36,9 +34,9 @@ public class Parameter implements HasExtensions, HasReference {
     private Content content;
     private Map<String, Object> extensions;
 
-    @JsonIgnore
-    public boolean isEmpty() {
-        return builder().build().equals(this);
+    @Override
+    public Parameter createInstance() {
+        return new Parameter();
     }
 }
 

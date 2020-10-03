@@ -1,11 +1,11 @@
 package de.qaware.openapigeneratorforspring.model;
 
-import de.qaware.openapigeneratorforspring.model.extension.HasExtensions;
 import de.qaware.openapigeneratorforspring.model.info.Info;
 import de.qaware.openapigeneratorforspring.model.path.Paths;
 import de.qaware.openapigeneratorforspring.model.security.SecurityRequirement;
 import de.qaware.openapigeneratorforspring.model.server.Server;
 import de.qaware.openapigeneratorforspring.model.tag.Tag;
+import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
 import lombok.Data;
 
 import java.util.List;

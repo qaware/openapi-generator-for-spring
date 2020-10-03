@@ -2,7 +2,6 @@ package de.qaware.openapigeneratorforspring.common.operation.response.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.model.Components;
-import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +20,7 @@ public class ReferencedApiResponsesHandlerImpl implements ReferencedItemHandler<
         // that means we can modify the reference, and don't need to call apiResponsesSetter again
         apiResponses.forEach((responseCode, apiResponse) ->
                 storage.storeMaybeReference(responseCode, apiResponse,
-                        referenceIdentifier -> apiResponses.put(responseCode, ApiResponse.builder().ref(referenceIdentifier).build())
+                        apiResponseReference -> apiResponses.put(responseCode, apiResponseReference)
                 )
         );
     }
