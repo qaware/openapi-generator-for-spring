@@ -31,10 +31,6 @@ public class PathItemBuilderFactory {
         return new PathItemBuilder(referencedItemConsumerSupplier, tagsConsumer);
     }
 
-    private boolean isAcceptedByAllOperationFilters(Operation operation, HandlerMethod handlerMethod) {
-        return operationFilters.stream().allMatch(operationFilter -> operationFilter.accept(operation, handlerMethod));
-    }
-
     @RequiredArgsConstructor
     public class PathItemBuilder {
         private final ReferencedItemConsumerSupplier referencedItemConsumerSupplier;
@@ -62,6 +58,10 @@ public class PathItemBuilderFactory {
                 }
             });
             return pathItem;
+        }
+
+        private boolean isAcceptedByAllOperationFilters(Operation operation, HandlerMethod handlerMethod) {
+            return operationFilters.stream().allMatch(operationFilter -> operationFilter.accept(operation, handlerMethod));
         }
     }
 }

@@ -14,4 +14,10 @@ public class OpenApiStringUtils {
         return OpenApiObjectUtils.setIf(value, StringUtils::isNotBlank, setter);
     }
 
+    public static void setStringRequireNonBlank(@Nullable String value, Consumer<String> setter) {
+        if (StringUtils.isBlank(value)) {
+            throw new IllegalStateException("String value '" + value + "'  must not be blank");
+        }
+        setter.accept(value);
+    }
 }

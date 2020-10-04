@@ -13,8 +13,14 @@ public class DefaultRequestBodyAnnotationMapper implements RequestBodyAnnotation
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
 
     @Override
-    public void applyFromAnnotation(RequestBody requestBody, io.swagger.v3.oas.annotations.parameters.RequestBody annotation,
-                                    ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    public RequestBody buildFromAnnotation(io.swagger.v3.oas.annotations.parameters.RequestBody requestBodyAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+        RequestBody requestBody = new RequestBody();
+        applyFromAnnotation(requestBody, requestBodyAnnotation, referencedItemConsumerSupplier);
+        return requestBody;
+    }
+
+    @Override
+    public void applyFromAnnotation(RequestBody requestBody, io.swagger.v3.oas.annotations.parameters.RequestBody annotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         setStringIfNotBlank(annotation.description(), requestBody::setDescription);
         setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), referencedItemConsumerSupplier), requestBody::setContent);
         if (annotation.required()) {

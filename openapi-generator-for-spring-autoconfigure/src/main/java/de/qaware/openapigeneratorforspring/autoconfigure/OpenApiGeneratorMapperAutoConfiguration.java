@@ -11,6 +11,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.DefaultInfoAnnotationMa
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLicenseAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkParameterAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultOperationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultRequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerVariableAnnotationMapper;
@@ -24,6 +25,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.InfoAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LicenseAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkParameterAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.OperationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
@@ -50,6 +52,17 @@ public class OpenApiGeneratorMapperAutoConfiguration {
             SchemaResolver schemaResolver
     ) {
         return schemaAnnotationMapperFactory.create(schemaResolver);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OperationAnnotationMapper defaultOperationAnnotationMapper(
+            RequestBodyAnnotationMapper requestBodyAnnotationMapper,
+            ServerAnnotationMapper serverAnnotationMapper,
+            ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper
+    ) {
+        return new DefaultOperationAnnotationMapper(requestBodyAnnotationMapper, serverAnnotationMapper, externalDocumentationAnnotationMapper, extensionAnnotationMapper);
     }
 
     @Bean

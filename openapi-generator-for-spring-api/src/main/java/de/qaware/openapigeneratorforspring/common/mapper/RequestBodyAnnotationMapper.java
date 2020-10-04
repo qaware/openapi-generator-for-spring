@@ -4,7 +4,7 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsum
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 
 public interface RequestBodyAnnotationMapper {
-    void applyFromAnnotation(RequestBody requestBody,
-                             io.swagger.v3.oas.annotations.parameters.RequestBody requestBodyAnnotation,
-                             ReferencedItemConsumerSupplier referencedItemConsumerSupplier);
+    RequestBody buildFromAnnotation(io.swagger.v3.oas.annotations.parameters.RequestBody requestBodyAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier);
+
+    void applyFromAnnotation(RequestBody requestBody, io.swagger.v3.oas.annotations.parameters.RequestBody requestBodyAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier);
 }

@@ -5,6 +5,7 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.OperationInfo;
+import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferencedRequestBodyConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
@@ -16,13 +17,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import java.util.stream.Stream;
-
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
 public class DefaultRequestBodyOperationCustomizer implements OperationCustomizer {
@@ -34,17 +34,13 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        setRequestBody(buildRequestBodyFromMethod(operationBuilderContext), operation, operationBuilderContext);
+        setRequestBody(applyFromMethod(null, operationBuilderContext), operation, operationBuilderContext);
     }
 
     @Override
     public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
                                                io.swagger.v3.oas.annotations.Operation operationAnnotation) {
-        RequestBody requestBody = buildRequestBodyFromMethod(operationBuilderContext);
-        requestBodyAnnotationMapper.applyFromAnnotation(requestBody, operationAnnotation.requestBody(),
-                operationBuilderContext.getReferencedItemConsumerSupplier()
-        );
-        setRequestBody(requestBody, operation, operationBuilderContext);
+        setRequestBody(applyFromMethod(operation.getRequestBody(), operationBuilderContext), operation, operationBuilderContext);
     }
 
     private void setRequestBody(RequestBody requestBody, Operation operation, OperationBuilderContext operationBuilderContext) {
@@ -55,58 +51,61 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
                 .maybeAsReference(requestBody, operation::setRequestBody);
     }
 
-    private RequestBody buildRequestBodyFromMethod(OperationBuilderContext operationBuilderContext) {
+    private RequestBody applyFromMethod(@Nullable RequestBody existingRequestBody, OperationBuilderContext operationBuilderContext) {
         OperationInfo operationInfo = operationBuilderContext.getOperationInfo();
         ReferencedSchemaConsumer referencedSchemaConsumer = operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedSchemaConsumer.class);
         return Stream.of(operationInfo.getHandlerMethod().getMethod().getParameters())
                 .flatMap(methodParameter -> {
                     AnnotationsSupplier annotationsSupplierFromMethodParameter = annotationsSupplierFactory.createFromAnnotatedElement(methodParameter);
-                    return annotationsSupplierFromMethodParameter.findAnnotations(org.springframework.web.bind.annotation.RequestBody.class)
-                            .reduce((a, b) -> {
-                                throw new IllegalStateException("Found more than one RequestBody annotation on parameter: " + a + " vs. " + b);
-                            })
+                    return Optional.ofNullable(annotationsSupplierFromMethodParameter.findFirstAnnotation(org.springframework.web.bind.annotation.RequestBody.class))
                             .map(springRequestBodyAnnotation -> {
-                                RequestBody requestBody = new RequestBody();
-                                // TODO check @Nullable on method parameter?
-                                requestBody.setRequired(springRequestBodyAnnotation.required());
-                                Content content = getConsumesContentType(operationInfo).stream().collect(Collectors.toMap(
-                                        x -> x,
-                                        contentType -> {
-                                            MediaType mediaType = new MediaType();
-                                            schemaResolver.resolveFromType(methodParameter.getType(),
-                                                    // the schema resolver should also consider annotations on the type itself
-                                                    // however, annotations being present on the parameter itself should take precedence
-                                                    annotationsSupplierFromMethodParameter
-                                                            .andThen(annotationsSupplierFactory.createFromAnnotatedElement(methodParameter.getType())),
-                                                    referencedSchemaConsumer,
-                                                    mediaType::setSchema
-                                            );
-                                            return mediaType;
-                                        },
-                                        (a, b) -> {
-                                            throw new IllegalStateException("Found conflicting content types: " + a + " vs. " + b);
-                                        },
-                                        Content::new
-                                ));
-                                setMapIfNotEmpty(content, requestBody::setContent);
-
-                                // also check if swagger annotation is present, which should take precedence (so apply later)
-                                io.swagger.v3.oas.annotations.parameters.RequestBody requestBodyAnnotation = annotationsSupplierFromMethodParameter.findFirstAnnotation(io.swagger.v3.oas.annotations.parameters.RequestBody.class);
-                                if (requestBodyAnnotation != null) {
-                                    requestBodyAnnotationMapper.applyFromAnnotation(requestBody, requestBodyAnnotation,
-                                            operationBuilderContext.getReferencedItemConsumerSupplier()
-                                    );
+                                RequestBody requestBody = getRequestBody(existingRequestBody, annotationsSupplierFromMethodParameter, operationBuilderContext.getReferencedItemConsumerSupplier());
+                                if (requestBody.getRequired() == null) {
+                                    requestBody.setRequired(springRequestBodyAnnotation.required());
                                 }
-
+                                for (String contentType : getConsumesContentType(operationInfo)) {
+                                    MediaType mediaType = getMediaType(contentType, requestBody);
+                                    if (mediaType.getSchema() == null) {
+                                        schemaResolver.resolveFromType(methodParameter.getType(),
+                                                // the schema resolver should also consider annotations on the type itself
+                                                // however, annotations being present on the parameter itself should take precedence
+                                                annotationsSupplierFromMethodParameter
+                                                        .andThen(annotationsSupplierFactory.createFromAnnotatedElement(methodParameter.getType())),
+                                                referencedSchemaConsumer,
+                                                mediaType::setSchema
+                                        );
+                                    }
+                                }
                                 return requestBody;
                             })
-                            .map(Stream::of).orElse(Stream.empty()); // Optional.toStream()
+                            .map(Stream::of).orElseGet(Stream::empty); // Optional.toStream()
                 })
                 .reduce((a, b) -> {
                     // TODO check if multiple usages of @RequestBody are allowed by Spring Web
                     throw new IllegalStateException("Found more than one @RequestBody annotation on " + operationInfo);
                 })
                 .orElseGet(RequestBody::new);
+    }
+
+    private RequestBody getRequestBody(@Nullable RequestBody existingRequestBody, AnnotationsSupplier annotationsSupplierFromMethodParameter, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+        return Optional.ofNullable(annotationsSupplierFromMethodParameter.findFirstAnnotation(io.swagger.v3.oas.annotations.parameters.RequestBody.class))
+                .map(requestBodyAnnotation -> {
+                    if (existingRequestBody == null) {
+                        return requestBodyAnnotationMapper.buildFromAnnotation(requestBodyAnnotation, referencedItemConsumerSupplier);
+                    } else {
+                        requestBodyAnnotationMapper.applyFromAnnotation(existingRequestBody, requestBodyAnnotation, referencedItemConsumerSupplier);
+                        return existingRequestBody;
+                    }
+                })
+                .orElseGet(() -> existingRequestBody != null ? existingRequestBody : new RequestBody());
+    }
+
+    private static MediaType getMediaType(String contentType, RequestBody requestBody) {
+        if (requestBody.getContent() == null) {
+            Content content = new Content();
+            requestBody.setContent(content);
+        }
+        return requestBody.getContent().computeIfAbsent(contentType, ignored -> new MediaType());
     }
 
     private List<String> getConsumesContentType(OperationInfo operationInfo) {

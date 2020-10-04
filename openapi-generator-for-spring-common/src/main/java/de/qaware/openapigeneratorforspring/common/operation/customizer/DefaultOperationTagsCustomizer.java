@@ -32,15 +32,10 @@ public class DefaultOperationTagsCustomizer implements OperationCustomizer {
     @Override
     public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
                                                io.swagger.v3.oas.annotations.Operation operationAnnotation) {
-        operationBuilderContext.getTagsConsumer().accept(
-                // also consume tag names only, even if no description or additional information is present
-                // the tags consumer is smart enough to pick the right tag model on identical names
-                Stream.of(operationAnnotation.tags())
-                        .map(tagName -> new Tag().withName(tagName))
-                        .collect(Collectors.toList())
-        );
-        setTagNamesToOperation(operation, Stream.concat(collectTagsFromMethodAndClass(operationBuilderContext),
-                Stream.of(operationAnnotation.tags())));
+        setTagNamesToOperation(operation, Stream.concat(
+                operation.getTags() == null ? Stream.empty() : operation.getTags().stream(),
+                collectTagsFromMethodAndClass(operationBuilderContext)
+        ));
     }
 
     private static void setTagNamesToOperation(Operation operation, Stream<String> tagNames) {

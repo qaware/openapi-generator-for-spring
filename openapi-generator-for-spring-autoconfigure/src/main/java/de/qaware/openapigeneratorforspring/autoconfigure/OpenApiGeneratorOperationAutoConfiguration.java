@@ -1,16 +1,13 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
-import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.OperationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultDeprecatedOperationCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationExternalDocsCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationAnnotationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationIdCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationServersCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationSummaryAndDescriptionCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationTagsCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultRequestBodyOperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
@@ -59,8 +56,8 @@ public class OpenApiGeneratorOperationAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationSummaryAndDescriptionCustomizer defaultOperationSummaryAndDescriptionCustomizer() {
-        return new DefaultOperationSummaryAndDescriptionCustomizer();
+    public DefaultOperationAnnotationCustomizer defaultOperationAnnotationCustomizer(OperationAnnotationMapper operationAnnotationMapper) {
+        return new DefaultOperationAnnotationCustomizer(operationAnnotationMapper);
     }
 
 
@@ -71,18 +68,6 @@ public class OpenApiGeneratorOperationAutoConfiguration {
             AnnotationsSupplierFactory annotationsSupplierFactory
     ) {
         return new DefaultOperationTagsCustomizer(tagAnnotationMapper, annotationsSupplierFactory);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public DefaultOperationExternalDocsCustomizer defaultOperationExternalDocsCustomizer(ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper) {
-        return new DefaultOperationExternalDocsCustomizer(externalDocumentationAnnotationMapper);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public DefaultOperationServersCustomizer defaultOperationServersCustomizer(ServerAnnotationMapper serverAnnotationMapper) {
-        return new DefaultOperationServersCustomizer(serverAnnotationMapper);
     }
 
     @Bean

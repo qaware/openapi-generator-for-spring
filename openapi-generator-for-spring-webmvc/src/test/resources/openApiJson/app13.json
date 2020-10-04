@@ -52,12 +52,12 @@
     "/mapping-2": {
       "get": {
         "tags": [
+          "tag-1",
+          "tag-3",
           "tag-6",
           "tag-7",
-          "tag-3",
           "tag-8",
-          "tag-5",
-          "tag-1"
+          "tag-5"
         ],
         "operationId": "mapping2",
         "responses": {
@@ -70,11 +70,11 @@
     "/mapping-3": {
       "get": {
         "tags": [
+          "tag-1",
+          "tag-2",
           "tag-5",
           "tag-3",
-          "tag-8",
-          "tag-1",
-          "tag-2"
+          "tag-8"
         ],
         "operationId": "mapping3",
         "responses": {

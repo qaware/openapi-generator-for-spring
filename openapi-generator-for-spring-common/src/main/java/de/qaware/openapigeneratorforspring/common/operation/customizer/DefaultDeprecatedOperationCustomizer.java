@@ -27,9 +27,7 @@ public class DefaultDeprecatedOperationCustomizer implements OperationCustomizer
     @Override
     public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
                                                io.swagger.v3.oas.annotations.Operation operationAnnotation) {
-        if (operationAnnotation.deprecated()) {
-            operation.setDeprecated(true);
-        } else {
+        if (operation.getDeprecated() == null) {
             customize(operation, operationBuilderContext);
         }
     }

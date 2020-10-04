@@ -4,7 +4,6 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderCont
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvider;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 @RequiredArgsConstructor
 public class DefaultOperationIdCustomizer implements OperationCustomizer {
@@ -21,11 +20,7 @@ public class DefaultOperationIdCustomizer implements OperationCustomizer {
     @Override
     public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
                                                io.swagger.v3.oas.annotations.Operation operationAnnotation) {
-
-
-        if (StringUtils.isNotBlank(operationAnnotation.operationId())) {
-            operation.setOperationId(operationAnnotation.operationId());
-        } else {
+        if (operation.getOperationId() == null) {
             customize(operation, operationBuilderContext);
         }
     }
