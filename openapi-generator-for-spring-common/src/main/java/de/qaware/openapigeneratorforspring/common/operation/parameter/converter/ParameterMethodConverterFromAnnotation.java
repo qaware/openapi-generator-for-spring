@@ -23,5 +23,6 @@ public abstract class ParameterMethodConverterFromAnnotation<A extends Annotatio
         return null;
     }
 
+    @Nullable
     protected abstract Parameter buildParameter(A annotation);
 }

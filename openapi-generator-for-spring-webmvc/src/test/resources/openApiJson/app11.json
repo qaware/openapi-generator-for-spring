@@ -7,7 +7,7 @@
   "paths": {
     "/mapping-1": {
       "get": {
-        "operationId": "adminMapping1",
+        "operationId": "mapping1",
         "parameters": [
           {
             "name": "param1",

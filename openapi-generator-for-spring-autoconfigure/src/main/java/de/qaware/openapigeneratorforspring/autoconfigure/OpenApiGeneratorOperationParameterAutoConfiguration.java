@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterFilter;
 import de.qaware.openapigeneratorforspring.common.mapper.ContentAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
@@ -39,13 +40,14 @@ public class OpenApiGeneratorOperationParameterAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public DefaultOperationParameterCustomizer defaultOperationParameterCustomizer(
-            AnnotationsSupplierFactory annotationsSupplierFactory,
+            List<OperationParameterFilter> operationParameterFilters,
             List<ParameterMethodConverter> parameterMethodConverters,
             List<OperationParameterCustomizer> operationParameterCustomizers,
-            ParameterAnnotationMapper parameterAnnotationMapper
+            ParameterAnnotationMapper parameterAnnotationMapper,
+            AnnotationsSupplierFactory annotationsSupplierFactory
     ) {
         return new DefaultOperationParameterCustomizer(
-                annotationsSupplierFactory, parameterMethodConverters, operationParameterCustomizers, parameterAnnotationMapper
+                operationParameterFilters, parameterMethodConverters, operationParameterCustomizers, parameterAnnotationMapper, annotationsSupplierFactory
         );
     }
 

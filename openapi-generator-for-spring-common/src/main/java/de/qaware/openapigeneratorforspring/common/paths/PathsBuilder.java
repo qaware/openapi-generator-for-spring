@@ -19,6 +19,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -43,17 +44,15 @@ public class PathsBuilder {
         Paths paths = new Paths();
 
         handlerMethods.stream()
-                .flatMap(
-                        handlerMethodWithInfo -> handlerMethodWithInfo.getPathPatterns().stream()
+                .flatMap(handlerMethodWithInfo ->
+                        handlerMethodWithInfo.getPathPatterns().stream()
                                 .map(pathPattern -> Pair.of(pathPattern, handlerMethodWithInfo))
                 )
-                .sorted(Map.Entry.comparingByKey())
+                .filter(item -> isAcceptedByAllHandlerMethodFilters(item.getRight()))
+                .sorted(Comparator.comparing(Pair::getLeft))
                 .forEachOrdered(item -> {
                     String pathPattern = item.getLeft();
                     HandlerMethodWithInfo handlerMethodWithInfo = item.getRight();
-                    if (isNotAcceptedByAllHandlerMethodFilters(handlerMethodWithInfo)) {
-                        return;
-                    }
 
                     PathItem pathItem = new PathItem();
                     Set<RequestMethod> requestMethods = handlerMethodWithInfo.getRequestMethods();
@@ -93,31 +92,16 @@ public class PathsBuilder {
         return paths;
     }
 
-    private boolean isNotAcceptedByAllHandlerMethodFilters(HandlerMethodWithInfo handlerMethod) {
-        for (HandlerMethodFilter handlerMethodFilter : handlerMethodFilters) {
-            if (!handlerMethodFilter.accept(handlerMethod)) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isAcceptedByAllHandlerMethodFilters(HandlerMethodWithInfo handlerMethod) {
+        return handlerMethodFilters.stream().allMatch(handlerMethodFilter -> handlerMethodFilter.accept(handlerMethod));
     }
 
     private boolean isAcceptedByAllOperationFilters(Operation operation, HandlerMethod handlerMethod) {
-        for (OperationFilter operationFilter : operationFilters) {
-            if (!operationFilter.accept(operation, handlerMethod)) {
-                return false;
-            }
-        }
-        return true;
+        return operationFilters.stream().allMatch(operationFilter -> operationFilter.accept(operation, handlerMethod));
     }
 
     private boolean isAcceptedByAllPathFilters(PathItem pathItem, String pathPattern, Map<RequestMethod, Operation> operationPerMethod) {
-        for (PathItemFilter pathItemFilter : pathItemFilters) {
-            if (!pathItemFilter.accept(pathItem, pathPattern, operationPerMethod)) {
-                return false;
-            }
-        }
-        return true;
+        return pathItemFilters.stream().allMatch(pathItemFilter -> pathItemFilter.accept(pathItem, pathPattern, operationPerMethod));
     }
 
     private static void setOperationOnPathItem(RequestMethod requestMethod, PathItem pathItem, Operation operation) {

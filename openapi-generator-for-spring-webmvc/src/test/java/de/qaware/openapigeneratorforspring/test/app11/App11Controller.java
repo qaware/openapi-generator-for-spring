@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class App11Controller {
 
     @GetMapping("mapping-1")
-    public void adminMapping1(
+    public void mapping1(
             @RequestParam @Schema(
                     discriminatorProperty = "petType",
                     discriminatorMapping = {
@@ -29,17 +29,17 @@ public class App11Controller {
     }
 
     @Value
-    private class DogDto implements Pet {
+    private static class DogDto implements Pet {
         String dogProperty;
     }
 
     @Value
-    private class CatDto implements Pet {
+    private static class CatDto implements Pet {
         String catProperty;
     }
 
     @Value
-    private class MonsterDto implements Pet {
+    private static class MonsterDto implements Pet {
         String monsterProperty;
     }
 }

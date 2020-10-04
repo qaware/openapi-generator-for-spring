@@ -4,6 +4,8 @@ import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.annotation.Nullable;
+
 public class DefaultParameterMethodConverterFromPathVariableAnnotation extends ParameterMethodConverterFromAnnotation<PathVariable> {
 
     public static final int ORDER = DEFAULT_ORDER;
@@ -15,6 +17,7 @@ public class DefaultParameterMethodConverterFromPathVariableAnnotation extends P
         this.parameterBuilder = parameterBuilder;
     }
 
+    @Nullable
     @Override
     protected Parameter buildParameter(PathVariable annotation) {
         return parameterBuilder.build(ParameterIn.PATH,
