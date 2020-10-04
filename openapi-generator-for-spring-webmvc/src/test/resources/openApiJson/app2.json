@@ -4,6 +4,17 @@
     "title": "API for App2",
     "version": "unknown"
   },
+  "tags": [
+    {
+      "name": "TAG-1"
+    },
+    {
+      "name": "TAG-2"
+    },
+    {
+      "name": "TAG-3"
+    }
+  ],
   "paths": {
     "/all-deprecated/get-mapping": {
       "get": {
@@ -67,6 +78,10 @@
     },
     "/operation-annotation/get2": {
       "get": {
+        "tags": [
+          "TAG-3",
+          "TAG-2"
+        ],
         "summary": "Summary 2",
         "operationId": "getMappingOperation2",
         "responses": {
@@ -109,11 +124,11 @@
             "variables": {
               "server-variable-name-1": {
                 "description": "variable description",
-                "default": "A",
                 "enum": [
                   "A",
                   "B"
                 ],
+                "default": "A",
                 "x-extension2": {
                   "property4": "value4",
                   "property3": "value3"

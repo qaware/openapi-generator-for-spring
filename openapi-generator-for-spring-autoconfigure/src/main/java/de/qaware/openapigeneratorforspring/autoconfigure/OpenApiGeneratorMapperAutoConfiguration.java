@@ -14,9 +14,11 @@ import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkParameterAnn
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultRequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerVariableAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultTagAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.EncodingAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.InfoAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LicenseAnnotationMapper;
@@ -26,6 +28,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerVariableAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
@@ -153,5 +156,14 @@ public class OpenApiGeneratorMapperAutoConfiguration {
             ExtensionAnnotationMapper extensionAnnotationMapper
     ) {
         return new DefaultRequestBodyAnnotationMapper(contentAnnotationMapper, extensionAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TagAnnotationMapper defaultTagAnnotationMapper(
+            ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper
+    ) {
+        return new DefaultTagAnnotationMapper(externalDocumentationAnnotationMapper, extensionAnnotationMapper);
     }
 }

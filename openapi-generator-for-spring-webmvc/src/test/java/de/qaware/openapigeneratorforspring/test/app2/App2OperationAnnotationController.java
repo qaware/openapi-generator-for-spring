@@ -27,7 +27,7 @@ public class App2OperationAnnotationController {
     @GetMapping("get2")
     @Operation(
             summary = "Summary 2",
-            tags = {"", "   "}
+            tags = {"TAG-3", "TAG-2"}
     )
     public String getMappingOperation2() {
         return null;

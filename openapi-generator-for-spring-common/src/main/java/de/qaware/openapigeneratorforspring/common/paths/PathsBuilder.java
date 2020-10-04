@@ -12,6 +12,7 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsum
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.path.PathItem;
 import de.qaware.openapigeneratorforspring.model.path.Paths;
+import de.qaware.openapigeneratorforspring.model.tag.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.LinkedMultiValueMap;
@@ -24,6 +25,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 public class PathsBuilder {
@@ -35,7 +37,7 @@ public class PathsBuilder {
     private final List<OperationFilter> operationFilters;
     private final OperationIdConflictResolver operationIdConflictResolver;
 
-    public Paths buildPaths(ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    public Paths buildPaths(ReferencedItemConsumerSupplier referencedItemConsumerSupplier, Consumer<List<Tag>> tagsConsumer) {
 
         List<HandlerMethodWithInfo> handlerMethods = handlerMethodsProvider.getHandlerMethods();
 
@@ -62,7 +64,7 @@ public class PathsBuilder {
                     requestMethods.forEach(requestMethod -> {
                         HandlerMethod handlerMethod = handlerMethodWithInfo.getHandlerMethod();
                         OperationInfo operationInfo = OperationInfo.of(handlerMethod, requestMethod, pathPattern);
-                        OperationBuilderContext operationBuilderContext = new OperationBuilderContext(operationInfo, referencedItemConsumerSupplier);
+                        OperationBuilderContext operationBuilderContext = new OperationBuilderContext(operationInfo, referencedItemConsumerSupplier, tagsConsumer);
                         Operation operation = operationBuilder.buildOperation(operationBuilderContext);
                         if (isAcceptedByAllOperationFilters(operation, handlerMethod)) {
                             String operationId = operation.getOperationId();

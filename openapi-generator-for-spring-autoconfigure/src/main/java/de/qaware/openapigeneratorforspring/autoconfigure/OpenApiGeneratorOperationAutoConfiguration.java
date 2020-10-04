@@ -4,6 +4,7 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultDeprecatedOperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationExternalDocsCustomizer;
@@ -65,8 +66,11 @@ public class OpenApiGeneratorOperationAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationTagsCustomizer defaultOperationTagsCustomizer() {
-        return new DefaultOperationTagsCustomizer();
+    public DefaultOperationTagsCustomizer defaultOperationTagsCustomizer(
+            TagAnnotationMapper tagAnnotationMapper,
+            AnnotationsSupplierFactory annotationsSupplierFactory
+    ) {
+        return new DefaultOperationTagsCustomizer(tagAnnotationMapper, annotationsSupplierFactory);
     }
 
     @Bean
