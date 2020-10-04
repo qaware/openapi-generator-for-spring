@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.test.app3;
 
-import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseDefaultProvider;
+import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesDescriptionCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesFromMethodCustomizer;
-import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,15 +10,12 @@ import org.springframework.context.annotation.Configuration;
 public class App3Configuration {
 
     @Bean
-    public OperationApiResponsesFromMethodCustomizer methodResponseApiResponseCustomizer() {
-        return new NoopOperationApiResponsesFromMethodCustomizer();
+    public OperationApiResponsesFromMethodCustomizer simpleOperationApiResponsesFromMethodCustomizer(ApiResponseDefaultProvider apiResponseDefaultProvider) {
+        return (apiResponses, operationBuilderContext) -> apiResponses.put("default", apiResponseDefaultProvider.build("200"));
     }
 
-    private static class NoopOperationApiResponsesFromMethodCustomizer implements OperationApiResponsesFromMethodCustomizer {
-
-        @Override
-        public void customize(ApiResponses apiResponses, OperationBuilderContext operationBuilderContext) {
-            // do nothing
-        }
+    @Bean
+    public OperationApiResponsesDescriptionCustomizer customOperationApiResponsesDescriptionCustomizer() {
+        return (apiResponses, operationBuilderContext) -> apiResponses.forEach((responseCode, apiResponse) -> apiResponse.setDescription("My own description"));
     }
 }

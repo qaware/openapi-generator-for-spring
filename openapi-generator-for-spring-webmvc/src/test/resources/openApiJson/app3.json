@@ -5,24 +5,51 @@
     "version": "unknown"
   },
   "paths": {
-    "/v1/post-mapping": {
-      "post": {
-        "operationId": "postMapping0"
-      }
-    },
     "/v1/get-mapping": {
       "get": {
-        "operationId": "getMappingReturnString0"
+        "operationId": "getMappingReturnString0",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/default"
+          }
+        }
+      }
+    },
+    "/v1/post-mapping": {
+      "post": {
+        "operationId": "postMapping0",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/default"
+          }
+        }
       }
     },
     "/v2/get-mapping": {
       "get": {
-        "operationId": "getMappingReturnString1"
+        "operationId": "getMappingReturnString1",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/default"
+          }
+        }
       }
     },
     "/v3/post-mapping": {
       "get": {
-        "operationId": "postMapping1"
+        "operationId": "postMapping1",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/default"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "default": {
+        "description": "My own description"
       }
     }
   }

@@ -11,7 +11,6 @@ import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.Ordered;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.reflect.Method;
@@ -20,26 +19,18 @@ import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class DefaultOperationApiResponsesFromMethodCustomizer implements Ordered, OperationApiResponsesFromMethodCustomizer {
+public class DefaultOperationApiResponsesFromMethodCustomizer implements OperationApiResponsesFromMethodCustomizer {
 
-    public static final int ORDER = Ordered.LOWEST_PRECEDENCE - 1000;
-
-    private final DefaultApiResponseCodeMapper defaultApiResponseCodeMapper;
+    private final ApiResponseCodeMapper apiResponseCodeMapper;
+    private final ApiResponseDefaultProvider apiResponseDefaultProvider;
     private final SchemaResolver schemaResolver;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
     public void customize(ApiResponses apiResponses, OperationBuilderContext operationBuilderContext) {
         Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
-        String responseCodeFromMethod = defaultApiResponseCodeMapper.getResponseCodeFromMethod(method);
-        ApiResponse defaultApiResponse = apiResponses.computeIfAbsent(responseCodeFromMethod,
-                ignored -> new ApiResponse()
-        );
-
-        if (StringUtils.isBlank(defaultApiResponse.getDescription())) {
-            // TODO make this description customizable?
-            defaultApiResponse.setDescription("Default response");
-        }
+        String responseCodeFromMethod = apiResponseCodeMapper.getResponseCodeFromMethod(method);
+        ApiResponse defaultApiResponse = apiResponses.computeIfAbsent(responseCodeFromMethod, apiResponseDefaultProvider::build);
 
         if (Void.TYPE.equals(method.getReturnType()) || Void.class.equals(method.getReturnType())) {
             return;
@@ -82,10 +73,5 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Ordered
                 .map(requestMappingAnnotation -> Arrays.asList(requestMappingAnnotation.produces()))
                 // fallback to "all value" if nothing has been specified
                 .orElse(Collections.singletonList(org.springframework.http.MediaType.ALL_VALUE));
-    }
-
-    @Override
-    public int getOrder() {
-        return ORDER;
     }
 }

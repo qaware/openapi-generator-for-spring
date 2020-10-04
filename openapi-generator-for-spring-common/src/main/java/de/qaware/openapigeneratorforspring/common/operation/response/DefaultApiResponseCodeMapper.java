@@ -34,6 +34,7 @@ public class DefaultApiResponseCodeMapper implements ApiResponseCodeMapper {
         return getResponseCodeFromMethod(method);
     }
 
+    @Override
     public String getResponseCodeFromMethod(Method method) {
         ResponseStatus responseStatus = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method)
                 .findFirstAnnotation(ResponseStatus.class);
