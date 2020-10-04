@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -49,7 +49,7 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>, E
     }
 
     public Map<String, T> buildReferencedItems() {
-        Map<String, T> referencedItems = new HashMap<>();
+        Map<String, T> referencedItems = new LinkedHashMap<>();
         entries.stream()
                 .filter(entry -> entry.isReferenceRequired() || referenceDecider.turnIntoReference(entry.getItem(), entry.getReferenceSetters().count()))
                 .collect(Collectors.groupingBy(this::createNonUniqueReferenceIdentifier))

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,7 +21,7 @@ public class DefaultExtensionAnnotationMapper implements ExtensionAnnotationMapp
 
     @Override
     public Map<String, Object> mapArray(Extension[] extensionAnnotations) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new LinkedHashMap<>();
         for (Extension extension : extensionAnnotations) {
             String name = extension.name();
             if (name.isEmpty()) {

@@ -6,6 +6,7 @@ import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
+import de.qaware.openapigeneratorforspring.common.paths.PathItemBuilderFactory;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -21,14 +22,19 @@ public class OpenApiGeneratorPathsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public PathsBuilder pathsBuilder(
-            // TODO maybe support list of handlerMethodsProvider?
             HandlerMethodsProvider handlerMethodsProvider,
-            OperationBuilder operationBuilder,
+            PathItemBuilderFactory pathItemBuilderFactory,
             List<PathItemFilter> pathItemFilters,
-            List<OperationFilter> operationFilters,
             List<HandlerMethodFilter> handlerMethodFilters,
             OperationIdConflictResolver operationIdConflictResolver
     ) {
-        return new PathsBuilder(handlerMethodsProvider, operationBuilder, pathItemFilters, handlerMethodFilters, operationFilters, operationIdConflictResolver);
+        return new PathsBuilder(handlerMethodsProvider, pathItemBuilderFactory, pathItemFilters, handlerMethodFilters, operationIdConflictResolver);
     }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public PathItemBuilderFactory pathItemBuilderFactory(OperationBuilder operationBuilder, List<OperationFilter> operationFilters) {
+        return new PathItemBuilderFactory(operationBuilder, operationFilters);
+    }
+
 }

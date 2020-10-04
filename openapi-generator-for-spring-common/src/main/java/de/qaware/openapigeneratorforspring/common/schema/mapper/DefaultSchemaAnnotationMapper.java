@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -93,7 +93,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
             return;
         }
 
-        Map<String, String> schemaReferenceMapping = new HashMap<>();
+        Map<String, String> schemaReferenceMapping = new LinkedHashMap<>();
         schema.setDiscriminator(
                 Discriminator.builder()
                         .propertyName(propertyName)
