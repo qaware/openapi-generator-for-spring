@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class DefaultTagAnnotationMapper implements TagAnnotationMapper {
         }
         tag.setName(tagAnnotation.name());
         setStringIfNotBlank(tagAnnotation.description(), tag::setDescription);
-        externalDocumentationAnnotationMapper.map(tagAnnotation.externalDocs()).ifPresent(tag::setExternalDocs);
+        setIfNotEmpty(externalDocumentationAnnotationMapper.map(tagAnnotation.externalDocs()), tag::setExternalDocs);
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(tagAnnotation.extensions()), tag::setExtensions);
         return tag;
     }

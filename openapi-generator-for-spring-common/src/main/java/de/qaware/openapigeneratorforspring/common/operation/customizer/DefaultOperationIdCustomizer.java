@@ -14,14 +14,8 @@ public class DefaultOperationIdCustomizer implements OperationCustomizer {
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        operation.setOperationId(operationIdProvider.getOperationId(operationBuilderContext.getOperationInfo()));
-    }
-
-    @Override
-    public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
-                                               io.swagger.v3.oas.annotations.Operation operationAnnotation) {
         if (operation.getOperationId() == null) {
-            customize(operation, operationBuilderContext);
+            operation.setOperationId(operationIdProvider.getOperationId(operationBuilderContext.getOperationInfo()));
         }
     }
 

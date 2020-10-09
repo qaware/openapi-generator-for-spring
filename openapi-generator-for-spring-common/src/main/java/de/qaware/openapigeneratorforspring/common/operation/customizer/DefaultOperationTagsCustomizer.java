@@ -26,12 +26,6 @@ public class DefaultOperationTagsCustomizer implements OperationCustomizer {
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        setTagNamesToOperation(operation, collectTagsFromMethodAndClass(operationBuilderContext));
-    }
-
-    @Override
-    public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
-                                               io.swagger.v3.oas.annotations.Operation operationAnnotation) {
         setTagNamesToOperation(operation, Stream.concat(
                 operation.getTags() == null ? Stream.empty() : operation.getTags().stream(),
                 collectTagsFromMethodAndClass(operationBuilderContext)

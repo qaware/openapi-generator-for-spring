@@ -46,8 +46,7 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
         setStringIfNotBlank(operationAnnotation.summary(), operation::setSummary);
         setStringIfNotBlank(operationAnnotation.description(), operation::setDescription);
         setRequestBody(operation::setRequestBody, operationAnnotation.requestBody(), referencedItemConsumerSupplier);
-        externalDocumentationAnnotationMapper.map(operationAnnotation.externalDocs())
-                .ifPresent(operation::setExternalDocs);
+        setIfNotEmpty(externalDocumentationAnnotationMapper.map(operationAnnotation.externalDocs()), operation::setExternalDocs);
         setStringIfNotBlank(operationAnnotation.operationId(), operation::setOperationId);
         setParameters(operation::setParameters, operationAnnotation.parameters(), referencedItemConsumerSupplier);
         setResponses(operation::setResponses, operationAnnotation.responses(), referencedItemConsumerSupplier);

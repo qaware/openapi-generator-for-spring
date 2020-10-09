@@ -10,8 +10,8 @@ import java.util.function.Consumer;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OpenApiStringUtils {
 
-    public static boolean setStringIfNotBlank(@Nullable String value, Consumer<String> setter) {
-        return OpenApiObjectUtils.setIf(value, StringUtils::isNotBlank, setter);
+    public static void setStringIfNotBlank(@Nullable String value, Consumer<String> setter) {
+        OpenApiObjectUtils.setIf(value, StringUtils::isNotBlank, setter);
     }
 
     public static void setStringRequireNonBlank(@Nullable String value, Consumer<String> setter) {

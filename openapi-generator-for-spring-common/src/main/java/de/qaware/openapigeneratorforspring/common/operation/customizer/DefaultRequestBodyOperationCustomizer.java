@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
+
 @RequiredArgsConstructor
 public class DefaultRequestBodyOperationCustomizer implements OperationCustomizer {
     public static final int ORDER = DEFAULT_ORDER;
@@ -34,21 +36,11 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        setRequestBody(applyFromMethod(null, operationBuilderContext), operation, operationBuilderContext);
-    }
-
-    @Override
-    public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
-                                               io.swagger.v3.oas.annotations.Operation operationAnnotation) {
-        setRequestBody(applyFromMethod(operation.getRequestBody(), operationBuilderContext), operation, operationBuilderContext);
-    }
-
-    private void setRequestBody(RequestBody requestBody, Operation operation, OperationBuilderContext operationBuilderContext) {
-        if (requestBody.isEmpty()) {
-            return;
-        }
-        operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedRequestBodyConsumer.class)
-                .maybeAsReference(requestBody, operation::setRequestBody);
+        setIfNotEmpty(
+                applyFromMethod(operation.getRequestBody(), operationBuilderContext),
+                requestBody -> operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedRequestBodyConsumer.class)
+                        .maybeAsReference(requestBody, operation::setRequestBody)
+        );
     }
 
     private RequestBody applyFromMethod(@Nullable RequestBody existingRequestBody, OperationBuilderContext operationBuilderContext) {

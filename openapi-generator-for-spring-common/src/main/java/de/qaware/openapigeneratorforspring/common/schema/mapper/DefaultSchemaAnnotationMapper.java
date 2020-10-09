@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
 @RequiredArgsConstructor
@@ -67,8 +68,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         }
         setAccessMode(annotation.accessMode(), schema);
         setStringIfNotBlank(annotation.example(), example -> schema.setExample(parsableValueMapper.parse(example)));
-        externalDocumentationAnnotationMapper.map(annotation.externalDocs())
-                .ifPresent(schema::setExternalDocs);
+        setIfNotEmpty(externalDocumentationAnnotationMapper.map(annotation.externalDocs()), schema::setExternalDocs);
         if (annotation.deprecated()) {
             schema.setDeprecated(true);
         }
