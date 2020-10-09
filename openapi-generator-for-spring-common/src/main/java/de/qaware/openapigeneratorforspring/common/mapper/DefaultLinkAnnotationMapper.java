@@ -3,9 +3,10 @@ package de.qaware.openapigeneratorforspring.common.mapper;
 import de.qaware.openapigeneratorforspring.model.link.Link;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
 import java.util.Map;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromArray;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
@@ -20,8 +21,8 @@ public class DefaultLinkAnnotationMapper implements LinkAnnotationMapper {
 
     @Override
     public Map<String, Link> mapArray(io.swagger.v3.oas.annotations.links.Link[] linkAnnotations) {
-        return buildStringMapFromArray(
-                linkAnnotations,
+        return buildStringMapFromStream(
+                Arrays.stream(linkAnnotations),
                 io.swagger.v3.oas.annotations.links.Link::name,
                 this::map
         );

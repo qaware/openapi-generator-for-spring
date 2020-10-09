@@ -10,8 +10,10 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
+
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromArray;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
@@ -24,8 +26,8 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
 
     @Override
     public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
-        return buildStringMapFromArray(
-                contentAnnotations,
+        return buildStringMapFromStream(
+                Arrays.stream(contentAnnotations),
                 io.swagger.v3.oas.annotations.media.Content::mediaType,
                 annotation -> map(annotation, referencedItemConsumerSupplier),
                 Content::new

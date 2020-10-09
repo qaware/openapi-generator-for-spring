@@ -1,11 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.operation.response;
 
-import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
-import java.util.List;
+import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
+import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 
 public interface ApiResponseAnnotationMapper {
-    ApiResponses buildApiResponsesFromAnnotations(List<ApiResponse> apiResponseAnnotations, OperationBuilderContext operationBuilderContext);
+    ApiResponse buildFromAnnotation(io.swagger.v3.oas.annotations.responses.ApiResponse apiResponseAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier);
+
+    void applyFromAnnotation(ApiResponse apiResponse, io.swagger.v3.oas.annotations.responses.ApiResponse apiResponseAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier);
 }

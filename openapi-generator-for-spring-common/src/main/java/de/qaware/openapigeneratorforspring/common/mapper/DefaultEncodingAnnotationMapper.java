@@ -5,10 +5,11 @@ import de.qaware.openapigeneratorforspring.common.reference.header.ReferencedHea
 import de.qaware.openapigeneratorforspring.model.media.Encoding;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromArray;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
@@ -21,7 +22,9 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
 
     @Override
     public Map<String, Encoding> mapArray(io.swagger.v3.oas.annotations.media.Encoding[] encodingAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
-        return buildStringMapFromArray(encodingAnnotations, io.swagger.v3.oas.annotations.media.Encoding::name,
+        return buildStringMapFromStream(
+                Arrays.stream(encodingAnnotations),
+                io.swagger.v3.oas.annotations.media.Encoding::name,
                 encodingAnnotation -> map(encodingAnnotation, referencedItemConsumerSupplier)
         );
     }

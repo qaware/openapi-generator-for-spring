@@ -1,59 +1,94 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
+import de.qaware.openapigeneratorforspring.common.operation.parameter.ParameterAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferencedParametersConsumer;
+import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferencedApiResponsesConsumer;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
+import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferencedRequestBodyConsumer;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
+import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 import de.qaware.openapigeneratorforspring.model.tag.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
 @RequiredArgsConstructor
 public class DefaultOperationAnnotationMapper implements OperationAnnotationMapper {
 
     private final RequestBodyAnnotationMapper requestBodyAnnotationMapper;
-    private final ServerAnnotationMapper serverAnnotationMapper;
     private final ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper;
+    private final ParameterAnnotationMapper parameterAnnotationMapper;
+    private final ApiResponseAnnotationMapper apiResponseAnnotationMapper;
+    private final ServerAnnotationMapper serverAnnotationMapper;
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
 
-
     @Override
-    public void applyFromAnnotation(Operation operation, io.swagger.v3.oas.annotations.Operation operationAnnotation,
-                                    ReferencedItemConsumerSupplier referencedItemConsumerSupplier,
-                                    Consumer<List<Tag>> tagsConsumer) {
-        setStringIfNotBlank(operationAnnotation.operationId(), operation::setOperationId);
+    public Operation map(io.swagger.v3.oas.annotations.Operation operationAnnotation,
+                         ReferencedItemConsumerSupplier referencedItemConsumerSupplier,
+                         Consumer<List<Tag>> tagsConsumer) {
+        Operation operation = new Operation();
+        setTags(operation, operationAnnotation.tags(), tagsConsumer);
         setStringIfNotBlank(operationAnnotation.summary(), operation::setSummary);
         setStringIfNotBlank(operationAnnotation.description(), operation::setDescription);
-        setRequestBody(operation, operationAnnotation, referencedItemConsumerSupplier);
+        setRequestBody(operation::setRequestBody, operationAnnotation.requestBody(), referencedItemConsumerSupplier);
+        externalDocumentationAnnotationMapper.map(operationAnnotation.externalDocs())
+                .ifPresent(operation::setExternalDocs);
+        setStringIfNotBlank(operationAnnotation.operationId(), operation::setOperationId);
+        setParameters(operation::setParameters, operationAnnotation.parameters(), referencedItemConsumerSupplier);
+        setResponses(operation::setResponses, operationAnnotation.responses(), referencedItemConsumerSupplier);
 
         if (operationAnnotation.deprecated()) {
             operation.setDeprecated(true);
         }
 
-        setTags(operation, operationAnnotation.tags(), tagsConsumer);
+        // TODO add security from annotation
 
         setCollectionIfNotEmpty(serverAnnotationMapper.mapArray(operationAnnotation.servers()), operation::setServers);
-        externalDocumentationAnnotationMapper.map(operationAnnotation.externalDocs())
-                .ifPresent(operation::setExternalDocs);
-        setMapIfNotEmpty(
-                extensionAnnotationMapper.mapArray(operationAnnotation.extensions()),
-                operation::setExtensions
+        setMapIfNotEmpty(extensionAnnotationMapper.mapArray(operationAnnotation.extensions()), operation::setExtensions);
+
+        return operation;
+    }
+
+    private void setParameters(Consumer<List<Parameter>> setter, io.swagger.v3.oas.annotations.Parameter[] parameterAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+        setCollectionIfNotEmpty(
+                Arrays.stream(parameterAnnotations)
+                        .map(annotation -> parameterAnnotationMapper.buildFromAnnotation(annotation, referencedItemConsumerSupplier))
+                        .collect(Collectors.toList()),
+                parameters -> referencedItemConsumerSupplier.get(ReferencedParametersConsumer.class).maybeAsReference(parameters, setter)
         );
     }
 
-    private void setRequestBody(Operation operation, io.swagger.v3.oas.annotations.Operation operationAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
-        RequestBody requestBody = requestBodyAnnotationMapper.buildFromAnnotation(operationAnnotation.requestBody(), referencedItemConsumerSupplier);
-        if (!requestBody.isEmpty()) {
-            operation.setRequestBody(requestBody);
-        }
+    private void setResponses(Consumer<ApiResponses> setter, ApiResponse[] apiResponseAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+        setMapIfNotEmpty(
+                buildStringMapFromStream(Arrays.stream(apiResponseAnnotations),
+                        ApiResponse::responseCode,
+                        annotation -> apiResponseAnnotationMapper.buildFromAnnotation(annotation, referencedItemConsumerSupplier),
+                        ApiResponses::new
+                ),
+                apiResponses -> referencedItemConsumerSupplier.get(ReferencedApiResponsesConsumer.class).maybeAsReference(apiResponses, setter)
+        );
+    }
+
+    private void setRequestBody(Consumer<RequestBody> setter, io.swagger.v3.oas.annotations.parameters.RequestBody requestBodyAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+        setIfNotEmpty(
+                requestBodyAnnotationMapper.buildFromAnnotation(requestBodyAnnotation, referencedItemConsumerSupplier),
+                requestBody -> referencedItemConsumerSupplier.get(ReferencedRequestBodyConsumer.class).maybeAsReference(requestBody, setter)
+        );
     }
 
     private static void setTags(Operation operation, String[] tags, Consumer<List<Tag>> tagsConsumer) {

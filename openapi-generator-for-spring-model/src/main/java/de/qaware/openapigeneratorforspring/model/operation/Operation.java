@@ -32,5 +32,9 @@ public class Operation implements HasExtensions {
     private List<SecurityRequirement> security;
     private List<Server> servers;
     private Map<String, Object> extensions;
+
+    public void setResponses(ApiResponses responses) {
+        this.responses = responses;
+    }
 }
 

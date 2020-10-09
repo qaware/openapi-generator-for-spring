@@ -1,7 +1,9 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
+import de.qaware.openapigeneratorforspring.common.mapper.CallbackAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ContactAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ContentAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultCallbackAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultContactAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultContentAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultEncodingAnnotationMapper;
@@ -31,6 +33,8 @@ import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMa
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerVariableAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.ParameterAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
@@ -58,11 +62,13 @@ public class OpenApiGeneratorMapperAutoConfiguration {
     @ConditionalOnMissingBean
     public OperationAnnotationMapper defaultOperationAnnotationMapper(
             RequestBodyAnnotationMapper requestBodyAnnotationMapper,
-            ServerAnnotationMapper serverAnnotationMapper,
             ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper,
-            ExtensionAnnotationMapper extensionAnnotationMapper
-    ) {
-        return new DefaultOperationAnnotationMapper(requestBodyAnnotationMapper, serverAnnotationMapper, externalDocumentationAnnotationMapper, extensionAnnotationMapper);
+            ParameterAnnotationMapper parameterAnnotationMapper,
+            ApiResponseAnnotationMapper apiResponseAnnotationMapper,
+            ServerAnnotationMapper serverAnnotationMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper) {
+        return new DefaultOperationAnnotationMapper(requestBodyAnnotationMapper, externalDocumentationAnnotationMapper,
+                parameterAnnotationMapper, apiResponseAnnotationMapper, serverAnnotationMapper, extensionAnnotationMapper);
     }
 
     @Bean
@@ -178,5 +184,11 @@ public class OpenApiGeneratorMapperAutoConfiguration {
             ExtensionAnnotationMapper extensionAnnotationMapper
     ) {
         return new DefaultTagAnnotationMapper(externalDocumentationAnnotationMapper, extensionAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public CallbackAnnotationMapper defaultCallbackAnnotationMapper(OperationAnnotationMapper operationAnnotationMapper) {
+        return new DefaultCallbackAnnotationMapper(operationAnnotationMapper);
     }
 }

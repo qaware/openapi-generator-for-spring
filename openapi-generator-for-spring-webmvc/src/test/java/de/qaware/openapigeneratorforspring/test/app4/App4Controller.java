@@ -27,6 +27,7 @@ public class App4Controller extends App4BaseController {
     @ApiResponse(description = "Custom default description for response")
     @ApiResponse(responseCode = "210", description = "All ok overwrite base")
     @Operation(responses = {
+            @ApiResponse(description = "Custom default description for response which actually matters"),
             @ApiResponse(responseCode = "410", description = "Some response overwrite base base")
     })
     public String getMapping2() {

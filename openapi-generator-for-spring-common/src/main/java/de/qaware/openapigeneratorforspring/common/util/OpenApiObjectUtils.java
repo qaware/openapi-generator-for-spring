@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.util;
 
+import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +22,10 @@ public class OpenApiObjectUtils {
 
     public static <T> boolean setIfNotNull(@Nullable T value, Consumer<T> setter) {
         return setIf(value, Objects::nonNull, setter);
+    }
+
+    public static <T extends HasIsEmpty<?>> void setIfNotEmpty(T value, Consumer<T> setter) {
+        setIf(value, v -> !v.isEmpty(), setter);
     }
 
 }

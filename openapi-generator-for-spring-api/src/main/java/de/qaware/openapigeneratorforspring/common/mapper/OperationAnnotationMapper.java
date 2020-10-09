@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public interface OperationAnnotationMapper {
-    void applyFromAnnotation(Operation operation, io.swagger.v3.oas.annotations.Operation operationAnnotation,
-                             ReferencedItemConsumerSupplier referencedItemConsumerSupplier,
-                             Consumer<List<Tag>> tagsConsumer);
+    Operation map(io.swagger.v3.oas.annotations.Operation operationAnnotation,
+                  ReferencedItemConsumerSupplier referencedItemConsumerSupplier, Consumer<List<Tag>> tagsConsumer);
 }

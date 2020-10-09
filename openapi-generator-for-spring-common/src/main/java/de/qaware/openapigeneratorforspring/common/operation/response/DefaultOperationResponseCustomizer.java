@@ -5,13 +5,16 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferencedApiResponsesConsumer;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiProxyUtils;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
+import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
@@ -26,52 +29,39 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
-    public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
-        fillApiResponses(operation, getApiResponseAnnotationsFromMethod(method), operationBuilderContext);
-    }
-
-    @Override
-    public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
-                                               io.swagger.v3.oas.annotations.Operation operationAnnotation) {
-        Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
-        // put the annotations from the operation last, which gives them the highest precedence
-        Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponseAnnotations
-                = Stream.concat(getApiResponseAnnotationsFromMethod(method), Stream.of(operationAnnotation.responses()));
-        fillApiResponses(operation, apiResponseAnnotations, operationBuilderContext);
-    }
-
-    private void fillApiResponses(Operation operation, Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> apiResponseAnnotations,
-                                  OperationBuilderContext operationBuilderContext) {
-        ApiResponses apiResponses = apiResponseAnnotationMapper.buildApiResponsesFromAnnotations(
-                apiResponseAnnotations.collect(Collectors.toList()),
-                operationBuilderContext
-        );
+    public void customize(Operation operation, OperationBuilderContext context) {
+        ApiResponses apiResponses = buildFromMethodAnnotations(operation, context);
         for (OperationApiResponsesCustomizer customizer : operationApiResponsesCustomizers) {
-            customizer.customize(apiResponses, operationBuilderContext);
+            customizer.customize(apiResponses, context);
         }
-        ReferencedApiResponsesConsumer referencedApiResponsesConsumer = operationBuilderContext.getReferencedItemConsumerSupplier()
+        ReferencedApiResponsesConsumer referencedApiResponsesConsumer = context.getReferencedItemConsumerSupplier()
                 .get(ReferencedApiResponsesConsumer.class);
         setMapIfNotEmpty(apiResponses,
                 responses -> referencedApiResponsesConsumer.maybeAsReference(responses, operation::setResponses)
         );
     }
 
+    private ApiResponses buildFromMethodAnnotations(Operation operation, OperationBuilderContext context) {
+        ApiResponses apiResponses = Optional.ofNullable(operation.getResponses()).orElseGet(ApiResponses::new);
 
-    private Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> getApiResponseAnnotationsFromMethod(Method method) {
-        AnnotationsSupplier annotationsSupplierFromMethod = annotationsSupplierFactory.createFromAnnotatedElement(method);
-        AnnotationsSupplier annotationsSupplierFromClass = annotationsSupplierFactory.createFromAnnotatedElement(method.getDeclaringClass());
+        Method method = context.getOperationInfo().getHandlerMethod().getMethod();
 
-        // first the annotations from declaring class,
-        // then the annotations from methods
-        // this way it's possible to overwrite responses on method level
-        return Stream.concat(
-                getMergedApiResponsesFromSupplier(annotationsSupplierFromClass),
-                getMergedApiResponsesFromSupplier(annotationsSupplierFromMethod)
-        );
+        AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method);
+        getMergedApiResponsesFromSupplier(annotationsSupplier).forEach(apiResponseAnnotation -> {
+            String responseCode = apiResponseAnnotation.responseCode();
+            if (StringUtils.isBlank(responseCode)) {
+                // at least it should be set to the "default" string
+                throw new IllegalStateException("Encountered ApiResponse annotation with empty response code");
+            }
+            ApiResponse apiResponse = apiResponses.computeIfAbsent(responseCode, ignored -> new ApiResponse());
+            ApiResponse smartImmutableApiResponse = OpenApiProxyUtils.smartImmutableProxy(apiResponse, OpenApiProxyUtils::addNonExistingKeys);
+            apiResponseAnnotationMapper.applyFromAnnotation(smartImmutableApiResponse, apiResponseAnnotation, context.getReferencedItemConsumerSupplier());
+        });
+
+        return apiResponses;
     }
 
-    private Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> getMergedApiResponsesFromSupplier(AnnotationsSupplier annotationsSupplier) {
+    private static Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> getMergedApiResponsesFromSupplier(AnnotationsSupplier annotationsSupplier) {
         return Stream.concat(
                 annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.responses.ApiResponses.class).flatMap(x -> Stream.of(x.value())),
                 annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.responses.ApiResponse.class)

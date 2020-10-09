@@ -107,15 +107,7 @@
       "put": {
         "operationId": "mapping5",
         "requestBody": {
-          "description": "Some other body description",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
-              }
-            }
-          },
-          "required": true
+          "$ref": "#/components/requestBodies/RequestBody_1"
         },
         "responses": {
           "200": {
@@ -186,6 +178,17 @@
       }
     },
     "requestBodies": {
+      "RequestBody_1": {
+        "description": "Some other body description",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
+            }
+          }
+        },
+        "required": true
+      },
       "RequestBody_0": {
         "content": {
           "text/plain": {

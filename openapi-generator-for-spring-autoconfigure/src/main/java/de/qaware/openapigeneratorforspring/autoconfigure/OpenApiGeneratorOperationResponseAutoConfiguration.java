@@ -48,13 +48,12 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ApiResponseAnnotationMapper defaultApiResponseAnnotationMapper(
-            ApiResponseCodeMapper apiResponseCodeMapper,
             HeaderAnnotationMapper headerAnnotationMapper,
             ContentAnnotationMapper contentAnnotationMapper,
             ExtensionAnnotationMapper extensionAnnotationMapper,
             LinkAnnotationMapper linkAnnotationMapper
     ) {
-        return new DefaultApiResponseAnnotationMapper(apiResponseCodeMapper, headerAnnotationMapper,
+        return new DefaultApiResponseAnnotationMapper(headerAnnotationMapper,
                 contentAnnotationMapper, extensionAnnotationMapper, linkAnnotationMapper);
     }
 

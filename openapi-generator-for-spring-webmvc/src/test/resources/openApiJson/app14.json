@@ -1,0 +1,58 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App14",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping-1": {
+      "post": {
+        "operationId": "mapping1",
+        "responses": {
+          "200": {
+            "description": "Default response"
+          }
+        },
+        "callbacks": {
+          "onData": {
+            "{$request.query.callbackUrl}/data": {
+              "post": {
+                "requestBody": {
+                  "description": "subscription payload",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/App14Controller.PayloadDto"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "OK"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "App14Controller.PayloadDto": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userData": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

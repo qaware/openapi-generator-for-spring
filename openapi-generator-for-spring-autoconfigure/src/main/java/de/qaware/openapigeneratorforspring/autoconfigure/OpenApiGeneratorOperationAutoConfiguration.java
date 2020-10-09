@@ -1,12 +1,13 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.mapper.CallbackAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.OperationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultDeprecatedOperationCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationAnnotationCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationCallbackCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationIdCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationTagsCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultRequestBodyOperationCustomizer;
@@ -32,8 +33,10 @@ public class OpenApiGeneratorOperationAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OperationBuilder operationBuilder(List<OperationCustomizer> operationCustomizers, AnnotationsSupplierFactory annotationsSupplierFactory) {
-        return new OperationBuilder(operationCustomizers, annotationsSupplierFactory);
+    public OperationBuilder operationBuilder(OperationAnnotationMapper operationAnnotationMapper,
+                                             List<OperationCustomizer> operationCustomizers,
+                                             AnnotationsSupplierFactory annotationsSupplierFactory) {
+        return new OperationBuilder(operationAnnotationMapper, operationCustomizers, annotationsSupplierFactory);
     }
 
     @Bean
@@ -53,13 +56,6 @@ public class OpenApiGeneratorOperationAutoConfiguration {
     public DefaultDeprecatedOperationCustomizer defaultDeprecatedOperationCustomizer(AnnotationsSupplierFactory annotationsSupplierFactory) {
         return new DefaultDeprecatedOperationCustomizer(annotationsSupplierFactory);
     }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public DefaultOperationAnnotationCustomizer defaultOperationAnnotationCustomizer(OperationAnnotationMapper operationAnnotationMapper) {
-        return new DefaultOperationAnnotationCustomizer(operationAnnotationMapper);
-    }
-
 
     @Bean
     @ConditionalOnMissingBean
@@ -84,5 +80,14 @@ public class OpenApiGeneratorOperationAutoConfiguration {
             SchemaResolver schemaResolver
     ) {
         return new DefaultRequestBodyOperationCustomizer(requestBodyAnnotationMapper, annotationsSupplierFactory, schemaResolver);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultOperationCallbackCustomizer defaultOperationCallbackCustomizer(
+            CallbackAnnotationMapper callbackAnnotationMapper,
+            AnnotationsSupplierFactory annotationsSupplierFactory
+    ) {
+        return new DefaultOperationCallbackCustomizer(callbackAnnotationMapper, annotationsSupplierFactory);
     }
 }

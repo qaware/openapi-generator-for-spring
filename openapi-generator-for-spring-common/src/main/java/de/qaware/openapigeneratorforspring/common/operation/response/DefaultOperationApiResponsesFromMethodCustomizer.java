@@ -17,6 +17,9 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseCodeMapper.DEFAULT_ANNOTATION_RESPONSE_CODE;
 
 @RequiredArgsConstructor
 public class DefaultOperationApiResponsesFromMethodCustomizer implements OperationApiResponsesFromMethodCustomizer {
@@ -29,8 +32,8 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
     @Override
     public void customize(ApiResponses apiResponses, OperationBuilderContext operationBuilderContext) {
         Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
-        String responseCodeFromMethod = apiResponseCodeMapper.getResponseCodeFromMethod(method);
-        ApiResponse defaultApiResponse = apiResponses.computeIfAbsent(responseCodeFromMethod, apiResponseDefaultProvider::build);
+
+        ApiResponse defaultApiResponse = getAndReplaceDefaultApiResponse(apiResponses, apiResponseCodeMapper.getFromMethod(method));
 
         if (Void.TYPE.equals(method.getReturnType()) || Void.class.equals(method.getReturnType())) {
             return;
@@ -53,6 +56,33 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
             );
         }
 
+    }
+
+    private ApiResponse getAndReplaceDefaultApiResponse(ApiResponses apiResponses, String responseCodeFromMethod) {
+        // we want to keep the place at which the default API response is inserted,
+        // but we want to change the "default" response to the response code of the method
+        AtomicReference<ApiResponse> defaultApiResponseHolder = new AtomicReference<>();
+        ApiResponses modified = new ApiResponses();
+        apiResponses.forEach((responseCode, apiResponse) -> {
+            if (DEFAULT_ANNOTATION_RESPONSE_CODE.equals(responseCode)) {
+                defaultApiResponseHolder.set(apiResponse);
+                modified.put(responseCodeFromMethod, apiResponse);
+            } else {
+                modified.put(responseCode, apiResponse);
+            }
+        });
+
+        // update via given reference to original map
+        apiResponses.clear();
+        apiResponses.putAll(modified);
+
+        // fallback to provider if default isn't present
+        if (defaultApiResponseHolder.get() == null) {
+            ApiResponse defaultApiResponse = apiResponseDefaultProvider.build(responseCodeFromMethod);
+            apiResponses.put(responseCodeFromMethod, defaultApiResponse);
+            return defaultApiResponse;
+        }
+        return defaultApiResponseHolder.get();
     }
 
     private static Content getOrCreateEmptyContent(ApiResponse apiResponse) {
