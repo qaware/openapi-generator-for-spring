@@ -21,7 +21,7 @@ public class ReferencedApiResponseStorage extends AbstractReferencedItemStorage<
         super(ReferenceType.API_RESPONSE, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, ApiResponse::new, Entry::new);
     }
 
-    void storeApiResponses(ApiResponses apiResponses) {
+    void maybeReferenceApiResponses(ApiResponses apiResponses) {
         // exploit the fact that we've access to the full map of apiResponses
         // that means we can modify the map as a reference
         // if this method is called again for the same owner instance of apiResponses,

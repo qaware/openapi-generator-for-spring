@@ -19,7 +19,9 @@
             }
           },
           {
-            "$ref": "#/components/parameters/param1"
+            "name": "param1",
+            "in": "path",
+            "description": "Description from operation"
           },
           {
             "name": "param2",
@@ -48,13 +50,6 @@
   "components": {
     "responses": {
       "200": {
-        "description": "Description from operation"
-      }
-    },
-    "parameters": {
-      "param1": {
-        "name": "param1",
-        "in": "path",
         "description": "Description from operation"
       }
     }

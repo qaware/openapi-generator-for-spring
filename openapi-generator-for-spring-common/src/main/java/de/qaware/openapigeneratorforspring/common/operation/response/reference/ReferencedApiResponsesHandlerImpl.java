@@ -16,7 +16,7 @@ public class ReferencedApiResponsesHandlerImpl implements ReferencedItemHandler<
     @Override
     public void maybeAsReference(ApiResponses apiResponses, Consumer<ApiResponses> apiResponsesSetter) {
         apiResponsesSetter.accept(apiResponses);
-        storage.storeApiResponses(apiResponses);
+        storage.maybeReferenceApiResponses(apiResponses);
     }
 
     @Override

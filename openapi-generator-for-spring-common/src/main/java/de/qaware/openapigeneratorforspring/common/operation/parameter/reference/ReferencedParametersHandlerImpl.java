@@ -9,7 +9,6 @@ import lombok.With;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
@@ -24,14 +23,7 @@ public class ReferencedParametersHandlerImpl implements ReferencedItemHandler<Li
     @Override
     public void maybeAsReference(List<Parameter> parameters, Consumer<List<Parameter>> parametersSetter) {
         parametersSetter.accept(parameters);
-        // we use the fact that we can modify each parameter via index if it's supposed to be changed to a reference
-        // using an IntStream here makes i effectively final and thus can be captured in nested lambda
-        IntStream.range(0, parameters.size()).forEach(i ->
-                storage.storeMaybeReference(
-                        parameters.get(i),
-                        parameterReference -> parameters.set(i, parameterReference)
-                )
-        );
+        storage.maybeReferenceParameters(parameters, owner);
     }
 
     @Override
