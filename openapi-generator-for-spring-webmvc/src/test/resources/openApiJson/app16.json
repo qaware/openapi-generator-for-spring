@@ -6,6 +6,10 @@
   },
   "servers": [
     {
+      "url": "http://some-url-from-supplier",
+      "description": "Description from supplier"
+    },
+    {
       "url": "http://url1",
       "description": "Server 1"
     }
@@ -15,5 +19,19 @@
       "name": "tag-1"
     }
   ],
-  "paths": {}
+  "paths": {},
+  "components": {
+    "securitySchemes": {
+      "scheme1": {
+        "type": "apiKey",
+        "name": "Api-Key",
+        "in": "header"
+      },
+      "scheme2": {
+        "type": "http",
+        "description": "scheme from supplier",
+        "in": "cookie"
+      }
+    }
+  }
 }

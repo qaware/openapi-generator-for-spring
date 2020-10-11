@@ -13,8 +13,11 @@ import de.qaware.openapigeneratorforspring.common.mapper.DefaultInfoAnnotationMa
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLicenseAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkParameterAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultOAuthFlowAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultOAuthFlowsAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultOperationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultRequestBodyAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultSecuritySchemeAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerVariableAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultTagAnnotationMapper;
@@ -27,9 +30,12 @@ import de.qaware.openapigeneratorforspring.common.mapper.InfoAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LicenseAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkParameterAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.OAuthFlowAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.OAuthFlowsAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.OperationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerVariableAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
@@ -190,5 +196,23 @@ public class OpenApiGeneratorMapperAutoConfiguration {
     @ConditionalOnMissingBean
     public CallbackAnnotationMapper defaultCallbackAnnotationMapper(OperationAnnotationMapper operationAnnotationMapper) {
         return new DefaultCallbackAnnotationMapper(operationAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SecuritySchemeAnnotationMapper defaultSecurityAnnotationMapper(OAuthFlowsAnnotationMapper oAuthFlowsAnnotationMapper, ExtensionAnnotationMapper extensionAnnotationMapper) {
+        return new DefaultSecuritySchemeAnnotationMapper(oAuthFlowsAnnotationMapper, extensionAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OAuthFlowsAnnotationMapper defaultOAuthFlowsAnnotationMapper(OAuthFlowAnnotationMapper oAuthFlowAnnotationMapper, ExtensionAnnotationMapper extensionAnnotationMapper) {
+        return new DefaultOAuthFlowsAnnotationMapper(oAuthFlowAnnotationMapper, extensionAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OAuthFlowAnnotationMapper defaultOAuthFlowAnnotationMapper(ExtensionAnnotationMapper extensionAnnotationMapper) {
+        return new DefaultOAuthFlowAnnotationMapper(extensionAnnotationMapper);
     }
 }

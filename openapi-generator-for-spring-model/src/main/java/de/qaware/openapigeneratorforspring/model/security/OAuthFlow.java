@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.model.security;
 
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
+import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
 import lombok.Data;
 
 import java.util.Map;
@@ -11,11 +12,16 @@ import java.util.Map;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#oauthFlowsObject"
  */
 @Data
-public class OAuthFlow implements HasExtensions {
+public class OAuthFlow implements HasExtensions, HasIsEmpty<OAuthFlow> {
     private String authorizationUrl;
     private String tokenUrl;
     private String refreshUrl;
     private Scopes scopes;
     private Map<String, Object> extensions;
+
+    @Override
+    public OAuthFlow createInstance() {
+        return new OAuthFlow();
+    }
 }
 

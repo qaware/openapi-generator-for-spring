@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.info;
 
 import de.qaware.openapigeneratorforspring.common.mapper.InfoAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationClassSupplier;
 import de.qaware.openapigeneratorforspring.model.info.Contact;
 import de.qaware.openapigeneratorforspring.model.info.Info;
@@ -8,7 +9,6 @@ import de.qaware.openapigeneratorforspring.model.info.License;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import lombok.RequiredArgsConstructor;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotNull;
@@ -19,10 +19,11 @@ public class DefaultOpenApiInfoSupplier implements OpenApiInfoSupplier {
     private final InfoAnnotationMapper infoAnnotationMapper;
     private final OpenApiVersionSupplier openApiVersionSupplier;
     private final OpenApiSpringBootApplicationClassSupplier springBootApplicationClassSupplier;
+    private final OpenApiSpringBootApplicationAnnotationsSupplier springBootApplicationAnnotationsSupplier;
 
     @Override
-    public Info get(@Nullable OpenAPIDefinition openAPIDefinitionAnnotation) {
-        Info info = Optional.ofNullable(openAPIDefinitionAnnotation)
+    public Info get() {
+        Info info = springBootApplicationAnnotationsSupplier.findFirstAnnotation(OpenAPIDefinition.class)
                 .map(OpenAPIDefinition::info)
                 .map(infoAnnotationMapper::map)
                 .orElseGet(Info::new);

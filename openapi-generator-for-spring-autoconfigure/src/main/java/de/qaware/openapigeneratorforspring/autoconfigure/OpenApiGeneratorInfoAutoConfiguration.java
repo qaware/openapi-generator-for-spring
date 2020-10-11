@@ -6,6 +6,7 @@ import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoConfigurationP
 import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
 import de.qaware.openapigeneratorforspring.common.info.OpenApiVersionSupplier;
 import de.qaware.openapigeneratorforspring.common.mapper.InfoAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationClassSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,8 +26,11 @@ public class OpenApiGeneratorInfoAutoConfiguration {
             OpenApiInfoConfigurationProperties infoProperties,
             InfoAnnotationMapper infoAnnotationMapper,
             OpenApiVersionSupplier openApiVersionSupplier,
-            OpenApiSpringBootApplicationClassSupplier springBootApplicationClassSupplier) {
-        return new DefaultOpenApiInfoSupplier(infoProperties, infoAnnotationMapper, openApiVersionSupplier, springBootApplicationClassSupplier);
+            OpenApiSpringBootApplicationClassSupplier springBootApplicationClassSupplier,
+            OpenApiSpringBootApplicationAnnotationsSupplier springBootApplicationAnnotationsSupplier
+    ) {
+        return new DefaultOpenApiInfoSupplier(infoProperties, infoAnnotationMapper, openApiVersionSupplier,
+                springBootApplicationClassSupplier, springBootApplicationAnnotationsSupplier);
     }
 
     @Bean

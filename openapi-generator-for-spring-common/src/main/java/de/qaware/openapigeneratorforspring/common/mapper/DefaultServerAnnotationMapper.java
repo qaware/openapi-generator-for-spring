@@ -3,9 +3,9 @@ package de.qaware.openapigeneratorforspring.common.mapper;
 import de.qaware.openapigeneratorforspring.model.server.Server;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
@@ -18,9 +18,8 @@ public class DefaultServerAnnotationMapper implements ServerAnnotationMapper {
 
     @Override
     public List<Server> mapArray(io.swagger.v3.oas.annotations.servers.Server[] serversAnnotations) {
-        return Stream.of(serversAnnotations)
+        return Arrays.stream(serversAnnotations)
                 .map(this::map)
-                .filter(server -> !server.isEmpty())
                 .collect(Collectors.toList());
     }
 
