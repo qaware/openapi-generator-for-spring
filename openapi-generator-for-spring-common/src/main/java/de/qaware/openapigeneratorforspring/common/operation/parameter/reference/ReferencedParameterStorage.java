@@ -17,7 +17,7 @@ public class ReferencedParameterStorage extends AbstractReferencedItemStorage<Pa
     }
 
     void storeMaybeReference(Parameter parameter, Consumer<Parameter> setter) {
-        getEntryOrAddNew(parameter).addSetter(setter);
+        getEntryOrAddNew(parameter).addSetter(setter::accept);
     }
 
     static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<Parameter> {

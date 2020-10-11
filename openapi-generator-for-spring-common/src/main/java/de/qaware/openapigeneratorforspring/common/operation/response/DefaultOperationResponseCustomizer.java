@@ -34,11 +34,8 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
         for (OperationApiResponsesCustomizer customizer : operationApiResponsesCustomizers) {
             customizer.customize(apiResponses, context);
         }
-        ReferencedApiResponsesConsumer referencedApiResponsesConsumer = context.getReferencedItemConsumerSupplier()
-                .get(ReferencedApiResponsesConsumer.class);
-        setMapIfNotEmpty(apiResponses,
-                responses -> referencedApiResponsesConsumer.maybeAsReference(responses, operation::setResponses)
-        );
+        ReferencedApiResponsesConsumer referencedApiResponsesConsumer = context.getReferencedItemConsumerSupplier().get(ReferencedApiResponsesConsumer.class);
+        setMapIfNotEmpty(apiResponses, responses -> referencedApiResponsesConsumer.maybeAsReference(responses, operation::setResponses));
     }
 
     private ApiResponses buildFromMethodAnnotations(Operation operation, OperationBuilderContext context) {

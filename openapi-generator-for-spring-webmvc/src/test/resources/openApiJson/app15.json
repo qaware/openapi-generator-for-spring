@@ -1,0 +1,62 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App15",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping1": {
+      "get": {
+        "operationId": "mapping1",
+        "parameters": [
+          {
+            "name": "param3",
+            "in": "query",
+            "description": "Description from param",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/param1"
+          },
+          {
+            "name": "param2",
+            "in": "cookie",
+            "description": "Description from method"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "/mapping2": {
+      "get": {
+        "operationId": "mapping2",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "200": {
+        "description": "Description from operation"
+      }
+    },
+    "parameters": {
+      "param1": {
+        "name": "param1",
+        "in": "path",
+        "description": "Description from operation"
+      }
+    }
+  }
+}

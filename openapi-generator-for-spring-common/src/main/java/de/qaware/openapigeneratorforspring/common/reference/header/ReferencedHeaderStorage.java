@@ -21,7 +21,7 @@ public class ReferencedHeaderStorage extends AbstractReferencedItemStorage<Heade
     void storeMaybeReference(String name, Header header, Consumer<Header> setter) {
         getEntryOrAddNew(header)
                 .withSuggestedIdentifier(name)
-                .addSetter(setter);
+                .addSetter(setter::accept);
     }
 
     static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<Header> {

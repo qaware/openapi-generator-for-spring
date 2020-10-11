@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -22,7 +21,10 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractReferencedItemStorage<T extends HasReference<T>, E extends AbstractReferencedItemStorage.ReferencableEntry<T>> {
+public abstract class AbstractReferencedItemStorage<
+        T extends HasReference<T>,
+        E extends AbstractReferencedItemStorage.ReferencableEntry<T, ? extends AbstractReferencedItemStorage.ReferenceSetter<T>>
+        > {
 
     private static final String IDENTIFIER_SEPARATOR = "_";
 
@@ -48,16 +50,21 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>, E
                 });
     }
 
+    protected void removeReferenceSettersOwnedBy(Object owner) {
+        entries.forEach(entry -> entry.removeReferenceSettersOwnedBy(owner));
+    }
+
     public Map<String, T> buildReferencedItems() {
         Map<String, T> referencedItems = new LinkedHashMap<>();
         entries.stream()
+                .filter(entry -> entry.getReferenceSetters().count() > 0) // safe-guard if all reference setters are removed due to ownership
                 .filter(entry -> entry.isReferenceRequired() || referenceDecider.turnIntoReference(entry.getItem(), entry.getReferenceSetters().count()))
                 .collect(Collectors.groupingBy(this::createNonUniqueReferenceIdentifier))
                 .forEach((referenceIdentifier, entriesGroupedByIdentifier) ->
                         buildUniqueReferenceIdentifiers(referenceIdentifier, entriesGroupedByIdentifier).forEach(
                                 (uniqueIdentifier, entry) -> {
-                                    String referencePath = referenceType.getReferencePrefix() + uniqueIdentifier;
-                                    entry.getReferenceSetters().forEach(setter -> setter.accept(itemConstructor.get().createReference(referencePath)));
+                                    T referenceItem = itemConstructor.get().createReference(referenceType.getReferencePrefix() + uniqueIdentifier);
+                                    entry.getReferenceSetters().forEach(setter -> setter.consumeReference(referenceItem));
                                     referencedItems.put(uniqueIdentifier, entry.getItem());
                                 })
                 );
@@ -70,7 +77,7 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>, E
                 .collect(Collectors.joining(IDENTIFIER_SEPARATOR));
     }
 
-    private Map<String, ReferencableEntry<T>> buildUniqueReferenceIdentifiers(String referenceIdentifier, List<E> entriesGroupedByIdentifier) {
+    private Map<String, ReferencableEntry<T, ? extends AbstractReferencedItemStorage.ReferenceSetter<T>>> buildUniqueReferenceIdentifiers(String referenceIdentifier, List<E> entriesGroupedByIdentifier) {
         if (entriesGroupedByIdentifier.size() == 1) {
             // special case: no conflicts need to be resolved as there's only one item for this identifier
             return Collections.singletonMap(referenceIdentifier, entriesGroupedByIdentifier.get(0));
@@ -98,7 +105,7 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>, E
                 );
     }
 
-    public interface ReferencableEntry<T> {
+    public interface ReferencableEntry<T, R extends ReferenceSetter<T>> {
         T getItem();
 
         boolean matches(T item);
@@ -110,27 +117,52 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>, E
         @Nullable
         String getSuggestedIdentifier();
 
-        Stream<Consumer<T>> getReferenceSetters();
+        Stream<R> getReferenceSetters();
 
+        void removeReferenceSettersOwnedBy(Object owner);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-    public static abstract class AbstractReferencableEntry<T> implements ReferencableEntry<T> {
+    public static abstract class AbstractReferencableEntryWithReferenceSetter<T, R extends ReferenceSetter<T>> implements ReferencableEntry<T, R> {
         @Getter
         private final T item;
-        private final List<Consumer<T>> referenceSetters = new ArrayList<>();
+        private final List<R> referenceSetters = new ArrayList<>();
 
         @Override
         public boolean matches(T item) {
             return this.item.equals(item);
         }
 
-        public void addSetter(Consumer<T> setter) {
+        public void addSetter(R setter) {
             referenceSetters.add(setter);
         }
 
-        public Stream<Consumer<T>> getReferenceSetters() {
+        public Stream<R> getReferenceSetters() {
             return referenceSetters.stream();
+        }
+
+        @Override
+        public void removeReferenceSettersOwnedBy(Object owner) {
+            // comparing by reference is ok here as the owner is usually mutable,
+            // but shouldn't be exchanged by another instance
+            referenceSetters.removeIf(referenceSetter -> referenceSetter.getOwner() == owner);
+        }
+    }
+
+    public static abstract class AbstractReferencableEntry<T> extends AbstractReferencableEntryWithReferenceSetter<T, ReferenceSetter<T>> {
+
+        protected AbstractReferencableEntry(T item) {
+            super(item);
+        }
+    }
+
+    public interface ReferenceSetter<T> {
+
+        void consumeReference(T referenceItem);
+
+        @Nullable
+        default Object getOwner() {
+            return null;
         }
     }
 }

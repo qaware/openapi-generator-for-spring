@@ -6,10 +6,12 @@ import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDec
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
+import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -19,29 +21,49 @@ public class ReferencedApiResponseStorage extends AbstractReferencedItemStorage<
         super(ReferenceType.API_RESPONSE, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, ApiResponse::new, Entry::new);
     }
 
-    void storeMaybeReference(String responseCode, ApiResponse apiResponse, Consumer<ApiResponse> setter) {
-        getEntryOrAddNew(apiResponse)
-                .addResponseCode(responseCode)
-                .addSetter(setter);
+    void storeApiResponses(ApiResponses apiResponses) {
+        // exploit the fact that we've access to the full map of apiResponses
+        // that means we can modify the map as a reference
+        // if this method is called again for the same owner instance of apiResponses,
+        // any previously defined reference consumers need to be removed first
+        removeReferenceSettersOwnedBy(apiResponses);
+        apiResponses.forEach((responseCode, apiResponse) ->
+                getEntryOrAddNew(apiResponse).addSetter(ApiResponseReferenceSetter.of(
+                        apiResponseReference -> apiResponses.put(responseCode, apiResponseReference),
+                        apiResponses,
+                        responseCode
+                ))
+        );
     }
 
-    static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<ApiResponse> {
-
-        private final Set<String> responseCodes = new HashSet<>();
+    static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntryWithReferenceSetter<ApiResponse, ApiResponseReferenceSetter> {
 
         protected Entry(ApiResponse item) {
             super(item);
         }
 
-        public Entry addResponseCode(String responseCode) {
-            responseCodes.add(responseCode);
-            return this; // fluent API
-        }
-
         @Nullable
         @Override
         public String getSuggestedIdentifier() {
-            return responseCodes.stream().sorted().collect(Collectors.joining("_"));
+            return getReferenceSetters()
+                    .map(ApiResponseReferenceSetter::getResponseCode)
+                    .distinct()
+                    .sorted()
+                    .collect(Collectors.joining("_"));
+        }
+    }
+
+    @RequiredArgsConstructor(staticName = "of")
+    private static class ApiResponseReferenceSetter implements AbstractReferencedItemStorage.ReferenceSetter<ApiResponse> {
+        private final Consumer<ApiResponse> setter;
+        @Getter
+        private final Object owner;
+        @Getter(AccessLevel.PRIVATE)
+        private final String responseCode;
+
+        @Override
+        public void consumeReference(ApiResponse referenceItem) {
+            setter.accept(referenceItem);
         }
     }
 }

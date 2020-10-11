@@ -51,8 +51,7 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
             mediaType.setExample(exampleObjectAnnotationMapper.map(exampleObjectAnnotations[0]).getValue());
         } else {
             setCollectionIfNotEmpty(exampleObjectAnnotationMapper.mapArray(exampleObjectAnnotations),
-                    examples -> referencedItemConsumerSupplier.get(ReferencedExamplesConsumer.class)
-                            .maybeAsReference(examples, mediaType::setExamples)
+                    examples -> referencedItemConsumerSupplier.get(ReferencedExamplesConsumer.class).maybeAsReference(examples, mediaType::setExamples)
             );
         }
     }

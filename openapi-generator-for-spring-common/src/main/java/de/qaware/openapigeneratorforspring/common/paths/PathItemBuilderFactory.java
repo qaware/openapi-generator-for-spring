@@ -57,6 +57,7 @@ public class PathItemBuilderFactory {
                     pathItem.addOperation(requestMethod.name(), operation);
                 }
             });
+            // TODO add PathItemCustomizer here?
             return pathItem;
         }
 

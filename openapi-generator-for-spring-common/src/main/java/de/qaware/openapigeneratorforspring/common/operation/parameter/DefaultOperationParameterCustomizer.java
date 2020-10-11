@@ -86,7 +86,7 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
                 .filter(parameter -> parameterFilters.stream().allMatch(filter -> filter.postAccept(parameter)))
                 .collect(Collectors.toList());
         ReferencedParametersConsumer referencedParametersConsumer = operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedParametersConsumer.class);
-        setCollectionIfNotEmpty(filteredParameters, p -> referencedParametersConsumer.maybeAsReference(p, operation::setParameters));
+        setCollectionIfNotEmpty(filteredParameters, p -> referencedParametersConsumer.withOwner(operation).maybeAsReference(p, operation::setParameters));
     }
 
     private List<Parameter> getParametersFromHandlerMethod(OperationBuilderContext operationBuilderContext) {

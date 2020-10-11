@@ -4,7 +4,9 @@ import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedIt
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.RequiredArgsConstructor;
+import lombok.With;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -14,6 +16,10 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.se
 @RequiredArgsConstructor
 public class ReferencedParametersHandlerImpl implements ReferencedItemHandler<List<Parameter>, List<Parameter>>, ReferencedParametersConsumer {
     private final ReferencedParameterStorage storage;
+
+    @With
+    @Nullable
+    private final Object owner;
 
     @Override
     public void maybeAsReference(List<Parameter> parameters, Consumer<List<Parameter>> parametersSetter) {

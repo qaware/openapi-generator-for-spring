@@ -10,6 +10,7 @@ import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import de.qaware.openapigeneratorforspring.model.security.SecurityScheme;
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
+import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
 import de.qaware.openapigeneratorforspring.model.trait.HasReference;
 import lombok.Data;
 
@@ -21,7 +22,7 @@ import java.util.Map;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#componentsObject"
  */
 @Data
-public class Components implements HasExtensions {
+public class Components implements HasExtensions, HasIsEmpty<Components> {
     private Map<String, ? extends HasReference<Schema>> schemas;
     private Map<String, ? extends HasReference<ApiResponse>> responses;
     private Map<String, ? extends HasReference<Parameter>> parameters;
@@ -32,4 +33,9 @@ public class Components implements HasExtensions {
     private Map<String, ? extends HasReference<Link>> links;
     private Map<String, Callback> callbacks;
     private Map<String, Object> extensions;
+
+    @Override
+    public Components createInstance() {
+        return new Components();
+    }
 }

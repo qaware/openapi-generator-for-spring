@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
+
 @RequiredArgsConstructor
 public class OpenApiGenerator {
 
@@ -34,7 +36,7 @@ public class OpenApiGenerator {
         OpenApi openApi = new OpenApi();
         openApi.setPaths(paths); // always set paths, even if empty to comply with spec
         openApi.setInfo(openApiInfoSupplier.get()); // always set info to comply with spec
-        openApi.setComponents(referencedItemSupport.buildComponents());
+        setIfNotEmpty(referencedItemSupport.buildComponents(), openApi::setComponents);
         openApi.setTags(tagsSupport.buildTags());
 
         openApiCustomizers.forEach(customizer -> customizer.customize(openApi));

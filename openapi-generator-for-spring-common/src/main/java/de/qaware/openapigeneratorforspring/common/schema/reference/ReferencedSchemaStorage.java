@@ -23,22 +23,22 @@ public class ReferencedSchemaStorage extends AbstractReferencedItemStorage<Schem
     }
 
     void storeAlwaysReference(Schema schema, Consumer<Schema> setter) {
-        getEntryOrAddNew(schema).addRequiredSetter(setter);
+        getEntryOrAddNew(schema).addRequiredSetter(setter::accept);
     }
 
     void storeMaybeReference(Schema schema, Consumer<Schema> setter) {
-        getEntryOrAddNew(schema).addSetter(setter);
+        getEntryOrAddNew(schema).addSetter(setter::accept);
     }
 
     static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<Schema> {
 
-        private final List<Consumer<Schema>> referenceRequiredSetters = new ArrayList<>();
+        private final List<ReferenceSetter<Schema>> referenceRequiredSetters = new ArrayList<>();
 
         protected Entry(Schema item) {
             super(item);
         }
 
-        public void addRequiredSetter(Consumer<Schema> setter) {
+        public void addRequiredSetter(ReferenceSetter<Schema> setter) {
             referenceRequiredSetters.add(setter);
         }
 
@@ -59,7 +59,7 @@ public class ReferencedSchemaStorage extends AbstractReferencedItemStorage<Schem
         }
 
         @Override
-        public Stream<Consumer<Schema>> getReferenceSetters() {
+        public Stream<ReferenceSetter<Schema>> getReferenceSetters() {
             return Stream.concat(super.getReferenceSetters(), referenceRequiredSetters.stream());
         }
     }

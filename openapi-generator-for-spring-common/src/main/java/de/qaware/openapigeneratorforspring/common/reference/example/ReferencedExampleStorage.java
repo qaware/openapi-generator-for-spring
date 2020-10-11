@@ -20,7 +20,7 @@ public class ReferencedExampleStorage extends AbstractReferencedItemStorage<Exam
     void storeMaybeReference(String name, Example example, Consumer<Example> setter) {
         getEntryOrAddNew(example)
                 .withSuggestedIdentifier(name)
-                .addSetter(setter);
+                .addSetter(setter::accept);
     }
 
     static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<Example> {

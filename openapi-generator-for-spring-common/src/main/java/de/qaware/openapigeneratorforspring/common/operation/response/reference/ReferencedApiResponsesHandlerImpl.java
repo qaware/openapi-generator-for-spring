@@ -16,13 +16,7 @@ public class ReferencedApiResponsesHandlerImpl implements ReferencedItemHandler<
     @Override
     public void maybeAsReference(ApiResponses apiResponses, Consumer<ApiResponses> apiResponsesSetter) {
         apiResponsesSetter.accept(apiResponses);
-        // exploit the fact that we've access to the full map of apiResponses
-        // that means we can modify the reference, and don't need to call apiResponsesSetter again
-        apiResponses.forEach((responseCode, apiResponse) ->
-                storage.storeMaybeReference(responseCode, apiResponse,
-                        apiResponseReference -> apiResponses.put(responseCode, apiResponseReference)
-                )
-        );
+        storage.storeApiResponses(apiResponses);
     }
 
     @Override

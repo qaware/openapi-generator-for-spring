@@ -17,7 +17,7 @@ public class ReferencedParametersHandlerFactory implements ReferencedItemHandler
     @Override
     public ReferencedItemHandler<List<Parameter>, List<Parameter>> create() {
         ReferencedParameterStorage storage = new ReferencedParameterStorage(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
-        return new ReferencedParametersHandlerImpl(storage);
+        return new ReferencedParametersHandlerImpl(storage, null);
     }
 
     @Override

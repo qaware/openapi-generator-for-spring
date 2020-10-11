@@ -48,7 +48,7 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
         setRequestBody(operation::setRequestBody, operationAnnotation.requestBody(), referencedItemConsumerSupplier);
         setIfNotEmpty(externalDocumentationAnnotationMapper.map(operationAnnotation.externalDocs()), operation::setExternalDocs);
         setStringIfNotBlank(operationAnnotation.operationId(), operation::setOperationId);
-        setParameters(operation::setParameters, operationAnnotation.parameters(), referencedItemConsumerSupplier);
+        setParameters(operation::setParameters, operationAnnotation.parameters(), referencedItemConsumerSupplier.withOwner(operation));
         setResponses(operation::setResponses, operationAnnotation.responses(), referencedItemConsumerSupplier);
 
         if (operationAnnotation.deprecated()) {
@@ -79,7 +79,8 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
                         annotation -> apiResponseAnnotationMapper.buildFromAnnotation(annotation, referencedItemConsumerSupplier),
                         ApiResponses::new
                 ),
-                apiResponses -> referencedItemConsumerSupplier.get(ReferencedApiResponsesConsumer.class).maybeAsReference(apiResponses, setter)
+                apiResponses -> referencedItemConsumerSupplier.get(ReferencedApiResponsesConsumer.class)
+                        .maybeAsReference(apiResponses, setter)
         );
     }
 
