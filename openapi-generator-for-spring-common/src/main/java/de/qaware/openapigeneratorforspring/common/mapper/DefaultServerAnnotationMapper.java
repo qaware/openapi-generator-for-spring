@@ -29,8 +29,8 @@ public class DefaultServerAnnotationMapper implements ServerAnnotationMapper {
         Server server = new Server();
         setStringIfNotBlank(serverAnnotation.description(), server::setDescription);
         setStringIfNotBlank(serverAnnotation.url(), server::setUrl);
-        setMapIfNotEmpty(extensionAnnotationMapper.mapArray(serverAnnotation.extensions()), server::setExtensions);
         setMapIfNotEmpty(serverVariableAnnotationMapper.mapArray(serverAnnotation.variables()), server::setVariables);
+        setMapIfNotEmpty(extensionAnnotationMapper.mapArray(serverAnnotation.extensions()), server::setExtensions);
         return server;
     }
 }

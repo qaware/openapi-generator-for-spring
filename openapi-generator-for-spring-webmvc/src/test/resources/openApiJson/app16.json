@@ -1,0 +1,19 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App16",
+    "version": "unknown"
+  },
+  "servers": [
+    {
+      "url": "http://url1",
+      "description": "Server 1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "tag-1"
+    }
+  ],
+  "paths": {}
+}

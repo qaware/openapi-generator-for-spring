@@ -5,7 +5,8 @@ import de.qaware.openapigeneratorforspring.model.info.Info;
 
 import javax.annotation.Nullable;
 
-public interface InfoAnnotationMapper {
+public interface
+InfoAnnotationMapper {
     @Nullable
     Info map(io.swagger.v3.oas.annotations.info.Info infoAnnotation);
 }

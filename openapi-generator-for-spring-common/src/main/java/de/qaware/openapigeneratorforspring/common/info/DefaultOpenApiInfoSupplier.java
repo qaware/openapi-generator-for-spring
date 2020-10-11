@@ -1,48 +1,31 @@
 package de.qaware.openapigeneratorforspring.common.info;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.mapper.InfoAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationClassSupplier;
 import de.qaware.openapigeneratorforspring.model.info.Contact;
 import de.qaware.openapigeneratorforspring.model.info.Info;
 import de.qaware.openapigeneratorforspring.model.info.License;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeansException;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.util.ClassUtils;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 import java.util.Optional;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotNull;
 
 @RequiredArgsConstructor
-public class DefaultOpenApiInfoSupplier implements OpenApiInfoSupplier, ApplicationContextAware {
+public class DefaultOpenApiInfoSupplier implements OpenApiInfoSupplier {
     private final OpenApiInfoConfigurationProperties properties;
-    private final AnnotationsSupplierFactory annotationsSupplierFactory;
     private final InfoAnnotationMapper infoAnnotationMapper;
     private final OpenApiVersionSupplier openApiVersionSupplier;
-
-    @Nullable
-    private ApplicationContext applicationContext;
+    private final OpenApiSpringBootApplicationClassSupplier springBootApplicationClassSupplier;
 
     @Override
-    public Info get() {
-        Info info = findSpringBootApplicationClass().map(springBootApplicationClass -> {
-            AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(springBootApplicationClass);
-            // TODO parse more from OpenAPIDefinition annotation
-            return Optional.ofNullable(annotationsSupplier.findFirstAnnotation(OpenAPIDefinition.class))
-                    .map(OpenAPIDefinition::info)
-                    .map(infoAnnotationMapper::map)
-                    .orElseGet(() -> Info.builder()
-                            .title("API for " + springBootApplicationClass.getSimpleName())
-                            .build()
-                    );
-        }).orElseGet(() -> Info.builder().build()); // this fallback should never happen, it means we're not running with Spring Boot
+    public Info get(@Nullable OpenAPIDefinition openAPIDefinitionAnnotation) {
+        Info info = Optional.ofNullable(openAPIDefinitionAnnotation)
+                .map(OpenAPIDefinition::info)
+                .map(infoAnnotationMapper::map)
+                .orElseGet(Info::new);
 
         // application properties should take effect with higher prio
         setIfNotNull(properties.getTitle(), info::setTitle);
@@ -72,24 +55,14 @@ public class DefaultOpenApiInfoSupplier implements OpenApiInfoSupplier, Applicat
             info.setVersion(openApiVersionSupplier.get());
         }
 
-        return info;
-    }
-
-    private Optional<Class<?>> findSpringBootApplicationClass() {
-        if (applicationContext != null) {
-            Map<String, Object> applicationBeans = applicationContext.getBeansWithAnnotation(SpringBootApplication.class);
-            if (applicationBeans.size() == 1) {
-                return Optional.of(applicationBeans.values().iterator().next())
-                        .map(Object::getClass)
-                        // remove Spring proxy classes
-                        .map(ClassUtils::getUserClass);
-            }
+        if (info.getTitle() == null) {
+            Optional<Class<?>> springBootApplicationClass = springBootApplicationClassSupplier.findSpringBootApplicationClass();
+            info.setTitle(springBootApplicationClass
+                    .map(clazz -> "API for " + clazz.getSimpleName())
+                    .orElse("Unknown API")
+            );
         }
-        return Optional.empty();
-    }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+        return info;
     }
 }
