@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,12 +25,31 @@ public class App15Controller {
             }
     )
     @Parameter(name = "param2", description = "Description from method", in = ParameterIn.COOKIE)
-    public void mapping1(@RequestParam @Parameter(description = "Description from param") String param3) {
+    public void mapping1get(@RequestParam @Parameter(description = "Description from param") String param3) {
+
+    }
+
+    @PutMapping("/mapping1")
+    @Parameter(name = "param2", description = "Description from method", in = ParameterIn.COOKIE)
+    public void mapping1put() {
+
+    }
+
+    @PostMapping("/mapping1")
+    @Parameter(name = "param2", description = "Description from method", in = ParameterIn.COOKIE)
+    public void mapping1post() {
+
+    }
+
+    @PatchMapping("/mapping1")
+    @Parameter(name = "param2", description = "Description from method", in = ParameterIn.COOKIE)
+    public void mapping1patch() {
 
     }
 
     @GetMapping("/mapping2")
     @ApiResponse(description = "Description from operation")
+    @Parameter(name = "param2", description = "Description from method", in = ParameterIn.COOKIE)
     public void mapping2() {
 
     }

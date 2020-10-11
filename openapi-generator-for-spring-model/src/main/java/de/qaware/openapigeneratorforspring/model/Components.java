@@ -31,7 +31,7 @@ public class Components implements HasExtensions, HasIsEmpty<Components> {
     private Map<String, ? extends HasReference<Header>> headers;
     private Map<String, ? extends HasReference<SecurityScheme>> securitySchemes;
     private Map<String, ? extends HasReference<Link>> links;
-    private Map<String, Callback> callbacks;
+    private Map<String, ? extends HasReference<Callback>> callbacks;
     private Map<String, Object> extensions;
 
     @Override

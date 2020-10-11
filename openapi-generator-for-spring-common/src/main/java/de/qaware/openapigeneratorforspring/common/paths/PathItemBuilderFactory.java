@@ -26,6 +26,7 @@ public class PathItemBuilderFactory {
 
     private final OperationBuilder operationBuilder;
     private final List<OperationFilter> operationFilters;
+    private final List<PathItemCustomizer> pathItemCustomizers;
 
     public PathItemBuilder create(ReferencedItemConsumerSupplier referencedItemConsumerSupplier, Consumer<List<Tag>> tagsConsumer) {
         return new PathItemBuilder(referencedItemConsumerSupplier, tagsConsumer);
@@ -39,25 +40,24 @@ public class PathItemBuilderFactory {
         @Getter
         private final Map<RequestMethod, Operation> operationPerMethod = new EnumMap<>(RequestMethod.class);
         @Getter
-        private final MultiValueMap<String, OperationWithInfo> operationsByIdPerPathItem = new LinkedMultiValueMap<>();
+        private final MultiValueMap<String, OperationWithInfo> operationsById = new LinkedMultiValueMap<>();
 
-        public PathItem build(String pathPattern, HandlerMethodWithInfo handlerMethodWithInfo) {
+        public PathItem build(String pathPattern, Map<RequestMethod, HandlerMethod> handlerMethods) {
             PathItem pathItem = new PathItem();
-            handlerMethodWithInfo.getRequestMethods().forEach(requestMethod -> {
-                HandlerMethod handlerMethod = handlerMethodWithInfo.getHandlerMethod();
+            handlerMethods.forEach((requestMethod, handlerMethod) -> {
                 OperationInfo operationInfo = OperationInfo.of(handlerMethod, requestMethod, pathPattern);
                 OperationBuilderContext operationBuilderContext = new OperationBuilderContext(operationInfo, referencedItemConsumerSupplier, tagsConsumer);
                 Operation operation = operationBuilder.buildOperation(operationBuilderContext);
                 if (isAcceptedByAllOperationFilters(operation, handlerMethod)) {
                     String operationId = operation.getOperationId();
                     if (operationId != null) {
-                        operationsByIdPerPathItem.add(operationId, OperationWithInfo.of(operation, operationInfo));
+                        operationsById.add(operationId, OperationWithInfo.of(operation, operationInfo));
                     }
                     operationPerMethod.put(requestMethod, operation);
                     pathItem.addOperation(requestMethod.name(), operation);
                 }
             });
-            // TODO add PathItemCustomizer here?
+            pathItemCustomizers.forEach(pathItemCustomizer -> pathItemCustomizer.customize(pathItem, pathPattern, referencedItemConsumerSupplier));
             return pathItem;
         }
 

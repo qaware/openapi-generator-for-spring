@@ -14,8 +14,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.method.HandlerMethod;
 
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,13 +44,23 @@ public class PathsBuilder {
                 )
                 .filter(item -> isAcceptedByAllHandlerMethodFilters(item.getRight()))
                 .sorted(Comparator.comparing(Pair::getLeft))
-                .forEachOrdered(item -> {
-                    String pathPattern = item.getLeft();
-                    HandlerMethodWithInfo handlerMethodWithInfo = item.getRight();
+                // there might be more than one handlerWithInfo with the same pathPattern,
+                // so we need to re-group this here
+                .collect(Collectors.groupingBy(Pair::getLeft, LinkedHashMap::new, Collectors.mapping(Pair::getRight, Collectors.toList())))
+                .forEach((pathPattern, handlerMethodWithInfos) -> {
+
+                    Map<RequestMethod, HandlerMethod> handlerMethods = handlerMethodWithInfos.stream()
+                            .flatMap(handlerMethodWithInfo -> handlerMethodWithInfo.getRequestMethods().stream()
+                                    .map(requestMethod -> Pair.of(requestMethod, handlerMethodWithInfo.getHandlerMethod())))
+                            .sorted(Map.Entry.comparingByKey()) // natural order of the enum RequestMethod
+                            .collect(Collectors.toMap(Pair::getKey, Pair::getValue, (a, b) -> {
+                                throw new IllegalStateException("Found more than one request handler method for path " + pathPattern + ": " + a + " vs. " + b);
+                            }, LinkedHashMap::new));
+
                     PathItemBuilderFactory.PathItemBuilder pathItemBuilder = pathItemBuilderFactory.create(referencedItemConsumerSupplier, tagsConsumer);
-                    PathItem pathItem = pathItemBuilder.build(pathPattern, handlerMethodWithInfo);
+                    PathItem pathItem = pathItemBuilder.build(pathPattern, handlerMethods);
                     if (isAcceptedByAllPathItemFilters(pathItem, pathPattern, pathItemBuilder.getOperationPerMethod())) {
-                        operationsById.addAll(pathItemBuilder.getOperationsByIdPerPathItem());
+                        operationsById.addAll(pathItemBuilder.getOperationsById());
                         paths.put(pathPattern, pathItem);
                     }
                 });

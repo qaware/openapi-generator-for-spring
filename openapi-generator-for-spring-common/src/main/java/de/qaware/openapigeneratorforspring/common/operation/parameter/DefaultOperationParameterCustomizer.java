@@ -40,12 +40,22 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
     @Override
     public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
                                                io.swagger.v3.oas.annotations.Operation operationAnnotation) {
+        List<Parameter> parameters = buildParameters(operationBuilderContext, Arrays.stream(operationAnnotation.parameters()));
+        setParametersToOperation(operation, parameters, operationBuilderContext);
+    }
 
+    @Override
+    public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
+        List<Parameter> parameters = buildParameters(operationBuilderContext, Stream.empty());
+        setParametersToOperation(operation, parameters, operationBuilderContext);
+    }
+
+    private List<Parameter> buildParameters(OperationBuilderContext operationBuilderContext, Stream<io.swagger.v3.oas.annotations.Parameter> additionalParameterAnnotations) {
         Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
         AnnotationsSupplier methodAnnotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(method);
 
         Map<String, io.swagger.v3.oas.annotations.Parameter> parameterAnnotationMap = Stream.concat(
-                Arrays.stream(operationAnnotation.parameters()),
+                additionalParameterAnnotations,
                 methodAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.Parameter.class)
         )
                 .collect(Collectors.toMap(
@@ -71,14 +81,7 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
                 parameters.add(parameter);
             }
         }
-
-        setParametersToOperation(operation, parameters, operationBuilderContext);
-    }
-
-    @Override
-    public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        List<Parameter> parameters = getParametersFromHandlerMethod(operationBuilderContext);
-        setParametersToOperation(operation, parameters, operationBuilderContext);
+        return parameters;
     }
 
     private void setParametersToOperation(Operation operation, List<Parameter> parameters, OperationBuilderContext operationBuilderContext) {

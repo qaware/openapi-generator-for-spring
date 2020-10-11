@@ -35,7 +35,9 @@ public class PathItem implements HasExtensions {
     @Override
     public Map<String, Object> getExtensions() {
         return Stream.concat(operations.entrySet().stream(), extensions.entrySet().stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> {
+                    throw new IllegalStateException("Conflicting key for PathItem property: " + a + "vs. " + b);
+                }, LinkedHashMap::new));
     }
 
     public void addOperation(String requestMethodName, Operation operation) {

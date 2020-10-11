@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.pattern.PathPattern;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,7 @@ public class HandlerMethodsProviderForWebFlux implements HandlerMethodsProvider 
                         entry.getValue(),
                         entry.getKey().getPatternsCondition().getPatterns().stream()
                                 .map(PathPattern::toString)
-                                .collect(Collectors.toSet()),
+                                .collect(Collectors.toCollection(LinkedHashSet::new)),
                         entry.getKey().getMethodsCondition().getMethods()
                 ))
                 .collect(Collectors.toList());

@@ -6,8 +6,13 @@
   },
   "paths": {
     "/mapping1": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/param2"
+        }
+      ],
       "get": {
-        "operationId": "mapping1",
+        "operationId": "mapping1get",
         "parameters": [
           {
             "name": "param3",
@@ -22,16 +27,35 @@
             "name": "param1",
             "in": "path",
             "description": "Description from operation"
-          },
-          {
-            "name": "param2",
-            "in": "cookie",
-            "description": "Description from method"
           }
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
+            "$ref": "#/components/responses/200_0"
+          }
+        }
+      },
+      "post": {
+        "operationId": "mapping1post",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_1"
+          }
+        }
+      },
+      "put": {
+        "operationId": "mapping1put",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_1"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "mapping1patch",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_1"
           }
         }
       }
@@ -39,9 +63,14 @@
     "/mapping2": {
       "get": {
         "operationId": "mapping2",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/param2"
+          }
+        ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
+            "$ref": "#/components/responses/200_0"
           }
         }
       }
@@ -49,8 +78,18 @@
   },
   "components": {
     "responses": {
-      "200": {
+      "200_1": {
+        "description": "Default response"
+      },
+      "200_0": {
         "description": "Description from operation"
+      }
+    },
+    "parameters": {
+      "param2": {
+        "name": "param2",
+        "in": "cookie",
+        "description": "Description from method"
       }
     }
   }
