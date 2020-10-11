@@ -1,5 +1,7 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
+import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceDeciderFactory;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceIdentifierConflictResolverFactory;
 import de.qaware.openapigeneratorforspring.common.reference.requestbody.DefaultReferenceIdentifierFactoryForRequestBody;
 import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferenceDeciderForRequestBody;
 import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferenceIdentifierConflictResolverForRequestBody;
@@ -28,18 +30,14 @@ public class OpenApiGeneratorReferenceRequestBodyAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceIdentifierConflictResolverForRequestBody defaultReferenceIdentifierConflictResolverForRequestBody() {
-        return new ReferenceIdentifierConflictResolverForRequestBody() {
-            // use default implementation
-        };
+    public ReferenceIdentifierConflictResolverForRequestBody defaultReferenceIdentifierConflictResolverForRequestBody(DefaultReferenceIdentifierConflictResolverFactory factory) {
+        return factory.create(defaultImpl -> defaultImpl::resolveConflict);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceDeciderForRequestBody defaultReferenceDeciderForRequestBody() {
-        return new ReferenceDeciderForRequestBody() {
-            // use default implementation
-        };
+    public ReferenceDeciderForRequestBody defaultReferenceDeciderForRequestBody(DefaultReferenceDeciderFactory factory) {
+        return factory.create(defaultImpl -> defaultImpl::turnIntoReference);
     }
 
 }

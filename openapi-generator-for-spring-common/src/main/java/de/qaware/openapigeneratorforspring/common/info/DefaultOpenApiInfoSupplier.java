@@ -44,8 +44,6 @@ public class DefaultOpenApiInfoSupplier implements OpenApiInfoSupplier, Applicat
                     );
         }).orElseGet(() -> Info.builder().build()); // this fallback should never happen, it means we're not running with Spring Boot
 
-        info.setVersion(openApiVersionSupplier.get());
-
         // application properties should take effect with higher prio
         setIfNotNull(properties.getTitle(), info::setTitle);
         setIfNotNull(properties.getDescription(), info::setDescription);
@@ -69,6 +67,10 @@ public class DefaultOpenApiInfoSupplier implements OpenApiInfoSupplier, Applicat
         });
         setIfNotNull(properties.getVersion(), info::setVersion);
         setIfNotNull(properties.getExtensions(), info::setExtensions);
+
+        if (info.getVersion() == null) {
+            info.setVersion(openApiVersionSupplier.get());
+        }
 
         return info;
     }

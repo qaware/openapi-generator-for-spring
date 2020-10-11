@@ -1,6 +1,8 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemSupportFactory;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceDeciderFactory;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceIdentifierConflictResolverFactory;
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandlerFactory;
 import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferenceDeciderForSchema;
 import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferenceIdentifierFactoryForSchema;
@@ -45,16 +47,26 @@ public class OpenApiGeneratorReferenceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceIdentifierConflictResolverForSchema defaultReferenceIdentifierConflictResolverForSchema() {
-        return new ReferenceIdentifierConflictResolverForSchema() {
-            // use default implementation
-        };
+    public ReferenceIdentifierConflictResolverForSchema defaultReferenceIdentifierConflictResolverForSchema(DefaultReferenceIdentifierConflictResolverFactory factory) {
+        return factory.create(defImpl -> defImpl::resolveConflict);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public ReferenceDeciderForSchema defaultReferenceDeciderForSchema() {
         return new DefaultReferenceDeciderForSchema();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultReferenceIdentifierConflictResolverFactory defaultReferenceIdentifierConflictResolverForTypeFactory() {
+        return new DefaultReferenceIdentifierConflictResolverFactory();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultReferenceDeciderFactory defaultReferenceDeciderFactory() {
+        return new DefaultReferenceDeciderFactory();
     }
 
 }

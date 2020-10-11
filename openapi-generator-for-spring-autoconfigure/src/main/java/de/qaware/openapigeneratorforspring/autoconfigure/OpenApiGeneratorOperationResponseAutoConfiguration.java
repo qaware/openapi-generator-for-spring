@@ -22,6 +22,8 @@ import de.qaware.openapigeneratorforspring.common.operation.response.reference.R
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceIdentifierConflictResolverForApiResponse;
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceIdentifierFactoryForApiResponse;
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferencedApiResponsesHandlerFactory;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceDeciderFactory;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceIdentifierConflictResolverFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -106,17 +108,13 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceIdentifierConflictResolverForApiResponse defaultReferenceIdentifierConflictResolverForApiResponse() {
-        return new ReferenceIdentifierConflictResolverForApiResponse() {
-            // use default implementation
-        };
+    public ReferenceIdentifierConflictResolverForApiResponse defaultReferenceIdentifierConflictResolverForApiResponse(DefaultReferenceIdentifierConflictResolverFactory factory) {
+        return factory.create(defaultImpl -> defaultImpl::resolveConflict);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceDeciderForApiResponse defaultReferenceDeciderForApiResponse() {
-        return new ReferenceDeciderForApiResponse() {
-            // use default implementation
-        };
+    public ReferenceDeciderForApiResponse defaultReferenceDeciderForApiResponse(DefaultReferenceDeciderFactory factory) {
+        return factory.create(defaultImpl -> defaultImpl::turnIntoReference);
     }
 }

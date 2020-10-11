@@ -1,5 +1,7 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
+import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceDeciderFactory;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceIdentifierConflictResolverFactory;
 import de.qaware.openapigeneratorforspring.common.reference.header.DefaultReferenceIdentifierFactoryForHeader;
 import de.qaware.openapigeneratorforspring.common.reference.header.ReferenceDeciderForHeader;
 import de.qaware.openapigeneratorforspring.common.reference.header.ReferenceIdentifierConflictResolverForHeader;
@@ -28,18 +30,14 @@ public class OpenApiGeneratorReferenceHeaderAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceIdentifierConflictResolverForHeader defaultReferenceIdentifierConflictResolverForHeader() {
-        return new ReferenceIdentifierConflictResolverForHeader() {
-            // use default implementation
-        };
+    public ReferenceIdentifierConflictResolverForHeader defaultReferenceIdentifierConflictResolverForHeader(DefaultReferenceIdentifierConflictResolverFactory factory) {
+        return factory.create(defaultImpl -> defaultImpl::resolveConflict);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceDeciderForHeader defaultReferenceDeciderForHeader() {
-        return new ReferenceDeciderForHeader() {
-            // use default implementation
-        };
+    public ReferenceDeciderForHeader defaultReferenceDeciderForHeader(DefaultReferenceDeciderFactory factory) {
+        return factory.create(defaultImpl -> defaultImpl::turnIntoReference);
     }
 
 }

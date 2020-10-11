@@ -24,6 +24,8 @@ import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.
 import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceIdentifierConflictResolverForParameter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferenceIdentifierFactoryForParameter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferencedParametersHandlerFactory;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceDeciderFactory;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceIdentifierConflictResolverFactory;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -146,15 +148,13 @@ public class OpenApiGeneratorOperationParameterAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceIdentifierConflictResolverForParameter defaultReferenceIdentifierConflictResolverForParameter() {
-        return new ReferenceIdentifierConflictResolverForParameter() {
-        };
+    public ReferenceIdentifierConflictResolverForParameter defaultReferenceIdentifierConflictResolverForParameter(DefaultReferenceIdentifierConflictResolverFactory factory) {
+        return factory.create(defaultImpl -> defaultImpl::resolveConflict);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceDeciderForParameter defaultReferenceDeciderForParameter() {
-        return new ReferenceDeciderForParameter() {
-        };
+    public ReferenceDeciderForParameter defaultReferenceDeciderForParameter(DefaultReferenceDeciderFactory factory) {
+        return factory.create(defaultImpl -> defaultImpl::turnIntoReference);
     }
 }

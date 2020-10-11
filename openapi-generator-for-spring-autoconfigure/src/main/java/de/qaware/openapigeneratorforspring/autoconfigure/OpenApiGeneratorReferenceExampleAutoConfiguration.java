@@ -5,6 +5,8 @@ import de.qaware.openapigeneratorforspring.common.reference.example.ReferenceDec
 import de.qaware.openapigeneratorforspring.common.reference.example.ReferenceIdentifierConflictResolverForExample;
 import de.qaware.openapigeneratorforspring.common.reference.example.ReferenceIdentifierFactoryForExample;
 import de.qaware.openapigeneratorforspring.common.reference.example.ReferencedExamplesHandlerFactory;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceDeciderFactory;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceIdentifierConflictResolverFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
@@ -28,18 +30,14 @@ public class OpenApiGeneratorReferenceExampleAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceIdentifierConflictResolverForExample defaultReferenceIdentifierConflictResolverForExample() {
-        return new ReferenceIdentifierConflictResolverForExample() {
-            // use default implementation
-        };
+    public ReferenceIdentifierConflictResolverForExample defaultReferenceIdentifierConflictResolverForExample(DefaultReferenceIdentifierConflictResolverFactory factory) {
+        return factory.create(defaultImpl -> defaultImpl::resolveConflict);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceDeciderForExample defaultReferenceDeciderForExample() {
-        return new ReferenceDeciderForExample() {
-            // use default implementation
-        };
+    public ReferenceDeciderForExample defaultReferenceDeciderForExample(DefaultReferenceDeciderFactory factory) {
+        return factory.create(defaultImpl -> defaultImpl::turnIntoReference);
     }
 
 }

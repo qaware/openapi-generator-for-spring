@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         if (annotation.nullable()) {
             schema.setNullable(true);
         }
+        setCollectionIfNotEmpty(Arrays.asList(annotation.requiredProperties()), schema::setRequired);
         setAccessMode(annotation.accessMode(), schema);
         setStringIfNotBlank(annotation.example(), example -> schema.setExample(parsableValueMapper.parse(example)));
         setIfNotEmpty(externalDocumentationAnnotationMapper.map(annotation.externalDocs()), schema::setExternalDocs);
