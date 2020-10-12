@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.util;
 
+import de.qaware.openapigeneratorforspring.model.media.Schema;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
@@ -13,6 +14,21 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OpenApiProxyUtilsTest {
+
+    @Test
+    public void immutableProxy() throws Exception {
+        Schema schema = new Schema();
+        schema.setRef("ref");
+
+        Schema immutableSchema = OpenApiProxyUtils.immutableProxy(schema);
+        immutableSchema.setRef("newRef");
+        immutableSchema.setNullable(true);
+
+        assertThat(immutableSchema.getRef()).isEqualTo("ref");
+        assertThat(immutableSchema.getNullable()).isNull();
+        assertThat(schema.getRef()).isEqualTo("ref");
+        assertThat(schema.getNullable()).isNull();
+    }
 
     @Test
     public void smartImmutableProxy_simpleValues() {

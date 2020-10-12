@@ -44,6 +44,11 @@ public class App5Controller {
         return null;
     }
 
+    @GetMapping("/get7")
+    public List<SimpleDto> getMappingReturnsTopLevelList() {
+        return null;
+    }
+
     @Schema(description = "global description", title = "should never appear")
     private interface BaseForEverything {
 

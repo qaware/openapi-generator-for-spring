@@ -58,7 +58,6 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "nullable": true,
                   "$ref": "#/components/schemas/nullable_string"
                 }
               }
@@ -93,6 +92,26 @@
           }
         }
       }
+    },
+    "/get7": {
+      "get": {
+        "operationId": "getMappingReturnsTopLevelList",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/App5Controller.SimpleDto_1"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -106,7 +125,6 @@
         "type": "object",
         "properties": {
           "property1": {
-            "nullable": true,
             "$ref": "#/components/schemas/nullable_string"
           }
         },
@@ -116,7 +134,6 @@
         "type": "object",
         "properties": {
           "property1": {
-            "nullable": true,
             "$ref": "#/components/schemas/nullable_string"
           }
         }

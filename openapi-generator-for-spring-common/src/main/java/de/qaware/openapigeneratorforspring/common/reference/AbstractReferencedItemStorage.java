@@ -3,6 +3,7 @@ package de.qaware.openapigeneratorforspring.common.reference;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiProxyUtils;
 import de.qaware.openapigeneratorforspring.model.trait.HasReference;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -64,7 +65,8 @@ public abstract class AbstractReferencedItemStorage<
                         buildUniqueReferenceIdentifiers(referenceIdentifier, entriesGroupedByIdentifier).forEach(
                                 (uniqueIdentifier, entry) -> {
                                     T referenceItem = itemConstructor.get().createReference(referenceType.getReferencePrefix() + uniqueIdentifier);
-                                    entry.getReferenceSetters().forEach(setter -> setter.consumeReference(referenceItem));
+                                    T immutableReferenceItem = OpenApiProxyUtils.immutableProxy(referenceItem);
+                                    entry.getReferenceSetters().forEach(setter -> setter.consumeReference(immutableReferenceItem));
                                     referencedItems.put(uniqueIdentifier, entry.getItem());
                                 })
                 );
