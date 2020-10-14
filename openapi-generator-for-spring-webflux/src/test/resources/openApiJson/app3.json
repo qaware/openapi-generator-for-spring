@@ -5,6 +5,23 @@
     "version": "unknown"
   },
   "paths": {
+    "/mapping-1": {
+      "get": {
+        "operationId": "mapping1",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/mapping-2": {
       "put": {
         "operationId": "mapping2",
@@ -16,7 +33,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/App3Controller.SomeDto"
+                    "$ref": "#/components/schemas/App3Controller.SomeDto_0"
                   }
                 }
               }
@@ -30,14 +47,27 @@
         "operationId": "mapping3",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/App3Controller.SomeDto"
-                }
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "/mapping-4": {
+      "post": {
+        "operationId": "mapping4",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/App3Controller.SomeDto_1"
               }
             }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -45,7 +75,7 @@
   },
   "components": {
     "schemas": {
-      "App3Controller.SomeDto": {
+      "App3Controller.SomeDto_1": {
         "type": "object",
         "properties": {
           "stringProperty1": {
@@ -53,6 +83,30 @@
           },
           "booleanProperty2": {
             "type": "boolean"
+          }
+        },
+        "description": "request body DTO"
+      },
+      "App3Controller.SomeDto_0": {
+        "type": "object",
+        "properties": {
+          "stringProperty1": {
+            "type": "string"
+          },
+          "booleanProperty2": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Default response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/App3Controller.SomeDto_0"
+            }
           }
         }
       }

@@ -25,9 +25,9 @@ public class ReferencedParameterStorage extends AbstractReferencedItemStorage<Pa
     void maybeReferenceParameters(List<Parameter> parameters, Object owner) {
         // we use the fact that we can modify each parameter via index if it's supposed to be changed to a reference
         // we still need to remove previously set parameters to the same owner then
-        // using an IntStream here makes i effectively final and thus can be captured in nested lambda
         checkOwner(owner);
         removeReferenceSettersOwnedBy(owner);
+        // using an IntStream here makes i effectively final and thus can be captured in nested lambda
         IntStream.range(0, parameters.size()).forEach(i ->
                 getEntryOrAddNew(parameters.get(i)).addSetter(ParameterReferenceSetter.of(
                         parameter -> parameters.set(i, parameter),

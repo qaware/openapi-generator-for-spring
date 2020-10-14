@@ -4,11 +4,13 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.mapper.CallbackAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.OperationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultDeprecatedOperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationCallbackCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationIdCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationServersCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationTagsCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultRequestBodyOperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
@@ -64,6 +66,15 @@ public class OpenApiGeneratorOperationAutoConfiguration {
             AnnotationsSupplierFactory annotationsSupplierFactory
     ) {
         return new DefaultOperationTagsCustomizer(tagAnnotationMapper, annotationsSupplierFactory);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultOperationServersCustomizer defaultOperationServersCustomizer(
+            ServerAnnotationMapper serverAnnotationMapper,
+            AnnotationsSupplierFactory annotationsSupplierFactory
+    ) {
+        return new DefaultOperationServersCustomizer(serverAnnotationMapper, annotationsSupplierFactory);
     }
 
     @Bean

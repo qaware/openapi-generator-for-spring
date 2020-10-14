@@ -19,8 +19,82 @@
       "name": "tag-1"
     }
   ],
-  "paths": {},
+  "paths": {
+    "/basePath/to/mapping1": {
+      "servers": [
+        {
+          "url": "http://url1",
+          "description": "Server 1"
+        }
+      ],
+      "get": {
+        "operationId": "mapping1get",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "put": {
+        "operationId": "mapping1put",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "/basePath/to/mapping2": {
+      "servers": [
+        {
+          "url": "http://url1",
+          "description": "Server 1"
+        }
+      ],
+      "post": {
+        "operationId": "mapping2post",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "mapping2delete",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "/basePath/to/mapping3": {
+      "get": {
+        "operationId": "mapping3",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        },
+        "servers": [
+          {
+            "url": "http://url2",
+            "description": "Server 2"
+          },
+          {
+            "url": "http://url1",
+            "description": "Server 1"
+          }
+        ]
+      }
+    }
+  },
   "components": {
+    "responses": {
+      "200": {
+        "description": "Default response"
+      }
+    },
     "securitySchemes": {
       "scheme1": {
         "type": "apiKey",

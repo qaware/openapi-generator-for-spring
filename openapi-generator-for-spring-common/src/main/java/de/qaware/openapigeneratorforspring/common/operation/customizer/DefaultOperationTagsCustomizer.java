@@ -43,7 +43,7 @@ public class DefaultOperationTagsCustomizer implements OperationCustomizer {
     private Stream<String> collectTagsFromMethodAndClass(OperationBuilderContext operationBuilderContext) {
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMethodWithDeclaringClass(operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod());
         List<Tag> tags = Stream.concat(
-                annotationsSupplier.findAnnotations(Tags.class).flatMap(tagsAnnotation -> Stream.of(tagsAnnotation.value())),
+                annotationsSupplier.findAnnotations(Tags.class).flatMap(x -> Stream.of(x.value())),
                 annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.tags.Tag.class)
         )
                 .map(tagAnnotationMapper::map)

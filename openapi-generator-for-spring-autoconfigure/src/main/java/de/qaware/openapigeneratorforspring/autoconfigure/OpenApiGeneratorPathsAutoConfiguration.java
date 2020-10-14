@@ -5,7 +5,7 @@ import de.qaware.openapigeneratorforspring.common.filter.operation.OperationFilt
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
-import de.qaware.openapigeneratorforspring.common.paths.DefaultPathItemParametersCustomizer;
+import de.qaware.openapigeneratorforspring.common.paths.DefaultPathItemSharedItemsCustomizer;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.PathItemBuilderFactory;
 import de.qaware.openapigeneratorforspring.common.paths.PathItemCustomizer;
@@ -45,7 +45,7 @@ public class OpenApiGeneratorPathsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultPathItemParametersCustomizer defaultPathItemParametersCustomizer() {
-        return new DefaultPathItemParametersCustomizer();
+    public DefaultPathItemSharedItemsCustomizer defaultPathItemSharedItemsCustomizer() {
+        return new DefaultPathItemSharedItemsCustomizer();
     }
 }
