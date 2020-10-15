@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.reference.example;
 
 import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedComponentHandler;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.example.Example;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +16,7 @@ import java.util.stream.Collectors;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
-public class ReferencedExamplesHandlerImpl implements
-        ReferencedItemHandler<List<ExampleObjectAnnotationMapper.ExampleWithOptionalName>, Map<String, Example>>,
-        ReferencedExamplesConsumer {
+public class ReferencedExamplesHandlerImpl implements ReferencedComponentHandler, ReferencedExamplesConsumer {
 
     private final ReferencedExampleStorage storage;
     private final ReferenceIdentifierFactoryForExample referenceIdentifierFactory;

@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.reference.header;
 
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper.HeaderWithOptionalName;
-import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedComponentHandler;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.header.Header;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +16,7 @@ import java.util.stream.Collectors;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
-public class ReferencedHeadersHandlerImpl implements
-        ReferencedItemHandler<List<HeaderWithOptionalName>, Map<String, Header>>,
-        ReferencedHeadersConsumer {
+public class ReferencedHeadersHandlerImpl implements ReferencedComponentHandler, ReferencedHeadersConsumer {
 
     private final ReferencedHeaderStorage storage;
     private final ReferenceIdentifierFactoryForHeader referenceIdentifierFactory;

@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.reference;
 
-import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedComponentHandler;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
-public class ReferencedParametersHandlerImpl implements ReferencedItemHandler<List<Parameter>, List<Parameter>>, ReferencedParametersConsumer {
+public class ReferencedParametersHandlerImpl implements ReferencedComponentHandler, ReferencedParametersConsumer {
     private final ReferencedParameterStorage storage;
 
     @With

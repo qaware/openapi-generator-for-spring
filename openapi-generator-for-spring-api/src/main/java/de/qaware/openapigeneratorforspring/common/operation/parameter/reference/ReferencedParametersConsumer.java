@@ -6,4 +6,5 @@ import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import java.util.List;
 
 public interface ReferencedParametersConsumer extends ReferencedItemConsumerForType<List<Parameter>, List<Parameter>> {
+    ReferencedParametersConsumer withOwner(Object owner);
 }

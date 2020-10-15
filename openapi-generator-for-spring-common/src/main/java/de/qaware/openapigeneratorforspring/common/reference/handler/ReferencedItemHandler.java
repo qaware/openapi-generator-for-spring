@@ -1,9 +1,14 @@
 package de.qaware.openapigeneratorforspring.common.reference.handler;
 
 
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemConsumerForType;
-import de.qaware.openapigeneratorforspring.model.Components;
+import de.qaware.openapigeneratorforspring.model.OpenApi;
 
-public interface ReferencedItemHandler<T, U> extends ReferencedItemConsumerForType<T, U> {
-    void applyToComponents(Components components);
+import javax.annotation.Nullable;
+
+public interface ReferencedItemHandler {
+    void applyToOpenApi(OpenApi openApi);
+
+    default ReferencedItemHandler withOwner(@Nullable Object object) {
+        return this;
+    }
 }

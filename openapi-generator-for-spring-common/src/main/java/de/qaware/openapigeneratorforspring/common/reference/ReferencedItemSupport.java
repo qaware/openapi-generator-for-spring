@@ -1,9 +1,9 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
-import de.qaware.openapigeneratorforspring.model.Components;
+import de.qaware.openapigeneratorforspring.model.OpenApi;
 
 public interface ReferencedItemSupport {
     ReferencedItemConsumerSupplier getReferencedItemConsumerSupplier();
 
-    Components buildComponents();
+    void applyToOpenApi(OpenApi openApi);
 }

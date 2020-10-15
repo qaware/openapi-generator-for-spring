@@ -25,7 +25,7 @@ public class OpenApiGeneratorReferenceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferencedItemSupportFactory referencedItemSupportFactory(List<ReferencedItemHandlerFactory<?, ?>> referencedItemHandlerFactories) {
+    public ReferencedItemSupportFactory referencedItemSupportFactory(List<ReferencedItemHandlerFactory> referencedItemHandlerFactories) {
         return new ReferencedItemSupportFactory(referencedItemHandlerFactories);
     }
 

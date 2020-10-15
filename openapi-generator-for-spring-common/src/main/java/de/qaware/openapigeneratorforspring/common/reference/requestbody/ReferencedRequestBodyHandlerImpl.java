@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.reference.requestbody;
 
-import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedComponentHandler;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +10,7 @@ import java.util.function.Consumer;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
-public class ReferencedRequestBodyHandlerImpl implements
-        ReferencedItemHandler<RequestBody, RequestBody>,
-        ReferencedRequestBodyConsumer {
+public class ReferencedRequestBodyHandlerImpl implements ReferencedComponentHandler, ReferencedRequestBodyConsumer {
 
     private final ReferencedRequestBodyStorage storage;
 
