@@ -11,12 +11,7 @@ import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
-@Import({
-        OpenApiGeneratorAnnotationAutoConfiguration.class,
-        OpenApiGeneratorMapperAutoConfiguration.class
-})
 @EnableConfigurationProperties(OpenApiInfoConfigurationProperties.class)
 public class OpenApiGeneratorInfoAutoConfiguration {
 

@@ -8,6 +8,8 @@ import de.qaware.openapigeneratorforspring.common.mapper.DefaultContactAnnotatio
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultContentAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultEncodingAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultExampleObjectAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultExtensionAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultExternalDocumentationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultHeaderAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultInfoAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultLicenseAnnotationMapper;
@@ -16,6 +18,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.DefaultLinkParameterAnn
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultOAuthFlowAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultOAuthFlowsAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultOperationAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultParsableValueMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultRequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultSecuritySchemeAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerAnnotationMapper;
@@ -41,18 +44,14 @@ import de.qaware.openapigeneratorforspring.common.mapper.ServerVariableAnnotatio
 import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.ParameterAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.schema.mapper.DefaultSchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
-@Import({
-        OpenApiGeneratorSchemaMapperFactoryAutoConfiguration.class,
-        OpenApiGeneratorSchemaAutoConfiguration.class,
-        OpenApiGeneratorUtilAutoConfiguration.class,
-})
 public class OpenApiGeneratorMapperAutoConfiguration {
 
     @Bean
@@ -62,6 +61,34 @@ public class OpenApiGeneratorMapperAutoConfiguration {
             SchemaResolver schemaResolver
     ) {
         return schemaAnnotationMapperFactory.create(schemaResolver);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SchemaAnnotationMapperFactory defaultSchemaAnnotationMapperFactory(
+            ParsableValueMapper parsableValueMapper,
+            ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper
+    ) {
+        return new DefaultSchemaAnnotationMapperFactory(parsableValueMapper, externalDocumentationAnnotationMapper, extensionAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ParsableValueMapper defaultParsableValueMapper(OpenApiObjectMapperSupplier objectMapperSupplier) {
+        return new DefaultParsableValueMapper(objectMapperSupplier);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ExtensionAnnotationMapper defaultExtensionAnnotationMapper(ParsableValueMapper parsableValueMapper) {
+        return new DefaultExtensionAnnotationMapper(parsableValueMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ExternalDocumentationAnnotationMapper defaultExternalDocumentationAnnotationMapper(ExtensionAnnotationMapper extensionAnnotationMapper) {
+        return new DefaultExternalDocumentationAnnotationMapper(extensionAnnotationMapper);
     }
 
     @Bean

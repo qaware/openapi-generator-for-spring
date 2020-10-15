@@ -33,7 +33,7 @@ public class DefaultOperationCallbackCustomizer implements OperationCustomizer {
                 ),
                 io.swagger.v3.oas.annotations.callbacks.Callback::name,
                 callbackAnnotation -> callbackAnnotationMapper.map(callbackAnnotation,
-                        operationBuilderContext.getReferencedItemConsumerSupplier(), operationBuilderContext.getTagsConsumer()
+                        operationBuilderContext.getReferencedItemConsumerSupplier()
                 )
         );
         setMapIfNotEmpty(callbacks, operation::setCallbacks);

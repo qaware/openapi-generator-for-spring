@@ -6,6 +6,7 @@ import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponse
 import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferencedApiResponsesConsumer;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferencedRequestBodyConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.tag.ReferencedTagsConsumer;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
@@ -39,10 +40,9 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
 
     @Override
     public Operation map(io.swagger.v3.oas.annotations.Operation operationAnnotation,
-                         ReferencedItemConsumerSupplier referencedItemConsumerSupplier,
-                         Consumer<List<Tag>> tagsConsumer) {
+                         ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         Operation operation = new Operation();
-        setTags(operation, operationAnnotation.tags(), tagsConsumer);
+        setTags(operation, operationAnnotation.tags(), referencedItemConsumerSupplier);
         setStringIfNotBlank(operationAnnotation.summary(), operation::setSummary);
         setStringIfNotBlank(operationAnnotation.description(), operation::setDescription);
         setRequestBody(operation::setRequestBody, operationAnnotation.requestBody(), referencedItemConsumerSupplier);
@@ -91,20 +91,23 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
         );
     }
 
-    private static void setTags(Operation operation, String[] tags, Consumer<List<Tag>> tagsConsumer) {
+    private static void setTags(Operation operation, String[] tags, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         setCollectionIfNotEmpty(
                 Stream.of(tags)
                         .filter(StringUtils::isNotBlank)
                         .distinct()
                         .collect(Collectors.toList()),
-                operation::setTags
+                tagNames -> {
+                    // also consume tag names here, even if no description or additional information is present
+                    // the tags consumer is smart enough to merge tags with identical names
+                    referencedItemConsumerSupplier.get(ReferencedTagsConsumer.class).accept(
+                            tagNames.stream()
+                                    .map(tagName -> new Tag().withName(tagName))
+                                    .collect(Collectors.toList())
+                    );
+                    operation.setTags(tagNames);
+                }
         );
-        // also consume tag names here, even if no description or additional information is present
-        // the tags consumer is smart enough to merge tags with identical names
-        tagsConsumer.accept(
-                Stream.of(tags)
-                        .map(tagName -> new Tag().withName(tagName))
-                        .collect(Collectors.toList())
-        );
+
     }
 }

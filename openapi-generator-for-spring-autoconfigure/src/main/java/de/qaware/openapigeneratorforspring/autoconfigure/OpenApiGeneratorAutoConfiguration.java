@@ -10,7 +10,6 @@ import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemSupportFactory;
 import de.qaware.openapigeneratorforspring.common.security.OpenApiSecuritySchemesSupplier;
 import de.qaware.openapigeneratorforspring.common.server.OpenApiServersSupplier;
-import de.qaware.openapigeneratorforspring.common.tags.TagsSupportFactory;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -23,11 +22,15 @@ import java.util.Optional;
 
 @Configuration
 @Import({
-        OpenApiGeneratorReferenceAutoConfiguration.class,
-        OpenApiGeneratorPathsAutoConfiguration.class,
-        OpenApiGeneratorUtilAutoConfiguration.class,
+        OpenApiGeneratorAnnotationAutoConfiguration.class,
+        OpenApiGeneratorFilterAutoConfiguration.class,
         OpenApiGeneratorInfoAutoConfiguration.class,
-        OpenApiGeneratorTagsAutoConfiguration.class
+        OpenApiGeneratorMapperAutoConfiguration.class,
+        OpenApiGeneratorOperationAutoConfiguration.class,
+        OpenApiGeneratorPathsAutoConfiguration.class,
+        OpenApiGeneratorReferenceAutoConfiguration.class,
+        OpenApiGeneratorSchemaAutoConfiguration.class,
+        OpenApiGeneratorUtilAutoConfiguration.class,
 })
 public class OpenApiGeneratorAutoConfiguration {
 
@@ -36,17 +39,9 @@ public class OpenApiGeneratorAutoConfiguration {
     public OpenApiGenerator openApiGenerator(
             PathsBuilder pathsBuilder,
             ReferencedItemSupportFactory referencedItemSupportFactory,
-            TagsSupportFactory tagsSupportFactory,
-            List<OpenApiCustomizer> openApiCustomizers,
-            OpenApiSpringBootApplicationAnnotationsSupplier springBootApplicationAnnotationsSupplier
+            List<OpenApiCustomizer> openApiCustomizers
     ) {
-        return new OpenApiGenerator(
-                pathsBuilder,
-                referencedItemSupportFactory,
-                tagsSupportFactory,
-                openApiCustomizers,
-                springBootApplicationAnnotationsSupplier
-        );
+        return new OpenApiGenerator(pathsBuilder, referencedItemSupportFactory, openApiCustomizers);
     }
 
     @Bean

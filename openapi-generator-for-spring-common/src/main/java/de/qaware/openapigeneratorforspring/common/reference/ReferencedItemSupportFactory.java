@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemConsumerForType;
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandlerFactory;
 import de.qaware.openapigeneratorforspring.model.Components;
@@ -51,15 +50,15 @@ public class ReferencedItemSupportFactory {
         private final Object owner;
 
         @Override
-        public <T extends ReferencedItemConsumerForType<?, ?>> T get(Class<T> consumerClazz) {
+        public <T extends ReferencedItemConsumer> T get(Class<T> consumerClazz) {
             return itemHandlersByItemClass.stream()
                     .filter(handler -> consumerClazz.isAssignableFrom(handler.getClass()))
                     .map(handler -> handler.withOwner(owner))
                     .map(consumerClazz::cast)
                     .reduce((a, b) -> {
-                        throw new IllegalStateException("Found more than one handler implementing " + consumerClazz);
+                        throw new IllegalStateException("Found more than one handler for consumer " + consumerClazz);
                     })
-                    .orElseThrow(() -> new IllegalStateException("Found no handler implementing " + consumerClazz));
+                    .orElseThrow(() -> new IllegalStateException("Found no handler for consumer " + consumerClazz));
         }
     }
 }

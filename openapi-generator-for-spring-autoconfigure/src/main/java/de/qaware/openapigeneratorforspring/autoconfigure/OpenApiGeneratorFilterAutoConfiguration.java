@@ -5,12 +5,7 @@ import de.qaware.openapigeneratorforspring.common.filter.handlermethod.ExcludeHi
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.NoOperationsPathItemFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
-@Import({
-        OpenApiGeneratorAnnotationAutoConfiguration.class,
-        OpenApiGeneratorReferenceAutoConfiguration.class
-})
 public class OpenApiGeneratorFilterAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean

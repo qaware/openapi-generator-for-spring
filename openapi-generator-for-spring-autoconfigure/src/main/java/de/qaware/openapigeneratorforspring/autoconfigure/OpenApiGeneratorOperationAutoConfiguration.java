@@ -26,10 +26,8 @@ import org.springframework.context.annotation.Import;
 import java.util.List;
 
 @Import({
-        OpenApiGeneratorAnnotationAutoConfiguration.class,
-        OpenApiGeneratorMapperAutoConfiguration.class,
-        OpenApiGeneratorOperationResponseAutoConfiguration.class,
         OpenApiGeneratorOperationParameterAutoConfiguration.class,
+        OpenApiGeneratorOperationResponseAutoConfiguration.class
 })
 public class OpenApiGeneratorOperationAutoConfiguration {
 

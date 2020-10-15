@@ -8,7 +8,6 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationWithInfo;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.path.PathItem;
-import de.qaware.openapigeneratorforspring.model.tag.Tag;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
@@ -19,7 +18,6 @@ import org.springframework.web.method.HandlerMethod;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 public class PathItemBuilderFactory {
@@ -28,14 +26,13 @@ public class PathItemBuilderFactory {
     private final List<OperationFilter> operationFilters;
     private final List<PathItemCustomizer> pathItemCustomizers;
 
-    public PathItemBuilder create(ReferencedItemConsumerSupplier referencedItemConsumerSupplier, Consumer<List<Tag>> tagsConsumer) {
-        return new PathItemBuilder(referencedItemConsumerSupplier, tagsConsumer);
+    public PathItemBuilder create(ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+        return new PathItemBuilder(referencedItemConsumerSupplier);
     }
 
     @RequiredArgsConstructor
     public class PathItemBuilder {
         private final ReferencedItemConsumerSupplier referencedItemConsumerSupplier;
-        private final Consumer<List<Tag>> tagsConsumer;
 
         @Getter
         private final Map<RequestMethod, Operation> operationPerMethod = new EnumMap<>(RequestMethod.class);
@@ -46,7 +43,7 @@ public class PathItemBuilderFactory {
             PathItem pathItem = new PathItem();
             handlerMethods.forEach((requestMethod, handlerMethod) -> {
                 OperationInfo operationInfo = OperationInfo.of(handlerMethod, requestMethod, pathPattern);
-                OperationBuilderContext operationBuilderContext = new OperationBuilderContext(operationInfo, referencedItemConsumerSupplier, tagsConsumer);
+                OperationBuilderContext operationBuilderContext = new OperationBuilderContext(operationInfo, referencedItemConsumerSupplier);
                 Operation operation = operationBuilder.buildOperation(operationBuilderContext);
                 if (isAcceptedByAllOperationFilters(operation, handlerMethod)) {
                     String operationId = operation.getOperationId();

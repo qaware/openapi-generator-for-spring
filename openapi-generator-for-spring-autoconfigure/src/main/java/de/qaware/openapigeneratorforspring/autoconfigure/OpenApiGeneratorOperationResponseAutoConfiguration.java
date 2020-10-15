@@ -17,24 +17,12 @@ import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOper
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesDescriptionCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesFromMethodCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.response.reference.DefaultReferenceIdentifierFactoryForApiResponse;
-import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceDeciderForApiResponse;
-import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceIdentifierConflictResolverForApiResponse;
-import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferenceIdentifierFactoryForApiResponse;
-import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferencedApiResponsesHandlerFactory;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceDeciderFactory;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceIdentifierConflictResolverFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
-@Import({
-        OpenApiGeneratorAnnotationAutoConfiguration.class,
-        OpenApiGeneratorMapperAutoConfiguration.class
-})
 public class OpenApiGeneratorOperationResponseAutoConfiguration {
 
     @Bean
@@ -88,33 +76,5 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
     @ConditionalOnMissingBean
     public ApiResponseCodeMapper defaultApiResponseCodeMapper(AnnotationsSupplierFactory annotationsSupplierFactory) {
         return new DefaultApiResponseCodeMapper(annotationsSupplierFactory);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ReferencedApiResponsesHandlerFactory referencedApiResponsesHandlerFactory(
-            ReferenceDeciderForApiResponse referenceDecider,
-            ReferenceIdentifierFactoryForApiResponse referenceIdentifierFactory,
-            ReferenceIdentifierConflictResolverForApiResponse referenceIdentifierConflictResolver
-    ) {
-        return new ReferencedApiResponsesHandlerFactory(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ReferenceIdentifierFactoryForApiResponse defaultReferenceIdentifierFactoryForApiResponse() {
-        return new DefaultReferenceIdentifierFactoryForApiResponse();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ReferenceIdentifierConflictResolverForApiResponse defaultReferenceIdentifierConflictResolverForApiResponse(DefaultReferenceIdentifierConflictResolverFactory factory) {
-        return factory.create(defaultImpl -> defaultImpl::resolveConflict);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ReferenceDeciderForApiResponse defaultReferenceDeciderForApiResponse(DefaultReferenceDeciderFactory factory) {
-        return factory.create(defaultImpl -> defaultImpl::turnIntoReference);
     }
 }

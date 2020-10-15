@@ -8,7 +8,6 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsum
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.path.PathItem;
 import de.qaware.openapigeneratorforspring.model.path.Paths;
-import de.qaware.openapigeneratorforspring.model.tag.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.LinkedMultiValueMap;
@@ -21,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -34,7 +32,7 @@ public class PathsBuilder {
     private final OperationIdConflictResolver operationIdConflictResolver;
 
 
-    public Paths buildPaths(ReferencedItemConsumerSupplier referencedItemConsumerSupplier, Consumer<List<Tag>> tagsConsumer) {
+    public Paths buildPaths(ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         MultiValueMap<String, OperationWithInfo> operationsById = new LinkedMultiValueMap<>();
         Paths paths = new Paths();
         handlerMethodsProvider.getHandlerMethods().stream()
@@ -57,7 +55,7 @@ public class PathsBuilder {
                                 throw new IllegalStateException("Found more than one request handler method for path " + pathPattern + ": " + a + " vs. " + b);
                             }, LinkedHashMap::new));
 
-                    PathItemBuilderFactory.PathItemBuilder pathItemBuilder = pathItemBuilderFactory.create(referencedItemConsumerSupplier, tagsConsumer);
+                    PathItemBuilderFactory.PathItemBuilder pathItemBuilder = pathItemBuilderFactory.create(referencedItemConsumerSupplier);
                     PathItem pathItem = pathItemBuilder.build(pathPattern, handlerMethods);
                     if (isAcceptedByAllPathItemFilters(pathItem, pathPattern, pathItemBuilder.getOperationPerMethod())) {
                         operationsById.addAll(pathItemBuilder.getOperationsById());

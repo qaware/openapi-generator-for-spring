@@ -4,6 +4,7 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.reference.tag.ReferencedTagsConsumer;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.tag.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
@@ -48,7 +49,7 @@ public class DefaultOperationTagsCustomizer implements OperationCustomizer {
         )
                 .map(tagAnnotationMapper::map)
                 .collect(Collectors.toList());
-        operationBuilderContext.getTagsConsumer().accept(tags);
+        setCollectionIfNotEmpty(tags, nonEmptyTags -> operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedTagsConsumer.class).accept(nonEmptyTags));
         return tags.stream().map(Tag::getName);
     }
 

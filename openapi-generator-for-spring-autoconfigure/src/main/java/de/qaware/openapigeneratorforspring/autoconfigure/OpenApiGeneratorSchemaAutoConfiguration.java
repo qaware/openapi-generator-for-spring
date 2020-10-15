@@ -29,9 +29,6 @@ import org.springframework.context.annotation.Import;
 import java.util.List;
 
 @Import({
-        OpenApiGeneratorAnnotationAutoConfiguration.class,
-        OpenApiGeneratorUtilAutoConfiguration.class,
-        OpenApiGeneratorSchemaMapperFactoryAutoConfiguration.class,
         OpenApiGeneratorSchemaTypeExtensionAutoConfiguration.class
 })
 public class OpenApiGeneratorSchemaAutoConfiguration {

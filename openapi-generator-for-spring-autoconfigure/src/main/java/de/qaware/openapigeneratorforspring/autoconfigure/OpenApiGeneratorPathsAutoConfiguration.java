@@ -12,14 +12,9 @@ import de.qaware.openapigeneratorforspring.common.paths.PathItemCustomizer;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
-@Import({
-        OpenApiGeneratorOperationAutoConfiguration.class,
-        OpenApiGeneratorFilterAutoConfiguration.class
-})
 public class OpenApiGeneratorPathsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
