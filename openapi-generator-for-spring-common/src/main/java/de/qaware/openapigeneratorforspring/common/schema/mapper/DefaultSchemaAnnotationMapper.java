@@ -3,7 +3,7 @@ package de.qaware.openapigeneratorforspring.common.schema.mapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
-import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.model.media.Discriminator;
 import de.qaware.openapigeneratorforspring.model.media.Schema;

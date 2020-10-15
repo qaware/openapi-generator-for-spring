@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 import java.lang.reflect.Type;

@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
-import de.qaware.openapigeneratorforspring.common.reference.header.ReferencedHeadersConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.component.header.ReferencedHeadersConsumer;
 import de.qaware.openapigeneratorforspring.model.media.Encoding;
 import lombok.RequiredArgsConstructor;
 

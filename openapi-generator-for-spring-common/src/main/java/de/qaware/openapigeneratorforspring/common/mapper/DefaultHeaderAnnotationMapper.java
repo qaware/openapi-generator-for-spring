@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
+import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
 import de.qaware.openapigeneratorforspring.model.header.Header;
 import lombok.RequiredArgsConstructor;

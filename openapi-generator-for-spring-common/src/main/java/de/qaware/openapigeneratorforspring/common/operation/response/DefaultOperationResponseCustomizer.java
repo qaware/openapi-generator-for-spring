@@ -4,7 +4,7 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferencedApiResponsesConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.component.response.ReferencedApiResponsesConsumer;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiProxyUtils;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;

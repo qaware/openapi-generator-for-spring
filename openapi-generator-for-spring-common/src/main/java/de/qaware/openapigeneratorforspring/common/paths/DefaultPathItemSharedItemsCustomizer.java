@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.paths;
 
-import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferencedParametersConsumer;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
+import de.qaware.openapigeneratorforspring.common.reference.component.parameter.ReferencedParametersConsumer;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.path.PathItem;
 import org.apache.commons.lang3.tuple.Pair;

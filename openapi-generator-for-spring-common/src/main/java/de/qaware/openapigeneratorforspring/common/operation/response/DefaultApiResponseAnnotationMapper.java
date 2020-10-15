@@ -5,7 +5,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapp
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
-import de.qaware.openapigeneratorforspring.common.reference.header.ReferencedHeadersConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.component.header.ReferencedHeadersConsumer;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 

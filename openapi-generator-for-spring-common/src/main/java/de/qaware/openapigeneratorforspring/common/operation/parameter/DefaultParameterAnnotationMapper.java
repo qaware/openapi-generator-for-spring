@@ -4,9 +4,9 @@ import de.qaware.openapigeneratorforspring.common.mapper.ContentAnnotationMapper
 import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
-import de.qaware.openapigeneratorforspring.common.reference.example.ReferencedExamplesConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.component.example.ReferencedExamplesConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import lombok.RequiredArgsConstructor;

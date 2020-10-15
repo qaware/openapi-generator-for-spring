@@ -23,12 +23,12 @@ import java.util.Map;
  */
 @Data
 public class Components implements HasExtensions, HasIsEmpty<Components> {
-    private Map<String, ? extends HasReference<Schema>> schemas;
-    private Map<String, ? extends HasReference<ApiResponse>> responses;
-    private Map<String, ? extends HasReference<Parameter>> parameters;
     private Map<String, ? extends HasReference<Example>> examples;
-    private Map<String, ? extends HasReference<RequestBody>> requestBodies;
     private Map<String, ? extends HasReference<Header>> headers;
+    private Map<String, ? extends HasReference<Parameter>> parameters;
+    private Map<String, ? extends HasReference<RequestBody>> requestBodies;
+    private Map<String, ? extends HasReference<ApiResponse>> responses;
+    private Map<String, ? extends HasReference<Schema>> schemas;
     private Map<String, ? extends HasReference<SecurityScheme>> securitySchemes;
     private Map<String, ? extends HasReference<Link>> links;
     private Map<String, ? extends HasReference<Callback>> callbacks;

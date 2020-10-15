@@ -1,12 +1,12 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
+import de.qaware.openapigeneratorforspring.common.reference.component.schema.DefaultReferenceDeciderForSchema;
+import de.qaware.openapigeneratorforspring.common.reference.component.schema.DefaultReferenceIdentifierFactoryForSchema;
+import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferenceDeciderForSchema;
+import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferenceIdentifierConflictResolverForSchema;
+import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferenceIdentifierFactoryForSchema;
+import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaHandlerFactory;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceIdentifierConflictResolverFactory;
-import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferenceDeciderForSchema;
-import de.qaware.openapigeneratorforspring.common.schema.reference.DefaultReferenceIdentifierFactoryForSchema;
-import de.qaware.openapigeneratorforspring.common.schema.reference.ReferenceDeciderForSchema;
-import de.qaware.openapigeneratorforspring.common.schema.reference.ReferenceIdentifierConflictResolverForSchema;
-import de.qaware.openapigeneratorforspring.common.schema.reference.ReferenceIdentifierFactoryForSchema;
-import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaHandlerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 

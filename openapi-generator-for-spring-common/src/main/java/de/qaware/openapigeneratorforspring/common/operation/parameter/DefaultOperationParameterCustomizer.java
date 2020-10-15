@@ -7,7 +7,7 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderCont
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferencedParametersConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.component.parameter.ReferencedParametersConsumer;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.RequiredArgsConstructor;

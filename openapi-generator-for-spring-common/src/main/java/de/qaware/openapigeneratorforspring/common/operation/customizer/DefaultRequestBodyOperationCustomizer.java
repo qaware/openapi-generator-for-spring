@@ -6,8 +6,8 @@ import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMa
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.OperationInfo;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
-import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferencedRequestBodyConsumer;
-import de.qaware.openapigeneratorforspring.common.schema.reference.ReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.component.requestbody.ReferencedRequestBodyConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.model.media.Content;
 import de.qaware.openapigeneratorforspring.model.media.MediaType;

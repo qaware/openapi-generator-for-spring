@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.common.annotation;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.annotation.Inherited;
@@ -20,7 +21,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DefaultAnnotationsSupplierFactoryTest {
 
-    DefaultAnnotationsSupplierFactory sut = new DefaultAnnotationsSupplierFactory();
+    private DefaultAnnotationsSupplierFactory sut;
+
+    @Before
+    public void setUp() throws Exception {
+        sut = new DefaultAnnotationsSupplierFactory();
+    }
 
     @Test
     public void plainAndCustomAnnotationWithInheritance() {

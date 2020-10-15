@@ -1,12 +1,12 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
+import de.qaware.openapigeneratorforspring.common.reference.component.header.DefaultReferenceIdentifierFactoryForHeader;
+import de.qaware.openapigeneratorforspring.common.reference.component.header.ReferenceDeciderForHeader;
+import de.qaware.openapigeneratorforspring.common.reference.component.header.ReferenceIdentifierConflictResolverForHeader;
+import de.qaware.openapigeneratorforspring.common.reference.component.header.ReferenceIdentifierFactoryForHeader;
+import de.qaware.openapigeneratorforspring.common.reference.component.header.ReferencedHeadersHandlerFactory;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceDeciderFactory;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceIdentifierConflictResolverFactory;
-import de.qaware.openapigeneratorforspring.common.reference.header.DefaultReferenceIdentifierFactoryForHeader;
-import de.qaware.openapigeneratorforspring.common.reference.header.ReferenceDeciderForHeader;
-import de.qaware.openapigeneratorforspring.common.reference.header.ReferenceIdentifierConflictResolverForHeader;
-import de.qaware.openapigeneratorforspring.common.reference.header.ReferenceIdentifierFactoryForHeader;
-import de.qaware.openapigeneratorforspring.common.reference.header.ReferencedHeadersHandlerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 

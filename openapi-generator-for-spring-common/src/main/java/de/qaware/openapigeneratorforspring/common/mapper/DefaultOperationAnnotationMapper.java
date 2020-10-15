@@ -1,11 +1,11 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
 import de.qaware.openapigeneratorforspring.common.operation.parameter.ParameterAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.operation.parameter.reference.ReferencedParametersConsumer;
 import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.operation.response.reference.ReferencedApiResponsesConsumer;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
-import de.qaware.openapigeneratorforspring.common.reference.requestbody.ReferencedRequestBodyConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.component.parameter.ReferencedParametersConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.component.requestbody.ReferencedRequestBodyConsumer;
+import de.qaware.openapigeneratorforspring.common.reference.component.response.ReferencedApiResponsesConsumer;
 import de.qaware.openapigeneratorforspring.common.reference.tag.ReferencedTagsConsumer;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
