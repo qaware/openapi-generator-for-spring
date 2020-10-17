@@ -12,7 +12,7 @@ public class ReferencedLinksHandlerFactory implements ReferencedItemHandlerFacto
 
     @Override
     public ReferencedItemHandler create() {
-        ReferencedLinksStorage storage = new ReferencedLinksStorage(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
+        ReferencedLinkStorage storage = new ReferencedLinkStorage(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
         return new ReferencedLinksHandlerImpl(storage);
     }
 }

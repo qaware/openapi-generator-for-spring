@@ -5,8 +5,10 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.qaware.openapigeneratorforspring.model.path.PathItem;
 import de.qaware.openapigeneratorforspring.model.trait.HasReference;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Collections;
 import java.util.Map;
@@ -16,6 +18,8 @@ import java.util.Map;
  *
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#callbackObject"
  */
+@EqualsAndHashCode
+@ToString
 public class Callback implements HasReference<Callback> {
 
     @JsonIgnore

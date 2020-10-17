@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class ReferencedLinksStorage extends AbstractReferencedItemStorage<Link, ReferencedLinksStorage.Entry> {
+public class ReferencedLinkStorage extends AbstractReferencedItemStorage<Link, ReferencedLinkStorage.Entry> {
 
-    ReferencedLinksStorage(ReferenceDeciderForType<Link> referenceDecider, ReferenceIdentifierFactoryForType<Link> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Link> referenceIdentifierConflictResolver) {
+    ReferencedLinkStorage(ReferenceDeciderForType<Link> referenceDecider, ReferenceIdentifierFactoryForType<Link> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Link> referenceIdentifierConflictResolver) {
         super(ReferenceType.LINK, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Link::new, Entry::new);
     }
 

@@ -13,7 +13,7 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.se
 @RequiredArgsConstructor
 public class ReferencedLinksHandlerImpl implements ReferencedComponentHandler, ReferencedLinksConsumer {
 
-    private final ReferencedLinksStorage storage;
+    private final ReferencedLinkStorage storage;
 
     @Override
     public void maybeAsReference(Map<String, Link> links, Consumer<Map<String, Link>> setter) {

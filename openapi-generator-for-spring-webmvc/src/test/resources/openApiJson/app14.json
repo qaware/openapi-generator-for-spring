@@ -5,6 +5,21 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/mapping2": {
+      "get": {
+        "operationId": "mapping2",
+        "responses": {
+          "200": {
+            "description": "Default response"
+          }
+        },
+        "callbacks": {
+          "callback1": {
+            "$ref": "#/components/callbacks/callback1"
+          }
+        }
+      }
+    },
     "/streams": {
       "post": {
         "description": "subscribes a client to receive out-of-band data",
@@ -76,6 +91,30 @@
                     "description": "Your server should return this HTTP status code if no longer interested in further updates"
                   }
                 }
+              }
+            }
+          },
+          "callback1": {
+            "$ref": "#/components/callbacks/callback1"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "202": {
+        "description": "description"
+      }
+    },
+    "callbacks": {
+      "callback1": {
+        "expression1": {
+          "get": {
+            "operationId": "operationId1",
+            "responses": {
+              "202": {
+                "$ref": "#/components/responses/202"
               }
             }
           }

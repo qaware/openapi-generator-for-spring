@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -45,10 +46,29 @@ public class App14Controller {
                     }
             )
     )
+    @Callback(
+            name = "callback1",
+            callbackUrlExpression = "expression1",
+            operation = @Operation(method = "get", operationId = "operationId1",
+                    responses = @ApiResponse(responseCode = "202", description = "description")
+            )
+    )
     public SubscriptionDto mapping1(@RequestParam
                                     @Parameter(description = "the location where data will be sent.  Must be network accessible by the source server")
                                     @Schema(format = "uri", example = "https://tonys-server.com") String callbackUrl) {
         return null;
+    }
+
+    @GetMapping("mapping2")
+    @Callback(
+            name = "callback1",
+            callbackUrlExpression = "expression1",
+            operation = @Operation(method = "get", operationId = "operationId1",
+                    responses = @ApiResponse(responseCode = "202", description = "description")
+            )
+    )
+    public void mapping2() {
+
     }
 
     @Value

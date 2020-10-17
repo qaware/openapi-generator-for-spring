@@ -15,7 +15,7 @@ public enum ReferenceType {
     SCHEMA("#/components/schemas/"),
     // security schemes are referenced directly by @SecurityRequirement
     LINK("#/components/links/"),
-    // TODO implement referencing callbacks
+    CALLBACK("#/components/callbacks/"),
     ;
 
     @Getter(AccessLevel.PROTECTED)

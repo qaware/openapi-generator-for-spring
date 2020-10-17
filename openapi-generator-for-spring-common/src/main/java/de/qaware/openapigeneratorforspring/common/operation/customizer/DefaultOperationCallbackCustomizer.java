@@ -4,11 +4,12 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.mapper.CallbackAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import de.qaware.openapigeneratorforspring.model.operation.Callback;
+import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
+import de.qaware.openapigeneratorforspring.common.reference.component.callback.ReferencedCallbacksConsumer;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
+import java.lang.reflect.Method;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
@@ -23,15 +24,18 @@ public class DefaultOperationCallbackCustomizer implements OperationCustomizer {
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMethodWithDeclaringClass(operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod());
-        Map<String, Callback> callbacks = buildStringMapFromStream(
-                annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.callbacks.Callback.class),
-                io.swagger.v3.oas.annotations.callbacks.Callback::name,
-                callbackAnnotation -> callbackAnnotationMapper.map(callbackAnnotation,
-                        operationBuilderContext.getReferencedItemConsumerSupplier()
-                )
+        Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
+        AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method);
+        ReferencedItemConsumerSupplier referencedItemConsumerSupplier = operationBuilderContext.getReferencedItemConsumerSupplier();
+        setMapIfNotEmpty(
+                buildStringMapFromStream(
+                        annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.callbacks.Callback.class),
+                        io.swagger.v3.oas.annotations.callbacks.Callback::name,
+                        callbackAnnotation -> callbackAnnotationMapper.map(callbackAnnotation, referencedItemConsumerSupplier)
+                ),
+                callbacks -> referencedItemConsumerSupplier.get(ReferencedCallbacksConsumer.class)
+                        .maybeAsReference(callbacks, operation::setCallbacks)
         );
-        setMapIfNotEmpty(callbacks, operation::setCallbacks);
     }
 
     @Override
