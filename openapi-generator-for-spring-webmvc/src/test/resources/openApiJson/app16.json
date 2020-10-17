@@ -33,7 +33,12 @@
           "200": {
             "$ref": "#/components/responses/200"
           }
-        }
+        },
+        "security": [
+          {
+            "scheme1": []
+          }
+        ]
       },
       "put": {
         "operationId": "mapping1put",
@@ -41,7 +46,12 @@
           "200": {
             "$ref": "#/components/responses/200"
           }
-        }
+        },
+        "security": [
+          {
+            "scheme1": []
+          }
+        ]
       }
     },
     "/basePath/to/mapping2": {
@@ -57,7 +67,12 @@
           "200": {
             "$ref": "#/components/responses/200"
           }
-        }
+        },
+        "security": [
+          {
+            "scheme1": []
+          }
+        ]
       },
       "delete": {
         "operationId": "mapping2delete",
@@ -65,7 +80,12 @@
           "200": {
             "$ref": "#/components/responses/200"
           }
-        }
+        },
+        "security": [
+          {
+            "scheme1": []
+          }
+        ]
       }
     },
     "/basePath/to/mapping3": {
@@ -76,6 +96,11 @@
             "$ref": "#/components/responses/200"
           }
         },
+        "security": [
+          {
+            "scheme1": []
+          }
+        ],
         "servers": [
           {
             "url": "http://url2",
@@ -96,6 +121,15 @@
             "$ref": "#/components/responses/200"
           }
         },
+        "security": [
+          {
+            "scheme2": [
+              "scope1",
+              "scope2"
+            ],
+            "scheme1": []
+          }
+        ],
         "servers": [
           {
             "url": "http://url3",

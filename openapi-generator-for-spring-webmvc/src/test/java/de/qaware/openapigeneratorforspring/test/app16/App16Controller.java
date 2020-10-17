@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.test.app16;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.servers.Servers;
 import org.springframework.http.MediaType;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Server(url = "http://url1", description = "Server 1")
+@SecurityRequirement(name = "scheme1")
 @RequestMapping(value = "basePath/to", consumes = MediaType.APPLICATION_JSON_VALUE)
 public class App16Controller {
 
@@ -49,6 +51,7 @@ public class App16Controller {
             @Server(url = "http://url3", description = "Server 3"),
             @Server(url = "http://url4", description = "Server 4")
     })
+    @SecurityRequirement(name = "scheme2", scopes = {"scope1", "scope2"})
     public void mapping4() {
 
     }

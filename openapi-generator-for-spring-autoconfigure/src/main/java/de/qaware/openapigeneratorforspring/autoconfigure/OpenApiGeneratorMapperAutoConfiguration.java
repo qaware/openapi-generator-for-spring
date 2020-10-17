@@ -20,6 +20,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.DefaultOAuthFlowsAnnota
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultOperationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultParsableValueMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultRequestBodyAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.DefaultSecurityRequirementAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultSecuritySchemeAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.DefaultServerVariableAnnotationMapper;
@@ -38,6 +39,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.OAuthFlowsAnnotationMap
 import de.qaware.openapigeneratorforspring.common.mapper.OperationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.SecurityRequirementAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerVariableAnnotationMapper;
@@ -98,10 +100,12 @@ public class OpenApiGeneratorMapperAutoConfiguration {
             ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper,
             ParameterAnnotationMapper parameterAnnotationMapper,
             ApiResponseAnnotationMapper apiResponseAnnotationMapper,
+            SecurityRequirementAnnotationMapper securityRequirementAnnotationMapper,
             ServerAnnotationMapper serverAnnotationMapper,
             ExtensionAnnotationMapper extensionAnnotationMapper) {
         return new DefaultOperationAnnotationMapper(requestBodyAnnotationMapper, externalDocumentationAnnotationMapper,
-                parameterAnnotationMapper, apiResponseAnnotationMapper, serverAnnotationMapper, extensionAnnotationMapper);
+                parameterAnnotationMapper, apiResponseAnnotationMapper, securityRequirementAnnotationMapper,
+                serverAnnotationMapper, extensionAnnotationMapper);
     }
 
     @Bean
@@ -241,5 +245,11 @@ public class OpenApiGeneratorMapperAutoConfiguration {
     @ConditionalOnMissingBean
     public OAuthFlowAnnotationMapper defaultOAuthFlowAnnotationMapper(ExtensionAnnotationMapper extensionAnnotationMapper) {
         return new DefaultOAuthFlowAnnotationMapper(extensionAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SecurityRequirementAnnotationMapper defaultSecurityRequirementAnnotationMapper() {
+        return new DefaultSecurityRequirementAnnotationMapper();
     }
 }

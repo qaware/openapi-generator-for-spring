@@ -78,7 +78,7 @@ public class OpenApiMapUtils {
         ));
     }
 
-    private static <T> Function<T, String> ensureKeyIsNotBlank(Function<? super T, String> keyMapper) {
+    public static <T> Function<T, String> ensureKeyIsNotBlank(Function<? super T, String> keyMapper) {
         return value -> {
             String key = keyMapper.apply(value);
             if (StringUtils.isBlank(key)) {

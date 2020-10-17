@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.ensureKeyIsNotBlank;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
@@ -45,6 +46,7 @@ public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
         openApi.setInfo(openApiInfoSupplier.get()); // always set info to comply with spec
         // TODO set more properties?
         Optional<OpenAPIDefinition> openAPIDefinitionAnnotation = springBootApplicationAnnotationsSupplier.findFirstAnnotation(OpenAPIDefinition.class);
+
         setServers(openAPIDefinitionAnnotation.map(OpenAPIDefinition::servers).orElse(null), openApi::setServers);
 
         setMapIfNotEmpty(buildSecuritySchemes(),
@@ -68,7 +70,7 @@ public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
                         .map(Supplier::get)
                         .map(Map::entrySet)
                         .flatMap(Collection::stream)
-        ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
+        ).collect(Collectors.toMap(ensureKeyIsNotBlank(Map.Entry::getKey), Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
     }
 
     public void setServers(@Nullable io.swagger.v3.oas.annotations.servers.Server[] serverAnnotations, Consumer<List<Server>> setter) {

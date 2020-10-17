@@ -35,6 +35,7 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
     private final ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper;
     private final ParameterAnnotationMapper parameterAnnotationMapper;
     private final ApiResponseAnnotationMapper apiResponseAnnotationMapper;
+    private final SecurityRequirementAnnotationMapper securityRequirementAnnotationMapper;
     private final ServerAnnotationMapper serverAnnotationMapper;
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
 
@@ -42,6 +43,7 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
     public Operation map(io.swagger.v3.oas.annotations.Operation operationAnnotation,
                          ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         Operation operation = new Operation();
+        // operationAnnotation.method() ignored here, as its managed by caller if at all
         setTags(operation, operationAnnotation.tags(), referencedItemConsumerSupplier);
         setStringIfNotBlank(operationAnnotation.summary(), operation::setSummary);
         setStringIfNotBlank(operationAnnotation.description(), operation::setDescription);
@@ -50,16 +52,12 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
         setStringIfNotBlank(operationAnnotation.operationId(), operation::setOperationId);
         setParameters(operation::setParameters, operationAnnotation.parameters(), referencedItemConsumerSupplier.withOwner(operation));
         setResponses(operation::setResponses, operationAnnotation.responses(), referencedItemConsumerSupplier);
-
         if (operationAnnotation.deprecated()) {
             operation.setDeprecated(true);
         }
-
-        // TODO add security from annotation
-
+        setMapIfNotEmpty(securityRequirementAnnotationMapper.mapArray(operationAnnotation.security()), operation::setFirstSecurity);
         setCollectionIfNotEmpty(serverAnnotationMapper.mapArray(operationAnnotation.servers()), operation::setServers);
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(operationAnnotation.extensions()), operation::setExtensions);
-
         return operation;
     }
 

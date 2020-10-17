@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.model.operation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.qaware.openapigeneratorforspring.model.ExternalDocumentation;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
@@ -9,8 +10,12 @@ import de.qaware.openapigeneratorforspring.model.server.Server;
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Operation
@@ -33,8 +38,21 @@ public class Operation implements HasExtensions {
     private List<Server> servers;
     private Map<String, Object> extensions;
 
-    public void setResponses(ApiResponses responses) {
-        this.responses = responses;
+    @JsonIgnore
+    public Optional<SecurityRequirement> getFirstSecurity() {
+        return Optional.ofNullable(security)
+                .map(Collection::stream)
+                .flatMap(Stream::findFirst);
+    }
+
+    public void setFirstSecurity(SecurityRequirement securityRequirement) {
+        if (security == null) {
+            security = new ArrayList<>();
+        }
+        if (security.size() > 0) {
+            security.set(0, securityRequirement);
+        }
+        security.add(securityRequirement);
     }
 }
 

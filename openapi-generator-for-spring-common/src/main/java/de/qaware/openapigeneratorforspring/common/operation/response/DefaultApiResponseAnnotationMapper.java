@@ -39,6 +39,5 @@ public class DefaultApiResponseAnnotationMapper implements ApiResponseAnnotation
         mergeWithExistingMap(apiResponse::getContent, apiResponse::setContent, contentAnnotationMapper.mapArray(annotation.content(), referencedItemConsumerSupplier));
         mergeWithExistingMap(apiResponse::getExtensions, apiResponse::setExtensions, extensionAnnotationMapper.mapArray(annotation.extensions()));
         // TODO treat provided ref specially when present!
-        setStringIfNotBlank(annotation.ref(), apiResponse::setRef);
     }
 }
