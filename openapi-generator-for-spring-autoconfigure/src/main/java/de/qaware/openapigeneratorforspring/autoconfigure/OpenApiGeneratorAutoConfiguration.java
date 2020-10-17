@@ -4,13 +4,11 @@ import de.qaware.openapigeneratorforspring.common.DefaultOpenApiCustomizer;
 import de.qaware.openapigeneratorforspring.common.OpenApiCustomizer;
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
 import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
-import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemSupportFactory;
-import de.qaware.openapigeneratorforspring.common.security.OpenApiSecuritySchemesSupplier;
 import de.qaware.openapigeneratorforspring.common.server.OpenApiServersSupplier;
+import de.qaware.openapigeneratorforspring.common.util.OpenAPIDefinitionAnnotationSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -50,20 +48,15 @@ public class OpenApiGeneratorAutoConfiguration {
     public DefaultOpenApiCustomizer defaultOpenApiCustomizer(
             OpenApiInfoSupplier openApiInfoSupplier,
             ServerAnnotationMapper serverAnnotationMapper,
-            TagAnnotationMapper tagAnnotationMapper,
             Optional<List<OpenApiServersSupplier>> optionalOpenApiServersSuppliers,
-            SecuritySchemeAnnotationMapper securitySchemeAnnotationMapper,
-            Optional<List<OpenApiSecuritySchemesSupplier>> optionalOpenApiSecuritySchemesSupplier,
-            OpenApiSpringBootApplicationAnnotationsSupplier springBootApplicationAnnotationsSupplier
-
+            OpenApiSpringBootApplicationAnnotationsSupplier springBootApplicationAnnotationsSupplier,
+            OpenAPIDefinitionAnnotationSupplier openAPIDefinitionAnnotationSupplier
     ) {
         return new DefaultOpenApiCustomizer(openApiInfoSupplier,
                 serverAnnotationMapper,
-                tagAnnotationMapper,
                 optionalOpenApiServersSuppliers.orElseGet(Collections::emptyList),
-                securitySchemeAnnotationMapper,
-                optionalOpenApiSecuritySchemesSupplier.orElseGet(Collections::emptyList),
-                springBootApplicationAnnotationsSupplier
+                springBootApplicationAnnotationsSupplier,
+                openAPIDefinitionAnnotationSupplier
         );
     }
 }

@@ -5,6 +5,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.CallbackAnnotationMappe
 import de.qaware.openapigeneratorforspring.common.mapper.OperationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.SecurityRequirementAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
@@ -12,6 +13,7 @@ import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultDe
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationCallbackCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationIdCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationSecurityRequirementCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationSecuritySchemesCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationServersCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationTagsCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultRequestBodyOperationCustomizer;
@@ -66,6 +68,15 @@ public class OpenApiGeneratorOperationAutoConfiguration {
             AnnotationsSupplierFactory annotationsSupplierFactory
     ) {
         return new DefaultOperationTagsCustomizer(tagAnnotationMapper, annotationsSupplierFactory);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultOperationSecuritySchemesCustomizer defaultOperationSecuritySchemesCustomizer(
+            SecuritySchemeAnnotationMapper securitySchemeAnnotationMapper,
+            AnnotationsSupplierFactory annotationsSupplierFactory
+    ) {
+        return new DefaultOperationSecuritySchemesCustomizer(securitySchemeAnnotationMapper, annotationsSupplierFactory);
     }
 
     @Bean

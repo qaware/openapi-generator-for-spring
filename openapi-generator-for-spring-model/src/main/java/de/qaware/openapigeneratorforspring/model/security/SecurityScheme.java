@@ -22,7 +22,7 @@ import java.util.Map;
 public class SecurityScheme implements HasExtensions, HasReference<SecurityScheme> {
     private String type;
     private String description;
-    private String name;
+    private String name; // name of header, query or cookie parameter!
     private String ref;
     private String in;
     private String scheme;

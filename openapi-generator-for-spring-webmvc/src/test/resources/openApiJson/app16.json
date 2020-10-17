@@ -163,6 +163,12 @@
         "type": "http",
         "description": "scheme from supplier",
         "in": "cookie"
+      },
+      "scheme4": {
+        "type": "oauth2"
+      },
+      "scheme3": {
+        "type": "apiKey"
       }
     }
   }

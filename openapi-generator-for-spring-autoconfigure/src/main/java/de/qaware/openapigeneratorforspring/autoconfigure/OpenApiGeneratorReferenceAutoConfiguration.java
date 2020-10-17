@@ -17,6 +17,7 @@ import java.util.List;
         OpenApiGeneratorReferenceRequestBodyAutoConfiguration.class,
         OpenApiGeneratorReferenceResponseAutoConfiguration.class,
         OpenApiGeneratorReferenceSchemaAutoConfiguration.class,
+        OpenApiGeneratorReferenceSecuritySchemeAutoConfiguration.class,
         OpenApiGeneratorReferenceTagAutoConfiguration.class
 })
 public class OpenApiGeneratorReferenceAutoConfiguration {

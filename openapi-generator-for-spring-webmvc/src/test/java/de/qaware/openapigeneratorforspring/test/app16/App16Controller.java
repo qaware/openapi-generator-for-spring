@@ -1,7 +1,9 @@
 package de.qaware.openapigeneratorforspring.test.app16;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.servers.Servers;
 import org.springframework.http.MediaType;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Server(url = "http://url1", description = "Server 1")
 @SecurityRequirement(name = "scheme1")
 @RequestMapping(value = "basePath/to", consumes = MediaType.APPLICATION_JSON_VALUE)
+@SecurityScheme(type = SecuritySchemeType.OAUTH2, name = "scheme4")
+@SecurityScheme(type = SecuritySchemeType.APIKEY, name = "scheme3")
 public class App16Controller {
 
     @GetMapping("/mapping1")

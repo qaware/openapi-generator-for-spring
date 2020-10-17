@@ -1,38 +1,23 @@
 package de.qaware.openapigeneratorforspring.common;
 
 import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
-import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.reference.tag.ReferencedTagsHandlerImpl;
-import de.qaware.openapigeneratorforspring.common.security.OpenApiSecuritySchemesSupplier;
 import de.qaware.openapigeneratorforspring.common.server.OpenApiServersSupplier;
+import de.qaware.openapigeneratorforspring.common.util.OpenAPIDefinitionAnnotationSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.OpenApi;
-import de.qaware.openapigeneratorforspring.model.security.SecurityScheme;
 import de.qaware.openapigeneratorforspring.model.server.Server;
-import de.qaware.openapigeneratorforspring.model.tag.Tag;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import lombok.RequiredArgsConstructor;
 
-import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.emptyListIfNull;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.ensureKeyIsNotBlank;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
 public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
@@ -40,68 +25,27 @@ public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
 
     private final OpenApiInfoSupplier openApiInfoSupplier;
     private final ServerAnnotationMapper serverAnnotationMapper;
-    private final TagAnnotationMapper tagAnnotationMapper;
     private final List<OpenApiServersSupplier> openApiServersSuppliers;
-    private final SecuritySchemeAnnotationMapper securitySchemeAnnotationMapper;
-    private final List<OpenApiSecuritySchemesSupplier> openApiSecuritySchemesSuppliers;
     private final OpenApiSpringBootApplicationAnnotationsSupplier springBootApplicationAnnotationsSupplier;
+    private final OpenAPIDefinitionAnnotationSupplier openAPIDefinitionAnnotationSupplier;
 
     @Override
     public void customize(OpenApi openApi) {
         openApi.setInfo(openApiInfoSupplier.get()); // always set info to comply with spec
         // TODO set more properties?
-
-        Optional<OpenAPIDefinition> openAPIDefinitionAnnotation = springBootApplicationAnnotationsSupplier.findFirstAnnotation(OpenAPIDefinition.class);
-
-        setTags(emptyListIfNull(openApi.getTags()),
-                openAPIDefinitionAnnotation.map(OpenAPIDefinition::tags).map(Arrays::stream).orElseGet(Stream::empty),
-                openApi::setTags
-        );
-
-        setServers(openAPIDefinitionAnnotation.map(OpenAPIDefinition::servers).orElse(null), openApi::setServers);
-
-        setMapIfNotEmpty(buildSecuritySchemes(),
-                securitySchemes -> {
-                    if (openApi.getComponents() == null) {
-                        openApi.setComponents(new Components());
-                    }
-                    openApi.getComponents().setSecuritySchemes(securitySchemes);
-                }
-        );
+        setServers(openApi::setServers);
     }
 
-    public void setTags(List<Tag> existingTags, Stream<io.swagger.v3.oas.annotations.tags.Tag> tagAnnotations, Consumer<List<Tag>> tagsSetter) {
-        Map<String, Tag> tagsByName = buildStringMapFromStream(
-                tagAnnotations,
-                io.swagger.v3.oas.annotations.tags.Tag::name,
-                tagAnnotationMapper::map
-        );
-        existingTags.forEach(tag -> tagsByName.merge(tag.getName(), tag, ReferencedTagsHandlerImpl::mergeTag));
-        ReferencedTagsHandlerImpl.applyToOpenApi(tagsByName, tagsSetter);
-    }
-
-    private Map<String, SecurityScheme> buildSecuritySchemes() {
-        return Stream.concat(
-                buildStringMapFromStream(
-                        springBootApplicationAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.security.SecurityScheme.class),
-                        io.swagger.v3.oas.annotations.security.SecurityScheme::name,
-                        securitySchemeAnnotationMapper::map
-                ).entrySet().stream(),
-                openApiSecuritySchemesSuppliers.stream()
+    public void setServers(Consumer<List<Server>> setter) {
+        List<Server> servers = Stream.concat(
+                openApiServersSuppliers.stream()
                         .map(Supplier::get)
-                        .map(Map::entrySet)
-                        .flatMap(Collection::stream)
-        ).collect(Collectors.toMap(ensureKeyIsNotBlank(Map.Entry::getKey), Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
-    }
-
-    public void setServers(@Nullable io.swagger.v3.oas.annotations.servers.Server[] serverAnnotations, Consumer<List<Server>> setter) {
-        List<Server> servers = openApiServersSuppliers.stream()
-                .map(Supplier::get)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        if (serverAnnotations != null) {
-            servers.addAll(serverAnnotationMapper.mapArray(serverAnnotations));
-        }
+                        .flatMap(Collection::stream),
+                Stream.concat(
+                        openAPIDefinitionAnnotationSupplier.getValues(OpenAPIDefinition::servers),
+                        springBootApplicationAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.servers.Server.class)
+                ).map(serverAnnotationMapper::map)
+        ).collect(Collectors.toList());
         setCollectionIfNotEmpty(servers, setter);
     }
 
