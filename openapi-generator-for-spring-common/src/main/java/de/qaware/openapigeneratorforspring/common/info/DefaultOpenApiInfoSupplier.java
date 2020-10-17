@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.info;
 
 import de.qaware.openapigeneratorforspring.common.mapper.InfoAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.util.OpenAPIDefinitionAnnotationSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationClassSupplier;
 import de.qaware.openapigeneratorforspring.model.info.Contact;
 import de.qaware.openapigeneratorforspring.model.info.Info;
@@ -19,11 +19,11 @@ public class DefaultOpenApiInfoSupplier implements OpenApiInfoSupplier {
     private final InfoAnnotationMapper infoAnnotationMapper;
     private final OpenApiVersionSupplier openApiVersionSupplier;
     private final OpenApiSpringBootApplicationClassSupplier springBootApplicationClassSupplier;
-    private final OpenApiSpringBootApplicationAnnotationsSupplier springBootApplicationAnnotationsSupplier;
+    private final OpenAPIDefinitionAnnotationSupplier openAPIDefinitionAnnotationSupplier;
 
     @Override
     public Info get() {
-        Info info = springBootApplicationAnnotationsSupplier.findFirstAnnotation(OpenAPIDefinition.class)
+        Info info = openAPIDefinitionAnnotationSupplier.get()
                 .map(OpenAPIDefinition::info)
                 .map(infoAnnotationMapper::map)
                 .orElseGet(Info::new);

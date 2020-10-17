@@ -4,6 +4,8 @@ import de.qaware.openapigeneratorforspring.common.DefaultOpenApiCustomizer;
 import de.qaware.openapigeneratorforspring.common.OpenApiCustomizer;
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
 import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
+import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemSupportFactory;
@@ -48,12 +50,17 @@ public class OpenApiGeneratorAutoConfiguration {
     public DefaultOpenApiCustomizer defaultOpenApiCustomizer(
             OpenApiInfoSupplier openApiInfoSupplier,
             ServerAnnotationMapper serverAnnotationMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper,
+            ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper,
             Optional<List<OpenApiServersSupplier>> optionalOpenApiServersSuppliers,
             OpenApiSpringBootApplicationAnnotationsSupplier springBootApplicationAnnotationsSupplier,
             OpenAPIDefinitionAnnotationSupplier openAPIDefinitionAnnotationSupplier
     ) {
-        return new DefaultOpenApiCustomizer(openApiInfoSupplier,
+        return new DefaultOpenApiCustomizer(
                 serverAnnotationMapper,
+                externalDocumentationAnnotationMapper,
+                extensionAnnotationMapper,
+                openApiInfoSupplier,
                 optionalOpenApiServersSuppliers.orElseGet(Collections::emptyList),
                 springBootApplicationAnnotationsSupplier,
                 openAPIDefinitionAnnotationSupplier

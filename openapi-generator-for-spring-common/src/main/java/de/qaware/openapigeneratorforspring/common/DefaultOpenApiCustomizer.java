@@ -1,6 +1,8 @@
 package de.qaware.openapigeneratorforspring.common;
 
 import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
+import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.server.OpenApiServersSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenAPIDefinitionAnnotationSupplier;
@@ -18,22 +20,31 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
 
 @RequiredArgsConstructor
 public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
     public static int ORDER = DEFAULT_ORDER;
 
-    private final OpenApiInfoSupplier openApiInfoSupplier;
     private final ServerAnnotationMapper serverAnnotationMapper;
+    private final ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper;
+    private final ExtensionAnnotationMapper extensionAnnotationMapper;
+
+    private final OpenApiInfoSupplier openApiInfoSupplier;
     private final List<OpenApiServersSupplier> openApiServersSuppliers;
+
     private final OpenApiSpringBootApplicationAnnotationsSupplier springBootApplicationAnnotationsSupplier;
     private final OpenAPIDefinitionAnnotationSupplier openAPIDefinitionAnnotationSupplier;
 
     @Override
     public void customize(OpenApi openApi) {
         openApi.setInfo(openApiInfoSupplier.get()); // always set info to comply with spec
-        // TODO set more properties?
         setServers(openApi::setServers);
+        openAPIDefinitionAnnotationSupplier.get().ifPresent(openAPIDefinition -> {
+            setIfNotEmpty(externalDocumentationAnnotationMapper.map(openAPIDefinition.externalDocs()), openApi::setExternalDocs);
+            setMapIfNotEmpty(extensionAnnotationMapper.mapArray(openAPIDefinition.extensions()), openApi::setExtensions);
+        });
     }
 
     public void setServers(Consumer<List<Server>> setter) {

@@ -4,6 +4,10 @@
     "title": "API for App16",
     "version": "unknown"
   },
+  "externalDocs": {
+    "description": "external doc",
+    "url": "http://link-to-external"
+  },
   "servers": [
     {
       "url": "http://some-url-from-supplier",
@@ -171,5 +175,6 @@
         "type": "apiKey"
       }
     }
-  }
+  },
+  "x-1": "x-2"
 }

@@ -1,8 +1,11 @@
 package de.qaware.openapigeneratorforspring.test.app16;
 
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
@@ -20,7 +23,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         },
         security = {
                 @SecurityRequirement(name = "scheme1", scopes = "scope1")
-        }
+        },
+        externalDocs = @ExternalDocumentation(description = "external doc", url = "http://link-to-external"),
+        extensions = @Extension(properties = @ExtensionProperty(name = "x-1", value = "x-2"))
 )
 @SecurityScheme(
         type = SecuritySchemeType.APIKEY,
