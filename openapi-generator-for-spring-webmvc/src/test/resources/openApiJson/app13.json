@@ -9,27 +9,27 @@
       "name": "tag-10"
     },
     {
-      "name": "tag-3"
-    },
-    {
       "name": "tag-4"
-    },
-    {
-      "name": "tag-5",
-      "description": "some description 5"
-    },
-    {
-      "name": "tag-6"
-    },
-    {
-      "name": "tag-7"
     },
     {
       "name": "tag-8",
       "description": "some description 8"
     },
     {
+      "name": "tag-3"
+    },
+    {
+      "name": "tag-5",
+      "description": "some description 5"
+    },
+    {
       "name": "tag-1"
+    },
+    {
+      "name": "tag-6"
+    },
+    {
+      "name": "tag-7"
     },
     {
       "name": "tag-2"

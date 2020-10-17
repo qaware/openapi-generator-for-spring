@@ -13,6 +13,7 @@ import java.util.List;
 @Import({
         OpenApiGeneratorReferenceExampleAutoConfiguration.class,
         OpenApiGeneratorReferenceHeaderAutoConfiguration.class,
+        OpenApiGeneratorReferenceLinkAutoConfiguration.class,
         OpenApiGeneratorReferenceParameterAutoConfiguration.class,
         OpenApiGeneratorReferenceRequestBodyAutoConfiguration.class,
         OpenApiGeneratorReferenceResponseAutoConfiguration.class,

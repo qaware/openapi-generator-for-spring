@@ -7,12 +7,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ReferenceType {
 
-    SCHEMA("#/components/schemas/"),
-    API_RESPONSE("#/components/responses/"),
-    PARAMETER("#/components/parameters/"),
     EXAMPLE("#/components/examples/"),
-    REQUEST_BODY("#/components/requestBodies/"),
     HEADER("#/components/headers/"),
+    PARAMETER("#/components/parameters/"),
+    REQUEST_BODY("#/components/requestBodies/"),
+    API_RESPONSE("#/components/responses/"),
+    SCHEMA("#/components/schemas/"),
+    // security schemes are referenced directly by @SecurityRequirement
+    LINK("#/components/links/"),
+    // TODO implement referencing callbacks
     ;
 
     @Getter(AccessLevel.PROTECTED)

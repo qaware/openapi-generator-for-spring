@@ -53,7 +53,8 @@ public class App4FullController {
                                                     })
                                     }
                             )
-                    )
+                    ),
+                    @Link(name = "link2", description = "link 2")
             },
             content = {
                     @Content(mediaType = "application/json",
@@ -115,7 +116,8 @@ public class App4FullController {
                                     )
                             }
                     )
-            }
+            },
+            links = @Link(name = "link2", description = "link 2")
     )
     public String getMapping4() {
         return null;

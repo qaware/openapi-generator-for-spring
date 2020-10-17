@@ -9,6 +9,9 @@
       "get": {
         "operationId": "getMapping1",
         "responses": {
+          "200": {
+            "description": "All ok"
+          },
           "310": {
             "description": "Some more responses 1"
           },
@@ -26,9 +29,6 @@
           },
           "411": {
             "$ref": "#/components/responses/411"
-          },
-          "200": {
-            "description": "All ok"
           },
           "201": {
             "description": "Default response",
@@ -96,15 +96,15 @@
           "200": {
             "description": "Default response",
             "headers": {
+              "header1": {
+                "$ref": "#/components/headers/header1"
+              },
               "header2": {
                 "description": "Description header 2",
                 "required": true,
                 "schema": {
                   "type": "string"
                 }
-              },
-              "header1": {
-                "$ref": "#/components/headers/header1"
               }
             },
             "content": {
@@ -128,6 +128,11 @@
                   "type": "string"
                 }
               }
+            },
+            "links": {
+              "link2": {
+                "$ref": "#/components/links/link2"
+              }
             }
           }
         }
@@ -135,20 +140,6 @@
     }
   },
   "components": {
-    "schemas": {
-      "schema-example-object-1": {
-        "title": "schema title 1",
-        "type": "string"
-      }
-    },
-    "responses": {
-      "411": {
-        "description": "Some more responses 2 from base base"
-      },
-      "503": {
-        "description": "Something went really wrong from base"
-      }
-    },
     "examples": {
       "MyExampleName": {
         "summary": "summary example2",
@@ -165,6 +156,25 @@
       },
       "header1": {
         "description": "Description header 1"
+      }
+    },
+    "responses": {
+      "411": {
+        "description": "Some more responses 2 from base base"
+      },
+      "503": {
+        "description": "Something went really wrong from base"
+      }
+    },
+    "schemas": {
+      "schema-example-object-1": {
+        "title": "schema title 1",
+        "type": "string"
+      }
+    },
+    "links": {
+      "link2": {
+        "description": "link 2"
       }
     }
   }
