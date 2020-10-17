@@ -64,7 +64,12 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
         AtomicReference<ApiResponse> defaultApiResponseHolder = new AtomicReference<>();
         ApiResponses modified = new ApiResponses();
         apiResponses.forEach((responseCode, apiResponse) -> {
-            if (DEFAULT_ANNOTATION_RESPONSE_CODE.equals(responseCode)) {
+            if (DEFAULT_ANNOTATION_RESPONSE_CODE.equals(responseCode) || responseCodeFromMethod.equals(responseCode)) {
+                if (defaultApiResponseHolder.get() != null) {
+                    // we cannot meaningfully merge those two API responses, so bail out
+                    throw new IllegalStateException("Found default API response object for key " + DEFAULT_ANNOTATION_RESPONSE_CODE
+                            + " and method code " + responseCodeFromMethod + ". Only one variant is supported for default response.");
+                }
                 defaultApiResponseHolder.set(apiResponse);
                 modified.put(responseCodeFromMethod, apiResponse);
             } else {

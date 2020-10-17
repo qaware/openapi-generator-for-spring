@@ -77,14 +77,129 @@
         "operationId": "getMapping3",
         "responses": {
           "200": {
-            "description": "Default response",
+            "description": "All ok",
+            "headers": {
+              "header1": {
+                "$ref": "#/components/headers/header1"
+              },
+              "header2": {
+                "description": "Description header 2",
+                "required": true,
+                "deprecated": true,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
             "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/schema-example-object-1"
+                },
+                "examples": {
+                  "Example1": {
+                    "$ref": "#/components/examples/Example2"
+                  },
+                  "MyExampleName": {
+                    "$ref": "#/components/examples/MyExampleName"
+                  },
+                  "Example0": {
+                    "summary": "summary example1",
+                    "description": "example description 1",
+                    "value": "some example value 1",
+                    "x-extension-example-object-1": {
+                      "name1": "value2"
+                    }
+                  }
+                },
+                "encoding": {
+                  "propertyInSchema1": {
+                    "contentType": "application/json",
+                    "style": "form",
+                    "explode": true,
+                    "allowReserved": true
+                  },
+                  "propertyInSchema2": {
+                    "contentType": "text/plain",
+                    "headers": {
+                      "header3": {
+                        "$ref": "#/components/headers/header3"
+                      }
+                    },
+                    "style": "form",
+                    "explode": true,
+                    "allowReserved": true,
+                    "x-extension-encoding-1": {
+                      "name1": "value2"
+                    }
+                  }
+                },
+                "x-extension-content-1": {
+                  "name1": "value2"
+                }
+              },
+              "text/plain": {
+                "examples": {
+                  "MyExampleName": {
+                    "$ref": "#/components/examples/MyExampleName"
+                  },
+                  "Example2": {
+                    "$ref": "#/components/examples/Example2"
+                  }
+                }
+              },
               "*/*": {
                 "schema": {
                   "type": "string"
                 }
               }
-            }
+            },
+            "links": {
+              "link1": {
+                "operationId": "getMapping3",
+                "parameters": {
+                  "parameter1": "parameterExpression1"
+                },
+                "requestBody": {
+                  "keyInBody1": "value1"
+                },
+                "description": "link 1 description",
+                "server": {
+                  "url": "http://link-server1",
+                  "description": "Server for Link 1",
+                  "variables": {
+                    "server-variable-1": {
+                      "description": "Server variable 1",
+                      "enum": [
+                        "value1",
+                        "value2"
+                      ],
+                      "default": "value1",
+                      "x-extension-server-variable-1": {
+                        "name1": "value2"
+                      },
+                      "x-extension-server-variable-2": {
+                        "name1": {
+                          "key1": "value1",
+                          "key2": "value2"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "link2": {
+                "$ref": "#/components/links/link2"
+              }
+            },
+            "x-extension-api-response-1": {
+              "name1": "value2"
+            },
+            "x-nameless-property-2": {
+              "key1": "value1",
+              "key2": "value2"
+            },
+            "x-nameless-property-1": "value2"
           }
         }
       }
