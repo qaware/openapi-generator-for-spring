@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
@@ -44,7 +43,7 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
         Method method = context.getOperationInfo().getHandlerMethod().getMethod();
 
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method);
-        getMergedApiResponsesFromSupplier(annotationsSupplier).forEach(apiResponseAnnotation -> {
+        annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.responses.ApiResponse.class).forEach(apiResponseAnnotation -> {
             String responseCode = apiResponseAnnotation.responseCode();
             if (StringUtils.isBlank(responseCode)) {
                 // at least it should be set to the "default" string
@@ -56,13 +55,6 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
         });
 
         return apiResponses;
-    }
-
-    private static Stream<io.swagger.v3.oas.annotations.responses.ApiResponse> getMergedApiResponsesFromSupplier(AnnotationsSupplier annotationsSupplier) {
-        return Stream.concat(
-                annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.responses.ApiResponses.class).flatMap(x -> Stream.of(x.value())),
-                annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.responses.ApiResponse.class)
-        );
     }
 
     @Override

@@ -43,7 +43,7 @@ public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
     public void customize(OpenApi openApi) {
 
         openApi.setInfo(openApiInfoSupplier.get()); // always set info to comply with spec
-        // TODO set more properties
+        // TODO set more properties?
         Optional<OpenAPIDefinition> openAPIDefinitionAnnotation = springBootApplicationAnnotationsSupplier.findFirstAnnotation(OpenAPIDefinition.class);
         setServers(openAPIDefinitionAnnotation.map(OpenAPIDefinition::servers).orElse(null), openApi::setServers);
 
@@ -59,7 +59,8 @@ public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
 
     private Map<String, SecurityScheme> buildSecuritySchemes() {
         return Stream.concat(
-                buildStringMapFromStream(findSecuritySchemeAnnotations(),
+                buildStringMapFromStream(
+                        springBootApplicationAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.security.SecurityScheme.class),
                         io.swagger.v3.oas.annotations.security.SecurityScheme::name,
                         securitySchemeAnnotationMapper::map
                 ).entrySet().stream(),
@@ -68,13 +69,6 @@ public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
                         .map(Map::entrySet)
                         .flatMap(Collection::stream)
         ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
-    }
-
-    private Stream<io.swagger.v3.oas.annotations.security.SecurityScheme> findSecuritySchemeAnnotations() {
-        return Stream.concat(
-                springBootApplicationAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.security.SecurityScheme.class),
-                springBootApplicationAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.security.SecuritySchemes.class).flatMap(x -> Stream.of(x.value()))
-        );
     }
 
     public void setServers(@Nullable io.swagger.v3.oas.annotations.servers.Server[] serverAnnotations, Consumer<List<Server>> setter) {

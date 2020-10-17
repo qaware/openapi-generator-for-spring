@@ -6,11 +6,9 @@ import de.qaware.openapigeneratorforspring.common.mapper.CallbackAnnotationMappe
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.model.operation.Callback;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
-import io.swagger.v3.oas.annotations.callbacks.Callbacks;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
@@ -27,10 +25,7 @@ public class DefaultOperationCallbackCustomizer implements OperationCustomizer {
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMethodWithDeclaringClass(operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod());
         Map<String, Callback> callbacks = buildStringMapFromStream(
-                Stream.concat(
-                        annotationsSupplier.findAnnotations(Callbacks.class).flatMap(annotation -> Stream.of(annotation.value())),
-                        annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.callbacks.Callback.class)
-                ),
+                annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.callbacks.Callback.class),
                 io.swagger.v3.oas.annotations.callbacks.Callback::name,
                 callbackAnnotation -> callbackAnnotationMapper.map(callbackAnnotation,
                         operationBuilderContext.getReferencedItemConsumerSupplier()

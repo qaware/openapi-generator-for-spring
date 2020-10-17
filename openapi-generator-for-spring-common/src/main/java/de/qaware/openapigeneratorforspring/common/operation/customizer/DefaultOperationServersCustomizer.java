@@ -6,7 +6,6 @@ import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.server.Server;
-import io.swagger.v3.oas.annotations.servers.Servers;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -36,11 +35,7 @@ public class DefaultOperationServersCustomizer implements OperationCustomizer {
 
     private Stream<Server> collectServersFromMethodAndClass(OperationBuilderContext operationBuilderContext) {
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMethodWithDeclaringClass(operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod());
-        return Stream.concat(
-                annotationsSupplier.findAnnotations(Servers.class).flatMap(x -> Stream.of(x.value())),
-                annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.servers.Server.class)
-        )
-                .map(serverAnnotationMapper::map);
+        return annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.servers.Server.class).map(serverAnnotationMapper::map);
     }
 
     @Override

@@ -1,11 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.annotation;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.annotation.Inherited;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -36,20 +35,43 @@ public class DefaultAnnotationsSupplierFactoryTest {
 
     @Test
     public void repeatableAnnotations() {
-        assertThat(sut.createFromAnnotatedElement(TestClassWithOneRepeatable.class).findAnnotations(ApiResponse.class)).hasSize(1);
-        assertThat(sut.createFromAnnotatedElement(TestClassWithOneRepeatable.class).findAnnotations(ApiResponses.class)).isEmpty();
+        assertThat(sut.createFromAnnotatedElement(TestClassWithOneRepeatable.class).findAnnotations(RepeatableTestAnnotation.class)).hasSize(1);
+        assertThat(sut.createFromAnnotatedElement(TestClassWithOneRepeatable.class).findAnnotations(RepeatableTestAnnotations.class)).isEmpty();
 
-        assertThat(sut.createFromAnnotatedElement(TestClassWithTwoRepeatable.class).findAnnotations(ApiResponse.class)).isEmpty();
-        assertThat(sut.createFromAnnotatedElement(TestClassWithTwoRepeatable.class).findAnnotations(ApiResponses.class))
+        assertThat(sut.createFromAnnotatedElement(TestClassWithTwoRepeatable.class).findAnnotations(RepeatableTestAnnotation.class)).hasSize(2);
+        assertThat(sut.createFromAnnotatedElement(TestClassWithTwoRepeatable.class).findAnnotations(RepeatableTestAnnotations.class))
                 .hasSize(1)
                 .allSatisfy(apiResponses -> assertThat(apiResponses.value()).hasSize(2));
+
+        assertThat(sut.createFromAnnotatedElement(TestClassWithRepeatableTestAnnotations.class).findAnnotations(RepeatableTestAnnotations.class))
+                .hasSize(1)
+                .allSatisfy(apiResponses -> assertThat(apiResponses.value()).hasSize(2));
+
     }
 
     @Inherited
     @Retention(RetentionPolicy.RUNTIME)
     @Target(value = {CONSTRUCTOR, FIELD, LOCAL_VARIABLE, METHOD, PACKAGE, PARAMETER, TYPE})
-    public @interface TestAnnotation {
+    private @interface TestAnnotation {
         // just for testing
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(value = {CONSTRUCTOR, FIELD, LOCAL_VARIABLE, METHOD, PACKAGE, PARAMETER, TYPE})
+    @Repeatable(RepeatableTestAnnotations.class)
+    private @interface RepeatableTestAnnotation {
+        // just for testing
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(value = {CONSTRUCTOR, FIELD, LOCAL_VARIABLE, METHOD, PACKAGE, PARAMETER, TYPE})
+    private @interface RepeatableTestAnnotations {
+        // just for testing
+        RepeatableTestAnnotation[] value() default {};
+
+        // this otherProperty makes it appear as a stand-alone annotation,
+        // otherwise, Spring annotations support filters it
+        boolean otherProperty() default false;
     }
 
     @SuppressWarnings("DeprecatedIsStillUsed") // annotation used for test
@@ -63,14 +85,20 @@ public class DefaultAnnotationsSupplierFactoryTest {
         // just for testing
     }
 
-    @ApiResponse(description = "description1")
-    @ApiResponse(description = "description2")
+    @RepeatableTestAnnotation
+    @RepeatableTestAnnotation
     private static class TestClassWithTwoRepeatable {
         // just for testing
     }
 
-    @ApiResponse(description = "description1")
+    @RepeatableTestAnnotations({@RepeatableTestAnnotation, @RepeatableTestAnnotation})
+    private static class TestClassWithRepeatableTestAnnotations {
+        // just for testing
+    }
+
+    @RepeatableTestAnnotation
     private static class TestClassWithOneRepeatable {
         // just for testing
     }
+
 }

@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.test.app16;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.oas.annotations.servers.Servers;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +41,15 @@ public class App16Controller {
     @GetMapping("/mapping3")
     @Server(url = "http://url2", description = "Server 2")
     public void mapping3() {
+
+    }
+
+    @GetMapping("/mapping4")
+    @Servers({
+            @Server(url = "http://url3", description = "Server 3"),
+            @Server(url = "http://url4", description = "Server 4")
+    })
+    public void mapping4() {
 
     }
 }

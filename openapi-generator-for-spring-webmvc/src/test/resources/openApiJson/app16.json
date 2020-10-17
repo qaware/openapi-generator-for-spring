@@ -87,6 +87,30 @@
           }
         ]
       }
+    },
+    "/basePath/to/mapping4": {
+      "get": {
+        "operationId": "mapping4",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        },
+        "servers": [
+          {
+            "url": "http://url3",
+            "description": "Server 3"
+          },
+          {
+            "url": "http://url4",
+            "description": "Server 4"
+          },
+          {
+            "url": "http://url1",
+            "description": "Server 1"
+          }
+        ]
+      }
     }
   },
   "components": {
