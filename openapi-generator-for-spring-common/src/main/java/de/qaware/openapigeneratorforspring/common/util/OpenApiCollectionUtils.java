@@ -20,9 +20,10 @@ public class OpenApiCollectionUtils {
     }
 
     public static <T> List<T> emptyListIfNull(@Nullable T[] values) {
-        if (values == null) {
-            return Collections.emptyList();
-        }
-        return Arrays.asList(values);
+        return values == null ? Collections.emptyList() : Arrays.asList(values);
+    }
+
+    public static <T> List<T> emptyListIfNull(@Nullable List<T> values) {
+        return values == null ? Collections.emptyList() : values;
     }
 }

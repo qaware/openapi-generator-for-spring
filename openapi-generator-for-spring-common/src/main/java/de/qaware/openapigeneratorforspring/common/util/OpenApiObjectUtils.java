@@ -26,4 +26,7 @@ public class OpenApiObjectUtils {
         setIf(value, v -> !v.isEmpty(), setter);
     }
 
+    public static <T> T nullOr(@Nullable T value, T defValue) {
+        return value == null ? defValue : value;
+    }
 }

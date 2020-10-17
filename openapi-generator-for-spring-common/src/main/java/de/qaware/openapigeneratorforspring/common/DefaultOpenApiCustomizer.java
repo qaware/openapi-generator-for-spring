@@ -3,6 +3,8 @@ package de.qaware.openapigeneratorforspring.common;
 import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
 import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.reference.tag.ReferencedTagsHandlerImpl;
 import de.qaware.openapigeneratorforspring.common.security.OpenApiSecuritySchemesSupplier;
 import de.qaware.openapigeneratorforspring.common.server.OpenApiServersSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
@@ -10,10 +12,12 @@ import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.OpenApi;
 import de.qaware.openapigeneratorforspring.model.security.SecurityScheme;
 import de.qaware.openapigeneratorforspring.model.server.Server;
+import de.qaware.openapigeneratorforspring.model.tag.Tag;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,6 +28,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.emptyListIfNull;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.ensureKeyIsNotBlank;
@@ -35,6 +40,7 @@ public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
 
     private final OpenApiInfoSupplier openApiInfoSupplier;
     private final ServerAnnotationMapper serverAnnotationMapper;
+    private final TagAnnotationMapper tagAnnotationMapper;
     private final List<OpenApiServersSupplier> openApiServersSuppliers;
     private final SecuritySchemeAnnotationMapper securitySchemeAnnotationMapper;
     private final List<OpenApiSecuritySchemesSupplier> openApiSecuritySchemesSuppliers;
@@ -42,10 +48,15 @@ public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
 
     @Override
     public void customize(OpenApi openApi) {
-
         openApi.setInfo(openApiInfoSupplier.get()); // always set info to comply with spec
         // TODO set more properties?
+
         Optional<OpenAPIDefinition> openAPIDefinitionAnnotation = springBootApplicationAnnotationsSupplier.findFirstAnnotation(OpenAPIDefinition.class);
+
+        setTags(emptyListIfNull(openApi.getTags()),
+                openAPIDefinitionAnnotation.map(OpenAPIDefinition::tags).map(Arrays::stream).orElseGet(Stream::empty),
+                openApi::setTags
+        );
 
         setServers(openAPIDefinitionAnnotation.map(OpenAPIDefinition::servers).orElse(null), openApi::setServers);
 
@@ -57,6 +68,16 @@ public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
                     openApi.getComponents().setSecuritySchemes(securitySchemes);
                 }
         );
+    }
+
+    public void setTags(List<Tag> existingTags, Stream<io.swagger.v3.oas.annotations.tags.Tag> tagAnnotations, Consumer<List<Tag>> tagsSetter) {
+        Map<String, Tag> tagsByName = buildStringMapFromStream(
+                tagAnnotations,
+                io.swagger.v3.oas.annotations.tags.Tag::name,
+                tagAnnotationMapper::map
+        );
+        existingTags.forEach(tag -> tagsByName.merge(tag.getName(), tag, ReferencedTagsHandlerImpl::mergeTag));
+        ReferencedTagsHandlerImpl.applyToOpenApi(tagsByName, tagsSetter);
     }
 
     private Map<String, SecurityScheme> buildSecuritySchemes() {
