@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -83,25 +84,31 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
             InitialSchema initialSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
             Schema schemaWithoutProperties = initialSchema.getSchema();
-            List<Consumer<Schema>> schemaReferenceSetters = referencedSchemas.findSchemaReference(schemaWithoutProperties);
+            Map<String, AnnotatedMember> properties = schemaPropertiesResolver.findProperties(javaType);
+            List<Consumer<Schema>> schemaReferenceSetters = referencedSchemas.findSchemaReference(schemaWithoutProperties, properties.keySet());
             if (schemaReferenceSetters != null) {
                 // we've seen this initialSchema before, then simply reference it lazily
                 schemaReferenceSetters.add(schemaConsumer);
             } else {
-                Map<String, AnnotatedMember> properties = schemaPropertiesResolver.findProperties(javaType);
                 // important to add the schemaWithoutProperties first before traversing the nested properties (if any)
                 // this prevents infinite loops when types refer to themselves
-                ReferencedSchemas.PropertyConsumer propertyConsumer = referencedSchemas.addNewSchemaReference(schemaWithoutProperties, schemaConsumer, recursionDepth == 0);
+                ReferencedSchemas.PropertyConsumer propertyConsumer = referencedSchemas.addNewSchemaReference(
+                        schemaWithoutProperties,
+                        schemaConsumer,
+                        recursionDepth == 0,
+                        properties.keySet(),
+                        ReferencedSchemas.CustomizerSupport.of(javaType, annotationsSupplier)
+                );
                 if (properties.isEmpty() || initialSchema.isIgnoreNestedProperties()) {
                     return;
                 }
                 properties.forEach((propertyName, member) -> {
                     AnnotationsSupplier propertyAnnotationsSupplier = annotationsSupplierFactory.createFromMember(member)
                             .andThen(annotationsSupplierFactory.createFromAnnotatedElement(member.getType().getRawClass()));
-                    Consumer<Schema> propertySchemaModifier = propertyConsumer.consumeProperty(propertyName, member.getType(), propertyAnnotationsSupplier);
+                    Consumer<Schema> propertySchemaCustomizer = propertyConsumer.consumeProperty(propertyName, member.getType(), propertyAnnotationsSupplier);
                     // here the recursion happens!
                     buildSchemaFromType(member.getType(), propertyAnnotationsSupplier,
-                            propertySchemaModifier.andThen(propertySchema -> schemaWithoutProperties.addProperty(propertyName, propertySchema)),
+                            propertySchemaCustomizer.andThen(propertySchema -> schemaWithoutProperties.addProperty(propertyName, propertySchema)),
                             recursionDepth + 1
                     );
                 });
@@ -111,14 +118,12 @@ public class DefaultSchemaResolver implements SchemaResolver {
         private InitialSchema buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
             InitialSchema initialSchema = getSchemaFromInitialTypeResolvers(javaType);
 
-            for (SchemaCustomizer schemaCustomizer : schemaCustomizers) {
-                schemaCustomizer.customizeBeforeProperties(initialSchema.getSchema(), javaType, annotationsSupplier);
-            }
+            schemaCustomizers.forEach(customizer -> customizer.customize(initialSchema.getSchema(), javaType, annotationsSupplier, null));
 
             // applying the schemaAnnotationMapper is treated specially here:
             // 1) It can only be built with an existing SchemaResolver (this class!)
             //    so that would end up in a circular loop if it wasn't resolved by using the schemaAnnotationMapperFactory
-            // 2) Using it requires a referencedSchemaConsumer, something which is only present on invocation
+            // 2) Using it requires a referencedSchemaConsumer, something which is only present during building and not as a singleton
             annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
                     // apply in reverse order
                     .collect(Collectors.toCollection(LinkedList::new))
@@ -140,15 +145,11 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
         void resolveReferencedSchemas() {
             referencedSchemas.forEach(referencedSchema -> {
+
+//                schemaCustomizers.forEach(referencedSchema::callCustomizer);
+
                 Schema schema = referencedSchema.getSchema();
                 int schemaReferenceConsumersSize = referencedSchema.getReferenceConsumersSize();
-                if (schema.isEmpty()) {
-                    throw new IllegalStateException("Encountered completely empty schema");
-                }
-                if (schemaReferenceConsumersSize == 0) {
-                    throw new IllegalStateException("Encountered schema without any schema consumers, that's strange");
-                }
-
                 if (schemaReferenceConsumersSize > 1 && referencedSchema.hasProperties()) {
                     // already set (not globally unique) reference here to have a "comparable" schema after this resolution
                     // globally unique reference identifier will be set after all schemas are collected
@@ -184,15 +185,25 @@ public class DefaultSchemaResolver implements SchemaResolver {
             private final Schema schema;
             @Getter
             private final boolean topLevel;
+            private final Set<String> propertyNames;
             private final LinkedList<Consumer<Schema>> referenceConsumers;
-            private final Map<String, ReferencedSchemaProperty> properties = new LinkedHashMap<>();
+            private final CustomizerSupport customizerSupport;
+            private final Map<String, CustomizerSupport> properties = new LinkedHashMap<>();
 
-            public boolean hasProperties() {
+            void addProperty(String propertyName, CustomizerSupport propertyCustomizerSupport) {
+                properties.put(propertyName, propertyCustomizerSupport);
+            }
+
+            boolean hasProperties() {
                 return !properties.isEmpty();
             }
 
-            public int getReferenceConsumersSize() {
+            int getReferenceConsumersSize() {
                 return referenceConsumers.size();
+            }
+
+            void callCustomizer(SchemaCustomizer customizer) {
+                customizer.customize(schema, customizerSupport.type, customizerSupport.annotationsSupplier, properties);
             }
 
             void consumeSchema(Schema newSchema) {
@@ -203,24 +214,44 @@ public class DefaultSchemaResolver implements SchemaResolver {
         }
 
         @RequiredArgsConstructor(staticName = "of")
-        private static class ReferencedSchemaProperty {
+        private static class CustomizerSupport implements SchemaCustomizer.SchemaProperty {
+            @Getter
             private final JavaType type;
+            @Getter
             private final AnnotationsSupplier annotationsSupplier;
-            private final List<Consumer<Schema>> modifiers = new ArrayList<>();
+            private final List<Consumer<Schema>> propertyCustomizers = new ArrayList<>();
+
+            void customizePropertySchema(Schema propertySchema) {
+                propertyCustomizers.forEach(customizer -> customizer.accept(propertySchema));
+            }
+
+            @Override
+            public void customize(Consumer<Schema> propertySchemaCustomizer) {
+                propertyCustomizers.add(propertySchemaCustomizer);
+            }
         }
 
         private final LinkedList<ReferencedSchema> items = new LinkedList<>();
 
-        public void forEach(Consumer<ReferencedSchema> action) {
-            items.descendingIterator().forEachRemaining(action);
+        void forEach(Consumer<ReferencedSchema> action) {
+            items.descendingIterator().forEachRemaining(referencedSchema -> {
+                if (referencedSchema.schema.isEmpty()) {
+                    throw new IllegalStateException("Encountered completely empty schema");
+                }
+                if (referencedSchema.referenceConsumers.isEmpty()) {
+                    throw new IllegalStateException("Encountered schema without any schema consumers, that's strange");
+                }
+                action.accept(referencedSchema);
+            });
         }
 
         @Nullable
-        public List<Consumer<Schema>> findSchemaReference(Schema schema) {
-            ensurePropertiesAreNotSet(schema);
+        List<Consumer<Schema>> findSchemaReference(Schema schema, Set<String> propertyNames) {
+            ensurePropertiesAreNowhereSet(schema);
 
             return items.stream()
-                    .filter(referencedSchema -> referencedSchema.schema.equals(schema)) // schema name is not part of "equals"!
+                    .filter(referencedSchema -> referencedSchema.schema.equals(schema)
+                            && referencedSchema.propertyNames.equals(propertyNames)) // schema name is not part of "equals"!
                     .reduce((a, b) -> {
                         throw new IllegalStateException("Found two entries for " + schema + ": " + a + " vs. " + b);
                     })
@@ -228,35 +259,39 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     .orElse(null);
         }
 
-        public void ensurePropertiesAreNotSet(Schema schema) {
+        void ensurePropertiesAreNowhereSet(Schema schema) {
             // safe-guard against wrong implementation of GenericTypeResolvers
             // they must defer setting properties until resolveReferencedSchemas is called
             if (schema.getProperties() != null) {
                 throw new IllegalStateException("To be added schema has non-null properties");
             }
-            items.stream().map(referencedSchema -> referencedSchema.schema).forEach(existingSchema -> {
+            items.stream().map(ReferencedSchema::getSchema).forEach(existingSchema -> {
                 if (existingSchema.getProperties() != null) {
                     throw new IllegalStateException("Existing referenced schema has non-null properties");
                 }
             });
         }
 
-        public PropertyConsumer addNewSchemaReference(Schema schema, Consumer<Schema> firstSchemaConsumer, boolean isTopLevel) {
+        PropertyConsumer addNewSchemaReference(Schema schema, Consumer<Schema> firstSchemaConsumer, boolean isTopLevel, Set<String> propertyNames, CustomizerSupport customizerSupport) {
             ReferencedSchema referencedSchema = new ReferencedSchema(
                     schema,
                     isTopLevel,
-                    new LinkedList<>(Collections.singleton(firstSchemaConsumer))
+                    propertyNames,
+                    new LinkedList<>(Collections.singleton(firstSchemaConsumer)),
+                    customizerSupport
             );
             items.add(referencedSchema);
             return (propertyName, propertyType, propertyAnnotationsSupplier) -> {
-                ReferencedSchemaProperty referencedSchemaProperty = ReferencedSchemaProperty.of(propertyType, propertyAnnotationsSupplier);
-                referencedSchema.properties.put(propertyName, referencedSchemaProperty);
-                return propertySchema -> referencedSchemaProperty.modifiers.forEach(modifier -> modifier.accept(propertySchema));
+                CustomizerSupport propertyCustomizerSupport = CustomizerSupport.of(propertyType, propertyAnnotationsSupplier);
+                referencedSchema.addProperty(propertyName, propertyCustomizerSupport);
+                // return customizer for this property
+                // the list of customizers is filled when the schema is finally built
+                return propertyCustomizerSupport::customizePropertySchema;
             };
         }
 
         @FunctionalInterface
-        public interface PropertyConsumer {
+        interface PropertyConsumer {
             Consumer<Schema> consumeProperty(String propertyName, JavaType propertyType, AnnotationsSupplier propertyAnnotationsSupplier);
         }
     }
