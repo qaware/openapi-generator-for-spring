@@ -72,10 +72,9 @@ public class App14Controller {
     }
 
     @Value
-    // TODO make "requiredProperties" also work via "required = true" on properties
-    @Schema(description = "subscription information", requiredProperties = "subscriptionId")
+    @Schema(description = "subscription information")
     private static class SubscriptionDto {
-        @Schema(description = "this unique identifier allows management of the subscription", example = "2531329f-fb09-4ef7-887e-84e648214436")
+        @Schema(description = "this unique identifier allows management of the subscription", example = "2531329f-fb09-4ef7-887e-84e648214436", required = true)
         String subscriptionId;
     }
 

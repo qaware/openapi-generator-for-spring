@@ -74,6 +74,18 @@
     }
   },
   "components": {
+    "responses": {
+      "200": {
+        "description": "Default response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/App3Controller.SomeDto_0"
+            }
+          }
+        }
+      }
+    },
     "schemas": {
       "App3Controller.SomeDto_1": {
         "type": "object",
@@ -95,18 +107,6 @@
           },
           "booleanProperty2": {
             "type": "boolean"
-          }
-        }
-      }
-    },
-    "responses": {
-      "200": {
-        "description": "Default response",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/App3Controller.SomeDto_0"
-            }
           }
         }
       }

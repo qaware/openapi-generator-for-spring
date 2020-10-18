@@ -26,8 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 
 @RequiredArgsConstructor
 public class DefaultSchemaResolver implements SchemaResolver {
@@ -85,41 +88,34 @@ public class DefaultSchemaResolver implements SchemaResolver {
             Map<String, AnnotatedMember> properties = initialSchema.isIgnoreNestedProperties() ? Collections.emptyMap()
                     : schemaPropertiesResolver.findProperties(javaType);
 
-            schemaCustomizers.forEach(customizer -> customizer.customize(initialSchema.getSchema(), javaType, annotationsSupplier, null));
+            Map<String, PropertyCustomizer> propertyCustomizers = customizeSchema(schemaWithoutProperties, javaType, annotationsSupplier, properties.keySet());
 
-            List<Consumer<Schema>> schemaReferenceSetters = referencedSchemas.findSchemaReference(schemaWithoutProperties, properties.keySet());
-            if (schemaReferenceSetters != null) {
-                // we've seen this initialSchema before, then simply reference it lazily
-                schemaReferenceSetters.add(schemaConsumer);
-                return;
-            }
-
-            // important to add the schemaWithoutProperties first before traversing the nested properties (if any)
-            // this prevents infinite loops when types refer to themselves
-            referencedSchemas.addNewSchemaReference(
-                    schemaWithoutProperties,
-                    schemaConsumer,
-                    recursionDepth == 0,
-                    properties.keySet()
-            );
-            if (properties.isEmpty()) {
-                return;
-            }
-            properties.forEach((propertyName, member) -> {
+            referencedSchemas.consumeSchemaWithProperties(schemaWithoutProperties, properties, recursionDepth == 0, schemaConsumer, (propertyName, member) -> {
                 AnnotationsSupplier propertyAnnotationsSupplier = annotationsSupplierFactory.createFromMember(member)
                         .andThen(annotationsSupplierFactory.createFromAnnotatedElement(member.getType().getRawClass()));
+                PropertyCustomizer propertyCustomizer = propertyCustomizers.get(propertyName);
                 // here the recursion happens!
                 buildSchemaFromType(member.getType(), propertyAnnotationsSupplier,
-                        propertySchema -> schemaWithoutProperties.addProperty(propertyName, propertySchema),
+                        propertySchema -> schemaWithoutProperties.addProperty(propertyName,
+                                propertyCustomizer.customize(propertySchema, member.getType(), propertyAnnotationsSupplier)),
                         recursionDepth + 1
                 );
             });
         }
 
+        private Map<String, PropertyCustomizer> customizeSchema(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Set<String> propertyNames) {
+            Map<String, PropertyCustomizer> customizerProperties = buildStringMapFromStream(
+                    propertyNames.stream(),
+                    x -> x,
+                    ignored -> new PropertyCustomizer()
+            );
+            schemaCustomizers.forEach(customizer -> customizer.customize(schema, javaType, annotationsSupplier, customizerProperties));
+            return customizerProperties;
+        }
+
+
         private InitialSchema buildSchemaFromTypeWithoutProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
             InitialSchema initialSchema = getSchemaFromInitialTypeResolvers(javaType);
-
-//            schemaCustomizers.forEach(customizer -> customizer.customize(initialSchema.getSchema(), javaType, annotationsSupplier, null));
 
             // applying the schemaAnnotationMapper is treated specially here:
             // 1) It can only be built with an existing SchemaResolver (this class!)
@@ -176,9 +172,28 @@ public class DefaultSchemaResolver implements SchemaResolver {
         }
     }
 
+
+    private static class PropertyCustomizer implements SchemaCustomizer.SchemaProperty {
+
+        @Nullable
+        private SchemaCustomizer.SchemaPropertyCustomizer schemaPropertyCustomizer;
+
+        @Override
+        public void customize(SchemaCustomizer.SchemaPropertyCustomizer propertySchemaCustomizer) {
+            this.schemaPropertyCustomizer = propertySchemaCustomizer;
+        }
+
+        public Schema customize(Schema propertySchema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+            if (schemaPropertyCustomizer != null) {
+                schemaPropertyCustomizer.customize(propertySchema, javaType, annotationsSupplier);
+            }
+            return propertySchema;
+        }
+    }
+
     private static class ReferencedSchemas {
 
-        @RequiredArgsConstructor
+        @RequiredArgsConstructor(staticName = "of")
         private static class ReferencedSchema {
             @Getter
             private final Schema schema;
@@ -205,6 +220,8 @@ public class DefaultSchemaResolver implements SchemaResolver {
         private final LinkedList<ReferencedSchema> items = new LinkedList<>();
 
         void forEach(Consumer<ReferencedSchema> action) {
+            // as schemas are referenced and the storage compares schema including properties,
+            // it's important to iterate over the items in reversed order
             items.descendingIterator().forEachRemaining(referencedSchema -> {
                 if (referencedSchema.schema.isEmpty()) {
                     throw new IllegalStateException("Encountered completely empty schema");
@@ -216,8 +233,32 @@ public class DefaultSchemaResolver implements SchemaResolver {
             });
         }
 
+        void consumeSchemaWithProperties(Schema schemaWithoutProperties, Map<String, AnnotatedMember> properties, boolean isTopLevel,
+                                         Consumer<Schema> schemaConsumer, BiConsumer<String, AnnotatedMember> propertyConsumer) {
+            List<Consumer<Schema>> schemaReferenceSetters = findSchemaReference(schemaWithoutProperties, properties.keySet());
+            if (schemaReferenceSetters != null) {
+                // we've seen this schema with its property names before, then simply reference it lazily
+                schemaReferenceSetters.add(schemaConsumer);
+                return;
+            }
+
+            // important to add the schemaWithoutProperties first before traversing the nested properties (if any)
+            // this prevents infinite loops when types refer to themselves
+            items.add(ReferencedSchema.of(
+                    schemaWithoutProperties,
+                    isTopLevel,
+                    properties.keySet(),
+                    new LinkedList<>(Collections.singleton(schemaConsumer))
+            ));
+
+            // when resolving referenced schemas, we reversely iterate.
+            // Counter this flip of properties by reversing the order here too.
+            new LinkedList<>(properties.keySet()).descendingIterator()
+                    .forEachRemaining(propertyName -> propertyConsumer.accept(propertyName, properties.get(propertyName)));
+        }
+
         @Nullable
-        List<Consumer<Schema>> findSchemaReference(Schema schema, Set<String> propertyNames) {
+        private List<Consumer<Schema>> findSchemaReference(Schema schema, Set<String> propertyNames) {
             ensurePropertiesAreNowhereSet(schema);
 
             return items.stream()
@@ -230,7 +271,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     .orElse(null);
         }
 
-        void ensurePropertiesAreNowhereSet(Schema schema) {
+        private void ensurePropertiesAreNowhereSet(Schema schema) {
             // safe-guard against wrong implementation of GenericTypeResolvers
             // they must defer setting properties until resolveReferencedSchemas is called
             if (schema.getProperties() != null) {
@@ -241,16 +282,6 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     throw new IllegalStateException("Existing referenced schema has non-null properties");
                 }
             });
-        }
-
-        void addNewSchemaReference(Schema schema, Consumer<Schema> firstSchemaConsumer, boolean isTopLevel, Set<String> propertyNames) {
-            ReferencedSchema referencedSchema = new ReferencedSchema(
-                    schema,
-                    isTopLevel,
-                    propertyNames,
-                    new LinkedList<>(Collections.singleton(firstSchemaConsumer))
-            );
-            items.add(referencedSchema);
         }
     }
 

@@ -5,15 +5,19 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 import java.util.Map;
-import java.util.function.Consumer;
 
 @FunctionalInterface
 public interface SchemaCustomizer {
     void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier,
-                   Map<String, SchemaProperty> properties);
+                   Map<String, ? extends SchemaProperty> properties);
 
     @FunctionalInterface
     interface SchemaProperty {
-        void customize(Consumer<Schema> propertySchemaCustomizer);
+        void customize(SchemaPropertyCustomizer schemaPropertyCustomizer);
+    }
+
+    @FunctionalInterface
+    interface SchemaPropertyCustomizer {
+        void customize(Schema propertySchema, JavaType javaType, AnnotationsSupplier annotationsSupplier);
     }
 }

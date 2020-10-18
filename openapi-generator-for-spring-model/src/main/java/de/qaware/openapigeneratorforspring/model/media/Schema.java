@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,13 @@ public class Schema implements HasExtensions, HasReference<Schema>, HasIsEmpty<S
             properties = new LinkedHashMap<>();
         }
         properties.put(propertyName, propertySchema);
+    }
+
+    public void addRequired(String requiredProperty) {
+        if (required == null) {
+            required = new ArrayList<>();
+        }
+        required.add(requiredProperty);
     }
 
     @Override

@@ -4,6 +4,7 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForDeprecated;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForNullable;
+import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForRequiredProperties;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaResolver;
@@ -102,6 +103,13 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     public SchemaCustomizerForDeprecated defaultSchemaCustomizerForDeprecated() {
         return new SchemaCustomizerForDeprecated();
     }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SchemaCustomizerForRequiredProperties defaultSchemaCustomizerForRequiredProperties() {
+        return new SchemaCustomizerForRequiredProperties();
+    }
+
 
     @Bean
     @ConditionalOnMissingBean
