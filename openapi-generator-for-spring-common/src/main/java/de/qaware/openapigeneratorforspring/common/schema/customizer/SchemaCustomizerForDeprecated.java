@@ -9,7 +9,7 @@ import java.util.Map;
 public class SchemaCustomizerForDeprecated implements SchemaCustomizer {
 
     @Override
-    public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Map<String, ? extends SchemaProperty> properties) {
+    public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Map<String, SchemaProperty> properties) {
         if (annotationsSupplier.findFirstAnnotation(Deprecated.class) != null) {
             schema.setDeprecated(true);
         }
