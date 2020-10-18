@@ -69,7 +69,7 @@ public class App5Controller {
     private static class ComplexDto implements BaseForDto {
         @Schema(description = "description1")
         ComplexDto other1;
-        @Schema(title = "title override", description = "description2")
+        @Schema(title = "title override", description = "description2", required = true)
         ComplexDto other2;
         @Nullable
         SomeOtherDto someOtherDto;

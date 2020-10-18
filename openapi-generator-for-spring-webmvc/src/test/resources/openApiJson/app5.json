@@ -152,6 +152,9 @@
       },
       "App5Controller.ComplexDto_4": {
         "title": "global title",
+        "required": [
+          "other2"
+        ],
         "type": "object",
         "properties": {
           "other1": {
@@ -191,6 +194,9 @@
         "description": "global description"
       },
       "App5Controller.ComplexDto_3": {
+        "required": [
+          "other2"
+        ],
         "type": "object",
         "properties": {
           "other1": {
@@ -230,6 +236,9 @@
       },
       "App5Controller.ComplexDto_2": {
         "title": "global title",
+        "required": [
+          "other2"
+        ],
         "type": "object",
         "properties": {
           "other1": {
@@ -270,6 +279,9 @@
       },
       "App5Controller.ComplexDto_1": {
         "title": "title override",
+        "required": [
+          "other2"
+        ],
         "type": "object",
         "properties": {
           "other1": {
@@ -310,6 +322,9 @@
       },
       "App5Controller.ComplexDto_0": {
         "title": "global title",
+        "required": [
+          "other2"
+        ],
         "type": "object",
         "properties": {
           "other1": {

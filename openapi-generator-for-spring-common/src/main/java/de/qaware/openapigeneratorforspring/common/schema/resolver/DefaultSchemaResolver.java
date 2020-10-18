@@ -186,6 +186,8 @@ public class DefaultSchemaResolver implements SchemaResolver {
         public Schema customize(Schema propertySchema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
             if (schemaPropertyCustomizer != null) {
                 schemaPropertyCustomizer.customize(propertySchema, javaType, annotationsSupplier);
+                // avoid running customizers multiple again when referenced schemas are consumed
+                schemaPropertyCustomizer = null;
             }
             return propertySchema;
         }
