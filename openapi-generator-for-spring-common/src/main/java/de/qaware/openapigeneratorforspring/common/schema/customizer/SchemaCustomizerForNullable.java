@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 
 public class SchemaCustomizerForNullable implements SchemaCustomizer {
     @Override
-    public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+    public void customizeBeforeProperties(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
         if (annotationsSupplier.findFirstAnnotation(Nullable.class) != null) {
             schema.setNullable(true);
         }

@@ -6,7 +6,7 @@ import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 public class SchemaCustomizerForDeprecated implements SchemaCustomizer {
     @Override
-    public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+    public void customizeBeforeProperties(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
         if (annotationsSupplier.findFirstAnnotation(Deprecated.class) != null) {
             schema.setDeprecated(true);
         }
