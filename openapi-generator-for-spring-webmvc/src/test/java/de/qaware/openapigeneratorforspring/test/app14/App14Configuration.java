@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Configuration;
 public class App14Configuration {
     @Bean
     public ReferenceDeciderForSchema referenceDeciderForSchema() {
-        return (item, numberOfUsages) -> false;
+        return (schema, numberOfUsages) -> false;
     }
 }
