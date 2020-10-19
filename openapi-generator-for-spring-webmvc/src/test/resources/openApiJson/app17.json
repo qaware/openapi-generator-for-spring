@@ -1,0 +1,51 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App17",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping1": {
+      "get": {
+        "operationId": "mapping1",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/App17Controller.SomeDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/App17Controller.SomeDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "App17Controller.SomeDto": {
+        "type": "object",
+        "properties": {
+          "stringProperty1": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

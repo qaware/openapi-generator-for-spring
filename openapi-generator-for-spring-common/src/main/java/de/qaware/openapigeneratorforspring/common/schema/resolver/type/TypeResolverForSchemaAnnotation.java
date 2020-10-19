@@ -20,7 +20,7 @@ public class TypeResolverForSchemaAnnotation implements TypeResolver {
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
-    public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
+    public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer, SchemaBuilderFromType schemaBuilderFromType, SchemaBuilderFromType recursiveSchemaBuilderFromType) {
         io.swagger.v3.oas.annotations.media.Schema schemaAnnotation = annotationsSupplier.findFirstAnnotation(io.swagger.v3.oas.annotations.media.Schema.class);
         if (schemaAnnotation != null && !Void.class.equals(schemaAnnotation.implementation())) {
             JavaType javaTypeFromSchemaAnnotation = openApiObjectMapperSupplier.get().constructType(schemaAnnotation.implementation());
@@ -29,7 +29,7 @@ public class TypeResolverForSchemaAnnotation implements TypeResolver {
                     // prevent infinite loop by detecting the same annotation again and again
                     .withExcludedBy(schemaAnnotation::equals)
                     .andThen(annotationsSupplierFactory.createFromAnnotatedElement(schemaAnnotation.implementation()));
-            schemaBuilderFromType.buildSchemaFromType(
+            recursiveSchemaBuilderFromType.buildSchemaFromType(
                     javaTypeFromSchemaAnnotation,
                     annotationsSupplierWithSchemaAnnotation,
                     schemaConsumer

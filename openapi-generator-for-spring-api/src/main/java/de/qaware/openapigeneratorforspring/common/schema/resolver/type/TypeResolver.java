@@ -24,11 +24,12 @@ public interface TypeResolver extends Ordered {
      * Resolve schema from type and provide it
      * via parameter {@code schemaConsumer}.
      *
-     * @param javaType              type to be resolved
-     * @param annotationsSupplier   annotations supplier
-     * @param schemaBuilderFromType schema builder to recursively build nested schemas
-     * @param schemaConsumer        schema consumer to provide resolve schema (if any)
+     * @param javaType                       type to be resolved
+     * @param annotationsSupplier            annotations supplier
+     * @param schemaConsumer                 schema consumer to provide resolve schema (if any)
+     * @param schemaBuilderFromType
+     * @param recursiveSchemaBuilderFromType schema builder to recursively build nested schemas
      * @return true if successfully resolved (schema consumer was called), false otherwise
      */
-    boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer);
+    boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer, SchemaBuilderFromType schemaBuilderFromType, SchemaBuilderFromType recursiveSchemaBuilderFromType);
 }

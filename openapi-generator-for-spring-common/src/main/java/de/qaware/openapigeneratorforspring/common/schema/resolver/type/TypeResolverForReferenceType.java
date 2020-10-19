@@ -12,10 +12,10 @@ public class TypeResolverForReferenceType implements TypeResolver {
     public static final int ORDER = DEFAULT_ORDER;
 
     @Override
-    public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
+    public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer, SchemaBuilderFromType schemaBuilderFromType, SchemaBuilderFromType recursiveSchemaBuilderFromType) {
         if (javaType.isReferenceType()) {
             // TODO append annotationSupplier with contained generic type!
-            schemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, schema -> {
+            recursiveSchemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, schema -> {
                 if (schema.getNullable() == null) {
                     // TODO check if all jackson reference types should be considered @Nullable by default
                     schema.setNullable(true);

@@ -56,7 +56,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
         Context context = new Context(schemaAnnotationMapperFactory.create(this), referencedSchemaConsumer);
         JavaType javaType = mapper.constructType(type);
         AtomicReference<Schema> schemaHolder = new AtomicReference<>();
-        context.buildSchemaFromType(javaType, annotationsSupplier, schemaHolder::set, 0);
+        context.buildSchemaFromTypeRecursively(javaType, annotationsSupplier, schemaHolder::set, 0);
         context.resolveReferencedSchemas();
         return schemaHolder.get();
     }
@@ -68,18 +68,22 @@ public class DefaultSchemaResolver implements SchemaResolver {
         private final ReferencedSchemaConsumer referencedSchemaConsumer;
         private final DefaultSchemaResolverSupport defaultSchemaResolverSupport = new DefaultSchemaResolverSupport();
 
-        void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer, int recursionDepth) {
+        void buildSchemaFromTypeRecursively(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer, int recursionDepth) {
             for (TypeResolver typeResolver : typeResolvers) {
                 boolean resolved = typeResolver.resolveFromType(
-                        javaType, annotationsSupplier,
-                        // this allows the TypeResolver to continue recursion
-                        (type, supplier, consumer) -> buildSchemaFromType(type, supplier, consumer, recursionDepth + 1),
-                        schemaConsumer
+                        javaType, annotationsSupplier, schemaConsumer,
+                        // this allows the TypeResolver to control recursion
+                        (type, supplier, consumer) -> buildSchemaFromType(type, supplier, consumer, recursionDepth),
+                        (type, supplier, consumer) -> buildSchemaFromTypeRecursively(type, supplier, consumer, recursionDepth + 1)
                 );
                 if (resolved) {
                     return;
                 }
             }
+            buildSchemaFromType(javaType, annotationsSupplier, schemaConsumer, recursionDepth);
+        }
+
+        private void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer, int recursionDepth) {
 
             InitialSchema initialSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
             Schema schemaWithoutProperties = initialSchema.getSchema();
@@ -93,7 +97,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                         .andThen(annotationsSupplierFactory.createFromAnnotatedElement(member.getType().getRawClass()));
                 PropertyCustomizer propertyCustomizer = propertyCustomizers.get(propertyName);
                 // here the recursion happens!
-                buildSchemaFromType(member.getType(), propertyAnnotationsSupplier,
+                buildSchemaFromTypeRecursively(member.getType(), propertyAnnotationsSupplier,
                         propertySchema -> schemaWithoutProperties.addProperty(propertyName,
                                 propertyCustomizer.customize(propertySchema, member.getType(), propertyAnnotationsSupplier)),
                         recursionDepth + 1

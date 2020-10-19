@@ -67,7 +67,7 @@ class DefaultSchemaResolverSupport {
 
     void consumeSchemaWithProperties(Schema schemaWithoutProperties, Map<String, AnnotatedMember> properties, boolean isTopLevel,
                                      Consumer<Schema> schemaConsumer, BiConsumer<String, AnnotatedMember> propertyConsumer) {
-        List<Consumer<Schema>> schemaReferenceSetters = findSchemaReference(schemaWithoutProperties, properties.keySet());
+        List<Consumer<Schema>> schemaReferenceSetters = findSchemaReferenceSetters(schemaWithoutProperties, properties.keySet());
         if (schemaReferenceSetters != null) {
             // we've seen this schema with its property names before, then simply reference it lazily
             schemaReferenceSetters.add(schemaConsumer);
@@ -90,8 +90,12 @@ class DefaultSchemaResolverSupport {
     }
 
     @Nullable
-    private List<Consumer<Schema>> findSchemaReference(Schema schema, Set<String> propertyNames) {
+    private List<Consumer<Schema>> findSchemaReferenceSetters(Schema schema, Set<String> propertyNames) {
         ensurePropertiesAreNowhereSet(schema);
+
+        if (schema.isEmpty() && propertyNames.isEmpty()) {
+            throw new IllegalStateException("Schema is completely empty. This is not supported here.");
+        }
 
         return referencedSchemas.stream()
                 .filter(referencedSchema -> referencedSchema.matches(schema, propertyNames))

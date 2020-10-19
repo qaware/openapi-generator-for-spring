@@ -20,6 +20,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResol
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForReferenceType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForSchemaAnnotation;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolverForCollectionLikeType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolverForObject;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolverForPrimitiveTypes;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
@@ -90,6 +91,12 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public InitialTypeResolverForObject defaultSimpleTypeResolverForObject(SchemaNameFactory schemaNameFactory) {
         return new InitialTypeResolverForObject(schemaNameFactory);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public InitialTypeResolverForCollectionLikeType defaultSimpleTypeResolverForCollectionLikeType() {
+        return new InitialTypeResolverForCollectionLikeType();
     }
 
     @Bean

@@ -13,7 +13,7 @@ public class TypeResolverForObject implements TypeResolver {
     public static final int ORDER = DEFAULT_ORDER;
 
     @Override
-    public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
+    public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer, SchemaBuilderFromType schemaBuilderFromType, SchemaBuilderFromType recursiveSchemaBuilderFromType) {
         if (javaType.getRawClass().equals(Object.class)) {
             // accept object schema without any properties as fallback here
             // to prevent traversing to meaningless properties of "Object"

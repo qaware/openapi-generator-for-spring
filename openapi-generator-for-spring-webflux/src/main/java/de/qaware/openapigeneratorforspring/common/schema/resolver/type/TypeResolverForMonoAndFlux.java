@@ -14,14 +14,14 @@ public class TypeResolverForMonoAndFlux implements TypeResolver {
     public static final int ORDER = DEFAULT_ORDER;
 
     @Override
-    public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType, Consumer<Schema> schemaConsumer) {
+    public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer, SchemaBuilderFromType schemaBuilderFromType, SchemaBuilderFromType recursiveSchemaBuilderFromType) {
         if (javaType.getRawClass().equals(Mono.class)) {
             JavaType innerType = javaType.getBindings().getTypeParameters().iterator().next();
-            schemaBuilderFromType.buildSchemaFromType(innerType, annotationsSupplier, schemaConsumer);
+            recursiveSchemaBuilderFromType.buildSchemaFromType(innerType, annotationsSupplier, schemaConsumer);
             return true;
         } else if (javaType.getRawClass().equals(Flux.class)) {
             JavaType innerType = javaType.getBindings().getTypeParameters().iterator().next();
-            TypeResolverForCollections.continueWithInnerType(innerType, annotationsSupplier, schemaBuilderFromType, schemaConsumer);
+            TypeResolverForCollections.continueWithInnerType(innerType, annotationsSupplier, recursiveSchemaBuilderFromType, schemaConsumer);
             return true;
         }
         return false;
