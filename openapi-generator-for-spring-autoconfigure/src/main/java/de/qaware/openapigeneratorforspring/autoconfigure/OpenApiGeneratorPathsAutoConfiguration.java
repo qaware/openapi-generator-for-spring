@@ -1,7 +1,8 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.filter.handlermethod.HandlerMethodFilter;
-import de.qaware.openapigeneratorforspring.common.filter.operation.OperationFilter;
+import de.qaware.openapigeneratorforspring.common.filter.operation.OperationPostFilter;
+import de.qaware.openapigeneratorforspring.common.filter.operation.OperationPreFilter;
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
@@ -32,10 +33,11 @@ public class OpenApiGeneratorPathsAutoConfiguration {
     @ConditionalOnMissingBean
     public PathItemBuilderFactory pathItemBuilderFactory(
             OperationBuilder operationBuilder,
-            List<OperationFilter> operationFilters,
+            List<OperationPreFilter> operationPreFilters,
+            List<OperationPostFilter> operationPostFilters,
             List<PathItemCustomizer> pathItemCustomizers
     ) {
-        return new PathItemBuilderFactory(operationBuilder, operationFilters, pathItemCustomizers);
+        return new PathItemBuilderFactory(operationBuilder, operationPreFilters, operationPostFilters, pathItemCustomizers);
     }
 
     @Bean

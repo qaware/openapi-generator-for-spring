@@ -57,7 +57,7 @@ public class PathsBuilder {
 
                     PathItemBuilderFactory.PathItemBuilder pathItemBuilder = pathItemBuilderFactory.create(referencedItemConsumerSupplier);
                     PathItem pathItem = pathItemBuilder.build(pathPattern, handlerMethods);
-                    if (isAcceptedByAllPathItemFilters(pathItem, pathPattern, pathItemBuilder.getOperationPerMethod())) {
+                    if (isAcceptedByAllPathItemFilters(pathItem, pathPattern)) {
                         operationsById.addAll(pathItemBuilder.getOperationsById());
                         paths.put(pathPattern, pathItem);
                     }
@@ -98,7 +98,7 @@ public class PathsBuilder {
         return handlerMethodFilters.stream().allMatch(handlerMethodFilter -> handlerMethodFilter.accept(handlerMethod));
     }
 
-    private boolean isAcceptedByAllPathItemFilters(PathItem pathItem, String pathPattern, Map<RequestMethod, Operation> operationPerMethod) {
-        return pathItemFilters.stream().allMatch(pathItemFilter -> pathItemFilter.accept(pathItem, pathPattern, operationPerMethod));
+    private boolean isAcceptedByAllPathItemFilters(PathItem pathItem, String pathPattern) {
+        return pathItemFilters.stream().allMatch(pathItemFilter -> pathItemFilter.accept(pathItem, pathPattern));
     }
 }

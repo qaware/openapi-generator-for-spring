@@ -2,7 +2,8 @@ package de.qaware.openapigeneratorforspring.common.operation.parameter;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
-import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterFilter;
+import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterPostFilter;
+import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterPreFilter;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
@@ -31,7 +32,8 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
 
     public static final int ORDER = DEFAULT_ORDER;
 
-    private final List<OperationParameterFilter> parameterFilters;
+    private final List<OperationParameterPreFilter> parameterPreFilters;
+    private final List<OperationParameterPostFilter> parameterPostFilters;
     private final List<ParameterMethodConverter> parameterMethodConverters;
     private final List<OperationParameterCustomizer> parameterCustomizers;
     private final ParameterAnnotationMapper parameterAnnotationMapper;
@@ -86,7 +88,7 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
 
     private void setParametersToOperation(Operation operation, List<Parameter> parameters, OperationBuilderContext operationBuilderContext) {
         List<Parameter> filteredParameters = parameters.stream()
-                .filter(parameter -> parameterFilters.stream().allMatch(filter -> filter.postAccept(parameter)))
+                .filter(parameter -> parameterPostFilters.stream().allMatch(filter -> filter.postAccept(parameter)))
                 .collect(Collectors.toList());
         ReferencedParametersConsumer referencedParametersConsumer = operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedParametersConsumer.class);
         setCollectionIfNotEmpty(filteredParameters, p -> referencedParametersConsumer.withOwner(operation).maybeAsReference(p, operation::setParameters));
@@ -103,7 +105,7 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
     @Nullable
     private Parameter convertFromMethodParameter(java.lang.reflect.Parameter methodParameter, OperationBuilderContext operationBuilderContext) {
         AnnotationsSupplier parameterAnnotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(methodParameter);
-        if (!parameterFilters.stream().allMatch(filter -> filter.preAccept(methodParameter, parameterAnnotationsSupplier))) {
+        if (!parameterPreFilters.stream().allMatch(filter -> filter.preAccept(methodParameter, parameterAnnotationsSupplier))) {
             return null;
         }
         return parameterMethodConverters.stream()

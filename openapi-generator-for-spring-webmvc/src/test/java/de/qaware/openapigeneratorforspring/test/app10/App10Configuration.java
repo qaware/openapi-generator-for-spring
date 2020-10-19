@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.test.app10;
 
 import de.qaware.openapigeneratorforspring.common.OpenApiResourceParameterProvider;
-import de.qaware.openapigeneratorforspring.common.filter.handlermethod.HandlerMethodFilter;
+import de.qaware.openapigeneratorforspring.common.filter.operation.OperationPreFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,21 +9,21 @@ import org.springframework.context.annotation.Configuration;
 public class App10Configuration {
 
     @Bean
-    public HandlerMethodFilter handlerMethodFilterForGroupsQueryParam(OpenApiResourceParameterProvider parameterProvider) {
-        return handlerMethodWithInfo -> {
+    public OperationPreFilter operationPreFilterForGroupsQueryParam(OpenApiResourceParameterProvider parameterProvider) {
+        return operationInfo -> {
             // important to get group inside the lambda, otherwise we're outside of request scope
             return parameterProvider.getFirstQueryParameter("pathPrefix")
-                    .map(group -> handlerMethodWithInfo.getPathPatterns().stream().allMatch(path -> path.startsWith(group)))
+                    .map(pathPrefix -> operationInfo.getPathPattern().startsWith(pathPrefix))
                     .orElse(true);
         };
     }
 
     @Bean
-    public HandlerMethodFilter handlerMethodFilterForGroupsHeaderParam(OpenApiResourceParameterProvider parameterProvider) {
-        return handlerMethodWithInfo -> {
+    public OperationPreFilter operationPreFilterForGroupsHeaderParam(OpenApiResourceParameterProvider parameterProvider) {
+        return operationInfo -> {
             // important to get group inside the lambda, otherwise we're outside of request scope
             return parameterProvider.getFirstHeaderValue("x-path-prefix")
-                    .map(group -> handlerMethodWithInfo.getPathPatterns().stream().allMatch(path -> path.startsWith(group)))
+                    .map(pathPrefix -> operationInfo.getPathPattern().startsWith(pathPrefix))
                     .orElse(true);
         };
     }
