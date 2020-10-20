@@ -58,6 +58,9 @@ public class DefaultSchemaResolver implements SchemaResolver {
         AtomicReference<Schema> schemaHolder = new AtomicReference<>();
         context.buildSchemaFromTypeRecursively(javaType, annotationsSupplier, schemaHolder::set, 0);
         context.resolveReferencedSchemas();
+        if (schemaHolder.get() == null) {
+            throw new IllegalStateException("Schema holder has no schema");
+        }
         return schemaHolder.get();
     }
 
@@ -92,17 +95,20 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
             Map<String, PropertyCustomizer> propertyCustomizers = customizeSchema(schemaWithoutProperties, javaType, annotationsSupplier, properties.keySet());
 
-            defaultSchemaResolverSupport.consumeSchemaWithProperties(schemaWithoutProperties, properties, recursionDepth == 0, schemaConsumer, (propertyName, member) -> {
-                AnnotationsSupplier propertyAnnotationsSupplier = annotationsSupplierFactory.createFromMember(member)
-                        .andThen(annotationsSupplierFactory.createFromAnnotatedElement(member.getType().getRawClass()));
-                PropertyCustomizer propertyCustomizer = propertyCustomizers.get(propertyName);
-                // here the recursion happens!
-                buildSchemaFromTypeRecursively(member.getType(), propertyAnnotationsSupplier,
-                        propertySchema -> schemaWithoutProperties.addProperty(propertyName,
-                                propertyCustomizer.customize(propertySchema, member.getType(), propertyAnnotationsSupplier)),
-                        recursionDepth + 1
-                );
-            });
+            defaultSchemaResolverSupport.consumeSchemaWithProperties(schemaWithoutProperties, properties.keySet(), recursionDepth == 0, schemaConsumer,
+                    () -> new LinkedList<>(properties.keySet()).descendingIterator().forEachRemaining(propertyName -> {
+                        AnnotatedMember member = properties.get(propertyName);
+                        AnnotationsSupplier propertyAnnotationsSupplier = annotationsSupplierFactory.createFromMember(member)
+                                .andThen(annotationsSupplierFactory.createFromAnnotatedElement(member.getType().getRawClass()));
+                        PropertyCustomizer propertyCustomizer = propertyCustomizers.get(propertyName);
+                        // here the recursion happens!
+                        buildSchemaFromTypeRecursively(member.getType(), propertyAnnotationsSupplier,
+                                propertySchema -> schemaWithoutProperties.setProperty(propertyName,
+                                        propertyCustomizer.customize(propertySchema, member.getType(), propertyAnnotationsSupplier)),
+                                recursionDepth + 1
+                        );
+                    })
+            );
         }
 
         private Map<String, PropertyCustomizer> customizeSchema(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Set<String> propertyNames) {

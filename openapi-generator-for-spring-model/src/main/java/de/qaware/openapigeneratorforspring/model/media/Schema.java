@@ -72,7 +72,7 @@ public class Schema implements HasExtensions, HasReference<Schema>, HasIsEmpty<S
     private Schema items;
     private Map<String, Object> extensions;
 
-    public void addProperty(String propertyName, Schema propertySchema) {
+    public void setProperty(String propertyName, Schema propertySchema) {
         if (properties == null) {
             properties = new LinkedHashMap<>();
         }

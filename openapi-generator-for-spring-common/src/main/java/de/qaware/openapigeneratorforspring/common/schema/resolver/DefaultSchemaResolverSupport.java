@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver;
 
-import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,9 +9,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -65,9 +62,9 @@ class DefaultSchemaResolverSupport {
         });
     }
 
-    void consumeSchemaWithProperties(Schema schemaWithoutProperties, Map<String, AnnotatedMember> properties, boolean isTopLevel,
-                                     Consumer<Schema> schemaConsumer, BiConsumer<String, AnnotatedMember> propertyConsumer) {
-        List<Consumer<Schema>> schemaReferenceSetters = findSchemaReferenceSetters(schemaWithoutProperties, properties.keySet());
+    void consumeSchemaWithProperties(Schema schemaWithoutProperties, Set<String> propertyNames, boolean isTopLevel,
+                                     Consumer<Schema> schemaConsumer, Runnable onNotFound) {
+        List<Consumer<Schema>> schemaReferenceSetters = findSchemaReferenceSetters(schemaWithoutProperties, propertyNames);
         if (schemaReferenceSetters != null) {
             // we've seen this schema with its property names before, then simply reference it lazily
             schemaReferenceSetters.add(schemaConsumer);
@@ -79,14 +76,11 @@ class DefaultSchemaResolverSupport {
         referencedSchemas.add(ReferencedSchema.of(
                 schemaWithoutProperties,
                 isTopLevel,
-                properties.keySet(),
+                propertyNames,
                 new LinkedList<>(Collections.singleton(schemaConsumer))
         ));
 
-        // when resolving referenced schemas, we reversely iterate.
-        // Counter this flip of properties by reversing the order here too.
-        new LinkedList<>(properties.keySet()).descendingIterator()
-                .forEachRemaining(propertyName -> propertyConsumer.accept(propertyName, properties.get(propertyName)));
+        onNotFound.run();
     }
 
     @Nullable
