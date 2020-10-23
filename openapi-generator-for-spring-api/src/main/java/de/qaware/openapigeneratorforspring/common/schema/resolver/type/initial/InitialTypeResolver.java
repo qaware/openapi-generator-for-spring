@@ -1,12 +1,15 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Singular;
 import org.springframework.core.Ordered;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
 @SuppressWarnings("squid:S1214") // suppress warning about constant in interface
 public interface InitialTypeResolver extends Ordered {
@@ -26,7 +29,7 @@ public interface InitialTypeResolver extends Ordered {
         }
 
         private final Schema schema;
-        @Builder.Default
-        private final boolean ignoreNestedProperties = true;
+        @Singular
+        private final Map<String, AnnotatedMember> properties;
     }
 }

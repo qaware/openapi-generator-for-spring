@@ -9,7 +9,6 @@ import de.qaware.openapigeneratorforspring.common.reference.component.schema.Ref
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver.InitialSchema;
@@ -19,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +32,6 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.bu
 public class DefaultSchemaResolver implements SchemaResolver {
 
     private final OpenApiObjectMapperSupplier openApiObjectMapperSupplier;
-    private final SchemaPropertiesResolver schemaPropertiesResolver;
     private final SchemaAnnotationMapperFactory schemaAnnotationMapperFactory;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
     private final List<TypeResolver> typeResolvers;
@@ -90,8 +87,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
             InitialSchema initialSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
             Schema schemaWithoutProperties = initialSchema.getSchema();
-            Map<String, AnnotatedMember> properties = initialSchema.isIgnoreNestedProperties() ? Collections.emptyMap()
-                    : schemaPropertiesResolver.findProperties(javaType);
+            Map<String, AnnotatedMember> properties = initialSchema.getProperties();
 
             Map<String, PropertyCustomizer> propertyCustomizers = customizeSchema(schemaWithoutProperties, javaType, annotationsSupplier, properties.keySet());
 
