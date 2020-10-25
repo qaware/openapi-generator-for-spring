@@ -5,6 +5,7 @@ import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustom
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForDeprecated;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForNullable;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForRequiredProperties;
+import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaResolver;
@@ -60,9 +61,10 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public TypeResolverForProperties defaultTypeResolverForProperties(
+            List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers,
             AnnotationsSupplierFactory annotationsSupplierFactory
     ) {
-        return new TypeResolverForProperties(annotationsSupplierFactory);
+        return new TypeResolverForProperties(schemaPropertiesCustomizers, annotationsSupplierFactory);
     }
 
     @Bean

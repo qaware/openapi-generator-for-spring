@@ -1,15 +1,15 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaBuilderFromType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaFactory;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import org.springframework.core.Ordered;
 
-import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Generic type resolver for {@link SchemaResolver}. Enables full
@@ -22,17 +22,6 @@ public interface TypeResolver extends Ordered {
 
     int DEFAULT_ORDER = Ordered.LOWEST_PRECEDENCE - 1000;
 
-    void resolve(
-            Schema initialSchema,
-            JavaType javaType,
-            AnnotationsSupplier annotationsSupplier,
-            Map<String, ? extends SchemaProperty> properties,
-            SchemaBuilderFromType schemaBuilderFromType
-    );
-
-    interface SchemaProperty {
-        AnnotatedMember getAnnotatedMember();
-
-        Schema customize(Schema propertySchema, JavaType javaType, AnnotationsSupplier annotationsSupplier);
-    }
+    @Nullable
+    Object resolve(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType);
 }

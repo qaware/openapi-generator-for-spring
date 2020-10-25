@@ -2,7 +2,6 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
@@ -10,30 +9,22 @@ import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustom
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForProperties;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaFactory;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 
 @RequiredArgsConstructor
 public class DefaultSchemaResolver implements SchemaResolver {
@@ -65,12 +56,10 @@ public class DefaultSchemaResolver implements SchemaResolver {
     }
 
 
-    private static class SchemaBuildActions {
-
-        private final List<SchemaBuildAction> actions = new ArrayList<>();
+    private static class SchemaBuildActions extends ArrayList<SchemaBuildActions.SchemaBuildAction> {
 
         public void add(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer) {
-            actions.add(SchemaBuildAction.of(javaType, annotationsSupplier, schemaConsumer));
+            super.add(SchemaBuildAction.of(javaType, annotationsSupplier, schemaConsumer));
         }
 
         @RequiredArgsConstructor(staticName = "of")
@@ -81,13 +70,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
         }
     }
 
-    @RequiredArgsConstructor
-    @EqualsAndHashCode
-    private static class UniqueSchemaKey {
-        private final int schemaHash;
-        private final Set<String> propertyNames;
-        private final List<JavaType> javaTypes;
-    }
+
 
     @RequiredArgsConstructor
     private class Context {
@@ -95,39 +78,40 @@ public class DefaultSchemaResolver implements SchemaResolver {
         private final SchemaAnnotationMapper schemaAnnotationMapper;
         private final ReferencedSchemaConsumer referencedSchemaConsumer;
         private final DefaultSchemaResolverSupport defaultSchemaResolverSupport = new DefaultSchemaResolverSupport();
-        private final Map<UniqueSchemaKey, Schema> uniqueSchemaKeys = new HashMap<>();
+        private final Map<Object, Schema> knownSchemas = new HashMap<>();
         private final LinkedList<Triple<Boolean, Schema, Consumer<Schema>>> referencableSchemas = new LinkedList<>();
 
-        Pair<UniqueSchemaKey, Schema> buildSchemaFromTypeRecursively(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+        Pair<Object, Schema> buildSchemaFromTypeRecursively(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
 
             InitialSchema initialSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
-            de.qaware.openapigeneratorforspring.model.media.Schema schemaWithoutProperties = initialSchema.getSchema();
-            Map<String, AnnotatedMember> properties = initialSchema.getProperties();
+            Schema schemaWithoutProperties = initialSchema.getSchema();
 
-            Map<String, PropertyCustomizer> propertyCustomizers = customizeSchema(schemaWithoutProperties, javaType, annotationsSupplier, properties);
+            customizeSchema(schemaWithoutProperties, javaType, annotationsSupplier);
 
             SchemaBuildActions actions = new SchemaBuildActions();
+            Object key = null;
             for (TypeResolver typeResolver : typeResolvers) {
-                typeResolver.resolve(schemaWithoutProperties, javaType, annotationsSupplier, propertyCustomizers, actions::add);
-                if (!actions.actions.isEmpty()) {
+                key = typeResolver.resolve(initialSchema, javaType, annotationsSupplier, actions::add);
+                if (!actions.isEmpty()) {
                     break;
                 }
             }
 
-            UniqueSchemaKey uniqueSchemaKey = new UniqueSchemaKey(
-                    schemaWithoutProperties.hashCode(),
-                    properties.keySet(),
-                    Stream.concat(Stream.of(javaType), actions.actions.stream().map(a -> a.javaType)).collect(Collectors.toList())
-            );
-            Schema existingSchema = uniqueSchemaKeys.get(uniqueSchemaKey);
-            if (existingSchema != null && !properties.isEmpty()) {
-                return Pair.of(uniqueSchemaKey, existingSchema);
+//            UniqueSchemaKey uniqueSchemaKey = new UniqueSchemaKey(
+//                    schemaWithoutProperties.hashCode(),
+//                    properties.keySet(),
+//                    Stream.concat(Stream.of(javaType), actions.stream().map(a -> a.javaType)).collect(Collectors.toList())
+//            );
+            if (key != null) {
+                Schema existingSchema = knownSchemas.get(key);
+                if (existingSchema != null) {
+                    return Pair.of(key, existingSchema);
+                }
+                knownSchemas.put(key, schemaWithoutProperties);
             }
-            uniqueSchemaKeys.put(uniqueSchemaKey, schemaWithoutProperties);
 
-
-            for (SchemaBuildActions.SchemaBuildAction action : actions.actions) {
-                Pair<UniqueSchemaKey, Schema> schemaPair = buildSchemaFromTypeRecursively(action.javaType, action.annotationsSupplier);
+            for (SchemaBuildActions.SchemaBuildAction action : actions) {
+                Pair<Object, Schema> schemaPair = buildSchemaFromTypeRecursively(action.javaType, action.annotationsSupplier);
                 if (schemaPair.getLeft() != null) {
                     action.schemaConsumer.accept(Schema.builder().name("MustReference_" + schemaPair.getLeft().hashCode()).build());
                 } else {
@@ -156,11 +140,11 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
         private void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer, int recursionDepth) {
 
-            InitialSchema initialSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
-            Schema schemaWithoutProperties = initialSchema.getSchema();
-            Map<String, AnnotatedMember> properties = initialSchema.getProperties();
-
-            Map<String, PropertyCustomizer> propertyCustomizers = customizeSchema(schemaWithoutProperties, javaType, annotationsSupplier, properties);
+//            InitialSchema initialSchema = buildSchemaFromTypeWithoutProperties(javaType, annotationsSupplier);
+//            Schema schemaWithoutProperties = initialSchema.getSchema();
+//            Map<String, AnnotatedMember> properties = initialSchema.getProperties();
+//
+//            Map<String, PropertyCustomizer> propertyCustomizers = customizeSchema(schemaWithoutProperties, javaType, annotationsSupplier, properties);
 
 //            defaultSchemaResolverSupport.consumeSchemaWithProperties(schemaWithoutProperties, properties.keySet(), recursionDepth == 0, schemaConsumer,
 //                    () -> new LinkedList<>(properties.keySet()).descendingIterator().forEachRemaining(propertyName -> {
@@ -178,14 +162,8 @@ public class DefaultSchemaResolver implements SchemaResolver {
 //            );
         }
 
-        private Map<String, PropertyCustomizer> customizeSchema(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Map<String, AnnotatedMember> properties) {
-            Map<String, PropertyCustomizer> customizerProperties = buildStringMapFromStream(
-                    properties.entrySet().stream(),
-                    Map.Entry::getKey,
-                    entry -> new PropertyCustomizer(entry.getValue())
-            );
-            schemaCustomizers.forEach(customizer -> customizer.customize(schema, javaType, annotationsSupplier, customizerProperties));
-            return customizerProperties;
+        private void customizeSchema(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+            schemaCustomizers.forEach(customizer -> customizer.customize(schema, javaType, annotationsSupplier));
         }
 
 
@@ -246,31 +224,6 @@ public class DefaultSchemaResolver implements SchemaResolver {
 //                    referencedSchemaConsumer.maybeAsReference(schema, referencedSchema::consumeSchema);
 //                }
 //            });
-        }
-    }
-
-    @RequiredArgsConstructor
-    private static class PropertyCustomizer implements SchemaCustomizer.SchemaProperty, TypeResolverForProperties.SchemaProperty {
-
-        @Getter
-        private final AnnotatedMember annotatedMember;
-
-        @Nullable
-        private SchemaCustomizer.SchemaPropertyCustomizer schemaPropertyCustomizer;
-
-        @Override
-        public void customize(SchemaCustomizer.SchemaPropertyCustomizer propertySchemaCustomizer) {
-            this.schemaPropertyCustomizer = propertySchemaCustomizer;
-        }
-
-        public Schema customize(Schema propertySchema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-            if (schemaPropertyCustomizer != null) {
-                schemaPropertyCustomizer.customize(propertySchema, javaType, annotationsSupplier);
-                // TODO check if this is still necessary
-                // avoid running customizers multiple again when referenced schemas are consumed
-                schemaPropertyCustomizer = null;
-            }
-            return propertySchema;
         }
     }
 }

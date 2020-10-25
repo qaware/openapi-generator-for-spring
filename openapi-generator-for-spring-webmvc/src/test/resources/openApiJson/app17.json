@@ -77,13 +77,6 @@
       }
     },
     "schemas": {
-      "nullable_array_nullable_array_MustReference_-114764967": {
-        "type": "array",
-        "nullable": true,
-        "items": {
-          "$ref": "#/components/schemas/nullable_array_MustReference_-114764967"
-        }
-      },
       "App17Controller.SomeDto_0": {
         "type": "object",
         "properties": {
@@ -94,16 +87,16 @@
             "$ref": "#/components/schemas/App17Controller.SomeDto_1"
           },
           "listOfSomeDtos": {
-            "$ref": "#/components/schemas/array_MustReference_-207081611"
+            "$ref": "#/components/schemas/array_MustReference_-917623756"
           },
           "nullableListOfSomeDtos": {
-            "$ref": "#/components/schemas/nullable_array_MustReference_-114764967"
+            "$ref": "#/components/schemas/nullable_array_MustReference_-581995080"
           },
           "setOfListOfSomeDtos": {
-            "$ref": "#/components/schemas/array_array_MustReference_-207081611"
+            "$ref": "#/components/schemas/array_array_MustReference_-917623756"
           },
           "nullableSetOfListOfSomeDtos": {
-            "$ref": "#/components/schemas/nullable_array_nullable_array_MustReference_-114764967"
+            "$ref": "#/components/schemas/nullable_array_nullable_array_MustReference_-581995080"
           }
         }
       },
@@ -117,33 +110,40 @@
             "$ref": "#/components/schemas/App17Controller.SomeDto_1"
           },
           "listOfSomeDtos": {
-            "$ref": "#/components/schemas/array_MustReference_-207081611"
+            "$ref": "#/components/schemas/array_MustReference_-917623756"
           },
           "nullableListOfSomeDtos": {
-            "$ref": "#/components/schemas/nullable_array_MustReference_-114764967"
+            "$ref": "#/components/schemas/nullable_array_MustReference_-581995080"
           },
           "setOfListOfSomeDtos": {
-            "$ref": "#/components/schemas/array_array_MustReference_-207081611"
+            "$ref": "#/components/schemas/array_array_MustReference_-917623756"
           },
           "nullableSetOfListOfSomeDtos": {
-            "$ref": "#/components/schemas/nullable_array_nullable_array_MustReference_-114764967"
+            "$ref": "#/components/schemas/nullable_array_nullable_array_MustReference_-581995080"
           }
         },
         "nullable": true
       },
-      "array_MustReference_-207081611": {
+      "array_array_MustReference_-917623756": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/array_MustReference_-917623756"
+        }
+      },
+      "nullable_array_nullable_array_MustReference_-581995080": {
+        "type": "array",
+        "nullable": true,
+        "items": {
+          "$ref": "#/components/schemas/nullable_array_MustReference_-581995080"
+        }
+      },
+      "array_MustReference_-917623756": {
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/App17Controller.SomeDto_0"
         }
       },
-      "array_array_MustReference_-207081611": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/array_MustReference_-207081611"
-        }
-      },
-      "nullable_array_MustReference_-114764967": {
+      "nullable_array_MustReference_-581995080": {
         "type": "array",
         "nullable": true,
         "items": {

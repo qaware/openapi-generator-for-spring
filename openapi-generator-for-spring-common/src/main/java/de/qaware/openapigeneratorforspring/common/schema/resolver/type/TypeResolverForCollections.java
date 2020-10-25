@@ -3,22 +3,25 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaBuilderFromType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 
-import java.util.Map;
+import javax.annotation.Nullable;
 
 public class TypeResolverForCollections implements TypeResolver {
 
     public static final int ORDER = DEFAULT_ORDER;
 
+    @Nullable
     @Override
-    public void resolve(Schema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier,
-                        Map<String, ? extends SchemaProperty> properties, SchemaBuilderFromType schemaBuilderFromType) {
+    public Object resolve(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
         if (javaType.isCollectionLikeType()) {
             // TODO adapt annotations supplier to nested getContentType, consider @ArraySchema?
             // TODO append annotationSupplier with contained generic type!
-            schemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, initialSchema::setItems);
+            Schema schema = initialSchema.getSchema();
+            schemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, schema::setItems);
         }
+        return null;
     }
 
 //    @Override
