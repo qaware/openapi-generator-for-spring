@@ -19,8 +19,6 @@ public class DefaultOperationParameterSchemaCustomizer implements OperationParam
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(methodParameter)
                 .andThen(annotationsSupplierFactory.createFromAnnotatedElement(methodParameter.getType()));
         ReferencedSchemaConsumer referencedSchemaConsumer = operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedSchemaConsumer.class);
-        schemaResolver.resolveFromType(methodParameter.getType(), annotationsSupplier, referencedSchemaConsumer,
-                parameter::setSchema
-        );
+        schemaResolver.resolveFromType(methodParameter.getType(), annotationsSupplier, referencedSchemaConsumer, parameter::setSchema);
     }
 }

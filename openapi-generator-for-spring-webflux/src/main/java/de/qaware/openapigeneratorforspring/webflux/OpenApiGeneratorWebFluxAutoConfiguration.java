@@ -3,7 +3,9 @@ package de.qaware.openapigeneratorforspring.webflux;
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
 import de.qaware.openapigeneratorforspring.common.OpenApiResourceParameterProvider;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForMonoAndFlux;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.InitialSchemaFactoryForFlux;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.InitialSchemaFactoryForMono;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForFlux;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +33,19 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public TypeResolverForMonoAndFlux defaultTypeResolverForMonoAndFlux() {
-        return new TypeResolverForMonoAndFlux();
+    public TypeResolverForFlux defaultTypeResolverForFlux() {
+        return new TypeResolverForFlux();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public InitialSchemaFactoryForFlux defaultInitialSchemaFactoryForFlux() {
+        return new InitialSchemaFactoryForFlux();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public InitialSchemaFactoryForMono defaultInitialSchemaFactoryForMono() {
+        return new InitialSchemaFactoryForMono();
     }
 }

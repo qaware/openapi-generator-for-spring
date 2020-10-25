@@ -58,7 +58,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
                                 for (String contentType : getConsumesContentType(operationInfo)) {
                                     MediaType mediaType = getMediaType(contentType, requestBody);
                                     if (mediaType.getSchema() == null) {
-                                        schemaResolver.resolveFromType(methodParameter.getType(),
+                                        schemaResolver.resolveFromType(methodParameter.getParameterizedType(),
                                                 // the schema resolver should also consider annotations on the type itself
                                                 // however, annotations being present on the parameter itself should take precedence
                                                 annotationsSupplierFromMethodParameter

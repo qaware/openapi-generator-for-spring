@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
@@ -10,7 +11,7 @@ import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
-public class InitialTypeResolverForObject implements InitialTypeResolver {
+public class InitialSchemaFactoryForObject implements InitialSchemaFactory {
 
     // TODO remove!
     public static final Supplier<Schema> OBJECT_SCHEMA_SUPPLIER = () -> Schema.builder().type("object").build();
@@ -23,7 +24,7 @@ public class InitialTypeResolverForObject implements InitialTypeResolver {
 
     @Nullable
     @Override
-    public InitialSchema resolveFromType(JavaType javaType) {
+    public InitialSchema resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialTypeResolver fallbackResolver) {
         return InitialSchema.builder()
                 .schema(Schema.builder()
                         .type("object")

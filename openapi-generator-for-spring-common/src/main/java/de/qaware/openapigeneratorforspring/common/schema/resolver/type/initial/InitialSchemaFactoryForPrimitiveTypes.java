@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 import javax.annotation.Nullable;
@@ -12,7 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class InitialTypeResolverForPrimitiveTypes implements InitialTypeResolver {
+public class InitialSchemaFactoryForPrimitiveTypes implements InitialSchemaFactory {
 
     public static final int ORDER = DEFAULT_ORDER;
 
@@ -65,7 +66,7 @@ public class InitialTypeResolverForPrimitiveTypes implements InitialTypeResolver
 
     @Nullable
     @Override
-    public InitialSchema resolveFromType(JavaType javaType) {
+    public InitialSchema resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialTypeResolver fallbackResolver) {
         return Optional.ofNullable(PRIMITIVE_TYPE_CLASS_TO_SCHEMA.get(javaType.getRawClass()))
                 .map(Supplier::get)
                 .map(InitialSchema::of)

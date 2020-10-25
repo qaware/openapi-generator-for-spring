@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.DefaultJava8TimeTypeResolver;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.DefaultJava8TimeInitialSchemaFactory;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeInitialSchemaFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolverConfigurationProperties;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.spring.DefaultSpringResponseEntityTypeResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Bean;
 public class OpenApiGeneratorSchemaTypeExtensionAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
-    public Java8TimeTypeResolver defaultJava8TimeTypeResolver(Java8TimeTypeResolverConfigurationProperties properties) {
-        return new DefaultJava8TimeTypeResolver(properties);
+    public Java8TimeInitialSchemaFactory defaultJava8TimeInitialSchemaFactory(Java8TimeTypeResolverConfigurationProperties properties) {
+        return new DefaultJava8TimeInitialSchemaFactory(properties);
     }
 
     @Bean

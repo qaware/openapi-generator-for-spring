@@ -34,6 +34,9 @@ public class DefaultReferenceIdentifierFactoryForSchema implements ReferenceIden
             if (StringUtils.isNotBlank(schema.getFormat())) {
                 identifierComponents.add(schema.getFormat());
             }
+            if (schema.getItems() != null) {
+                identifierComponents.addAll(buildIdentifierComponents(schema.getItems(), schema.getItems().getName()));
+            }
         } else {
             identifierComponents.addAll(Arrays.asList("Schema", counter.getAndIncrement()));
         }
