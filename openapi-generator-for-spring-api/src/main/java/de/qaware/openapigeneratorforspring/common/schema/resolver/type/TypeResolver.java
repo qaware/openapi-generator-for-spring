@@ -23,5 +23,9 @@ public interface TypeResolver extends Ordered {
     int DEFAULT_ORDER = Ordered.LOWEST_PRECEDENCE - 1000;
 
     @Nullable
-    Object resolve(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType);
+    RecursionKey resolve(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType);
+
+    interface RecursionKey {
+        int getHashCode();
+    }
 }

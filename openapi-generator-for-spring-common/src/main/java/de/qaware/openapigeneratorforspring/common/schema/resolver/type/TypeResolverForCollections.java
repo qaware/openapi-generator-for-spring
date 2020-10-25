@@ -14,7 +14,7 @@ public class TypeResolverForCollections implements TypeResolver {
 
     @Nullable
     @Override
-    public Object resolve(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
+    public RecursionKey resolve(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
         if (javaType.isCollectionLikeType()) {
             // TODO adapt annotations supplier to nested getContentType, consider @ArraySchema?
             // TODO append annotationSupplier with contained generic type!

@@ -27,7 +27,7 @@ public class TypeResolverForProperties implements TypeResolver {
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Nullable
-    public Object resolve(
+    public RecursionKey resolve(
             InitialSchema initialSchema,
             JavaType javaType,
             AnnotationsSupplier annotationsSupplier,
@@ -55,9 +55,14 @@ public class TypeResolverForProperties implements TypeResolver {
 
     @RequiredArgsConstructor
     @EqualsAndHashCode
-    private static class UniqueSchemaKey {
+    private static class UniqueSchemaKey implements RecursionKey {
         private final JavaType javaType;
         private final int schemaHash;
+
+        @Override
+        public int getHashCode() {
+            return this.hashCode();
+        }
     }
 
     private Map<String, PropertyCustomizer> customizeSchemaProperties(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Map<String, AnnotatedMember> properties) {

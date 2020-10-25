@@ -15,7 +15,7 @@ public class TypeResolverForFlux implements TypeResolver {
 
     @Override
     @Nullable
-    public Object resolve(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
+    public RecursionKey resolve(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
         if (javaType.getRawClass().equals(Flux.class)) {
             JavaType innerType = javaType.getBindings().getTypeParameters().iterator().next();
             Schema schema = initialSchema.getSchema();

@@ -13,7 +13,7 @@ import java.util.Set;
 public class App17Controller {
 
     @GetMapping("/mapping1")
-    public List<SomeDto> mapping1(@RequestBody SomeDto someDto) {
+    public List<SomeDto> mapping1(@RequestBody @Nullable SomeDto someDto) {
         return null;
     }
 

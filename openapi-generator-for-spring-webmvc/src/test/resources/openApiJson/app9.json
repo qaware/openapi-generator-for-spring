@@ -41,7 +41,7 @@
             "in": "query",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
+              "$ref": "#/components/schemas/deprecated_App9Controller.SomeDeprecatedDto"
             }
           }
         ],
@@ -90,7 +90,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
+                "$ref": "#/components/schemas/deprecated_App9Controller.SomeDeprecatedDto"
               }
             }
           },
@@ -132,7 +132,7 @@
             "required": true,
             "deprecated": true,
             "schema": {
-              "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
+              "$ref": "#/components/schemas/deprecated_App9Controller.SomeDeprecatedDto"
             }
           }
         ],
@@ -148,17 +148,6 @@
     }
   },
   "components": {
-    "schemas": {
-      "App9Controller.SomeDeprecatedDto": {
-        "type": "object",
-        "deprecated": true
-      }
-    },
-    "responses": {
-      "200": {
-        "description": "Default response"
-      }
-    },
     "parameters": {
       "param1": {
         "name": "param1",
@@ -183,7 +172,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
+              "$ref": "#/components/schemas/deprecated_App9Controller.SomeDeprecatedDto"
             }
           }
         },
@@ -193,11 +182,30 @@
         "content": {
           "text/plain": {
             "schema": {
-              "$ref": "#/components/schemas/App9Controller.SomeDeprecatedDto"
+              "$ref": "#/components/schemas/deprecated_App9Controller.SomeDeprecatedDto"
             }
           }
         },
         "required": true
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Default response"
+      }
+    },
+    "schemas": {
+      "deprecated_App9Controller.SomeDeprecatedDto": {
+        "type": "object",
+        "properties": {
+          "param1": {
+            "type": "string"
+          },
+          "param2": {
+            "type": "string"
+          }
+        },
+        "deprecated": true
       }
     }
   }

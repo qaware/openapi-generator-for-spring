@@ -3,6 +3,7 @@ package de.qaware.openapigeneratorforspring.test.app9;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -58,6 +59,7 @@ public class App9Controller {
 
     }
 
+    @Value
     private static class SomeDto {
         String param1;
         String param2;
@@ -65,6 +67,7 @@ public class App9Controller {
 
     @SuppressWarnings("DeprecatedIsStillUsed") // deprecated for test
     @Deprecated
+    @Value
     private static class SomeDeprecatedDto {
         String param1;
         String param2;

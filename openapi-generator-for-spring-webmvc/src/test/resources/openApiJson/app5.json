@@ -102,10 +102,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/App5Controller.SimpleDto_1"
-                  }
+                  "$ref": "#/components/schemas/array_App5Controller.SimpleDto_1"
                 }
               }
             }
@@ -128,6 +125,24 @@
       }
     },
     "schemas": {
+      "nullable_App5Controller.SomeOtherDto": {
+        "type": "object",
+        "properties": {
+          "other": {
+            "$ref": "#/components/schemas/App5Controller.ComplexDto_3"
+          },
+          "someOtherDto": {
+            "$ref": "#/components/schemas/App5Controller.SomeOtherDto"
+          }
+        },
+        "nullable": true
+      },
+      "array_array_App5Controller.SimpleDto": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/array_App5Controller.SimpleDto_0"
+        }
+      },
       "nullable_string": {
         "type": "string",
         "nullable": true
@@ -158,81 +173,56 @@
         "type": "object",
         "properties": {
           "other1": {
-            "$ref": "#/components/schemas/App5Controller.ComplexDto_0"
+            "$ref": "#/components/schemas/App5Controller.ComplexDto_2"
           },
           "other2": {
             "$ref": "#/components/schemas/App5Controller.ComplexDto_1"
           },
           "someOtherDto": {
-            "$ref": "#/components/schemas/App5Controller.SomeOtherDto_1"
+            "$ref": "#/components/schemas/nullable_App5Controller.SomeOtherDto"
           },
           "listOfComplexDtos": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/App5Controller.ComplexDto_3"
-            }
+            "$ref": "#/components/schemas/array_App5Controller.ComplexDto"
           },
           "listOfSetOfStrings": {
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
+            "$ref": "#/components/schemas/array_array_string"
           },
           "setOfListOfSimpleDtos": {
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/App5Controller.SimpleDto_1"
-              }
-            }
+            "$ref": "#/components/schemas/array_array_App5Controller.SimpleDto"
           }
         },
         "description": "global description"
       },
       "App5Controller.ComplexDto_3": {
+        "title": "global title",
         "required": [
           "other2"
         ],
         "type": "object",
         "properties": {
           "other1": {
-            "$ref": "#/components/schemas/App5Controller.ComplexDto_0"
+            "$ref": "#/components/schemas/App5Controller.ComplexDto_2"
           },
           "other2": {
             "$ref": "#/components/schemas/App5Controller.ComplexDto_1"
           },
           "someOtherDto": {
-            "$ref": "#/components/schemas/App5Controller.SomeOtherDto_1"
+            "$ref": "#/components/schemas/nullable_App5Controller.SomeOtherDto"
           },
           "listOfComplexDtos": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/App5Controller.ComplexDto_3"
+              "$ref": "#/components/schemas/App5Controller.ComplexDto_0"
             }
           },
           "listOfSetOfStrings": {
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
+            "$ref": "#/components/schemas/array_array_string"
           },
           "setOfListOfSimpleDtos": {
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/App5Controller.SimpleDto_1"
-              }
-            }
+            "$ref": "#/components/schemas/array_array_App5Controller.SimpleDto"
           }
-        }
+        },
+        "description": "nestedDescription"
       },
       "App5Controller.ComplexDto_2": {
         "title": "global title",
@@ -242,40 +232,25 @@
         "type": "object",
         "properties": {
           "other1": {
-            "$ref": "#/components/schemas/App5Controller.ComplexDto_0"
+            "$ref": "#/components/schemas/App5Controller.ComplexDto_2"
           },
           "other2": {
             "$ref": "#/components/schemas/App5Controller.ComplexDto_1"
           },
           "someOtherDto": {
-            "$ref": "#/components/schemas/App5Controller.SomeOtherDto_1"
+            "$ref": "#/components/schemas/nullable_App5Controller.SomeOtherDto"
           },
           "listOfComplexDtos": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/App5Controller.ComplexDto_3"
-            }
+            "$ref": "#/components/schemas/array_App5Controller.ComplexDto"
           },
           "listOfSetOfStrings": {
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
+            "$ref": "#/components/schemas/array_array_string"
           },
           "setOfListOfSimpleDtos": {
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/App5Controller.SimpleDto_1"
-              }
-            }
+            "$ref": "#/components/schemas/array_array_App5Controller.SimpleDto"
           }
         },
-        "description": "nestedDescription"
+        "description": "description1"
       },
       "App5Controller.ComplexDto_1": {
         "title": "title override",
@@ -285,107 +260,96 @@
         "type": "object",
         "properties": {
           "other1": {
-            "$ref": "#/components/schemas/App5Controller.ComplexDto_0"
+            "$ref": "#/components/schemas/App5Controller.ComplexDto_2"
           },
           "other2": {
             "$ref": "#/components/schemas/App5Controller.ComplexDto_1"
           },
           "someOtherDto": {
-            "$ref": "#/components/schemas/App5Controller.SomeOtherDto_1"
+            "$ref": "#/components/schemas/nullable_App5Controller.SomeOtherDto"
           },
           "listOfComplexDtos": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/App5Controller.ComplexDto_3"
-            }
+            "$ref": "#/components/schemas/array_App5Controller.ComplexDto"
           },
           "listOfSetOfStrings": {
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
+            "$ref": "#/components/schemas/array_array_string"
           },
           "setOfListOfSimpleDtos": {
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/App5Controller.SimpleDto_1"
-              }
-            }
+            "$ref": "#/components/schemas/array_array_App5Controller.SimpleDto"
           }
         },
         "description": "description2"
       },
       "App5Controller.ComplexDto_0": {
-        "title": "global title",
         "required": [
           "other2"
         ],
         "type": "object",
         "properties": {
           "other1": {
-            "$ref": "#/components/schemas/App5Controller.ComplexDto_0"
+            "$ref": "#/components/schemas/App5Controller.ComplexDto_2"
           },
           "other2": {
             "$ref": "#/components/schemas/App5Controller.ComplexDto_1"
           },
           "someOtherDto": {
-            "$ref": "#/components/schemas/App5Controller.SomeOtherDto_1"
+            "$ref": "#/components/schemas/nullable_App5Controller.SomeOtherDto"
           },
           "listOfComplexDtos": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/App5Controller.ComplexDto_3"
-            }
+            "$ref": "#/components/schemas/array_App5Controller.ComplexDto"
           },
           "listOfSetOfStrings": {
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
+            "$ref": "#/components/schemas/array_array_string"
           },
           "setOfListOfSimpleDtos": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/App5Controller.SimpleDto_1"
-              }
+              "$ref": "#/components/schemas/array_App5Controller.SimpleDto_1"
             }
           }
-        },
-        "description": "description1"
+        }
       },
-      "App5Controller.SomeOtherDto_0": {
+      "array_array_string": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/array_string"
+        }
+      },
+      "array_App5Controller.SimpleDto_1": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/App5Controller.SimpleDto_1"
+        }
+      },
+      "array_App5Controller.SimpleDto_0": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/App5Controller.SimpleDto_1"
+        }
+      },
+      "array_string": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "App5Controller.SomeOtherDto": {
         "type": "object",
         "properties": {
           "other": {
-            "$ref": "#/components/schemas/App5Controller.ComplexDto_2"
+            "$ref": "#/components/schemas/App5Controller.ComplexDto_3"
           },
           "someOtherDto": {
-            "$ref": "#/components/schemas/App5Controller.SomeOtherDto_0"
+            "$ref": "#/components/schemas/App5Controller.SomeOtherDto"
           }
         },
         "description": "nestedOtherDescription"
       },
-      "App5Controller.SomeOtherDto_1": {
-        "type": "object",
-        "properties": {
-          "other": {
-            "$ref": "#/components/schemas/App5Controller.ComplexDto_2"
-          },
-          "someOtherDto": {
-            "$ref": "#/components/schemas/App5Controller.SomeOtherDto_0"
-          }
-        },
-        "nullable": true
+      "array_App5Controller.ComplexDto": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/App5Controller.ComplexDto_0"
+        }
       }
     }
   }

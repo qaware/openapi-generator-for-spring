@@ -21,15 +21,15 @@ public class DefaultReferenceIdentifierFactoryForSchema implements ReferenceIden
     @Override
     public List<Object> buildIdentifierComponents(Schema schema, @Nullable String suggestedIdentifier) {
         List<Object> identifierComponents = new ArrayList<>();
+        if (TRUE.equals(schema.getNullable())) {
+            identifierComponents.add(NULLABLE_PREFIX);
+        }
+        if (TRUE.equals(schema.getDeprecated())) {
+            identifierComponents.add(DEPRECATED_PREFIX);
+        }
         if (StringUtils.isNotBlank(suggestedIdentifier)) {
             identifierComponents.add(suggestedIdentifier);
         } else if (StringUtils.isNotBlank(schema.getType())) {
-            if (TRUE.equals(schema.getNullable())) {
-                identifierComponents.add(NULLABLE_PREFIX);
-            }
-            if (TRUE.equals(schema.getDeprecated())) {
-                identifierComponents.add(DEPRECATED_PREFIX);
-            }
             identifierComponents.add(schema.getType());
             if (StringUtils.isNotBlank(schema.getFormat())) {
                 identifierComponents.add(schema.getFormat());
