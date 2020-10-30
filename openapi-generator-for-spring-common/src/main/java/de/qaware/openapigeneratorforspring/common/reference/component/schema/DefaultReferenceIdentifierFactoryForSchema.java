@@ -20,7 +20,7 @@ public class DefaultReferenceIdentifierFactoryForSchema implements ReferenceIden
     private final AtomicInteger counter = new AtomicInteger();
 
     @Override
-    public String buildIdentifier(Schema schema, @Nullable String suggestedIdentifier) {
+    public String buildIdentifier(Schema schema, @Nullable String suggestedIdentifier, int numberOfSetters) {
         List<Object> identifierComponents = new ArrayList<>();
         if (TRUE.equals(schema.getNullable())) {
             identifierComponents.add(NULLABLE_PREFIX);
@@ -36,9 +36,10 @@ public class DefaultReferenceIdentifierFactoryForSchema implements ReferenceIden
                 identifierComponents.add(schema.getFormat());
             }
             if (schema.getItems() != null) {
-                identifierComponents.add(buildIdentifier(schema.getItems(), schema.getItems().getName()));
+                identifierComponents.add(buildIdentifier(schema.getItems(), schema.getItems().getName(), numberOfSetters));
             }
         } else {
+            // fallback to dummy counted identifier, as schema are sometimes required to be referenced
             identifierComponents.addAll(Arrays.asList("Schema", counter.getAndIncrement()));
         }
         return identifierComponents.stream().map(Object::toString).collect(Collectors.joining("_"));

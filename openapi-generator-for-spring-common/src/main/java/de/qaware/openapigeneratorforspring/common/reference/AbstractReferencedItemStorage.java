@@ -14,6 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,19 +61,30 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
     public Map<String, T> buildReferencedItems() {
         Map<String, T> referencedItems = new LinkedHashMap<>();
         buildGroupedEntries()
-                .filter(entry -> entry.getReferenceSetters().size() > 0) // safe-guard if all reference setters are removed due to ownership
-                .filter(entry -> entry.isReferenceRequired() || referenceDecider.turnIntoReference(entry.getItem(), entry.getReferenceSetters().size()))
-                .flatMap(this::buildNonUniqueReferenceIdentifier)
+                .flatMap(this::buildNonUniqueReferenceIdentifiers)
                 .collect(groupingByPairKeyAndCollectingValuesTo(groupingByPairKeyAndCollectingValuesToList()))
-                .forEach((referenceIdentifier, entriesMapGroupedByIdentifier) ->
-                        buildUniqueReferenceIdentifiers(referenceIdentifier, entriesMapGroupedByIdentifier).forEach(
-                                (uniqueIdentifier, entry) -> {
-                                    T referenceItem = itemConstructor.get().createReference(referenceType.getReferencePrefix() + uniqueIdentifier);
-                                    T immutableReferenceItem = OpenApiProxyUtils.immutableProxy(referenceItem);
-                                    entry.getReferenceSetters().forEach(setter -> setter.consumeReference(immutableReferenceItem));
-                                    referencedItems.put(uniqueIdentifier, entry.getItem());
-                                }));
+                .forEach((referenceIdentifier, itemsPerIdentifier) -> {
+                    removeNotToBeReferencedItems(referenceIdentifier, itemsPerIdentifier);
+                    buildUniqueReferenceIdentifiers(referenceIdentifier, itemsPerIdentifier).forEach(
+                            (uniqueIdentifier, itemWithReferenceSetters) -> {
+                                T referenceItem = itemConstructor.get().createReference(referenceType.getReferencePrefix() + uniqueIdentifier);
+                                T immutableReferenceItem = OpenApiProxyUtils.immutableProxy(referenceItem);
+                                itemWithReferenceSetters.getValue().forEach(setter -> setter.consumeReference(immutableReferenceItem));
+                                referencedItems.put(uniqueIdentifier, itemWithReferenceSetters.getKey());
+                            });
+                });
         return referencedItems;
+    }
+
+    private void removeNotToBeReferencedItems(String referenceIdentifier, Map<T, List<ReferenceSetter<T>>> itemsGroupedByIdentifier) {
+        Iterator<Map.Entry<T, List<ReferenceSetter<T>>>> iterator = itemsGroupedByIdentifier.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<T, List<ReferenceSetter<T>>> entry = iterator.next();
+            boolean isReferenceNotRequired = entry.getValue().stream().noneMatch(ReferenceSetter::isReferenceRequired);
+            if (isReferenceNotRequired && !referenceDecider.turnIntoReference(entry.getKey(), referenceIdentifier, entry.getValue().size())) {
+                iterator.remove();
+            }
+        }
     }
 
     private Stream<GroupedEntry> buildGroupedEntries() {
@@ -81,19 +93,17 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
                 .values().stream();
     }
 
-    private Map<String, ConsumableEntry> buildUniqueReferenceIdentifiers(String referenceIdentifier, Map<GroupedEntry, List<ReferenceSetter<T>>> entriesMapGroupedByIdentifier) {
-        if (entriesMapGroupedByIdentifier.size() == 1) {
-            // there's no conflict if there's only one entry to be consumed,
+    private Map<String, Map.Entry<T, List<ReferenceSetter<T>>>> buildUniqueReferenceIdentifiers(String referenceIdentifier, Map<T, List<ReferenceSetter<T>>> itemsGroupedByIdentifier) {
+        if (itemsGroupedByIdentifier.size() == 1) {
+            // there's no conflict if there's only one item to be consumed,
             // then just return the identifier itself
             return Collections.singletonMap(
                     referenceIdentifier,
-                    createConsumableEntry(entriesMapGroupedByIdentifier.entrySet().iterator().next())
+                    itemsGroupedByIdentifier.entrySet().iterator().next()
             );
         }
 
-        List<T> itemsWithSameIdentifier = entriesMapGroupedByIdentifier.keySet().stream()
-                .map(GroupedEntry::getItem)
-                .collect(Collectors.toList());
+        List<T> itemsWithSameIdentifier = new ArrayList<>(itemsGroupedByIdentifier.keySet());
 
         List<String> uniqueIdentifiers = referenceIdentifierConflictResolver.resolveConflict(itemsWithSameIdentifier, referenceIdentifier);
         if (uniqueIdentifiers.size() != itemsWithSameIdentifier.size()) {
@@ -102,11 +112,11 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
         }
 
         // zip unique identifiers with map entries
-        List<Map.Entry<GroupedEntry, List<ReferenceSetter<T>>>> entriesMapAsList = new ArrayList<>(entriesMapGroupedByIdentifier.entrySet());
+        List<Map.Entry<T, List<ReferenceSetter<T>>>> entriesMapAsList = new ArrayList<>(itemsGroupedByIdentifier.entrySet());
         return IntStream.range(0, entriesMapAsList.size()).boxed()
                 .collect(Collectors.toMap(
                         uniqueIdentifiers::get,
-                        i -> createConsumableEntry(entriesMapAsList.get(i)),
+                        entriesMapAsList::get,
                         (a, b) -> {
                             throw new IllegalStateException(String.format("Found non-unique reference identifier from conflict resolver %s: %s vs. %s",
                                     referenceIdentifierConflictResolver.getClass().getSimpleName(), a, b));
@@ -115,14 +125,19 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
                 ));
     }
 
-    private Stream<Pair<String, Pair<GroupedEntry, ReferenceSetter<T>>>> buildNonUniqueReferenceIdentifier(GroupedEntry entry) {
-        List<Pair<String, Pair<GroupedEntry, ReferenceSetter<T>>>> result = new ArrayList<>();
-        // intermediate grouping ensures we don't call the referenceIdentifierFactory not more than needed!
+    private Stream<Pair<String, Pair<T, ReferenceSetter<T>>>> buildNonUniqueReferenceIdentifiers(GroupedEntry entry) {
+        List<Pair<String, Pair<T, ReferenceSetter<T>>>> result = new ArrayList<>();
         entry.getReferenceSetters().stream()
+                // intermediate grouping by suggestedIdentifier ensures we don't call the referenceIdentifierFactory not more than needed!
                 .collect(groupingByPairKeyAndCollectingValuesToList())
                 .forEach(((suggestedIdentifier, referenceSetters) -> {
-                    String identifier = referenceIdentifierFactory.buildIdentifier(entry.getItem(), suggestedIdentifier.getValue());
-                    referenceSetters.forEach(referenceSetter -> result.add(Pair.of(identifier, Pair.of(entry, referenceSetter))));
+                    String identifier = referenceIdentifierFactory.buildIdentifier(entry.getItem(), suggestedIdentifier.getValue(), referenceSetters.size());
+                    boolean isReferenceRequired = referenceSetters.stream().anyMatch(ReferenceSetter::isReferenceRequired);
+                    if (identifier == null && isReferenceRequired) {
+                        throw new IllegalStateException("Cannot skip referencing " + entry.getItem() + " with null identifier as reference is required for at least one reference setter");
+                    } else if (identifier != null) {
+                        referenceSetters.forEach(referenceSetter -> result.add(Pair.of(identifier, Pair.of(entry.getItem(), referenceSetter))));
+                    }
                 }));
         return result.stream();
     }
@@ -137,35 +152,17 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
 
     @RequiredArgsConstructor
     @Getter
-    private class ConsumableEntry {
-        private final T item;
-        private final List<ReferenceSetter<T>> referenceSetters;
-    }
-
-    private ConsumableEntry createConsumableEntry(Map.Entry<GroupedEntry, List<ReferenceSetter<T>>> entry) {
-        // note however that the reference setters in entry.getValue() may only be a subset
-        // of all reference setters belonging to this GroupedEntry!
-        return new ConsumableEntry(entry.getKey().getItem(), entry.getValue());
-    }
-
-    @RequiredArgsConstructor
-    @Getter
     private class GroupedEntry {
         private final T item;
         private final List<Pair<SuggestedIdentifier, ReferenceSetter<T>>> referenceSetters = new ArrayList<>();
-        private boolean referenceRequired = false;
 
         public GroupedEntry addReferenceSetter(Pair<SuggestedIdentifier, ReferenceSetter<T>> referenceSetter) {
             referenceSetters.add(referenceSetter);
-            if (referenceSetter.getValue().isReferenceRequired()) {
-                referenceRequired = true;
-            }
             return this;
         }
 
         public GroupedEntry merge(GroupedEntry other) {
-            // important not to use addAll to keep track of referenceRequired flag
-            other.referenceSetters.forEach(this::addReferenceSetter);
+            referenceSetters.addAll(other.referenceSetters);
             return this;
         }
     }

@@ -4,6 +4,6 @@ import java.util.function.Function;
 
 public class DefaultReferenceDeciderFactory {
     public <T, R extends ReferenceDeciderForType<T>> R create(Function<ReferenceDeciderForType<T>, R> mapper) {
-        return mapper.apply((item, numberOfUsages) -> numberOfUsages > 1);
+        return mapper.apply((item, referenceIdentifier, numberOfUsages) -> numberOfUsages > 1);
     }
 }

@@ -14,7 +14,7 @@ public class ReferencedExamplesHandlerFactory implements ReferencedItemHandlerFa
     public ReferencedItemHandler create() {
         ReferencedExampleStorage storage = new ReferencedExampleStorage(
                 referenceDecider,
-                (example, exampleName) -> referenceIdentifierFactory.buildSuggestedIdentifier(exampleName),
+                (example, exampleName, numberOfSetters) -> referenceIdentifierFactory.buildSuggestedIdentifier(exampleName),
                 referenceIdentifierConflictResolver
         );
         return new ReferencedExamplesHandlerImpl(storage, referenceIdentifierFactory);

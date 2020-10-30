@@ -14,7 +14,7 @@ public class ReferencedHeadersHandlerFactory implements ReferencedItemHandlerFac
     public ReferencedItemHandler create() {
         ReferencedHeaderStorage storage = new ReferencedHeaderStorage(
                 referenceDecider,
-                (header, headerName) -> referenceIdentifierFactory.buildSuggestedIdentifier(headerName),
+                (header, headerName, numberOfSetters) -> referenceIdentifierFactory.buildSuggestedIdentifier(headerName),
                 referenceIdentifierConflictResolver
         );
         return new ReferencedHeadersHandlerImpl(storage, referenceIdentifierFactory);

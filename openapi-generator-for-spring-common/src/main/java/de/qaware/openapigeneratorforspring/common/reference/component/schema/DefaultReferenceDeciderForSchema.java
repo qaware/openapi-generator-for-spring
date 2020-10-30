@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 public class DefaultReferenceDeciderForSchema implements ReferenceDeciderForSchema {
 
     @Override
-    public boolean turnIntoReference(Schema schema, long numberOfUsages) {
+    public boolean turnIntoReference(Schema schema, String referenceIdentifier, long numberOfUsages) {
         if (onlyTypeIsSet(schema)) {
             return false;
         }
