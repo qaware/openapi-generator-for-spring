@@ -12,14 +12,20 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.EXAMPLE;
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.HEADER;
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.SCHEMA;
+
 public class ReferencedParameterStorage extends AbstractReferencedItemStorage<Parameter, ReferencedParameterStorage.Entry> {
 
     ReferencedParameterStorage(ReferenceDeciderForType<Parameter> referenceDecider, ReferenceIdentifierFactoryForType<Parameter> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Parameter> referenceIdentifierConflictResolver) {
-        super(ReferenceType.PARAMETER, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Parameter::new, Entry::new);
+        super(ReferenceType.PARAMETER, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Parameter::new, Entry::new,
+                Arrays.asList(SCHEMA, EXAMPLE, HEADER));
     }
 
     void maybeReferenceParameters(List<Parameter> parameters, Object owner) {

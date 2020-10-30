@@ -7,13 +7,19 @@ import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIde
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
+
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.EXAMPLE;
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.HEADER;
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.SCHEMA;
 
 
 public class ReferencedRequestBodyStorage extends AbstractReferencedItemStorage<RequestBody, ReferencedRequestBodyStorage.Entry> {
 
     ReferencedRequestBodyStorage(ReferenceDeciderForType<RequestBody> referenceDecider, ReferenceIdentifierFactoryForType<RequestBody> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<RequestBody> referenceIdentifierConflictResolver) {
-        super(ReferenceType.REQUEST_BODY, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, RequestBody::new, Entry::new);
+        super(ReferenceType.REQUEST_BODY, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, RequestBody::new, Entry::new,
+                Arrays.asList(SCHEMA, EXAMPLE, HEADER));
     }
 
     void storeMaybeReference(RequestBody requestBody, Consumer<RequestBody> setter) {

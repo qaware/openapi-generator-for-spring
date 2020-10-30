@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -20,7 +21,8 @@ public class ReferencedSchemaStorage extends AbstractReferencedItemStorage<Schem
     ReferencedSchemaStorage(ReferenceDeciderForType<Schema> referenceDecider,
                             ReferenceIdentifierFactoryForType<Schema> referenceIdentifierFactory,
                             ReferenceIdentifierConflictResolverForType<Schema> referenceIdentifierConflictResolver) {
-        super(ReferenceType.SCHEMA, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Schema::new, Entry::new);
+        super(ReferenceType.SCHEMA, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Schema::new, Entry::new,
+                Collections.emptyList());
     }
 
     void storeAlwaysReference(Schema schema, Consumer<Schema> setter) {

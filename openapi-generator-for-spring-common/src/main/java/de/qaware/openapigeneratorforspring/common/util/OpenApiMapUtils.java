@@ -72,7 +72,7 @@ public class OpenApiMapUtils {
                 keyMapper,
                 valueMapper,
                 (a, b) -> {
-                    throw new IllegalStateException("Duplicate key " + a);
+                    throw new IllegalStateException("Duplicate key for values " + a + " vs. " + b);
                 },
                 mapSupplier
         ));

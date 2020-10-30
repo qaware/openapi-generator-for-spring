@@ -12,13 +12,20 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.EXAMPLE;
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.HEADER;
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.LINK;
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.SCHEMA;
 
 public class ReferencedApiResponseStorage extends AbstractReferencedItemStorage<ApiResponse, ReferencedApiResponseStorage.Entry> {
 
     ReferencedApiResponseStorage(ReferenceDeciderForType<ApiResponse> referenceDecider, ReferenceIdentifierFactoryForType<ApiResponse> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<ApiResponse> referenceIdentifierConflictResolver) {
-        super(ReferenceType.API_RESPONSE, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, ApiResponse::new, Entry::new);
+        super(ReferenceType.API_RESPONSE, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, ApiResponse::new, Entry::new,
+                Arrays.asList(SCHEMA, EXAMPLE, HEADER, LINK));
     }
 
     void maybeReferenceApiResponses(ApiResponses apiResponses) {

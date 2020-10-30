@@ -1,21 +1,27 @@
 package de.qaware.openapigeneratorforspring.common.reference.component.callback;
 
 import de.qaware.openapigeneratorforspring.common.reference.AbstractReferencedItemStorage;
-import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.operation.Callback;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.API_RESPONSE;
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.CALLBACK;
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.PARAMETER;
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.REQUEST_BODY;
 
 
 public class ReferencedCallbackStorage extends AbstractReferencedItemStorage<Callback, ReferencedCallbackStorage.Entry> {
 
     ReferencedCallbackStorage(ReferenceDeciderForType<Callback> referenceDecider, ReferenceIdentifierFactoryForType<Callback> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Callback> referenceIdentifierConflictResolver) {
-        super(ReferenceType.CALLBACK, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Callback::new, Entry::new);
+        super(CALLBACK, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Callback::new, Entry::new,
+                Arrays.asList(CALLBACK, API_RESPONSE, PARAMETER, REQUEST_BODY));
     }
 
     void storeMaybeReferenceCallbacks(Map<String, Callback> callbacks) {

@@ -39,6 +39,7 @@ public abstract class AbstractReferencedItemStorage<
     private final ReferenceIdentifierConflictResolverForType<T> referenceIdentifierConflictResolver;
     private final Supplier<T> itemConstructor;
     private final Function<T, E> entryConstructor;
+    private final List<ReferenceType> buildDependencies;
 
     private final List<E> entries = new ArrayList<>();
 
@@ -59,6 +60,10 @@ public abstract class AbstractReferencedItemStorage<
 
     protected void removeReferenceSettersOwnedBy(Object owner) {
         entries.forEach(entry -> entry.removeReferenceSettersOwnedBy(owner));
+    }
+
+    public Pair<ReferenceType, List<ReferenceType>> getBuildDependencies() {
+        return Pair.of(referenceType, buildDependencies);
     }
 
     public Map<String, T> buildReferencedItems() {

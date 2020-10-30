@@ -7,15 +7,19 @@ import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIde
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.link.Link;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.HEADER;
 
 
 public class ReferencedLinkStorage extends AbstractReferencedItemStorage<Link, ReferencedLinkStorage.Entry> {
 
     ReferencedLinkStorage(ReferenceDeciderForType<Link> referenceDecider, ReferenceIdentifierFactoryForType<Link> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Link> referenceIdentifierConflictResolver) {
-        super(ReferenceType.LINK, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Link::new, Entry::new);
+        super(ReferenceType.LINK, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Link::new, Entry::new,
+                Arrays.asList(HEADER));
     }
 
     void storeMaybeReferenceLinks(Map<String, Link> links) {
