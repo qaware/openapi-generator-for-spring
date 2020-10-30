@@ -7,9 +7,7 @@ import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIde
 import de.qaware.openapigeneratorforspring.model.operation.Callback;
 
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.API_RESPONSE;
 import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.CALLBACK;
@@ -17,10 +15,10 @@ import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType
 import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.REQUEST_BODY;
 
 
-public class ReferencedCallbackStorage extends AbstractReferencedItemStorage<Callback, ReferencedCallbackStorage.Entry> {
+public class ReferencedCallbackStorage extends AbstractReferencedItemStorage<Callback> {
 
     ReferencedCallbackStorage(ReferenceDeciderForType<Callback> referenceDecider, ReferenceIdentifierFactoryForType<Callback> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Callback> referenceIdentifierConflictResolver) {
-        super(CALLBACK, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Callback::new, Entry::new,
+        super(CALLBACK, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Callback::new,
                 Arrays.asList(CALLBACK, API_RESPONSE, PARAMETER, REQUEST_BODY));
     }
 
@@ -30,27 +28,7 @@ public class ReferencedCallbackStorage extends AbstractReferencedItemStorage<Cal
         // here, we don't need to track the callback name together with the setter,
         // but simpler build a Set of callback names inside the entry
         callbacks.forEach((callbackName, callback) ->
-                getEntryOrAddNew(callback)
-                        .addCallbackName(callbackName)
-                        .addSetter(referenceCallback -> callbacks.put(callbackName, referenceCallback))
+                addEntry(callback, referenceCallback -> callbacks.put(callbackName, referenceCallback), callbackName)
         );
-    }
-
-    static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<Callback> {
-        protected Entry(Callback item) {
-            super(item);
-        }
-
-        private final Set<String> callbackNames = new LinkedHashSet<>();
-
-        @Override
-        public String getSuggestedIdentifier() {
-            return String.join("_", callbackNames);
-        }
-
-        public AbstractReferencableEntry<Callback> addCallbackName(String callbackName) {
-            callbackNames.add(callbackName);
-            return this; // fluent API
-        }
     }
 }

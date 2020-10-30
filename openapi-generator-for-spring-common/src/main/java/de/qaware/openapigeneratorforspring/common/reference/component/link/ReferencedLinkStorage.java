@@ -7,19 +7,17 @@ import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIde
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.link.Link;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.HEADER;
 
 
-public class ReferencedLinkStorage extends AbstractReferencedItemStorage<Link, ReferencedLinkStorage.Entry> {
+public class ReferencedLinkStorage extends AbstractReferencedItemStorage<Link> {
 
     ReferencedLinkStorage(ReferenceDeciderForType<Link> referenceDecider, ReferenceIdentifierFactoryForType<Link> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Link> referenceIdentifierConflictResolver) {
-        super(ReferenceType.LINK, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Link::new, Entry::new,
-                Arrays.asList(HEADER));
+        super(ReferenceType.LINK, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Link::new,
+                Collections.singletonList(HEADER));
     }
 
     void storeMaybeReferenceLinks(Map<String, Link> links) {
@@ -27,28 +25,6 @@ public class ReferencedLinkStorage extends AbstractReferencedItemStorage<Link, R
         // this makes life easier than for example ApiResponses reference handling
         // here, we don't need to track the link name together with the setter,
         // but simpler build a Set of link names inside the entry
-        links.forEach((linkName, link) ->
-                getEntryOrAddNew(link)
-                        .addLinkName(linkName)
-                        .addSetter(referenceLink -> links.put(linkName, referenceLink))
-        );
-    }
-
-    static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<Link> {
-        protected Entry(Link item) {
-            super(item);
-        }
-
-        private final Set<String> linkNames = new LinkedHashSet<>();
-
-        @Override
-        public String getSuggestedIdentifier() {
-            return String.join("_", linkNames);
-        }
-
-        public AbstractReferencableEntry<Link> addLinkName(String linkName) {
-            linkNames.add(linkName);
-            return this; // fluent API
-        }
+        links.forEach((linkName, link) -> addEntry(link, referenceLink -> links.put(linkName, referenceLink), linkName));
     }
 }

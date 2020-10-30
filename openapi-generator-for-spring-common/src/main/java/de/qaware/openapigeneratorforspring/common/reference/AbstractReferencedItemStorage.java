@@ -17,49 +17,40 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.nullOr;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.groupingByPairKeyAndCollectingValuesTo;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.groupingByPairKeyAndCollectingValuesToList;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractReferencedItemStorage<
-        T extends HasReference<T>,
-        E extends AbstractReferencedItemStorage.ReferencableEntry<T, ? extends AbstractReferencedItemStorage.ReferenceSetter<T>>
-        > {
+public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
 
     private final ReferenceType referenceType;
     private final ReferenceDeciderForType<T> referenceDecider;
     private final ReferenceIdentifierFactoryForType<T> referenceIdentifierFactory;
     private final ReferenceIdentifierConflictResolverForType<T> referenceIdentifierConflictResolver;
     private final Supplier<T> itemConstructor;
-    private final Function<T, E> entryConstructor;
     private final List<ReferenceType> buildDependencies;
 
-    private final List<E> entries = new ArrayList<>();
+    private final List<Entry<T>> entries = new ArrayList<>();
 
-    protected E getEntryOrAddNew(T item) {
-        // we don't use a map here to be able to recompute grouping
-        // when items of already stored entries get altered via reference!
-        return entries.stream()
-                .filter(entry -> entry.getItem().equals(item))
-                .reduce((a, b) -> {
-                    throw new IllegalStateException("Found more than one entry: " + a + " vs. " + b);
-                })
-                .orElseGet(() -> {
-                    E newEntry = entryConstructor.apply(item);
-                    entries.add(newEntry);
-                    return newEntry;
-                });
+    protected void addEntry(T item, ReferenceSetter<T> referenceSetter) {
+        addEntry(item, referenceSetter, null, null);
     }
 
-    protected void removeReferenceSettersOwnedBy(Object owner) {
-        entries.forEach(entry -> entry.removeReferenceSettersOwnedBy(owner));
+    protected void addEntry(T item, ReferenceSetter<T> referenceSetter, @Nullable String suggestedIdentifier) {
+        addEntry(item, referenceSetter, suggestedIdentifier, null);
+    }
+
+    protected void addEntry(T item, ReferenceSetter<T> referenceSetter, @Nullable String suggestedIdentifier, @Nullable Object owner) {
+        entries.add(Entry.of(item, referenceSetter, SuggestedIdentifier.of(suggestedIdentifier), owner));
+    }
+
+    protected void removeEntriesOwnedBy(Object owner) {
+        entries.removeIf(entry -> entry.getOwner() == owner);
     }
 
     public Pair<ReferenceType, List<ReferenceType>> getBuildDependencies() {
@@ -68,9 +59,9 @@ public abstract class AbstractReferencedItemStorage<
 
     public Map<String, T> buildReferencedItems() {
         Map<String, T> referencedItems = new LinkedHashMap<>();
-        entries.stream()
-                .filter(entry -> entry.getReferenceSetters().count() > 0) // safe-guard if all reference setters are removed due to ownership
-                .filter(entry -> entry.isReferenceRequired() || referenceDecider.turnIntoReference(entry.getItem(), entry.getReferenceSetters().count()))
+        buildGroupedEntries()
+                .filter(entry -> entry.getReferenceSetters().size() > 0) // safe-guard if all reference setters are removed due to ownership
+                .filter(entry -> entry.isReferenceRequired() || referenceDecider.turnIntoReference(entry.getItem(), entry.getReferenceSetters().size()))
                 .flatMap(this::buildNonUniqueReferenceIdentifier)
                 .collect(groupingByPairKeyAndCollectingValuesTo(groupingByPairKeyAndCollectingValuesToList()))
                 .forEach((referenceIdentifier, entriesMapGroupedByIdentifier) ->
@@ -84,7 +75,13 @@ public abstract class AbstractReferencedItemStorage<
         return referencedItems;
     }
 
-    private Map<String, ConsumableEntry> buildUniqueReferenceIdentifiers(String referenceIdentifier, Map<UniqueEntry, List<ReferenceSetter<T>>> entriesMapGroupedByIdentifier) {
+    private Stream<GroupedEntry> buildGroupedEntries() {
+        return entries.stream()
+                .collect(Collectors.toMap(e -> e, this::createNewGroupedEntry, GroupedEntry::merge, LinkedHashMap::new))
+                .values().stream();
+    }
+
+    private Map<String, ConsumableEntry> buildUniqueReferenceIdentifiers(String referenceIdentifier, Map<GroupedEntry, List<ReferenceSetter<T>>> entriesMapGroupedByIdentifier) {
         if (entriesMapGroupedByIdentifier.size() == 1) {
             // there's no conflict if there's only one entry to be consumed,
             // then just return the identifier itself
@@ -95,7 +92,7 @@ public abstract class AbstractReferencedItemStorage<
         }
 
         List<T> itemsWithSameIdentifier = entriesMapGroupedByIdentifier.keySet().stream()
-                .map(UniqueEntry::getItem)
+                .map(GroupedEntry::getItem)
                 .collect(Collectors.toList());
 
         List<String> uniqueIdentifiers = referenceIdentifierConflictResolver.resolveConflict(itemsWithSameIdentifier, referenceIdentifier);
@@ -105,7 +102,7 @@ public abstract class AbstractReferencedItemStorage<
         }
 
         // zip unique identifiers with map entries
-        List<Map.Entry<UniqueEntry, List<ReferenceSetter<T>>>> entriesMapAsList = new ArrayList<>(entriesMapGroupedByIdentifier.entrySet());
+        List<Map.Entry<GroupedEntry, List<ReferenceSetter<T>>>> entriesMapAsList = new ArrayList<>(entriesMapGroupedByIdentifier.entrySet());
         return IntStream.range(0, entriesMapAsList.size()).boxed()
                 .collect(Collectors.toMap(
                         uniqueIdentifiers::get,
@@ -118,21 +115,14 @@ public abstract class AbstractReferencedItemStorage<
                 ));
     }
 
-    private Stream<Pair<String, Pair<UniqueEntry, ReferenceSetter<T>>>> buildNonUniqueReferenceIdentifier(E entry) {
-        List<Pair<String, Pair<UniqueEntry, ReferenceSetter<T>>>> result = new ArrayList<>();
+    private Stream<Pair<String, Pair<GroupedEntry, ReferenceSetter<T>>>> buildNonUniqueReferenceIdentifier(GroupedEntry entry) {
+        List<Pair<String, Pair<GroupedEntry, ReferenceSetter<T>>>> result = new ArrayList<>();
         // intermediate grouping ensures we don't call the referenceIdentifierFactory not more than needed!
-        entry.getReferenceSetters()
-                .map(referenceSetter -> {
-                    // suggestedIdentifier can still be null, as the entry might also not know one
-                    // so we need to wrap it inside SuggestedIdentifier to handle the null value when grouping
-                    String suggestedIdentifier = nullOr(referenceSetter.getSuggestedIdentifier(), entry.getSuggestedIdentifier());
-                    return Pair.of(SuggestedIdentifier.of(suggestedIdentifier), referenceSetter);
-                })
+        entry.getReferenceSetters().stream()
                 .collect(groupingByPairKeyAndCollectingValuesToList())
                 .forEach(((suggestedIdentifier, referenceSetters) -> {
                     String identifier = referenceIdentifierFactory.buildIdentifier(entry.getItem(), suggestedIdentifier.getValue());
-                    UniqueEntry uniqueEntry = new UniqueEntry(entry);
-                    referenceSetters.forEach(referenceSetter -> result.add(Pair.of(identifier, Pair.of(uniqueEntry, referenceSetter))));
+                    referenceSetters.forEach(referenceSetter -> result.add(Pair.of(identifier, Pair.of(entry, referenceSetter))));
                 }));
         return result.stream();
     }
@@ -152,65 +142,55 @@ public abstract class AbstractReferencedItemStorage<
         private final List<ReferenceSetter<T>> referenceSetters;
     }
 
-    private ConsumableEntry createConsumableEntry(Map.Entry<UniqueEntry, List<ReferenceSetter<T>>> entry) {
-        // note however that the reference setters in this onlyEntry may only be a subset
-        // of all reference setters belonging to this unique entry!
+    private ConsumableEntry createConsumableEntry(Map.Entry<GroupedEntry, List<ReferenceSetter<T>>> entry) {
+        // note however that the reference setters in entry.getValue() may only be a subset
+        // of all reference setters belonging to this GroupedEntry!
         return new ConsumableEntry(entry.getKey().getItem(), entry.getValue());
     }
 
     @RequiredArgsConstructor
-    private class UniqueEntry {
-        private final E entry;
-
-        public T getItem() {
-            return entry.getItem();
-        }
-        // equals/hashCode intentionally not implemented to make groupingBy work correctly
-    }
-
-    public interface ReferencableEntry<T, R extends ReferenceSetter<T>> {
-        T getItem();
-
-        default boolean isReferenceRequired() {
-            return false;
-        }
-
-        @Nullable
-        default String getSuggestedIdentifier() {
-            return null;
-        }
-
-        Stream<R> getReferenceSetters();
-
-        void removeReferenceSettersOwnedBy(Object owner);
-    }
-
-    @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-    public static abstract class AbstractReferencableEntryWithReferenceSetter<T, R extends ReferenceSetter<T>> implements ReferencableEntry<T, R> {
-        @Getter
+    @Getter
+    private class GroupedEntry {
         private final T item;
-        private final List<R> referenceSetters = new ArrayList<>();
+        private final List<Pair<SuggestedIdentifier, ReferenceSetter<T>>> referenceSetters = new ArrayList<>();
+        private boolean referenceRequired = false;
 
-        public void addSetter(R setter) {
-            referenceSetters.add(setter);
+        public GroupedEntry addReferenceSetter(Pair<SuggestedIdentifier, ReferenceSetter<T>> referenceSetter) {
+            referenceSetters.add(referenceSetter);
+            if (referenceSetter.getValue().isReferenceRequired()) {
+                referenceRequired = true;
+            }
+            return this;
         }
 
-        public Stream<R> getReferenceSetters() {
-            return referenceSetters.stream();
+        public GroupedEntry merge(GroupedEntry other) {
+            // important not to use addAll to keep track of referenceRequired flag
+            other.referenceSetters.forEach(this::addReferenceSetter);
+            return this;
+        }
+    }
+
+    private GroupedEntry createNewGroupedEntry(Entry<T> entry) {
+        return new GroupedEntry(entry.getItem()).addReferenceSetter(Pair.of(entry.getSuggestedIdentifier(), entry.getReferenceSetter()));
+    }
+
+    @RequiredArgsConstructor(staticName = "of")
+    @Getter
+    private static class Entry<T> {
+        private final T item;
+        private final ReferenceSetter<T> referenceSetter;
+        private final SuggestedIdentifier suggestedIdentifier;
+        @Nullable
+        private final Object owner;
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof Entry<?> && item.equals(((Entry<?>) obj).item);
         }
 
         @Override
-        public void removeReferenceSettersOwnedBy(Object owner) {
-            // comparing by reference is ok here as the owner is usually mutable,
-            // but shouldn't be exchanged by another instance
-            referenceSetters.removeIf(referenceSetter -> referenceSetter.getOwner() == owner);
-        }
-    }
-
-    public static abstract class AbstractReferencableEntry<T> extends AbstractReferencableEntryWithReferenceSetter<T, ReferenceSetter<T>> {
-
-        protected AbstractReferencableEntry(T item) {
-            super(item);
+        public int hashCode() {
+            return item.hashCode();
         }
     }
 
@@ -219,14 +199,8 @@ public abstract class AbstractReferencedItemStorage<
 
         void consumeReference(T referenceItem);
 
-        @Nullable
-        default String getSuggestedIdentifier() {
-            return null;
-        }
-
-        @Nullable
-        default Object getOwner() {
-            return null;
+        default boolean isReferenceRequired() {
+            return false;
         }
     }
 }

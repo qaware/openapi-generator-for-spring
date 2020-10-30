@@ -15,20 +15,14 @@ import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType
 import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.SCHEMA;
 
 
-public class ReferencedRequestBodyStorage extends AbstractReferencedItemStorage<RequestBody, ReferencedRequestBodyStorage.Entry> {
+public class ReferencedRequestBodyStorage extends AbstractReferencedItemStorage<RequestBody> {
 
     ReferencedRequestBodyStorage(ReferenceDeciderForType<RequestBody> referenceDecider, ReferenceIdentifierFactoryForType<RequestBody> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<RequestBody> referenceIdentifierConflictResolver) {
-        super(ReferenceType.REQUEST_BODY, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, RequestBody::new, Entry::new,
+        super(ReferenceType.REQUEST_BODY, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, RequestBody::new,
                 Arrays.asList(SCHEMA, EXAMPLE, HEADER));
     }
 
     void storeMaybeReference(RequestBody requestBody, Consumer<RequestBody> setter) {
-        getEntryOrAddNew(requestBody).addSetter(setter::accept);
-    }
-
-    static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<RequestBody> {
-        protected Entry(RequestBody item) {
-            super(item);
-        }
+        addEntry(requestBody, setter::accept);
     }
 }

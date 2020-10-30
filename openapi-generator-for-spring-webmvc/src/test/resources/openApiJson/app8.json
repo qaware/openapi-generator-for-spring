@@ -40,7 +40,14 @@
         "operationId": "getResponseEntityOfInstant",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/responseEntitySchema"
+                }
+              }
+            }
           }
         }
       }
