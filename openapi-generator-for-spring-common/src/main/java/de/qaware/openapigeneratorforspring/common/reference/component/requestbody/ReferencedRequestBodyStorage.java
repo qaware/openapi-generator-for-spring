@@ -7,7 +7,6 @@ import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIde
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 
@@ -24,13 +23,6 @@ public class ReferencedRequestBodyStorage extends AbstractReferencedItemStorage<
     static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<RequestBody> {
         protected Entry(RequestBody item) {
             super(item);
-        }
-
-        @Nullable
-        @Override
-        public String getSuggestedIdentifier() {
-            // TODO is there are good way for request body reference identifier?
-            return null;
         }
     }
 }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static java.lang.Boolean.TRUE;
 
@@ -19,7 +20,7 @@ public class DefaultReferenceIdentifierFactoryForSchema implements ReferenceIden
     private final AtomicInteger counter = new AtomicInteger();
 
     @Override
-    public List<Object> buildIdentifierComponents(Schema schema, @Nullable String suggestedIdentifier) {
+    public String buildIdentifier(Schema schema, @Nullable String suggestedIdentifier) {
         List<Object> identifierComponents = new ArrayList<>();
         if (TRUE.equals(schema.getNullable())) {
             identifierComponents.add(NULLABLE_PREFIX);
@@ -35,11 +36,11 @@ public class DefaultReferenceIdentifierFactoryForSchema implements ReferenceIden
                 identifierComponents.add(schema.getFormat());
             }
             if (schema.getItems() != null) {
-                identifierComponents.addAll(buildIdentifierComponents(schema.getItems(), schema.getItems().getName()));
+                identifierComponents.add(buildIdentifier(schema.getItems(), schema.getItems().getName()));
             }
         } else {
             identifierComponents.addAll(Arrays.asList("Schema", counter.getAndIncrement()));
         }
-        return identifierComponents;
+        return identifierComponents.stream().map(Object::toString).collect(Collectors.joining("_"));
     }
 }

@@ -6,6 +6,8 @@ import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDec
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -22,22 +24,22 @@ public class ReferencedSchemaStorage extends AbstractReferencedItemStorage<Schem
     }
 
     void storeAlwaysReference(Schema schema, Consumer<Schema> setter) {
-        getEntryOrAddNew(schema).addRequiredSetter(setter::accept);
+        getEntryOrAddNew(schema).addRequiredSetter(SchemaReferenceSetter.of(setter, schema.getName()));
     }
 
     void storeMaybeReference(Schema schema, Consumer<Schema> setter) {
-        getEntryOrAddNew(schema).addSetter(setter::accept);
+        getEntryOrAddNew(schema).addSetter(SchemaReferenceSetter.of(setter, schema.getName()));
     }
 
-    static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntry<Schema> {
+    static class Entry extends AbstractReferencedItemStorage.AbstractReferencableEntryWithReferenceSetter<Schema, SchemaReferenceSetter> {
 
-        private final List<ReferenceSetter<Schema>> referenceRequiredSetters = new ArrayList<>();
+        private final List<SchemaReferenceSetter> referenceRequiredSetters = new ArrayList<>();
 
         protected Entry(Schema item) {
             super(item);
         }
 
-        public void addRequiredSetter(ReferenceSetter<Schema> setter) {
+        public void addRequiredSetter(SchemaReferenceSetter setter) {
             referenceRequiredSetters.add(setter);
         }
 
@@ -46,15 +48,22 @@ public class ReferencedSchemaStorage extends AbstractReferencedItemStorage<Schem
             return !referenceRequiredSetters.isEmpty();
         }
 
-        @Nullable
         @Override
-        public String getSuggestedIdentifier() {
-            return getItem().getName();
+        public Stream<SchemaReferenceSetter> getReferenceSetters() {
+            return Stream.concat(super.getReferenceSetters(), referenceRequiredSetters.stream());
         }
+    }
+
+    @RequiredArgsConstructor(staticName = "of")
+    private static class SchemaReferenceSetter implements AbstractReferencedItemStorage.ReferenceSetter<Schema> {
+        private final Consumer<Schema> setter;
+        @Nullable
+        @Getter
+        private final String suggestedIdentifier;
 
         @Override
-        public Stream<ReferenceSetter<Schema>> getReferenceSetters() {
-            return Stream.concat(super.getReferenceSetters(), referenceRequiredSetters.stream());
+        public void consumeReference(Schema referenceItem) {
+            setter.accept(referenceItem);
         }
     }
 }

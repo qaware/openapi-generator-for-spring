@@ -4,8 +4,6 @@ import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedIt
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandlerFactory;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
-
 @RequiredArgsConstructor
 public class ReferencedHeadersHandlerFactory implements ReferencedItemHandlerFactory {
     private final ReferenceDeciderForHeader referenceDecider;
@@ -16,7 +14,7 @@ public class ReferencedHeadersHandlerFactory implements ReferencedItemHandlerFac
     public ReferencedItemHandler create() {
         ReferencedHeaderStorage storage = new ReferencedHeaderStorage(
                 referenceDecider,
-                (header, headerName) -> Collections.singletonList(referenceIdentifierFactory.buildSuggestedIdentifier(headerName)),
+                (header, headerName) -> referenceIdentifierFactory.buildSuggestedIdentifier(headerName),
                 referenceIdentifierConflictResolver
         );
         return new ReferencedHeadersHandlerImpl(storage, referenceIdentifierFactory);

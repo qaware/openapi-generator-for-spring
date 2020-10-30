@@ -5,6 +5,16 @@
     "version": "unknown"
   },
   "paths": {
+    "/simple/get-instant": {
+      "get": {
+        "operationId": "getMappingReturnInstant",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
     "/simple/get-instant-2/{pathParam}": {
       "get": {
         "operationId": "getMappingReturnInstantWithParameter",
@@ -20,15 +30,45 @@
         ],
         "responses": {
           "200": {
-            "description": "Default response"
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "/simple/get-response-entity-instant": {
+      "get": {
+        "operationId": "getResponseEntityOfInstant",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
           }
         }
       }
     }
   },
   "components": {
+    "responses": {
+      "200": {
+        "description": "Default response",
+        "content": {
+          "*/*": {
+            "schema": {
+              "$ref": "#/components/schemas/string_date-time"
+            }
+          }
+        }
+      }
+    },
     "schemas": {
+      "string_date-time": {
+        "type": "string",
+        "format": "date-time"
+      },
       "inputParameter": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "responseEntitySchema": {
         "type": "string",
         "format": "date-time"
       }

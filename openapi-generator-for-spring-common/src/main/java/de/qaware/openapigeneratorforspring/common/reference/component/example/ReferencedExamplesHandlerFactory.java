@@ -4,8 +4,6 @@ import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedIt
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandlerFactory;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
-
 @RequiredArgsConstructor
 public class ReferencedExamplesHandlerFactory implements ReferencedItemHandlerFactory {
     private final ReferenceDeciderForExample referenceDecider;
@@ -16,7 +14,7 @@ public class ReferencedExamplesHandlerFactory implements ReferencedItemHandlerFa
     public ReferencedItemHandler create() {
         ReferencedExampleStorage storage = new ReferencedExampleStorage(
                 referenceDecider,
-                (example, exampleName) -> Collections.singletonList(referenceIdentifierFactory.buildSuggestedIdentifier(exampleName)),
+                (example, exampleName) -> referenceIdentifierFactory.buildSuggestedIdentifier(exampleName),
                 referenceIdentifierConflictResolver
         );
         return new ReferencedExamplesHandlerImpl(storage, referenceIdentifierFactory);
