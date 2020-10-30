@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 public class App17Controller {
@@ -32,10 +33,10 @@ public class App17Controller {
         @Nullable
         SomeDto someDtoProperty;
         List<SomeDto> listOfSomeDtos;
-//        @Nullable
+        //        @Nullable
 //        List<SomeDto> nullableListOfSomeDtos;
 //        Set<List<SomeDto>> setOfListOfSomeDtos;
-//        @Nullable
-//        Set<List<SomeDto>> nullableSetOfListOfSomeDtos;
+        @Nullable
+        Set<List<SomeDto>> nullableSetOfListOfSomeDtos;
     }
 }

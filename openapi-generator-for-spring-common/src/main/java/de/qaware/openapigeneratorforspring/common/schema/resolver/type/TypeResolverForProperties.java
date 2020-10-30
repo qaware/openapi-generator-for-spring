@@ -48,10 +48,7 @@ public class TypeResolverForProperties implements TypeResolver {
             AnnotationsSupplier propertyAnnotationsSupplier = annotationsSupplierFactory.createFromMember(member)
                     .andThen(annotationsSupplierFactory.createFromAnnotatedElement(propertyType.getRawClass()));
             schemaBuilderFromType.buildSchemaFromType(propertyType, propertyAnnotationsSupplier,
-                    propertySchema -> {
-                        LOGGER.info("Setting property {} to {}", propertyName, propertySchema.toPrettyString());
-                        initialSchema.getSchema().setProperty(propertyName, propertyCustomizer.customize(propertySchema, propertyType, propertyAnnotationsSupplier));
-                    }
+                    propertySchema -> initialSchema.getSchema().setProperty(propertyName, propertyCustomizer.customize(propertySchema, propertyType, propertyAnnotationsSupplier))
             );
         });
 

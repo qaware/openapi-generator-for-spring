@@ -5,16 +5,6 @@
     "version": "unknown"
   },
   "paths": {
-    "/simple/get-instant": {
-      "get": {
-        "operationId": "getMappingReturnInstant",
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/200"
-          }
-        }
-      }
-    },
     "/simple/get-instant-2/{pathParam}": {
       "get": {
         "operationId": "getMappingReturnInstantWithParameter",
@@ -26,29 +16,11 @@
             "schema": {
               "$ref": "#/components/schemas/inputParameter"
             }
-          },
-          {
-            "name": "pathParam",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/string_date-time"
-            }
           }
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
-          }
-        }
-      }
-    },
-    "/simple/get-response-entity-instant": {
-      "get": {
-        "operationId": "getResponseEntityOfInstant",
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/200"
+            "description": "Default response"
           }
         }
       }
@@ -59,26 +31,6 @@
       "inputParameter": {
         "type": "string",
         "format": "date-time"
-      },
-      "string_date-time": {
-        "type": "string",
-        "format": "date-time"
-      },
-      "responseEntitySchema": {
-        "type": "string",
-        "format": "date-time"
-      }
-    },
-    "responses": {
-      "200": {
-        "description": "Default response",
-        "content": {
-          "*/*": {
-            "schema": {
-              "$ref": "#/components/schemas/string_date-time"
-            }
-          }
-        }
       }
     }
   }

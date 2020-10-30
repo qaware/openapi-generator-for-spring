@@ -6,9 +6,12 @@ import de.qaware.openapigeneratorforspring.common.util.DefaultOpenApiObjectMappe
 import de.qaware.openapigeneratorforspring.common.util.DefaultOpenApiSpringBootApplicationAnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.util.DefaultOpenApiSpringBootApplicationClassSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenAPIDefinitionAnnotationSupplier;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiLoggingUtils;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationClassSupplier;
+import de.qaware.openapigeneratorforspring.model.media.Schema;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
@@ -41,4 +44,15 @@ public class OpenApiGeneratorUtilAutoConfiguration {
     ) {
         return new DefaultOpenAPIDefinitionAnnotationSupplier(openApiSpringBootApplicationAnnotationsSupplier);
     }
+
+    public interface OpenApiLoggingUtilsRegistrationBean extends InitializingBean {
+
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OpenApiLoggingUtilsRegistrationBean defaultOpenApiLoggingUtilsRegistrationBean() {
+        return () -> OpenApiLoggingUtils.registerPrettyPrinter(Schema.class, OpenApiLoggingUtils::prettyPrintSchema);
+    }
+
 }

@@ -12,7 +12,7 @@
           "content": {
             "*/*": {
               "schema": {
-                "$ref": "#/components/schemas/nullable_App17Controller.SomeDto_1"
+                "$ref": "#/components/schemas/nullable_App17Controller.SomeDto"
               }
             }
           },
@@ -35,51 +35,45 @@
   },
   "components": {
     "schemas": {
-      "App17Controller.SomeDto_0": {
+      "nullable_array_nullable_array_App17Controller.SomeDto": {
+        "type": "array",
+        "nullable": true,
+        "items": {
+          "$ref": "#/components/schemas/nullable_array_App17Controller.SomeDto"
+        }
+      },
+      "App17Controller.SomeDto": {
         "type": "object",
         "properties": {
+          "someDtoProperty": {
+            "$ref": "#/components/schemas/nullable_App17Controller.SomeDto"
+          },
           "listOfSomeDtos": {
             "$ref": "#/components/schemas/array_App17Controller.SomeDto"
           },
-          "someDtoProperty": {
-            "$ref": "#/components/schemas/nullable_App17Controller.SomeDto_0"
+          "nullableSetOfListOfSomeDtos": {
+            "$ref": "#/components/schemas/nullable_array_nullable_array_App17Controller.SomeDto"
           }
         }
       },
-      "App17Controller.SomeDto_1": {
-        "type": "object",
-        "properties": {
-          "listOfSomeDtos": {
-            "$ref": "#/components/schemas/array_App17Controller.SomeDto"
-          },
-          "someDtoProperty": {
-            "$ref": "#/components/schemas/nullable_App17Controller.SomeDto_1"
-          }
+      "nullable_array_App17Controller.SomeDto": {
+        "type": "array",
+        "nullable": true,
+        "items": {
+          "$ref": "#/components/schemas/nullable_App17Controller.SomeDto"
         }
       },
-      "nullable_App17Controller.SomeDto_1": {
+      "nullable_App17Controller.SomeDto": {
         "type": "object",
         "properties": {
-          "listOfSomeDtos": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/App17Controller.SomeDto_1"
-            }
-          },
           "someDtoProperty": {
-            "$ref": "#/components/schemas/nullable_App17Controller.SomeDto_1"
-          }
-        },
-        "nullable": true
-      },
-      "nullable_App17Controller.SomeDto_0": {
-        "type": "object",
-        "properties": {
+            "$ref": "#/components/schemas/nullable_App17Controller.SomeDto"
+          },
           "listOfSomeDtos": {
             "$ref": "#/components/schemas/array_App17Controller.SomeDto"
           },
-          "someDtoProperty": {
-            "$ref": "#/components/schemas/nullable_App17Controller.SomeDto_0"
+          "nullableSetOfListOfSomeDtos": {
+            "$ref": "#/components/schemas/nullable_array_nullable_array_App17Controller.SomeDto"
           }
         },
         "nullable": true
@@ -87,7 +81,7 @@
       "array_App17Controller.SomeDto": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/App17Controller.SomeDto_0"
+          "$ref": "#/components/schemas/App17Controller.SomeDto"
         }
       }
     }

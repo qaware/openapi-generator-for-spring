@@ -21,36 +21,10 @@ public class TypeResolverForCollections implements TypeResolver {
             // TODO adapt annotations supplier to nested getContentType, consider @ArraySchema?
             // TODO append annotationSupplier with contained generic type!
             Schema schema = initialSchema.getSchema();
-            schemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, items -> {
-                LOGGER.info("Setting items to {} for {}", items.toPrettyString(), schema.toPrettyString());
-                schema.setItems(items);
-            });
+            schemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, schema::setItems);
         }
         return null;
     }
-
-//    @Override
-//    public boolean resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer,
-//                                   SchemaBuilderFromType schemaBuilderFromType, SchemaBuilderFromType recursiveSchemaBuilderFromType) {
-//        if (javaType.isCollectionLikeType()) {
-//            continueWithInnerType(javaType.getContentType(), annotationsSupplier, recursiveSchemaBuilderFromType, schemaConsumer);
-//            return true;
-//        }
-//        return false;
-//    }
-
-//    static void continueWithInnerType(JavaType innerType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType recursiveSchemaBuilderFromType, Consumer<Schema> schemaConsumer) {
-//        // TODO adapt annotations supplier to nested getContentType, consider @ArraySchema?
-//        // TODO append annotationSupplier with contained generic type!
-//
-//        // modifying the captured arraySchema here is important for referencing later
-//        // do not rebuild the array schema here everytime this schema consumer is run
-//        Schema arraySchema = Schema.builder().type("array").build();
-//        recursiveSchemaBuilderFromType.buildSchemaFromType(innerType, annotationsSupplier, innerTypeSchema -> {
-//            arraySchema.setItems(innerTypeSchema);
-//            schemaConsumer.accept(arraySchema);
-//        });
-//    }
 
     @Override
     public int getOrder() {
