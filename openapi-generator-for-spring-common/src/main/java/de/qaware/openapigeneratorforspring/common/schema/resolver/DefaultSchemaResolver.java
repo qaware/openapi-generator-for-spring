@@ -13,21 +13,22 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.I
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaFactory;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Slf4j
 public class DefaultSchemaResolver implements SchemaResolver {
 
     private final OpenApiObjectMapperSupplier openApiObjectMapperSupplier;
@@ -57,14 +58,15 @@ public class DefaultSchemaResolver implements SchemaResolver {
     }
 
     @RequiredArgsConstructor
-    private class Context {
+    private class Context implements RecursiveSchemaBuilder {
 
         private final SchemaAnnotationMapper schemaAnnotationMapper;
         private final ReferencedSchemaConsumer referencedSchemaConsumer;
-        private final Map<TypeResolver.RecursionKey, Schema> knownSchemas = new HashMap<>();
+        private final Map<TypeResolver.RecursionKey, Schema> knownSchemas = new LinkedHashMap<>();
         private final LinkedList<ReferencableSchema> referencableSchemas = new LinkedList<>();
 
-        Schema buildSchemaFromTypeRecursively(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+        @Override
+        public Schema buildSchemaFromTypeRecursively(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
             InitialSchema initialSchema = buildInitialSchema(javaType, annotationsSupplier);
             Schema schema = initialSchema.getSchema();
             customizeSchema(schema, javaType, annotationsSupplier);
@@ -93,7 +95,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
             }
             Schema existingSchema = knownSchemas.get(recursionKey);
             if (existingSchema != null) {
-                return new RecursiveSchema(existingSchema, recursionKey.getHashCode());
+                return new RecursiveSchema(existingSchema, recursionKey);
             }
             knownSchemas.put(recursionKey, schema);
             return null;
@@ -130,7 +132,11 @@ public class DefaultSchemaResolver implements SchemaResolver {
         }
 
         void resolveReferencedSchemas() {
-            referencableSchemas.descendingIterator().forEachRemaining(referencableSchema -> {
+            knownSchemas.forEach((key, schema) -> {
+                LOGGER.info("Known: {} -> {}", key.hashCode(), schema.toPrettyString());
+            });
+            LOGGER.info("Resolving:\n{}\n", referencableSchemas.stream().map(s -> s.getSchema().toPrettyString()).collect(Collectors.joining("\n")));
+            referencableSchemas.forEach(referencableSchema -> {
                 if (referencableSchema.getSchema() instanceof RecursiveSchema) {
                     RecursiveSchema recursiveSchema = (RecursiveSchema) referencableSchema.getSchema();
                     referencedSchemaConsumer.alwaysAsReference(recursiveSchema.getSchema(), referencableSchema.getSchemaConsumer());
@@ -138,18 +144,27 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     referencedSchemaConsumer.maybeAsReference(referencableSchema.getSchema(), referencableSchema.getSchemaConsumer());
                 }
             });
+            LOGGER.info("Resolved:\n{}\n", referencableSchemas.stream().map(s -> s.getSchema().toPrettyString()).collect(Collectors.joining("\n")));
         }
 
-        private class TypeResolverActions extends ArrayList<TypeResolverAction> {
+        private class TypeResolverActions extends LinkedList<TypeResolverAction> {
 
             void add(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer) {
                 super.add(TypeResolverAction.of(javaType, annotationsSupplier, schemaConsumer));
             }
 
             void runRecursively() {
-                forEach(action -> referencableSchemas.add(action.run(Context.this::buildSchemaFromTypeRecursively)));
+                forEach(action -> {
+                    ReferencableSchema referencableSchema = action.run(Context.this);
+                    referencableSchemas.add(referencableSchema);
+                });
             }
         }
+    }
+
+    @FunctionalInterface
+    private interface RecursiveSchemaBuilder {
+        Schema buildSchemaFromTypeRecursively(JavaType javaType, AnnotationsSupplier annotationsSupplier);
     }
 
     @RequiredArgsConstructor(staticName = "of")
@@ -165,18 +180,24 @@ public class DefaultSchemaResolver implements SchemaResolver {
         private final AnnotationsSupplier annotationsSupplier;
         private final Consumer<Schema> schemaConsumer;
 
-        ReferencableSchema run(BiFunction<JavaType, AnnotationsSupplier, Schema> recursiveAction) {
-            Schema schema = recursiveAction.apply(javaType, annotationsSupplier);
+        ReferencableSchema run(RecursiveSchemaBuilder recursiveSchemaBuilder) {
+            Schema schema = recursiveSchemaBuilder.buildSchemaFromTypeRecursively(javaType, annotationsSupplier);
             schemaConsumer.accept(schema);
             return ReferencableSchema.of(schema, schemaConsumer);
         }
     }
 
-    @RequiredArgsConstructor
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static class RecursiveSchema extends Schema {
         @Getter
         private final Schema schema;
-        private final int hashCode;
+        private final TypeResolver.RecursionKey recursionKey;
+
+
+        @Override
+        public void setItems(Schema items) {
+            schema.setItems(items);
+        }
 
         @Override
         public String getName() {
@@ -185,12 +206,39 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
         @Override
         public boolean equals(Object o) {
-            return o instanceof RecursiveSchema && hashCode == o.hashCode();
+            if (o instanceof RecursiveSchema) {
+                LOGGER.info("Matching {} against {}", toPrettyString(), ((RecursiveSchema) o).toPrettyString());
+                if (recursionKey.equals(((RecursiveSchema) o).recursionKey)) {
+                    LOGGER.info("Matched against {}", ((RecursiveSchema) o).toPrettyString());
+                    return true;
+                }
+                return false;
+            } else {
+                if (o instanceof Schema) {
+                    LOGGER.info("Matching {} against {}", toPrettyString(), ((Schema) o).toPrettyString());
+                    boolean equals = schema.equals(o);
+                    if (equals) {
+                        LOGGER.info("Matched against {}", ((Schema) o).toPrettyString());
+                    }
+                    return equals;
+                }
+                return false;
+            }
+        }
+
+        @Override
+        public String toPrettyString() {
+            return "->" + schema.toPrettyString(false) + "$" + hashCode();
         }
 
         @Override
         public int hashCode() {
-            return hashCode;
+            return recursionKey.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return "RecursiveSchema(" + recursionKey.hashCode() + ")";
         }
     }
 }

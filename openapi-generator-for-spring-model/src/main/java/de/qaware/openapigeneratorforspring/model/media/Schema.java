@@ -90,5 +90,38 @@ public class Schema implements HasExtensions, HasReference<Schema>, HasIsEmpty<S
     public Schema createInstance() {
         return new Schema();
     }
+
+    public String toPrettyString() {
+        return toPrettyString(true);
+    }
+
+    public String toPrettyString(boolean includeProperties) {
+        StringBuilder sb = new StringBuilder();
+        if (nullable != null && nullable) {
+            sb.append('?');
+        }
+        if (name != null) {
+            sb.append(name);
+        } else if (items != null) {
+            sb.append('[').append(items.toPrettyString()).append(']');
+        } else if (type != null) {
+            sb.append("type:").append(type);
+        } else if (ref != null) {
+            sb.append("-->").append(ref);
+        }
+
+        if (includeProperties && properties != null) {
+            sb.append('{');
+            properties.forEach((propertyName, propertySchema) -> {
+                sb.append(propertyName);
+                sb.append('=');
+                sb.append(propertySchema.toPrettyString());
+                sb.append(',');
+            });
+            sb.append("}");
+        }
+        return sb.toString();
+    }
+
 }
 

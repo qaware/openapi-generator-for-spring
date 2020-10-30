@@ -10,6 +10,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.I
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Map;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 
 @RequiredArgsConstructor
+@Slf4j
 public class TypeResolverForProperties implements TypeResolver {
 
     // this resolver does not have any condition, so run this always later then the other resolvers as a fallback
@@ -46,7 +48,10 @@ public class TypeResolverForProperties implements TypeResolver {
             AnnotationsSupplier propertyAnnotationsSupplier = annotationsSupplierFactory.createFromMember(member)
                     .andThen(annotationsSupplierFactory.createFromAnnotatedElement(propertyType.getRawClass()));
             schemaBuilderFromType.buildSchemaFromType(propertyType, propertyAnnotationsSupplier,
-                    propertySchema -> initialSchema.getSchema().setProperty(propertyName, propertyCustomizer.customize(propertySchema, propertyType, propertyAnnotationsSupplier))
+                    propertySchema -> {
+                        LOGGER.info("Setting property {} to {}", propertyName, propertySchema.toPrettyString());
+                        initialSchema.getSchema().setProperty(propertyName, propertyCustomizer.customize(propertySchema, propertyType, propertyAnnotationsSupplier));
+                    }
             );
         });
 
@@ -58,11 +63,6 @@ public class TypeResolverForProperties implements TypeResolver {
     private static class UniqueSchemaKey implements RecursionKey {
         private final JavaType javaType;
         private final int schemaHash;
-
-        @Override
-        public int getHashCode() {
-            return this.hashCode();
-        }
     }
 
     private Map<String, PropertyCustomizer> customizeSchemaProperties(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Map<String, AnnotatedMember> properties) {

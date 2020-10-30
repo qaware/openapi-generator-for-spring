@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -40,7 +41,14 @@ public abstract class AbstractReferencedItemStorage<
 
     protected E getEntryOrAddNew(T item) {
         return entries.stream()
-                .filter(entry -> entry.matches(item))
+                .filter(entry -> {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    return entry.matches(item);
+                })
                 .reduce((a, b) -> {
                     throw new IllegalStateException("Found more than one entry: " + a + " vs. " + b);
                 })
@@ -158,6 +166,7 @@ public abstract class AbstractReferencedItemStorage<
         }
     }
 
+    @FunctionalInterface
     public interface ReferenceSetter<T> {
 
         void consumeReference(T referenceItem);
