@@ -6,7 +6,6 @@ import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIde
 import de.qaware.openapigeneratorforspring.common.util.OpenApiProxyUtils;
 import de.qaware.openapigeneratorforspring.model.trait.HasReference;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -48,7 +47,7 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
     }
 
     protected void addEntry(T item, ReferenceSetter<T> referenceSetter, @Nullable String suggestedIdentifier, @Nullable Object owner) {
-        entries.add(Entry.of(item, referenceSetter, suggestedIdentifier, owner));
+        entries.add(Entry.of(item, ReferenceSetterWithIdentifier.of(referenceSetter, suggestedIdentifier), owner));
     }
 
     protected void removeEntriesOwnedBy(Object owner) {
@@ -127,14 +126,14 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
     }
 
     private Stream<Pair<String, Pair<T, ReferenceSetter<T>>>> buildNonUniqueReferenceIdentifiers(GroupedEntry entry) {
-        List<Pair<String, ReferenceSetter<T>>> referenceSetters = entry.getReferenceSetters();
-        List<IdentifierSetterImpl<?>> identifierSetters = referenceSetters.stream()
-                .map(IdentifierSetterImpl::new)
+        List<ReferenceSetterWithIdentifier<T>> referenceSetters = entry.getReferenceSetters();
+        List<IdentifierSetterImpl> identifierSetters = referenceSetters.stream()
+                .map(IdentifierSetterImpl::ofReferenceSetter)
                 .collect(Collectors.toList());
         referenceIdentifierFactory.mergeIdentifiers(entry.getItem(), Collections.unmodifiableList(identifierSetters));
         return IntStream.range(0, identifierSetters.size()).boxed()
                 .flatMap(i -> {
-                    ReferenceSetter<T> referenceSetter = referenceSetters.get(i).getValue();
+                    ReferenceSetter<T> referenceSetter = referenceSetters.get(i).getReferenceSetter();
                     String identifier = identifierSetters.get(i).getValue();
                     if (identifier == null && referenceSetter.isReferenceRequired()) {
                         throw new IllegalStateException("Cannot skip referencing " + entry.getItem() + " with null identifier as reference is required");
@@ -145,19 +144,18 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
                 });
     }
 
+    @RequiredArgsConstructor
     @Getter
-    @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-    private static class IdentifierSetterImpl<T> implements ReferenceIdentifierFactoryForType.IdentifierSetter {
-        public IdentifierSetterImpl(Pair<String, ReferenceSetter<T>> referenceSetter) {
-            this.suggestedValue = referenceSetter.getKey();
-            this.referenceRequired = referenceSetter.getValue().isReferenceRequired();
+    private static class IdentifierSetterImpl implements ReferenceIdentifierFactoryForType.IdentifierSetter {
+
+        public static <T> IdentifierSetterImpl ofReferenceSetter(ReferenceSetterWithIdentifier<T> referenceSetter) {
+            return new IdentifierSetterImpl(referenceSetter.getSuggestedIdentifier(), referenceSetter.getReferenceSetter().isReferenceRequired());
         }
 
         @Nullable
-        @EqualsAndHashCode.Include // important for grouping in default implementation of mergeIdentifiers
         private final String suggestedValue;
-
         private final boolean referenceRequired;
+
         @Setter
         private String value = null;
     }
@@ -166,9 +164,9 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
     @Getter
     private class GroupedEntry {
         private final T item;
-        private final List<Pair<String, ReferenceSetter<T>>> referenceSetters = new ArrayList<>();
+        private final List<ReferenceSetterWithIdentifier<T>> referenceSetters = new ArrayList<>();
 
-        public GroupedEntry addReferenceSetter(Pair<String, ReferenceSetter<T>> referenceSetter) {
+        public GroupedEntry addReferenceSetter(ReferenceSetterWithIdentifier<T> referenceSetter) {
             referenceSetters.add(referenceSetter);
             return this;
         }
@@ -180,16 +178,14 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
     }
 
     private GroupedEntry createNewGroupedEntry(Entry<T> entry) {
-        return new GroupedEntry(entry.getItem()).addReferenceSetter(Pair.of(entry.getSuggestedIdentifier(), entry.getReferenceSetter()));
+        return new GroupedEntry(entry.getItem()).addReferenceSetter(entry.getReferenceSetterWithIdentifier());
     }
 
     @RequiredArgsConstructor(staticName = "of")
     @Getter
     private static class Entry<T> {
         private final T item;
-        private final ReferenceSetter<T> referenceSetter;
-        @Nullable
-        private final String suggestedIdentifier;
+        private final ReferenceSetterWithIdentifier<T> referenceSetterWithIdentifier;
         @Nullable
         private final Object owner;
 
@@ -202,6 +198,14 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
         public int hashCode() {
             return item.hashCode();
         }
+    }
+
+    @RequiredArgsConstructor(staticName = "of")
+    @Getter
+    private static class ReferenceSetterWithIdentifier<T> {
+        private final ReferenceSetter<T> referenceSetter;
+        @Nullable
+        private final String suggestedIdentifier;
     }
 
     @FunctionalInterface
