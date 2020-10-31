@@ -8,9 +8,11 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.type.InitialSc
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForFlux;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class OpenApiGeneratorWebFluxAutoConfiguration {
 
     @Bean

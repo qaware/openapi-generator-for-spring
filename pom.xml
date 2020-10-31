@@ -34,6 +34,7 @@
         <module>openapi-generator-for-spring-autoconfigure</module>
         <module>openapi-generator-for-spring-model</module>
         <module>openapi-generator-for-spring-api</module>
+        <module>openapi-generator-for-spring-test</module>
     </modules>
 
     <dependencyManagement>
