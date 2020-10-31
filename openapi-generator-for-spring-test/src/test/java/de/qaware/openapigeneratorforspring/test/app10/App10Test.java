@@ -1,23 +1,11 @@
 package de.qaware.openapigeneratorforspring.test.app10;
 
+import de.qaware.openapigeneratorforspring.test.AbstractOpenApiGeneratorWebMvcBaseIntTest;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 
-import static de.qaware.openapigeneratorforspring.test.AbstractOpenApiGeneratorWebMvcIntTest.assertResponseBodyMatchesOpenApiJson;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@SpringBootTest
-@RunWith(SpringRunner.class)
-@AutoConfigureMockMvc
-public class App10Test {
-
-    @Autowired
-    protected MockMvc mockMvc;
+public class App10Test extends AbstractOpenApiGeneratorWebMvcBaseIntTest {
 
     @Test
     public void testWithQueryParam() throws Exception {
