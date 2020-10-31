@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class InitialSchemaFactoryForPrimitiveTypes implements InitialSchemaFactory {
+public class InitialSchemaBuilderForPrimitiveTypes implements InitialSchemaBuilder {
 
     public static final int ORDER = DEFAULT_ORDER;
 
@@ -66,7 +66,7 @@ public class InitialSchemaFactoryForPrimitiveTypes implements InitialSchemaFacto
 
     @Nullable
     @Override
-    public InitialSchema resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialTypeResolver fallbackResolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
         return Optional.ofNullable(PRIMITIVE_TYPE_CLASS_TO_SCHEMA.get(javaType.getRawClass()))
                 .map(Supplier::get)
                 .map(InitialSchema::of)

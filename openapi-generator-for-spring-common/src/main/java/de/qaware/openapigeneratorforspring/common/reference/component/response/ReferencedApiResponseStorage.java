@@ -3,8 +3,8 @@ package de.qaware.openapigeneratorforspring.common.reference.component.response;
 import de.qaware.openapigeneratorforspring.common.reference.AbstractReferencedItemStorage;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierBuilderForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 
@@ -16,8 +16,7 @@ import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType
 import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.SCHEMA;
 
 public class ReferencedApiResponseStorage extends AbstractReferencedItemStorage<ApiResponse> {
-
-    ReferencedApiResponseStorage(ReferenceDeciderForType<ApiResponse> referenceDecider, ReferenceIdentifierFactoryForType<ApiResponse> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<ApiResponse> referenceIdentifierConflictResolver) {
+    ReferencedApiResponseStorage(ReferenceDeciderForType<ApiResponse> referenceDecider, ReferenceIdentifierBuilderForType<ApiResponse> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<ApiResponse> referenceIdentifierConflictResolver) {
         super(ReferenceType.API_RESPONSE, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, ApiResponse::new,
                 Arrays.asList(SCHEMA, EXAMPLE, HEADER, LINK));
     }
@@ -28,8 +27,6 @@ public class ReferencedApiResponseStorage extends AbstractReferencedItemStorage<
         // if this method is called again for the same owner instance of apiResponses,
         // any previously defined reference consumers need to be removed first
         removeEntriesOwnedBy(apiResponses);
-        apiResponses.forEach((responseCode, apiResponse) ->
-                addEntry(apiResponse, apiResponseReference -> apiResponses.put(responseCode, apiResponseReference), responseCode, apiResponses)
-        );
+       addEntriesFromMap(apiResponses);
     }
 }

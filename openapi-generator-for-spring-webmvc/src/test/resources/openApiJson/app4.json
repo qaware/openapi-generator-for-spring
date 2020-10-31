@@ -98,19 +98,20 @@
                 },
                 "examples": {
                   "Example1": {
-                    "summary": "summary example3",
-                    "externalValue": "http://some-url2"
-                  },
-                  "MyExampleName": {
-                    "$ref": "#/components/examples/MyExampleName"
-                  },
-                  "Example0": {
                     "summary": "summary example1",
                     "description": "example description 1",
                     "value": "some example value 1",
                     "x-extension-example-object-1": {
                       "name1": "value2"
                     }
+                  },
+                  "Example2": {
+                    "summary": "summary example2",
+                    "externalValue": "http://some-url1"
+                  },
+                  "Example3": {
+                    "summary": "summary example3",
+                    "externalValue": "http://some-url2"
                   }
                 },
                 "encoding": {
@@ -142,9 +143,10 @@
               "text/plain": {
                 "examples": {
                   "MyExampleName": {
-                    "$ref": "#/components/examples/MyExampleName"
+                    "summary": "summary example2",
+                    "externalValue": "http://some-url1"
                   },
-                  "Example2": {
+                  "MyExampleName1": {
                     "summary": "summary example3",
                     "externalValue": "http://some-url2"
                   }
@@ -257,12 +259,6 @@
     }
   },
   "components": {
-    "examples": {
-      "MyExampleName": {
-        "summary": "summary example2",
-        "externalValue": "http://some-url1"
-      }
-    },
     "headers": {
       "header1": {
         "description": "Description header 1"

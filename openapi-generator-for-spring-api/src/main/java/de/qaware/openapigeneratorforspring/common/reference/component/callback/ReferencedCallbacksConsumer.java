@@ -5,6 +5,6 @@ import de.qaware.openapigeneratorforspring.model.operation.Callback;
 
 import java.util.Map;
 
-public interface ReferencedCallbacksConsumer extends ReferencedItemConsumerForType<Map<String, Callback>, Map<String, Callback>> {
+public interface ReferencedCallbacksConsumer extends ReferencedItemConsumerForType<Map<String, Callback>> {
 
 }

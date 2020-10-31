@@ -1,9 +1,9 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
-import de.qaware.openapigeneratorforspring.common.reference.component.response.DefaultReferenceIdentifierFactoryForApiResponse;
+import de.qaware.openapigeneratorforspring.common.reference.component.response.DefaultReferenceIdentifierBuilderForApiResponse;
 import de.qaware.openapigeneratorforspring.common.reference.component.response.ReferenceDeciderForApiResponse;
+import de.qaware.openapigeneratorforspring.common.reference.component.response.ReferenceIdentifierBuilderForApiResponse;
 import de.qaware.openapigeneratorforspring.common.reference.component.response.ReferenceIdentifierConflictResolverForApiResponse;
-import de.qaware.openapigeneratorforspring.common.reference.component.response.ReferenceIdentifierFactoryForApiResponse;
 import de.qaware.openapigeneratorforspring.common.reference.component.response.ReferencedApiResponsesHandlerFactory;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceDeciderFactory;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceIdentifierConflictResolverFactory;
@@ -16,7 +16,7 @@ public class OpenApiGeneratorReferenceResponseAutoConfiguration {
     @ConditionalOnMissingBean
     public ReferencedApiResponsesHandlerFactory referencedApiResponsesHandlerFactory(
             ReferenceDeciderForApiResponse referenceDecider,
-            ReferenceIdentifierFactoryForApiResponse referenceIdentifierFactory,
+            ReferenceIdentifierBuilderForApiResponse referenceIdentifierFactory,
             ReferenceIdentifierConflictResolverForApiResponse referenceIdentifierConflictResolver
     ) {
         return new ReferencedApiResponsesHandlerFactory(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
@@ -24,8 +24,8 @@ public class OpenApiGeneratorReferenceResponseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ReferenceIdentifierFactoryForApiResponse defaultReferenceIdentifierFactoryForApiResponse() {
-        return new DefaultReferenceIdentifierFactoryForApiResponse();
+    public ReferenceIdentifierBuilderForApiResponse defaultReferenceIdentifierFactoryForApiResponse() {
+        return new DefaultReferenceIdentifierBuilderForApiResponse();
     }
 
     @Bean

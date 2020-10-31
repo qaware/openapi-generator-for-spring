@@ -12,9 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
 
 @RequiredArgsConstructor
 public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
@@ -47,11 +47,15 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
 
     private void setExampleOrExamples(MediaType mediaType, ExampleObject[] exampleObjectAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         if (exampleObjectAnnotations.length == 1 && StringUtils.isBlank(exampleObjectAnnotations[0].name())) {
-            // one should not set the full example object here, just the value
-            mediaType.setExample(exampleObjectAnnotationMapper.map(exampleObjectAnnotations[0]).getValue());
+            setIfNotEmpty(exampleObjectAnnotationMapper.map(exampleObjectAnnotations[0]),
+                    // one should not set the full example object here, just the value
+                    // so no referencing is needed in this case
+                    example -> mediaType.setExample(example.getValue())
+            );
         } else {
-            setCollectionIfNotEmpty(exampleObjectAnnotationMapper.mapArray(exampleObjectAnnotations),
-                    examples -> referencedItemConsumerSupplier.get(ReferencedExamplesConsumer.class).maybeAsReference(examples, mediaType::setExamples)
+            ReferencedExamplesConsumer referencedExamplesConsumer = referencedItemConsumerSupplier.get(ReferencedExamplesConsumer.class);
+            setMapIfNotEmpty(exampleObjectAnnotationMapper.mapArray(exampleObjectAnnotations),
+                    examples -> referencedExamplesConsumer.maybeAsReference(examples, mediaType::setExamples)
             );
         }
     }

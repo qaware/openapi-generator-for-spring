@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReferencedLinksHandlerFactory implements ReferencedItemHandlerFactory {
     private final ReferenceDeciderForLink referenceDecider;
-    private final ReferenceIdentifierFactoryForLink referenceIdentifierFactory;
+    private final ReferenceIdentifierBuilderForLink referenceIdentifierFactory;
     private final ReferenceIdentifierConflictResolverForLink referenceIdentifierConflictResolver;
 
     @Override

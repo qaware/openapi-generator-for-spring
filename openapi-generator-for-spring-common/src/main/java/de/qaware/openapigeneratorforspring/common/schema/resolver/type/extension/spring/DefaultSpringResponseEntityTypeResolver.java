@@ -3,19 +3,19 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.extensio
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaFactory;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaTypeResolver;
 import org.springframework.http.ResponseEntity;
 
 import javax.annotation.Nullable;
 
-public class DefaultSpringResponseEntityTypeResolver implements InitialSchemaFactory {
+public class DefaultSpringResponseEntityTypeResolver implements InitialSchemaBuilder {
 
     public static final int ORDER = DEFAULT_ORDER;
 
     @Nullable
     @Override
-    public InitialSchema resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialTypeResolver fallbackResolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
         if (javaType.getRawClass().equals(ResponseEntity.class)) {
             return fallbackResolver.resolveFromType(javaType.containedType(0), annotationsSupplier);
         }

@@ -10,7 +10,7 @@ import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotation
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaFactory;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiLoggingUtils;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
@@ -39,7 +39,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
     private final SchemaAnnotationMapperFactory schemaAnnotationMapperFactory;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
     private final List<TypeResolver> typeResolvers;
-    private final List<InitialSchemaFactory> initialSchemaFactories;
+    private final List<InitialSchemaBuilder> initialSchemaBuilders;
     private final List<SchemaCustomizer> schemaCustomizers;
 
     @Override
@@ -142,8 +142,8 @@ public class DefaultSchemaResolver implements SchemaResolver {
         }
 
         private InitialSchema getSchemaFromInitialTypeResolvers(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-            for (InitialSchemaFactory initialSchemaFactory : initialSchemaFactories) {
-                InitialSchema initialSchema = initialSchemaFactory.resolveFromType(javaType, annotationsSupplier, this::getSchemaFromInitialTypeResolvers);
+            for (InitialSchemaBuilder initialSchemaBuilder : initialSchemaBuilders) {
+                InitialSchema initialSchema = initialSchemaBuilder.buildFromType(javaType, annotationsSupplier, this::getSchemaFromInitialTypeResolvers);
                 if (initialSchema != null) {
                     return initialSchema;
                 }

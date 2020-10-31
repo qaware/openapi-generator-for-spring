@@ -5,10 +5,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class DefaultReferenceIdentifierFactoryForApiResponse implements ReferenceIdentifierFactoryForApiResponse {
+public class DefaultReferenceIdentifierBuilderForApiResponse implements ReferenceIdentifierBuilderForApiResponse {
 
     @Override
     @Nullable
@@ -17,10 +17,11 @@ public class DefaultReferenceIdentifierFactoryForApiResponse implements Referenc
     }
 
     @Override
-    public void mergeIdentifiers(ApiResponse item, List<IdentifierSetter> identifierSetters) {
+    public void buildIdentifiers(ApiResponse item, List<IdentifierSetter> identifierSetters) {
         String mergedIdentifier = identifierSetters.stream()
                 .map(IdentifierSetter::getSuggestedValue)
-                .filter(Objects::nonNull)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .sorted()
                 .distinct()
                 .collect(Collectors.joining("_"));

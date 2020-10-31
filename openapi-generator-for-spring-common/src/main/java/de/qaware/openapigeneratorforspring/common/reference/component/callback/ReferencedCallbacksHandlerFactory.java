@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReferencedCallbacksHandlerFactory implements ReferencedItemHandlerFactory {
     private final ReferenceDeciderForCallback referenceDecider;
-    private final ReferenceIdentifierFactoryForCallback referenceIdentifierFactory;
+    private final ReferenceIdentifierBuilderForCallback referenceIdentifierFactory;
     private final ReferenceIdentifierConflictResolverForCallback referenceIdentifierConflictResolver;
 
     @Override

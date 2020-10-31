@@ -10,8 +10,7 @@ import java.util.Map;
 
 @Builder
 @Getter
-public
-class InitialSchema {
+public class InitialSchema {
     public static InitialSchema of(Schema schema) {
         return InitialSchema.builder()
                 .schema(schema)

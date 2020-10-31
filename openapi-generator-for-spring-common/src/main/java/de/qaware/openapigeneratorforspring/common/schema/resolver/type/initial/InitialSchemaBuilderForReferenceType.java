@@ -5,13 +5,13 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 
 import javax.annotation.Nullable;
 
-public class InitialSchemaFactoryForReferenceType implements InitialSchemaFactory {
+public class InitialSchemaBuilderForReferenceType implements InitialSchemaBuilder {
 
     public static final int ORDER = DEFAULT_ORDER;
 
     @Nullable
     @Override
-    public InitialSchema resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialTypeResolver fallbackResolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
         if (javaType.isReferenceType()) {
             // TODO append annotationSupplier with contained generic type!
             InitialSchema initialSchema = fallbackResolver.resolveFromType(javaType.getContentType(), annotationsSupplier);

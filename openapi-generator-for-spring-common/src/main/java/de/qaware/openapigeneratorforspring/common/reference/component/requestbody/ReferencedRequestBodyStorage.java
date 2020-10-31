@@ -3,8 +3,8 @@ package de.qaware.openapigeneratorforspring.common.reference.component.requestbo
 import de.qaware.openapigeneratorforspring.common.reference.AbstractReferencedItemStorage;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierBuilderForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 
 import java.util.Arrays;
@@ -17,7 +17,7 @@ import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType
 
 public class ReferencedRequestBodyStorage extends AbstractReferencedItemStorage<RequestBody> {
 
-    ReferencedRequestBodyStorage(ReferenceDeciderForType<RequestBody> referenceDecider, ReferenceIdentifierFactoryForType<RequestBody> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<RequestBody> referenceIdentifierConflictResolver) {
+    ReferencedRequestBodyStorage(ReferenceDeciderForType<RequestBody> referenceDecider, ReferenceIdentifierBuilderForType<RequestBody> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<RequestBody> referenceIdentifierConflictResolver) {
         super(ReferenceType.REQUEST_BODY, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, RequestBody::new,
                 Arrays.asList(SCHEMA, EXAMPLE, HEADER));
     }

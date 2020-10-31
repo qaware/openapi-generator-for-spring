@@ -5,6 +5,6 @@ import de.qaware.openapigeneratorforspring.model.link.Link;
 
 import java.util.Map;
 
-public interface ReferencedLinksConsumer extends ReferencedItemConsumerForType<Map<String, Link>, Map<String, Link>> {
+public interface ReferencedLinksConsumer extends ReferencedItemConsumerForType<Map<String, Link>> {
 
 }

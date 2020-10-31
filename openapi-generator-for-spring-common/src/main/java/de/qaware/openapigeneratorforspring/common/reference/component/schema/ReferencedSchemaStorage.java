@@ -3,8 +3,8 @@ package de.qaware.openapigeneratorforspring.common.reference.component.schema;
 import de.qaware.openapigeneratorforspring.common.reference.AbstractReferencedItemStorage;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierBuilderForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 public class ReferencedSchemaStorage extends AbstractReferencedItemStorage<Schema> {
 
     ReferencedSchemaStorage(ReferenceDeciderForType<Schema> referenceDecider,
-                            ReferenceIdentifierFactoryForType<Schema> referenceIdentifierFactory,
+                            ReferenceIdentifierBuilderForType<Schema> referenceIdentifierFactory,
                             ReferenceIdentifierConflictResolverForType<Schema> referenceIdentifierConflictResolver) {
         super(ReferenceType.SCHEMA, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Schema::new,
                 Collections.emptyList());

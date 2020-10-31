@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public class ReferencedSchemaHandlerFactory implements ReferencedItemHandlerFactory {
 
     private final ReferenceDeciderForSchema referenceDecider;
-    private final ReferenceIdentifierFactoryForSchema referenceIdentifierFactory;
+    private final ReferenceIdentifierBuilderForSchema referenceIdentifierFactory;
     private final ReferenceIdentifierConflictResolverForSchema referenceIdentifierConflictResolver;
 
     @Override

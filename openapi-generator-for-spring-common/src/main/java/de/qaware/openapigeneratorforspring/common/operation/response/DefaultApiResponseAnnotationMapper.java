@@ -10,7 +10,6 @@ import de.qaware.openapigeneratorforspring.common.reference.component.link.Refer
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.mergeWithExistingMap;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
@@ -32,7 +31,7 @@ public class DefaultApiResponseAnnotationMapper implements ApiResponseAnnotation
     @Override
     public void applyFromAnnotation(ApiResponse apiResponse, io.swagger.v3.oas.annotations.responses.ApiResponse annotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         setStringIfNotBlank(annotation.description(), apiResponse::setDescription);
-        setCollectionIfNotEmpty(headerAnnotationMapper.mapArray(annotation.headers(), referencedItemConsumerSupplier),
+        setMapIfNotEmpty(headerAnnotationMapper.mapArray(annotation.headers(), referencedItemConsumerSupplier),
                 headers -> referencedItemConsumerSupplier.get(ReferencedHeadersConsumer.class).maybeAsReference(headers,
                         headersMap -> mergeWithExistingMap(apiResponse::getHeaders, apiResponse::setHeaders, headersMap)
                 )

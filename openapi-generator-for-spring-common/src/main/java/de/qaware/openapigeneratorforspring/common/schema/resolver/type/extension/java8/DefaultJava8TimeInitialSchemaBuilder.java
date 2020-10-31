@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolverConfigurationProperties.Format;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaTypeResolver;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.RequiredArgsConstructor;
 
@@ -15,7 +15,7 @@ import java.time.Instant;
 import static de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolverConfigurationProperties.Format.ISO8601;
 
 @RequiredArgsConstructor
-public class DefaultJava8TimeInitialSchemaFactory implements Java8TimeInitialSchemaFactory {
+public class DefaultJava8TimeInitialSchemaBuilder implements Java8TimeInitialSchemaBuilder {
 
     public static final int ORDER = DEFAULT_ORDER;
 
@@ -23,7 +23,7 @@ public class DefaultJava8TimeInitialSchemaFactory implements Java8TimeInitialSch
 
     @Nullable
     @Override
-    public InitialSchema resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialTypeResolver fallbackResolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
         Class<?> rawClass = javaType.getRawClass();
         Format format = properties.getFormat();
         Schema.SchemaBuilder schemaBuilder = createSchemaBuilderWithType(format);

@@ -7,16 +7,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReferencedHeadersHandlerFactory implements ReferencedItemHandlerFactory {
     private final ReferenceDeciderForHeader referenceDecider;
-    private final ReferenceIdentifierFactoryForHeader referenceIdentifierFactory;
+    private final ReferenceIdentifierBuilderForHeader referenceIdentifierFactory;
     private final ReferenceIdentifierConflictResolverForHeader referenceIdentifierConflictResolver;
 
     @Override
     public ReferencedItemHandler create() {
-        ReferencedHeaderStorage storage = new ReferencedHeaderStorage(
-                referenceDecider,
-                (header, headerName, numberOfSetters) -> referenceIdentifierFactory.buildSuggestedIdentifier(headerName),
-                referenceIdentifierConflictResolver
-        );
-        return new ReferencedHeadersHandlerImpl(storage, referenceIdentifierFactory);
+        ReferencedHeaderStorage storage = new ReferencedHeaderStorage(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
+        return new ReferencedHeadersHandlerImpl(storage);
     }
 }

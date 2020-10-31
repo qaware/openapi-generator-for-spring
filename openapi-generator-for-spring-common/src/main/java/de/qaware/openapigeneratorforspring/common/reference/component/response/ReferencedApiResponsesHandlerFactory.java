@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public class ReferencedApiResponsesHandlerFactory implements ReferencedItemHandlerFactory {
 
     private final ReferenceDeciderForApiResponse referenceDecider;
-    private final ReferenceIdentifierFactoryForApiResponse referenceIdentifierFactory;
+    private final ReferenceIdentifierBuilderForApiResponse referenceIdentifierFactory;
     private final ReferenceIdentifierConflictResolverForApiResponse referenceIdentifierConflictResolver;
 
     @Override

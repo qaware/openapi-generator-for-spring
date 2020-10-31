@@ -4,6 +4,6 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsum
 
 import java.util.function.Consumer;
 
-public interface ReferencedItemConsumerForType<T, U> extends ReferencedItemConsumer {
-    void maybeAsReference(T item, Consumer<U> setter);
+public interface ReferencedItemConsumerForType<T> extends ReferencedItemConsumer {
+    void maybeAsReference(T item, Consumer<T> setter);
 }

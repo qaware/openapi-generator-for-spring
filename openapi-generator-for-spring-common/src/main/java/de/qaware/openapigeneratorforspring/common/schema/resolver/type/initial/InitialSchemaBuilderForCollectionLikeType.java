@@ -8,14 +8,14 @@ import lombok.RequiredArgsConstructor;
 import javax.annotation.Nullable;
 
 @RequiredArgsConstructor
-public class InitialSchemaFactoryForCollectionLikeType implements InitialSchemaFactory {
+public class InitialSchemaBuilderForCollectionLikeType implements InitialSchemaBuilder {
 
 
     public static final int ORDER = DEFAULT_ORDER;
 
     @Nullable
     @Override
-    public InitialSchema resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialTypeResolver fallbackResolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
         return javaType.isCollectionLikeType() ? InitialSchema.builder().schema(Schema.builder().type("array").build()).build() : null;
     }
 

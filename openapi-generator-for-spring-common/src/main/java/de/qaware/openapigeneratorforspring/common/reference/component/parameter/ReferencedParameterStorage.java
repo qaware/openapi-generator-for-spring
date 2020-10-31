@@ -3,8 +3,8 @@ package de.qaware.openapigeneratorforspring.common.reference.component.parameter
 import de.qaware.openapigeneratorforspring.common.reference.AbstractReferencedItemStorage;
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierBuilderForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import de.qaware.openapigeneratorforspring.model.path.PathItem;
@@ -19,7 +19,7 @@ import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType
 
 public class ReferencedParameterStorage extends AbstractReferencedItemStorage<Parameter> {
 
-    ReferencedParameterStorage(ReferenceDeciderForType<Parameter> referenceDecider, ReferenceIdentifierFactoryForType<Parameter> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Parameter> referenceIdentifierConflictResolver) {
+    ReferencedParameterStorage(ReferenceDeciderForType<Parameter> referenceDecider, ReferenceIdentifierBuilderForType<Parameter> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Parameter> referenceIdentifierConflictResolver) {
         super(ReferenceType.PARAMETER, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Parameter::new,
                 Arrays.asList(SCHEMA, EXAMPLE, HEADER));
     }

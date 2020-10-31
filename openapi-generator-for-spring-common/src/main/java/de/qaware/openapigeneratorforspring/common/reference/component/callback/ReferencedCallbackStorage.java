@@ -2,8 +2,8 @@ package de.qaware.openapigeneratorforspring.common.reference.component.callback;
 
 import de.qaware.openapigeneratorforspring.common.reference.AbstractReferencedItemStorage;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierBuilderForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.model.operation.Callback;
 
 import java.util.Arrays;
@@ -17,7 +17,7 @@ import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType
 
 public class ReferencedCallbackStorage extends AbstractReferencedItemStorage<Callback> {
 
-    ReferencedCallbackStorage(ReferenceDeciderForType<Callback> referenceDecider, ReferenceIdentifierFactoryForType<Callback> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Callback> referenceIdentifierConflictResolver) {
+    ReferencedCallbackStorage(ReferenceDeciderForType<Callback> referenceDecider, ReferenceIdentifierBuilderForType<Callback> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Callback> referenceIdentifierConflictResolver) {
         super(CALLBACK, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Callback::new,
                 Arrays.asList(CALLBACK, API_RESPONSE, PARAMETER, REQUEST_BODY));
     }

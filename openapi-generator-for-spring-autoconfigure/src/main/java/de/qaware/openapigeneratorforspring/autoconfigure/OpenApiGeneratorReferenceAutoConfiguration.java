@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemSupportFactory;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceDeciderFactory;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceIdentifierBuilderFactory;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.DefaultReferenceIdentifierConflictResolverFactory;
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandlerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -40,6 +41,12 @@ public class OpenApiGeneratorReferenceAutoConfiguration {
     @ConditionalOnMissingBean
     public DefaultReferenceDeciderFactory defaultReferenceDeciderFactory() {
         return new DefaultReferenceDeciderFactory();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultReferenceIdentifierBuilderFactory defaultReferenceIdentifierBuilderFactory() {
+        return new DefaultReferenceIdentifierBuilderFactory();
     }
 
 }

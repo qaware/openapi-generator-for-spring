@@ -21,7 +21,7 @@ public class ReferencedLinksHandlerImpl implements DependentReferencedComponentH
     @Override
     public void maybeAsReference(Map<String, Link> links, Consumer<Map<String, Link>> setter) {
         setter.accept(links);
-        storage.storeMaybeReferenceLinks(links);
+        storage.maybeReferenceLinks(links);
     }
 
     @Override

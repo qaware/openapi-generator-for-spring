@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReferencedRequestBodyHandlerFactory implements ReferencedItemHandlerFactory {
     private final ReferenceDeciderForRequestBody referenceDecider;
-    private final ReferenceIdentifierFactoryForRequestBody referenceIdentifierFactory;
+    private final ReferenceIdentifierBuilderForRequestBody referenceIdentifierFactory;
     private final ReferenceIdentifierConflictResolverForRequestBody referenceIdentifierConflictResolver;
 
     @Override

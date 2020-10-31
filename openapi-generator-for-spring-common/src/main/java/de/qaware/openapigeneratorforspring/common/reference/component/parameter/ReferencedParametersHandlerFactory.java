@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReferencedParametersHandlerFactory implements ReferencedItemHandlerFactory {
     private final ReferenceDeciderForParameter referenceDecider;
-    private final ReferenceIdentifierFactoryForParameter referenceIdentifierFactory;
+    private final ReferenceIdentifierBuilderForParameter referenceIdentifierFactory;
     private final ReferenceIdentifierConflictResolverForParameter referenceIdentifierConflictResolver;
 
     @Override

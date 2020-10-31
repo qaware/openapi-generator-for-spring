@@ -7,9 +7,9 @@ import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustom
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForRequiredProperties;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaNameFactory;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaNameBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaResolver;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameFactory;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.DefaultSchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
@@ -18,12 +18,12 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.Sch
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollections;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForProperties;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaFactory;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaFactoryForCollectionLikeType;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaFactoryForObject;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaFactoryForPrimitiveTypes;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaFactoryForReferenceType;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaFactoryForSchemaAnnotation;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForCollectionLikeType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForObject;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForPrimitiveTypes;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForReferenceType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForSchemaAnnotation;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -43,12 +43,12 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
             SchemaAnnotationMapperFactory schemaAnnotationMapperFactory,
             AnnotationsSupplierFactory annotationsSupplierFactory,
             List<TypeResolver> typeResolvers,
-            List<InitialSchemaFactory> initialSchemaFactories,
+            List<InitialSchemaBuilder> initialSchemaBuilders,
             List<SchemaCustomizer> schemaCustomizers
     ) {
         return new DefaultSchemaResolver(
                 openApiObjectMapperSupplier, schemaAnnotationMapperFactory, annotationsSupplierFactory,
-                typeResolvers, initialSchemaFactories, schemaCustomizers
+                typeResolvers, initialSchemaBuilders, schemaCustomizers
         );
     }
 
@@ -69,35 +69,35 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public InitialSchemaFactoryForReferenceType defaultInitialSchemaFactoryForReferenceType() {
-        return new InitialSchemaFactoryForReferenceType();
+    public InitialSchemaBuilderForReferenceType defaultInitialSchemaBuilderForReferenceType() {
+        return new InitialSchemaBuilderForReferenceType();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public InitialSchemaFactoryForSchemaAnnotation defaultInitialSchemaFactoryForSchemaAnnotation(
+    public InitialSchemaBuilderForSchemaAnnotation defaultInitialSchemaBuilderForSchemaAnnotation(
             OpenApiObjectMapperSupplier openApiObjectMapperSupplier,
             AnnotationsSupplierFactory annotationsSupplierFactory
     ) {
-        return new InitialSchemaFactoryForSchemaAnnotation(openApiObjectMapperSupplier, annotationsSupplierFactory);
+        return new InitialSchemaBuilderForSchemaAnnotation(openApiObjectMapperSupplier, annotationsSupplierFactory);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public InitialSchemaFactoryForPrimitiveTypes defaultInitialSchemaFactoryForPrimitiveTypes() {
-        return new InitialSchemaFactoryForPrimitiveTypes();
+    public InitialSchemaBuilderForPrimitiveTypes defaultInitialSchemaBuilderForPrimitiveTypes() {
+        return new InitialSchemaBuilderForPrimitiveTypes();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public InitialSchemaFactoryForObject defaultInitialSchemaFactoryForObject(SchemaNameFactory schemaNameFactory, SchemaPropertiesResolver schemaPropertiesResolver) {
-        return new InitialSchemaFactoryForObject(schemaNameFactory, schemaPropertiesResolver);
+    public InitialSchemaBuilderForObject defaultInitialSchemaBuilderForObject(SchemaNameBuilder schemaNameBuilder, SchemaPropertiesResolver schemaPropertiesResolver) {
+        return new InitialSchemaBuilderForObject(schemaNameBuilder, schemaPropertiesResolver);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public InitialSchemaFactoryForCollectionLikeType defaultInitialSchemaFactoryForCollectionLikeType() {
-        return new InitialSchemaFactoryForCollectionLikeType();
+    public InitialSchemaBuilderForCollectionLikeType defaultInitialSchemaBuilderForCollectionLikeType() {
+        return new InitialSchemaBuilderForCollectionLikeType();
     }
 
     @Bean
@@ -121,8 +121,8 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SchemaNameFactory defaultSchemaNameFactory() {
-        return new DefaultSchemaNameFactory();
+    public SchemaNameBuilder defaultSchemaNameBuilder() {
+        return new DefaultSchemaNameBuilder();
     }
 
     @Bean

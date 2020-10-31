@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class InitialSchemaFactoryForSchemaAnnotation implements InitialSchemaFactory {
+public class InitialSchemaBuilderForSchemaAnnotation implements InitialSchemaBuilder {
 
     public static final int ORDER = DEFAULT_ORDER - 100; // make this higher precedence as the annotation should override everything
 
@@ -20,7 +20,7 @@ public class InitialSchemaFactoryForSchemaAnnotation implements InitialSchemaFac
 
     @Nullable
     @Override
-    public InitialSchema resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialTypeResolver fallbackResolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
         return Optional.ofNullable(annotationsSupplier.findFirstAnnotation(Schema.class))
                 .map(Schema::implementation)
                 .filter(clazz -> !Void.class.equals(clazz))

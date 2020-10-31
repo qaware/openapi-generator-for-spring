@@ -5,6 +5,6 @@ import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 import java.util.function.Consumer;
 
-public interface ReferencedSchemaConsumer extends ReferencedItemConsumerForType<Schema, Schema> {
+public interface ReferencedSchemaConsumer extends ReferencedItemConsumerForType<Schema> {
     void alwaysAsReference(Schema schema, Consumer<Schema> setter);
 }

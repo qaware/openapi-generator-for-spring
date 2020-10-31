@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.Map;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
@@ -43,9 +42,8 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
             encoding.setAllowReserved(true);
         }
 
-        setCollectionIfNotEmpty(headerAnnotationMapper.mapArray(encodingAnnotation.headers(), referencedItemConsumerSupplier),
-                headers -> referencedItemConsumerSupplier.get(ReferencedHeadersConsumer.class)
-                        .maybeAsReference(headers, encoding::setHeaders)
+        setMapIfNotEmpty(headerAnnotationMapper.mapArray(encodingAnnotation.headers(), referencedItemConsumerSupplier),
+                headers -> referencedItemConsumerSupplier.get(ReferencedHeadersConsumer.class).maybeAsReference(headers, encoding::setHeaders)
         );
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(encodingAnnotation.extensions()), encoding::setExtensions);
 

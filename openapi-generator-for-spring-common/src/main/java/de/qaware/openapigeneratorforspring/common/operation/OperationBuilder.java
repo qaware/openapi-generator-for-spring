@@ -19,6 +19,14 @@ public class OperationBuilder {
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     public Operation buildOperation(OperationBuilderContext context) {
+        try {
+            return getOperationInternal(context);
+        } catch (Exception e) {
+            throw new RuntimeException("Exception encountered while building operation with " + context.getOperationInfo(), e);
+        }
+    }
+
+    public Operation getOperationInternal(OperationBuilderContext context) {
         Method method = context.getOperationInfo().getHandlerMethod().getMethod();
 
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(method);

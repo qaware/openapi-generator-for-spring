@@ -7,9 +7,9 @@ import org.springframework.core.Ordered;
 import javax.annotation.Nullable;
 
 @SuppressWarnings("squid:S1214") // suppress warning about constant in interface
-public interface InitialSchemaFactory extends Ordered {
+public interface InitialSchemaBuilder extends Ordered {
     int DEFAULT_ORDER = Ordered.LOWEST_PRECEDENCE - 1000;
 
     @Nullable
-    InitialSchema resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialTypeResolver fallbackResolver);
+    InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver);
 }

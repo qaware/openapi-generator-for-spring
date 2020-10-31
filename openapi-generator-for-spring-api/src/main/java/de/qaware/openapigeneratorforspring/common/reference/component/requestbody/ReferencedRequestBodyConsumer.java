@@ -3,6 +3,6 @@ package de.qaware.openapigeneratorforspring.common.reference.component.requestbo
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferencedItemConsumerForType;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 
-public interface ReferencedRequestBodyConsumer extends ReferencedItemConsumerForType<RequestBody, RequestBody> {
+public interface ReferencedRequestBodyConsumer extends ReferencedItemConsumerForType<RequestBody> {
 
 }

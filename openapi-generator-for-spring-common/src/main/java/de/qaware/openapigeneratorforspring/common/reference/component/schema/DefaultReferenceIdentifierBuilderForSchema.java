@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 
 import static java.lang.Boolean.TRUE;
 
-public class DefaultReferenceIdentifierFactoryForSchema implements ReferenceIdentifierFactoryForSchema {
+public class DefaultReferenceIdentifierBuilderForSchema implements ReferenceIdentifierBuilderForSchema {
 
-    private static final String NULLABLE_PREFIX = "nullable";
-    private static final String DEPRECATED_PREFIX = "deprecated";
+    private static final String NULLABLE_IDENTIFIER_PREFIX = "nullable";
+    private static final String DEPRECATED_IDENTIFIER_PREFIX = "deprecated";
 
     private final AtomicInteger counter = new AtomicInteger();
 
@@ -23,10 +23,10 @@ public class DefaultReferenceIdentifierFactoryForSchema implements ReferenceIden
     public String buildIdentifier(Schema schema, @Nullable String suggestedIdentifier, int numberOfSetters) {
         List<Object> identifierComponents = new ArrayList<>();
         if (TRUE.equals(schema.getNullable())) {
-            identifierComponents.add(NULLABLE_PREFIX);
+            identifierComponents.add(NULLABLE_IDENTIFIER_PREFIX);
         }
         if (TRUE.equals(schema.getDeprecated())) {
-            identifierComponents.add(DEPRECATED_PREFIX);
+            identifierComponents.add(DEPRECATED_IDENTIFIER_PREFIX);
         }
         if (StringUtils.isNotBlank(suggestedIdentifier)) {
             identifierComponents.add(suggestedIdentifier);

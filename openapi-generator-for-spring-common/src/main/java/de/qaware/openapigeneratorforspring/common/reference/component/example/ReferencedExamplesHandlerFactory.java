@@ -7,16 +7,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReferencedExamplesHandlerFactory implements ReferencedItemHandlerFactory {
     private final ReferenceDeciderForExample referenceDecider;
-    private final ReferenceIdentifierFactoryForExample referenceIdentifierFactory;
+    private final ReferenceIdentifierBuilderForExample referenceIdentifierFactory;
     private final ReferenceIdentifierConflictResolverForExample referenceIdentifierConflictResolver;
 
     @Override
     public ReferencedItemHandler create() {
-        ReferencedExampleStorage storage = new ReferencedExampleStorage(
-                referenceDecider,
-                (example, exampleName, numberOfSetters) -> referenceIdentifierFactory.buildSuggestedIdentifier(exampleName),
-                referenceIdentifierConflictResolver
-        );
-        return new ReferencedExamplesHandlerImpl(storage, referenceIdentifierFactory);
+        ReferencedExampleStorage storage = new ReferencedExampleStorage(referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver);
+        return new ReferencedExamplesHandlerImpl(storage);
     }
 }

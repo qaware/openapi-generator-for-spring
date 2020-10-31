@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
+import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierBuilderForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
-import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierFactoryForType;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiProxyUtils;
 import de.qaware.openapigeneratorforspring.model.trait.HasReference;
 import lombok.AccessLevel;
@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -31,12 +32,16 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
 
     private final ReferenceType referenceType;
     private final ReferenceDeciderForType<T> referenceDecider;
-    private final ReferenceIdentifierFactoryForType<T> referenceIdentifierFactory;
+    private final ReferenceIdentifierBuilderForType<T> referenceIdentifierFactory;
     private final ReferenceIdentifierConflictResolverForType<T> referenceIdentifierConflictResolver;
     private final Supplier<T> itemConstructor;
     private final List<ReferenceType> buildDependencies;
 
     private final List<Entry<T>> entries = new ArrayList<>();
+
+    protected void addEntriesFromMap(Map<String, T> itemsMap) {
+        itemsMap.forEach((itemName, item) -> addEntry(item, referenceItem -> itemsMap.put(itemName, referenceItem), itemName, itemsMap));
+    }
 
     protected void addEntry(T item, ReferenceSetter<T> referenceSetter) {
         addEntry(item, referenceSetter, null, null);
@@ -130,7 +135,7 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
         List<IdentifierSetterImpl> identifierSetters = referenceSetters.stream()
                 .map(IdentifierSetterImpl::ofReferenceSetter)
                 .collect(Collectors.toList());
-        referenceIdentifierFactory.mergeIdentifiers(entry.getItem(), Collections.unmodifiableList(identifierSetters));
+        referenceIdentifierFactory.buildIdentifiers(entry.getItem(), Collections.unmodifiableList(identifierSetters));
         return IntStream.range(0, identifierSetters.size()).boxed()
                 .flatMap(i -> {
                     ReferenceSetter<T> referenceSetter = referenceSetters.get(i).getReferenceSetter();
@@ -146,14 +151,15 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
 
     @RequiredArgsConstructor
     @Getter
-    private static class IdentifierSetterImpl implements ReferenceIdentifierFactoryForType.IdentifierSetter {
+    private static class IdentifierSetterImpl implements ReferenceIdentifierBuilderForType.IdentifierSetter {
 
         public static <T> IdentifierSetterImpl ofReferenceSetter(ReferenceSetterWithIdentifier<T> referenceSetter) {
-            return new IdentifierSetterImpl(referenceSetter.getSuggestedIdentifier(), referenceSetter.getReferenceSetter().isReferenceRequired());
+            return new IdentifierSetterImpl(Optional.ofNullable(referenceSetter.getSuggestedIdentifier()), referenceSetter.getReferenceSetter().isReferenceRequired());
         }
 
+        @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
         @Nullable
-        private final String suggestedValue;
+        private final Optional<String> suggestedValue;
         private final boolean referenceRequired;
 
         @Setter

@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIf;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
@@ -60,7 +59,7 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
         // TODO handle @ArraySchema as well?
         setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), referencedItemConsumerSupplier), parameter::setContent);
         ReferencedExamplesConsumer referencedExamplesConsumer = referencedItemConsumerSupplier.get(ReferencedExamplesConsumer.class);
-        setCollectionIfNotEmpty(exampleObjectAnnotationMapper.mapArray(annotation.examples()),
+        setMapIfNotEmpty(exampleObjectAnnotationMapper.mapArray(annotation.examples()),
                 examples -> referencedExamplesConsumer.maybeAsReference(examples, parameter::setExamples)
         );
         setStringIfNotBlank(annotation.example(), parameter::setExample);

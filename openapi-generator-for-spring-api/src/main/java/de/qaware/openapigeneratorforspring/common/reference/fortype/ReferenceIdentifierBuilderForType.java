@@ -7,15 +7,14 @@ import java.util.Optional;
 import static java.util.stream.Collectors.groupingBy;
 
 @FunctionalInterface
-public interface ReferenceIdentifierFactoryForType<T> {
+public interface ReferenceIdentifierBuilderForType<T> {
     @Nullable
     String buildIdentifier(T item, @Nullable String suggestedIdentifier, int numberOfSetters);
 
-    default void mergeIdentifiers(T item, List<IdentifierSetter> identifierSetters) {
+    default void buildIdentifiers(T item, List<IdentifierSetter> identifierSetters) {
         // do not merge anything by default, and group by suggested identifier to avoid unnecessary calls to buildIdentifier
         identifierSetters.stream()
-                // cannot use suggestedValue directly as null value is not allowed by groupingBy
-                .collect(groupingBy(identifierSetter -> Optional.ofNullable(identifierSetter.getSuggestedValue())))
+                .collect(groupingBy(IdentifierSetter::getSuggestedValue))
                 .forEach((optionalSuggestedIdentifier, groupedIdentifierSetters) -> {
                     String identifier = buildIdentifier(item, optionalSuggestedIdentifier.orElse(null), groupedIdentifierSetters.size());
                     groupedIdentifierSetters.forEach(identifierSetter -> identifierSetter.setValue(identifier));
@@ -23,8 +22,7 @@ public interface ReferenceIdentifierFactoryForType<T> {
     }
 
     interface IdentifierSetter {
-        @Nullable
-        String getSuggestedValue();
+        Optional<String> getSuggestedValue();
 
         boolean isReferenceRequired();
 
