@@ -31,10 +31,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/App3Controller.SomeDto_0"
-                  }
+                  "$ref": "#/components/schemas/array_App3Controller.SomeDto"
                 }
               }
             }
@@ -87,6 +84,17 @@
       }
     },
     "schemas": {
+      "App3Controller.SomeDto_0": {
+        "type": "object",
+        "properties": {
+          "stringProperty1": {
+            "type": "string"
+          },
+          "booleanProperty2": {
+            "type": "boolean"
+          }
+        }
+      },
       "App3Controller.SomeDto_1": {
         "type": "object",
         "properties": {
@@ -99,15 +107,10 @@
         },
         "description": "request body DTO"
       },
-      "App3Controller.SomeDto_0": {
-        "type": "object",
-        "properties": {
-          "stringProperty1": {
-            "type": "string"
-          },
-          "booleanProperty2": {
-            "type": "boolean"
-          }
+      "array_App3Controller.SomeDto": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/App3Controller.SomeDto_0"
         }
       }
     }

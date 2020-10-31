@@ -98,7 +98,8 @@
                 },
                 "examples": {
                   "Example1": {
-                    "$ref": "#/components/examples/Example2"
+                    "summary": "summary example3",
+                    "externalValue": "http://some-url2"
                   },
                   "MyExampleName": {
                     "$ref": "#/components/examples/MyExampleName"
@@ -144,7 +145,8 @@
                     "$ref": "#/components/examples/MyExampleName"
                   },
                   "Example2": {
-                    "$ref": "#/components/examples/Example2"
+                    "summary": "summary example3",
+                    "externalValue": "http://some-url2"
                   }
                 }
               },
@@ -259,26 +261,22 @@
       "MyExampleName": {
         "summary": "summary example2",
         "externalValue": "http://some-url1"
-      },
-      "Example2": {
-        "summary": "summary example3",
-        "externalValue": "http://some-url2"
       }
     },
     "headers": {
-      "header3": {
-        "description": "Description header 3"
-      },
       "header1": {
         "description": "Description header 1"
+      },
+      "header3": {
+        "description": "Description header 3"
       }
     },
     "responses": {
-      "411": {
-        "description": "Some more responses 2 from base base"
-      },
       "503": {
         "description": "Something went really wrong from base"
+      },
+      "411": {
+        "description": "Some more responses 2 from base base"
       }
     },
     "schemas": {

@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -47,7 +48,7 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
     }
 
     protected void addEntry(T item, ReferenceSetter<T> referenceSetter, @Nullable String suggestedIdentifier, @Nullable Object owner) {
-        entries.add(Entry.of(item, referenceSetter, SuggestedIdentifier.of(suggestedIdentifier), owner));
+        entries.add(Entry.of(item, referenceSetter, suggestedIdentifier, owner));
     }
 
     protected void removeEntriesOwnedBy(Object owner) {
@@ -126,37 +127,48 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
     }
 
     private Stream<Pair<String, Pair<T, ReferenceSetter<T>>>> buildNonUniqueReferenceIdentifiers(GroupedEntry entry) {
-        List<Pair<String, Pair<T, ReferenceSetter<T>>>> result = new ArrayList<>();
-        entry.getReferenceSetters().stream()
-                // intermediate grouping by suggestedIdentifier ensures we don't call the referenceIdentifierFactory not more than needed!
-                .collect(groupingByPairKeyAndCollectingValuesToList())
-                .forEach(((suggestedIdentifier, referenceSetters) -> {
-                    String identifier = referenceIdentifierFactory.buildIdentifier(entry.getItem(), suggestedIdentifier.getValue(), referenceSetters.size());
-                    boolean isReferenceRequired = referenceSetters.stream().anyMatch(ReferenceSetter::isReferenceRequired);
-                    if (identifier == null && isReferenceRequired) {
-                        throw new IllegalStateException("Cannot skip referencing " + entry.getItem() + " with null identifier as reference is required for at least one reference setter");
+        List<Pair<String, ReferenceSetter<T>>> referenceSetters = entry.getReferenceSetters();
+        List<IdentifierSetterImpl<?>> identifierSetters = referenceSetters.stream()
+                .map(IdentifierSetterImpl::new)
+                .collect(Collectors.toList());
+        referenceIdentifierFactory.mergeIdentifiers(entry.getItem(), Collections.unmodifiableList(identifierSetters));
+        return IntStream.range(0, identifierSetters.size()).boxed()
+                .flatMap(i -> {
+                    ReferenceSetter<T> referenceSetter = referenceSetters.get(i).getValue();
+                    String identifier = identifierSetters.get(i).getValue();
+                    if (identifier == null && referenceSetter.isReferenceRequired()) {
+                        throw new IllegalStateException("Cannot skip referencing " + entry.getItem() + " with null identifier as reference is required");
                     } else if (identifier != null) {
-                        referenceSetters.forEach(referenceSetter -> result.add(Pair.of(identifier, Pair.of(entry.getItem(), referenceSetter))));
+                        return Stream.of(Pair.of(identifier, Pair.of(entry.getItem(), referenceSetter)));
                     }
-                }));
-        return result.stream();
+                    return Stream.empty();
+                });
     }
 
-    @RequiredArgsConstructor(staticName = "of")
-    @EqualsAndHashCode // important for grouping!
     @Getter
-    private static class SuggestedIdentifier {
+    @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+    private static class IdentifierSetterImpl<T> implements ReferenceIdentifierFactoryForType.IdentifierSetter {
+        public IdentifierSetterImpl(Pair<String, ReferenceSetter<T>> referenceSetter) {
+            this.suggestedValue = referenceSetter.getKey();
+            this.referenceRequired = referenceSetter.getValue().isReferenceRequired();
+        }
+
         @Nullable
-        private final String value;
+        @EqualsAndHashCode.Include // important for grouping in default implementation of mergeIdentifiers
+        private final String suggestedValue;
+
+        private final boolean referenceRequired;
+        @Setter
+        private String value = null;
     }
 
     @RequiredArgsConstructor
     @Getter
     private class GroupedEntry {
         private final T item;
-        private final List<Pair<SuggestedIdentifier, ReferenceSetter<T>>> referenceSetters = new ArrayList<>();
+        private final List<Pair<String, ReferenceSetter<T>>> referenceSetters = new ArrayList<>();
 
-        public GroupedEntry addReferenceSetter(Pair<SuggestedIdentifier, ReferenceSetter<T>> referenceSetter) {
+        public GroupedEntry addReferenceSetter(Pair<String, ReferenceSetter<T>> referenceSetter) {
             referenceSetters.add(referenceSetter);
             return this;
         }
@@ -176,7 +188,8 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
     private static class Entry<T> {
         private final T item;
         private final ReferenceSetter<T> referenceSetter;
-        private final SuggestedIdentifier suggestedIdentifier;
+        @Nullable
+        private final String suggestedIdentifier;
         @Nullable
         private final Object owner;
 

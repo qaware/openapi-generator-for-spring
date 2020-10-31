@@ -167,10 +167,9 @@
       }
     },
     "requestBodies": {
-      "RequestBody_1": {
-        "description": "Some other body description",
+      "RequestBody_0": {
         "content": {
-          "application/json": {
+          "text/plain": {
             "schema": {
               "$ref": "#/components/schemas/deprecated_App9Controller.SomeDeprecatedDto"
             }
@@ -178,9 +177,10 @@
         },
         "required": true
       },
-      "RequestBody_0": {
+      "RequestBody_1": {
+        "description": "Some other body description",
         "content": {
-          "text/plain": {
+          "application/json": {
             "schema": {
               "$ref": "#/components/schemas/deprecated_App9Controller.SomeDeprecatedDto"
             }
