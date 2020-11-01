@@ -65,23 +65,50 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
 
     public Map<String, T> buildReferencedItems() {
         Map<String, T> referencedItems = new LinkedHashMap<>();
+        ReferenceActions referenceActions = new ReferenceActions();
         buildGroupedEntries()
                 .flatMap(this::buildNonUniqueReferenceIdentifiers)
                 .collect(groupingByPairKeyAndCollectingValuesTo(groupingByPairKeyAndCollectingValuesToList()))
-                .forEach((referenceIdentifier, itemsPerIdentifier) -> {
-                    removeNotToBeReferencedItems(referenceIdentifier, itemsPerIdentifier);
-                    buildUniqueReferenceIdentifiers(referenceIdentifier, itemsPerIdentifier).forEach(
-                            (uniqueIdentifier, itemWithReferenceSetters) -> {
-                                T referenceItem = itemConstructor.get().createReference(referenceType.getReferencePrefix() + uniqueIdentifier);
-                                T immutableReferenceItem = OpenApiProxyUtils.immutableProxy(referenceItem);
-                                itemWithReferenceSetters.getValue().forEach(setter -> setter.consumeReference(immutableReferenceItem));
-                                referencedItems.put(uniqueIdentifier, itemWithReferenceSetters.getKey());
+                .forEach((referenceIdentifier, itemsGroupedPerIdentifier) -> {
+                    removeNotToBeReferencedItems(itemsGroupedPerIdentifier, referenceIdentifier);
+                    buildUniqueReferenceIdentifiers(referenceIdentifier, itemsGroupedPerIdentifier).forEach(
+                            (uniqueReferenceIdentifier, itemWithReferenceSetters) -> {
+                                referencedItems.put(uniqueReferenceIdentifier, itemWithReferenceSetters.getKey());
+                                // defer reference action as calling the reference setters will modify items T,
+                                // which spoil the usage of the map itemsGroupedPerIdentifier where T item is the key
+                                referenceActions.add(uniqueReferenceIdentifier, itemWithReferenceSetters.getValue());
                             });
                 });
+        referenceActions.run();
         return referencedItems;
     }
 
-    private void removeNotToBeReferencedItems(String referenceIdentifier, Map<T, List<ReferenceSetter<T>>> itemsGroupedByIdentifier) {
+    private class ReferenceActions extends ArrayList<ReferenceActions.ReferenceAction> {
+
+        public void add(String uniqueIdentifier, List<ReferenceSetter<T>> referenceSetters) {
+            add(new ReferenceAction(uniqueIdentifier, referenceSetters));
+        }
+
+        public void run() {
+            forEach(ReferenceAction::run);
+        }
+
+        @RequiredArgsConstructor
+        private class ReferenceAction {
+            private final String uniqueIdentifier;
+            private final List<ReferenceSetter<T>> referenceSetters;
+
+            public void run() {
+                T referenceItem = itemConstructor.get().createReference(referenceType.getReferencePrefix() + uniqueIdentifier);
+                // make referenceItem immutable as some setters are chained with customizers,
+                // which should only apply the the reference items, not to the "dummy" schema where only $ref is set
+                T immutableReferenceItem = OpenApiProxyUtils.immutableProxy(referenceItem);
+                referenceSetters.forEach(setter -> setter.consumeReference(immutableReferenceItem));
+            }
+        }
+    }
+
+    private void removeNotToBeReferencedItems(Map<T, List<ReferenceSetter<T>>> itemsGroupedByIdentifier, String referenceIdentifier) {
         Iterator<Map.Entry<T, List<ReferenceSetter<T>>>> iterator = itemsGroupedByIdentifier.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<T, List<ReferenceSetter<T>>> entry = iterator.next();
@@ -165,6 +192,7 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
         @Setter
         private String value = null;
     }
+
 
     @RequiredArgsConstructor
     @Getter

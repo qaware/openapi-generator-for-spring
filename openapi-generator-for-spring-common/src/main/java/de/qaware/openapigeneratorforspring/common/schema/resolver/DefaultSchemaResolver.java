@@ -15,6 +15,7 @@ import de.qaware.openapigeneratorforspring.common.util.OpenApiLoggingUtils;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -194,9 +195,11 @@ public class DefaultSchemaResolver implements SchemaResolver {
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
     private static class RecursiveSchema extends Schema implements OpenApiLoggingUtils.HasToPrettyString {
         @Getter
         private final Schema schema;
+        @EqualsAndHashCode.Include
         private final TypeResolver.RecursionKey recursionKey;
 
         public static Schema unwrap(Schema schema) {
@@ -209,11 +212,6 @@ public class DefaultSchemaResolver implements SchemaResolver {
         @Override
         public String getName() {
             return schema.getName();
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return o instanceof RecursiveSchema && recursionKey.equals(((RecursiveSchema) o).recursionKey);
         }
 
         @Override

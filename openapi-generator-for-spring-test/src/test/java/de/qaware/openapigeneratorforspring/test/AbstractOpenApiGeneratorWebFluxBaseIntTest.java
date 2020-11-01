@@ -33,7 +33,7 @@ public abstract class AbstractOpenApiGeneratorWebFluxBaseIntTest {
         try {
             JSONAssert.assertEquals(expectedJson, actualJson, true);
         } catch (AssertionError e) {
-            throw new AssertionError("JSON Expected: " + expectedJson + " Actual: " + actualJson, e);
+            throw new AssertionError(e.getMessage() + "\n\n Actual JSON: " + actualJson, e);
         }
     }
 }

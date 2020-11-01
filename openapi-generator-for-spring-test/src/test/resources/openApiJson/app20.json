@@ -31,7 +31,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/array_App20Controller.SomeDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/App20Controller.SomeDto_0"
+                  }
                 }
               }
             }
@@ -106,12 +109,6 @@
           }
         },
         "description": "request body DTO"
-      },
-      "array_App20Controller.SomeDto": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/App20Controller.SomeDto_0"
-        }
       }
     }
   }
