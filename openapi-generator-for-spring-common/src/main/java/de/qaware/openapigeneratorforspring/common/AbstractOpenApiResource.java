@@ -8,12 +8,17 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.CONFIG_PROPERTIES_PREFIX;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.OPEN_API_DOCS_DEFAULT_PATH;
+
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @RestController
 @Hidden
 public abstract class AbstractOpenApiResource {
 
-    protected static final String API_DOCS_PATH = "/v3/api-docs";
+    protected static final String API_DOCS_PATH_SPEL = "${" +
+            CONFIG_PROPERTIES_PREFIX + ".api-docs-path:" + // "api-docs-path" should match OpenApiConfigurationProperties setting
+            OPEN_API_DOCS_DEFAULT_PATH + "}";
 
     private final OpenApiGenerator openApiGenerator;
     private final OpenApiObjectMapperSupplier objectMapperSupplier;

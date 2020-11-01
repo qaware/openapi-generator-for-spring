@@ -24,7 +24,7 @@ public class OpenApiResourceForWebFlux extends AbstractOpenApiResource {
         super(openApiGenerator, objectMapperSupplier);
     }
 
-    @GetMapping(value = API_DOCS_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = API_DOCS_PATH_SPEL, produces = MediaType.APPLICATION_JSON_VALUE)
     public String getOpenApiAsJson(ServerHttpRequest serverHttpRequest) throws JsonProcessingException {
         SERVER_HTTP_REQUEST_THREAD_LOCAL.set(serverHttpRequest);
         return super.getOpenApiAsJson();

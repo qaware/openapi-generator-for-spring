@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.DefaultOpenApiCustomizer;
+import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.common.OpenApiCustomizer;
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
 import de.qaware.openapigeneratorforspring.common.info.OpenApiInfoSupplier;
@@ -13,6 +14,7 @@ import de.qaware.openapigeneratorforspring.common.server.OpenApiServersSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenAPIDefinitionAnnotationSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -33,6 +35,7 @@ import java.util.Optional;
         OpenApiGeneratorSchemaAutoConfiguration.class,
         OpenApiGeneratorUtilAutoConfiguration.class,
 })
+@EnableConfigurationProperties(OpenApiConfigurationProperties.class)
 public class OpenApiGeneratorAutoConfiguration {
 
     @Bean

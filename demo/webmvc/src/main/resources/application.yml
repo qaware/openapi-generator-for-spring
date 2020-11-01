@@ -1,0 +1,5 @@
+openapi-generator-for-spring:
+  api-docs-path: "args2"
+server:
+  servlet:
+    context-path: "/some-context-path"

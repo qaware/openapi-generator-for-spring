@@ -13,7 +13,7 @@ public class OpenApiResourceForWebMvc extends AbstractOpenApiResource {
         super(openApiGenerator, objectMapperSupplier);
     }
 
-    @GetMapping(value = API_DOCS_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = API_DOCS_PATH_SPEL, produces = MediaType.APPLICATION_JSON_VALUE)
     public String getOpenApiAsJson() throws JsonProcessingException {
         return super.getOpenApiAsJson();
     }

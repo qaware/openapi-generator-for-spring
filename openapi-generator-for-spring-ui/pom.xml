@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>openapi-generator-for-spring-test</artifactId>
+    <artifactId>openapi-generator-for-spring-ui</artifactId>
 
     <parent>
         <artifactId>openapi-generator-for-spring-parent</artifactId>
@@ -14,39 +14,42 @@
     <dependencies>
         <dependency>
             <groupId>de.qaware.openapi-generator-for-spring</groupId>
-            <artifactId>openapi-generator-for-spring-starter</artifactId>
-            <scope>test</scope>
+            <artifactId>openapi-generator-for-spring-common</artifactId>
+            <scope>provided</scope>
         </dependency>
-        <!--
-        Explicitly include both WebFlux AND WebMVC, as test cases cover both variants.
-        Note that applications using this library usually run either WebMVC or WebFlux.
-        -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webflux</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+        </dependency>
+
+        <!-- see https://www.webjars.org/documentation#springboot -->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>webjars-locator-core</artifactId>
+            <version>0.46</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>swagger-ui</artifactId>
+            <version>3.36.1</version>
+        </dependency>
+
     </dependencies>
 
 </project>

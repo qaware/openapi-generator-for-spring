@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiAutoConfiguration,\
+  de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiWebMvcAutoConfiguration
