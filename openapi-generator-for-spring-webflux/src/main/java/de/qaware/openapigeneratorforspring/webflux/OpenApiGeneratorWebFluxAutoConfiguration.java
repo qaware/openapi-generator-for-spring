@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.webflux;
 
+import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
-import de.qaware.openapigeneratorforspring.common.OpenApiResourceParameterProvider;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.InitialSchemaBuilderForFlux;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.InitialSchemaBuilderForMono;
@@ -29,8 +29,8 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OpenApiResourceParameterProvider openApiResourceParameterProviderForWebFlux() {
-        return new OpenApiResourceParameterProviderForWebFlux();
+    public OpenApiRequestAwareProviderForWebFlux openApiRequestAwareProviderForWebFlux(OpenApiConfigurationProperties openApiConfigurationProperties) {
+        return new OpenApiRequestAwareProviderForWebFlux(openApiConfigurationProperties);
     }
 
     @Bean

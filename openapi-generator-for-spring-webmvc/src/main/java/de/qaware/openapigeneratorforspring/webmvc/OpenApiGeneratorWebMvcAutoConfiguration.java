@@ -1,7 +1,6 @@
 package de.qaware.openapigeneratorforspring.webmvc;
 
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
-import de.qaware.openapigeneratorforspring.common.OpenApiResourceParameterProvider;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -9,6 +8,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import javax.servlet.http.HttpServletRequest;
 
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class OpenApiGeneratorWebMvcAutoConfiguration {
@@ -27,7 +28,10 @@ public class OpenApiGeneratorWebMvcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OpenApiResourceParameterProvider openApiResourceParameterProviderForWebMvc(WebRequest webRequest) {
-        return new OpenApiResourceParameterProviderForWebMvc(webRequest);
+    public OpenApiRequestAwareProviderForWebMvc openApiRequestAwareProviderForWebMvc(
+            WebRequest webRequest,
+            HttpServletRequest httpServletRequest
+    ) {
+        return new OpenApiRequestAwareProviderForWebMvc(webRequest, httpServletRequest);
     }
 }

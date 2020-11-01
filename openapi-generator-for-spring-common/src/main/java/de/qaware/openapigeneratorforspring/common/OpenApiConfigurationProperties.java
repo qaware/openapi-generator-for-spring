@@ -12,4 +12,5 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.O
 @Setter
 public class OpenApiConfigurationProperties {
     private String apiDocsPath = OPEN_API_DOCS_DEFAULT_PATH;
+    private boolean addDefaultServer = true;
 }

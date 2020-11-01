@@ -10,8 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         description = "Demo API",
         version = "1.0"
 ))
-public class WebMvcDemoApplication {
+public class WebFluxDemoApplication {
     public static void main(String[] args) {
-        SpringApplication.run(WebMvcDemoApplication.class, args);
+        SpringApplication.run(WebFluxDemoApplication.class, args);
     }
 }

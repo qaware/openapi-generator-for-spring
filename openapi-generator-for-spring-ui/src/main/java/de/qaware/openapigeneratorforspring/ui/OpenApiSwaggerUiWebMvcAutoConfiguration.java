@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.ui;
 
 import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiBaseUriProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.ResourceUtils;
@@ -25,19 +26,25 @@ public class OpenApiSwaggerUiWebMvcAutoConfiguration {
     public static final String SWAGGER_UI_WEB_JAR = "swagger-ui";
 
     @Bean
-    public WebMvcConfigurer swaggerUiWebMvcConfigurer(OpenApiSwaggerUiConfigurationProperties uiProperties, OpenApiConfigurationProperties properties) {
+    public WebMvcConfigurer swaggerUiWebMvcConfigurer(
+            OpenApiConfigurationProperties properties,
+            OpenApiSwaggerUiConfigurationProperties swaggerUiProperties,
+            OpenApiBaseUriProvider openApiBaseUriProvider
+    ) {
+
         String pathToSwaggerUiIndexHtml = new WebJarAssetLocator().getFullPath(SWAGGER_UI_WEB_JAR, INDEX_HTML_FILE);
         String pathToSwaggerUi = pathToSwaggerUiIndexHtml.substring(0, pathToSwaggerUiIndexHtml.length() - INDEX_HTML_FILE.length());
+
         return new WebMvcConfigurer() {
 
             @Override
             public void addResourceHandlers(ResourceHandlerRegistry registry) {
-                registry.addResourceHandler(uiProperties.getPath() + "/**")
+                registry.addResourceHandler(swaggerUiProperties.getPath() + "/**")
                         .addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX + pathToSwaggerUi)
                         .resourceChain(false) // TODO investigate if caching should really be disabled
                         .addTransformer((request, resource, transformerChain) -> {
                             if (resource.getURL().getPath().endsWith(INDEX_HTML_FILE)) {
-                                String apiDocsUri = ServletUriComponentsBuilder.fromContextPath(request)
+                                String apiDocsUri = ServletUriComponentsBuilder.fromUriString(openApiBaseUriProvider.getBaseUri())
                                         .path(DEFAULT_PATH_SEPARATOR + properties.getApiDocsPath())
                                         .build().toUriString();
                                 String modifiedIndexHtmlContent = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)).lines()
@@ -52,9 +59,9 @@ public class OpenApiSwaggerUiWebMvcAutoConfiguration {
 
             @Override
             public void addViewControllers(ViewControllerRegistry registry) {
-                String redirectToIndexHtml = uiProperties.getPath() + DEFAULT_PATH_SEPARATOR + INDEX_HTML_FILE;
-                registry.addRedirectViewController(uiProperties.getPath(), redirectToIndexHtml);
-                registry.addRedirectViewController(uiProperties.getPath() + DEFAULT_PATH_SEPARATOR, redirectToIndexHtml);
+                String redirectToIndexHtml = swaggerUiProperties.getPath() + DEFAULT_PATH_SEPARATOR + INDEX_HTML_FILE;
+                registry.addRedirectViewController(swaggerUiProperties.getPath(), redirectToIndexHtml);
+                registry.addRedirectViewController(swaggerUiProperties.getPath() + DEFAULT_PATH_SEPARATOR, redirectToIndexHtml);
             }
         };
     }

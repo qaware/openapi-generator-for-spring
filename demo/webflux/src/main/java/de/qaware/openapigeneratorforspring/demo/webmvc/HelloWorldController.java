@@ -6,8 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Nullable;
+import reactor.core.publisher.Mono;
 
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
@@ -15,8 +14,13 @@ import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 @RequestMapping(path = "hello-world")
 @Tag(name = "hello-world")
 public class HelloWorldController {
+
+    public static final String GREETING = "Hello from the demo app! Nice to meet you, ";
+
     @GetMapping(value = "greeting", produces = TEXT_PLAIN_VALUE)
-    public String getGreeting(@Nullable @RequestParam(value = "name", required = false) @Parameter(description = "Your name") String name) {
-        return "Hello from the demo app! Nice to meet you, " + (name == null ? "unknown friend" : name);
+    public Mono<String> getGreeting(@RequestParam(value = "name", required = false) @Parameter(description = "Your name") String nameMono) {
+        return Mono.justOrEmpty(nameMono)
+                .switchIfEmpty(Mono.just("unknown friend"))
+                .map(name -> "Hello from the demo app! Nice to meet you, " + name);
     }
 }

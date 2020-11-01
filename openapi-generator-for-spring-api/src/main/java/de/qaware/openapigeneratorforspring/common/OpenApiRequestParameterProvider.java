@@ -3,7 +3,7 @@ package de.qaware.openapigeneratorforspring.common;
 import java.util.List;
 import java.util.Optional;
 
-public interface OpenApiResourceParameterProvider {
+public interface OpenApiRequestParameterProvider {
 
     List<String> getHeaderValues(String headerName);
 
