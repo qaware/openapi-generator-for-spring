@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.TransformedResource;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.webjars.WebJarAssetLocator;
 
 import java.io.BufferedReader;
@@ -17,13 +17,12 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
+import static de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiAutoConfiguration.INDEX_HTML_FILE;
+import static de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiAutoConfiguration.SWAGGER_UI_WEB_JAR;
 import static org.springframework.util.AntPathMatcher.DEFAULT_PATH_SEPARATOR;
 
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class OpenApiSwaggerUiWebMvcAutoConfiguration {
-
-    public static final String INDEX_HTML_FILE = "index.html";
-    public static final String SWAGGER_UI_WEB_JAR = "swagger-ui";
 
     @Bean
     public WebMvcConfigurer swaggerUiWebMvcConfigurer(
@@ -44,7 +43,7 @@ public class OpenApiSwaggerUiWebMvcAutoConfiguration {
                         .resourceChain(false) // TODO investigate if caching should really be disabled
                         .addTransformer((request, resource, transformerChain) -> {
                             if (resource.getURL().getPath().endsWith(INDEX_HTML_FILE)) {
-                                String apiDocsUri = ServletUriComponentsBuilder.fromUriString(openApiBaseUriProvider.getBaseUri())
+                                String apiDocsUri = UriComponentsBuilder.fromUriString(openApiBaseUriProvider.getBaseUri())
                                         .path(DEFAULT_PATH_SEPARATOR + properties.getApiDocsPath())
                                         .build().toUriString();
                                 String modifiedIndexHtmlContent = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)).lines()

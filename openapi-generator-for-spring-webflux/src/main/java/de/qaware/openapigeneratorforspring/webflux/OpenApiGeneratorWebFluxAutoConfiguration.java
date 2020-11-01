@@ -29,8 +29,8 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OpenApiRequestAwareProviderForWebFlux openApiRequestAwareProviderForWebFlux(OpenApiConfigurationProperties openApiConfigurationProperties) {
-        return new OpenApiRequestAwareProviderForWebFlux(openApiConfigurationProperties);
+    public OpenApiRequestAwareProviderForWebFlux openApiRequestAwareProviderForWebFlux() {
+        return new OpenApiRequestAwareProviderForWebFlux();
     }
 
     @Bean
@@ -49,5 +49,17 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
     @ConditionalOnMissingBean
     public InitialSchemaBuilderForMono defaultInitialSchemaFactoryForMono() {
         return new InitialSchemaBuilderForMono();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OpenApiBaseUriProviderForWebFluxWebFilter openApiBaseUriProviderWebFilterContextInjection(OpenApiBaseUriProviderForWebFlux openApiBaseUriProviderForWebFlux) {
+        return openApiBaseUriProviderForWebFlux.asWebFilterInjection();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OpenApiBaseUriProviderForWebFlux openApiBaseUriProviderForWebFlux(OpenApiConfigurationProperties openApiConfigurationProperties) {
+        return new OpenApiBaseUriProviderForWebFlux(openApiConfigurationProperties);
     }
 }

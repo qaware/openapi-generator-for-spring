@@ -23,6 +23,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>de.qaware.openapi-generator-for-spring</groupId>
+            <artifactId>openapi-generator-for-spring-webflux</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <scope>provided</scope>
