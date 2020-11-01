@@ -4,5 +4,11 @@
     "title": "API for App22",
     "version": "unknown"
   },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Default Server"
+    }
+  ],
   "paths": {}
 }

@@ -4,12 +4,6 @@
     "title": "API for App20",
     "version": "unknown"
   },
-  "servers": [
-    {
-      "url": "/",
-      "description": "Default Server"
-    }
-  ],
   "paths": {
     "/mapping-1": {
       "get": {

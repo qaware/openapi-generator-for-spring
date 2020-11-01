@@ -4,5 +4,11 @@
     "title": "API for App21",
     "version": "unknown"
   },
+  "servers": [
+    {
+      "url": "http://localhost",
+      "description": "Default Server"
+    }
+  ],
   "paths": {}
 }
