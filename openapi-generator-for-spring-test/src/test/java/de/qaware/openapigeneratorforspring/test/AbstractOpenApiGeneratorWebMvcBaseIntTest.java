@@ -10,6 +10,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.concurrent.Callable;
+
 import static de.qaware.openapigeneratorforspring.test.OpenApiJsonFileLoader.readOpenApiJsonFile;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,12 +23,20 @@ public abstract class AbstractOpenApiGeneratorWebMvcBaseIntTest {
     @Autowired
     protected MockMvc mockMvc;
 
-    public static void assertResponseBodyMatchesOpenApiJson(String expectedJsonFile, ResultActions performResult) throws Exception {
+    protected static void assertResponseBodyMatchesOpenApiJson(String expectedJsonFile, ResultActions performResult) throws Exception {
+        assertResponseBodyMatchesOpenApiJson(expectedJsonFile, () -> getResponseBodyAsString(performResult));
+    }
+
+    protected static void assertResponseBodyMatchesOpenApiJson(String expectedJsonFile, Callable<String> responseBodySupplier) throws Exception {
         String expectedJson = readOpenApiJsonFile(expectedJsonFile);
+        String actualJson = responseBodySupplier.call();
+        JSONAssert.assertEquals(expectedJson, actualJson, true);
+    }
+
+    protected static String getResponseBodyAsString(ResultActions performResult) throws Exception {
         MvcResult mvcResult = performResult
                 .andExpect(status().isOk())
                 .andReturn();
-        String actualJson = mvcResult.getResponse().getContentAsString();
-        JSONAssert.assertEquals(expectedJson, actualJson, true);
+        return mvcResult.getResponse().getContentAsString();
     }
 }

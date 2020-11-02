@@ -4,7 +4,7 @@ import de.qaware.openapigeneratorforspring.test.AbstractOpenApiGeneratorWebFluxB
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 
-@TestPropertySource(properties = "openapi-generator-for-spring.add-default-server = false")
+@TestPropertySource(properties = "openapi-generator-for-spring.server.add-default = false")
 public class App18Test extends AbstractOpenApiGeneratorWebFluxBaseIntTest {
 
     @Test

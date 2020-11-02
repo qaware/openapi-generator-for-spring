@@ -11,7 +11,6 @@ import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemSupportFactory;
 import de.qaware.openapigeneratorforspring.common.server.DefaultOpenApiDefaultServerSupplier;
-import de.qaware.openapigeneratorforspring.common.server.OpenApiDefaultServerSupplier;
 import de.qaware.openapigeneratorforspring.common.server.OpenApiServersSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenAPIDefinitionAnnotationSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiBaseUriProvider;
@@ -22,7 +21,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -74,13 +72,10 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OpenApiDefaultServerSupplier defaultOpenApiDefaultServerSupplier(
+    public OpenApiServersSupplier defaultOpenApiDefaultServerSupplier(
             OpenApiBaseUriProvider openApiBaseUriProvider, // provided by WebMVC or WebFlux
             OpenApiConfigurationProperties properties
     ) {
-        if (properties.isAddDefaultServer()) {
-            return new DefaultOpenApiDefaultServerSupplier(openApiBaseUriProvider);
-        }
-        return Collections::emptyList;
+        return new DefaultOpenApiDefaultServerSupplier(openApiBaseUriProvider, properties);
     }
 }

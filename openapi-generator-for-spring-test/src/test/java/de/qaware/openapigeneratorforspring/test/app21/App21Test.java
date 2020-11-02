@@ -4,22 +4,54 @@ import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties
 import de.qaware.openapigeneratorforspring.test.AbstractOpenApiGeneratorWebMvcBaseIntTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.assertj.core.api.Assertions.entry;
 
-@TestPropertySource(properties = "openapi-generator-for-spring.api-docs-path=/my/own-path/to-api-docs")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource(properties = {
+        "openapi-generator-for-spring.api-docs-path=/my/own-path/to-api-docs",
+        "openapi-generator-for-spring.ui.path=/my/own-path/to-swagger-ui",
+        "server.servlet.context-path=/my-context-path"
+})
 public class App21Test extends AbstractOpenApiGeneratorWebMvcBaseIntTest {
 
     @Autowired
     private OpenApiConfigurationProperties properties;
+    @Autowired
+    private TestRestTemplate testRestTemplate;
+    @LocalServerPort
+    private int serverPort;
 
     @Test
     public void testWithCustomApiDocsPath() throws Exception {
-        assertResponseBodyMatchesOpenApiJson("app21.json",
-                mockMvc.perform(get("/my/own-path/to-api-docs"))
+        assertResponseBodyMatchesOpenApiJson("app21.json", () ->
+                getResponseBody("/my/own-path/to-api-docs").replace("http://localhost:" + serverPort, "http://localhost")
         );
+    }
+
+    @Test
+    public void testSwaggerUiIndexHtmlWithCustomPath() throws Exception {
+        String responseBody = getResponseBody("/my/own-path/to-swagger-ui/index.html");
+        assertThat(responseBody).contains(buildUrl("/my/own-path/to-api-docs"));
+    }
+
+    @Test
+    public void testSwaggerUiRedirectToIndexHtml() throws Exception {
+        assertRedirectEntity(getResponseEntity("/my/own-path/to-swagger-ui"));
+        assertRedirectEntity(getResponseEntity("/my/own-path/to-swagger-ui/"));
+    }
+
+    private void assertRedirectEntity(ResponseEntity<String> redirectEntity1) {
+        assertThat(redirectEntity1.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+        assertThat(redirectEntity1.getHeaders()).contains(entry("Location", singletonList(buildUrl("/my/own-path/to-swagger-ui/index.html"))));
     }
 
     @Test
@@ -28,4 +60,20 @@ public class App21Test extends AbstractOpenApiGeneratorWebMvcBaseIntTest {
         // so make sure it's also working with configuration properties
         assertThat(properties.getApiDocsPath()).isEqualTo("/my/own-path/to-api-docs");
     }
+
+    private String getResponseBody(String path) {
+        ResponseEntity<String> entity = getResponseEntity(path);
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(entity.getBody()).isNotNull();
+        return entity.getBody();
+    }
+
+    private ResponseEntity<String> getResponseEntity(String path) {
+        return testRestTemplate.getForEntity(buildUrl(path), String.class);
+    }
+
+    protected String buildUrl(String path) {
+        return "http://localhost:" + serverPort + "/my-context-path" + path;
+    }
+
 }

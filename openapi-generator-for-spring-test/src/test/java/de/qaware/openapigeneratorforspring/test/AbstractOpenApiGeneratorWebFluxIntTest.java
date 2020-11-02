@@ -3,7 +3,7 @@ package de.qaware.openapigeneratorforspring.test;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 
-@TestPropertySource(properties = "openapi-generator-for-spring.add-default-server = false")
+@TestPropertySource(properties = "openapi-generator-for-spring.server.add-default = false")
 public abstract class AbstractOpenApiGeneratorWebFluxIntTest extends AbstractOpenApiGeneratorWebFluxBaseIntTest {
 
     private final String expectedJsonFile;

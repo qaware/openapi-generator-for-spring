@@ -6,12 +6,15 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
 
 import static de.qaware.openapigeneratorforspring.webflux.OpenApiResourceForWebFlux.SERVER_HTTP_REQUEST_THREAD_LOCAL;
 
 @RequiredArgsConstructor
-public class OpenApiBaseUriProviderForWebFlux implements OpenApiBaseUriProvider {
+public class OpenApiBaseUriProviderForWebFlux implements OpenApiBaseUriProvider, WebFilter {
 
     private static final String ATTRIBUTE_NAME = OpenApiBaseUriProviderForWebFlux.class.getName();
 
@@ -36,11 +39,10 @@ public class OpenApiBaseUriProviderForWebFlux implements OpenApiBaseUriProvider 
         throw new IllegalStateException("Cannot find attribute " + ATTRIBUTE_NAME);
     }
 
-    OpenApiBaseUriProviderForWebFluxWebFilter asWebFilterInjection() {
-        return (exchange, chain) -> {
-            exchange.getAttributes().put(ATTRIBUTE_NAME, (OpenApiBaseUriProvider) () -> getBaseUri(exchange.getRequest()));
-            return chain.filter(exchange);
-        };
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        exchange.getAttributes().put(ATTRIBUTE_NAME, (OpenApiBaseUriProvider) () -> getBaseUri(exchange.getRequest()));
+        return chain.filter(exchange);
     }
 
     private String getBaseUri(ServerHttpRequest request) {

@@ -10,6 +10,7 @@ import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSuppli
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
@@ -17,6 +18,7 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    @Conditional(OpenApiConfigurationProperties.EnabledCondition.class)
     public OpenApiResourceForWebFlux openApiResource(OpenApiGenerator openApiGenerator, OpenApiObjectMapperSupplier openApiObjectMapperSupplier) {
         return new OpenApiResourceForWebFlux(openApiGenerator, openApiObjectMapperSupplier);
     }
@@ -49,12 +51,6 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
     @ConditionalOnMissingBean
     public InitialSchemaBuilderForMono defaultInitialSchemaFactoryForMono() {
         return new InitialSchemaBuilderForMono();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public OpenApiBaseUriProviderForWebFluxWebFilter openApiBaseUriProviderWebFilterContextInjection(OpenApiBaseUriProviderForWebFlux openApiBaseUriProviderForWebFlux) {
-        return openApiBaseUriProviderForWebFlux.asWebFilterInjection();
     }
 
     @Bean

@@ -4,6 +4,7 @@ import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties
 import de.qaware.openapigeneratorforspring.common.util.OpenApiBaseUriProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -22,6 +23,7 @@ import static de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiAutoConfigu
 import static org.springframework.util.AntPathMatcher.DEFAULT_PATH_SEPARATOR;
 
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@Conditional(OpenApiSwaggerUiConfigurationProperties.EnabledCondition.class)
 public class OpenApiSwaggerUiWebMvcAutoConfiguration {
 
     @Bean
