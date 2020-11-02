@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.test.app16;
 
 import de.qaware.openapigeneratorforspring.common.security.OpenApiSecuritySchemesSupplier;
-import de.qaware.openapigeneratorforspring.common.server.OpenApiServersSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiServersSupplier;
 import de.qaware.openapigeneratorforspring.model.security.SecurityScheme;
 import de.qaware.openapigeneratorforspring.model.server.Server;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;

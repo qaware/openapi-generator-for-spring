@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common;
 
-import de.qaware.openapigeneratorforspring.common.util.OpenApiConfigurationPropertiesUtil;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiConfigurationPropertiesUtils.ConfigurationPropertyCondition;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -22,7 +22,7 @@ public class OpenApiConfigurationProperties {
         private boolean addDefault = true;
     }
 
-    public static class EnabledCondition extends OpenApiConfigurationPropertiesUtil.ConfigurationPropertyCondition<OpenApiConfigurationProperties> {
+    public static class EnabledCondition extends ConfigurationPropertyCondition<OpenApiConfigurationProperties> {
         public EnabledCondition() {
             super(OpenApiConfigurationProperties.class, OpenApiConfigurationProperties::isEnabled);
         }

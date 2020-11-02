@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.server;
+package de.qaware.openapigeneratorforspring.common.supplier;
 
 import de.qaware.openapigeneratorforspring.model.server.Server;
 

@@ -3,7 +3,7 @@ package de.qaware.openapigeneratorforspring.webflux;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import de.qaware.openapigeneratorforspring.common.AbstractOpenApiResource;
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.GetMapping;

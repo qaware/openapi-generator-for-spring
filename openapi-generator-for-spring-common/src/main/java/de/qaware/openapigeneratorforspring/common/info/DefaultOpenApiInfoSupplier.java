@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.info;
 
 import de.qaware.openapigeneratorforspring.common.mapper.InfoAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.util.OpenAPIDefinitionAnnotationSupplier;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationClassSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenAPIDefinitionAnnotationSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationClassSupplier;
 import de.qaware.openapigeneratorforspring.model.info.Contact;
 import de.qaware.openapigeneratorforspring.model.info.Info;
 import de.qaware.openapigeneratorforspring.model.info.License;

@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.ui;
 
 import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiBaseUriProvider;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -30,7 +30,7 @@ public class OpenApiSwaggerUiWebMvcAutoConfiguration {
     public WebMvcConfigurer swaggerUiWebMvcConfigurer(
             OpenApiConfigurationProperties properties,
             OpenApiSwaggerUiConfigurationProperties swaggerUiProperties,
-            OpenApiBaseUriProvider openApiBaseUriProvider
+            OpenApiBaseUriSupplier openApiBaseUriSupplier
     ) {
 
         String pathToSwaggerUiIndexHtml = new WebJarAssetLocator().getFullPath(SWAGGER_UI_WEB_JAR, INDEX_HTML_FILE);
@@ -45,7 +45,7 @@ public class OpenApiSwaggerUiWebMvcAutoConfiguration {
                         .resourceChain(false) // TODO investigate if caching should really be disabled
                         .addTransformer((request, resource, transformerChain) -> {
                             if (resource.getURL().getPath().endsWith(INDEX_HTML_FILE)) {
-                                String apiDocsUri = UriComponentsBuilder.fromUriString(openApiBaseUriProvider.getBaseUri())
+                                String apiDocsUri = UriComponentsBuilder.fromUriString(openApiBaseUriSupplier.getBaseUri())
                                         .path(DEFAULT_PATH_SEPARATOR + properties.getApiDocsPath())
                                         .build().toUriString();
                                 String modifiedIndexHtmlContent = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)).lines()

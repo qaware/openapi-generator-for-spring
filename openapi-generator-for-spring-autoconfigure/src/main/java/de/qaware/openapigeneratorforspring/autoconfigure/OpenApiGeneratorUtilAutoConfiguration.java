@@ -1,15 +1,15 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
-import de.qaware.openapigeneratorforspring.common.util.DefaultOpenAPIDefinitionAnnotationSupplier;
-import de.qaware.openapigeneratorforspring.common.util.DefaultOpenApiObjectMapperSupplier;
-import de.qaware.openapigeneratorforspring.common.util.DefaultOpenApiSpringBootApplicationAnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.util.DefaultOpenApiSpringBootApplicationClassSupplier;
-import de.qaware.openapigeneratorforspring.common.util.OpenAPIDefinitionAnnotationSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.DefaultOpenAPIDefinitionAnnotationSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.DefaultOpenApiObjectMapperSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.DefaultOpenApiSpringBootApplicationAnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.DefaultOpenApiSpringBootApplicationClassSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenAPIDefinitionAnnotationSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationAnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationClassSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiLoggingUtils;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationClassSupplier;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

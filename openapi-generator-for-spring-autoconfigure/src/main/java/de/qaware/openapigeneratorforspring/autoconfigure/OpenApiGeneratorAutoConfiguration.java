@@ -10,11 +10,11 @@ import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAn
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemSupportFactory;
-import de.qaware.openapigeneratorforspring.common.server.DefaultOpenApiDefaultServerSupplier;
-import de.qaware.openapigeneratorforspring.common.server.OpenApiServersSupplier;
-import de.qaware.openapigeneratorforspring.common.util.OpenAPIDefinitionAnnotationSupplier;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiBaseUriProvider;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.DefaultOpenApiDefaultServerSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenAPIDefinitionAnnotationSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiServersSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationAnnotationsSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -73,9 +73,9 @@ public class OpenApiGeneratorAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public OpenApiServersSupplier defaultOpenApiDefaultServerSupplier(
-            OpenApiBaseUriProvider openApiBaseUriProvider, // provided by WebMVC or WebFlux
+            OpenApiBaseUriSupplier openApiBaseUriSupplier, // provided by WebMVC or WebFlux
             OpenApiConfigurationProperties properties
     ) {
-        return new DefaultOpenApiDefaultServerSupplier(openApiBaseUriProvider, properties);
+        return new DefaultOpenApiDefaultServerSupplier(openApiBaseUriSupplier, properties);
     }
 }

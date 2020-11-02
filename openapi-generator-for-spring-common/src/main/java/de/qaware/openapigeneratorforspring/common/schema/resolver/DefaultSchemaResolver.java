@@ -11,8 +11,8 @@ import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotation
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiLoggingUtils;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;

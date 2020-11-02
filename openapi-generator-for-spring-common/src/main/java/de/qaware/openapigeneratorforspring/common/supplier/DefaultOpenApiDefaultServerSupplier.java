@@ -1,7 +1,6 @@
-package de.qaware.openapigeneratorforspring.common.server;
+package de.qaware.openapigeneratorforspring.common.supplier;
 
 import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiBaseUriProvider;
 import de.qaware.openapigeneratorforspring.model.server.Server;
 import lombok.RequiredArgsConstructor;
 
@@ -10,7 +9,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class DefaultOpenApiDefaultServerSupplier implements OpenApiServersSupplier {
-    private final OpenApiBaseUriProvider openApiBaseUriProvider;
+    private final OpenApiBaseUriSupplier openApiBaseUriSupplier;
     private final OpenApiConfigurationProperties properties;
 
     @Override
@@ -21,7 +20,7 @@ public class DefaultOpenApiDefaultServerSupplier implements OpenApiServersSuppli
 
         return Collections.singletonList(Server.builder()
                 .description("Default Server")
-                .url(openApiBaseUriProvider.getBaseUri())
+                .url(openApiBaseUriSupplier.getBaseUri())
                 .build()
         );
     }

@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.ui;
 
 import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
-import de.qaware.openapigeneratorforspring.webflux.OpenApiBaseUriProviderForWebFlux;
+import de.qaware.openapigeneratorforspring.webflux.OpenApiBaseUriSupplierForWebFlux;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -80,7 +80,7 @@ public class OpenApiSwaggerUiWebFluxAutoConfiguration {
                             Flux<DataBuffer> flux = DataBufferUtils.read(outputResource, bufferFactory, StreamUtils.BUFFER_SIZE);
                             return DataBufferUtils.join(flux)
                                     .map(dataBuffer -> {
-                                        String apiDocsUri = UriComponentsBuilder.fromUriString(OpenApiBaseUriProviderForWebFlux.getBaseUri(exchange))
+                                        String apiDocsUri = UriComponentsBuilder.fromUriString(OpenApiBaseUriSupplierForWebFlux.getBaseUri(exchange))
                                                 .path(DEFAULT_PATH_SEPARATOR + properties.getApiDocsPath())
                                                 .build().toUriString();
                                         CharBuffer charBuffer = StandardCharsets.UTF_8.decode(dataBuffer.asByteBuffer());

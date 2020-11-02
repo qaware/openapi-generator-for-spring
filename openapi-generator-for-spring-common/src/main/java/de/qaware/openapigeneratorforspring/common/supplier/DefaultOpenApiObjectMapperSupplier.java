@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.util;
+package de.qaware.openapigeneratorforspring.common.supplier;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;

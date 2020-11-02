@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.model.OpenApi;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AccessLevel;
@@ -17,7 +17,8 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.O
 public abstract class AbstractOpenApiResource {
 
     protected static final String API_DOCS_PATH_SPEL = "${" +
-            CONFIG_PROPERTIES_PREFIX + ".api-docs-path:" + // "api-docs-path" should match OpenApiConfigurationProperties setting
+            // "api-docs-path" should match OpenApiConfigurationProperties setting
+            CONFIG_PROPERTIES_PREFIX + ".api-docs-path:" +
             OPEN_API_DOCS_DEFAULT_PATH + "}";
 
     private final OpenApiGenerator openApiGenerator;

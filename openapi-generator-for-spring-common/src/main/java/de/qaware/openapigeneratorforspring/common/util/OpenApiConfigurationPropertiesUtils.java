@@ -16,7 +16,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import java.util.function.Predicate;
 
 @NoArgsConstructor
-public class OpenApiConfigurationPropertiesUtil {
+public class OpenApiConfigurationPropertiesUtils {
 
     @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
     public static abstract class ConfigurationPropertyCondition<T> extends SpringBootCondition {

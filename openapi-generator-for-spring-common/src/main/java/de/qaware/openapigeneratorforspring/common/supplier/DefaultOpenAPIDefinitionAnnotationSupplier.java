@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.util;
+package de.qaware.openapigeneratorforspring.common.supplier;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import lombok.RequiredArgsConstructor;

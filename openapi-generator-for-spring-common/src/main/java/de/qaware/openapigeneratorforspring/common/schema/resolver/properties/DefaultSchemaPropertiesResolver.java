@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

@@ -6,7 +6,7 @@ import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.InitialSchemaBuilderForFlux;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.InitialSchemaBuilderForMono;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForFlux;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
@@ -55,7 +55,7 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OpenApiBaseUriProviderForWebFlux openApiBaseUriProviderForWebFlux(OpenApiConfigurationProperties openApiConfigurationProperties) {
-        return new OpenApiBaseUriProviderForWebFlux(openApiConfigurationProperties);
+    public OpenApiBaseUriSupplierForWebFlux openApiBaseUriProviderForWebFlux(OpenApiConfigurationProperties openApiConfigurationProperties) {
+        return new OpenApiBaseUriSupplierForWebFlux(openApiConfigurationProperties);
     }
 }

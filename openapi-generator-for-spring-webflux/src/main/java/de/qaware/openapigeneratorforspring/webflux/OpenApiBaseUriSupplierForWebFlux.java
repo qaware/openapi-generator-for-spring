@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.webflux;
 
 import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiBaseUriProvider;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplier;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -14,9 +14,9 @@ import reactor.core.publisher.Mono;
 import static de.qaware.openapigeneratorforspring.webflux.OpenApiResourceForWebFlux.SERVER_HTTP_REQUEST_THREAD_LOCAL;
 
 @RequiredArgsConstructor
-public class OpenApiBaseUriProviderForWebFlux implements OpenApiBaseUriProvider, WebFilter {
+public class OpenApiBaseUriSupplierForWebFlux implements OpenApiBaseUriSupplier, WebFilter {
 
-    private static final String ATTRIBUTE_NAME = OpenApiBaseUriProviderForWebFlux.class.getName();
+    private static final String ATTRIBUTE_NAME = OpenApiBaseUriSupplierForWebFlux.class.getName();
 
     private final OpenApiConfigurationProperties properties;
 
@@ -31,9 +31,9 @@ public class OpenApiBaseUriProviderForWebFlux implements OpenApiBaseUriProvider,
 
     public static String getBaseUri(ServerWebExchange serverWebExchange) {
         Object attribute = serverWebExchange.getAttribute(ATTRIBUTE_NAME);
-        if (attribute instanceof OpenApiBaseUriProvider) {
-            OpenApiBaseUriProvider openApiBaseUriProvider = (OpenApiBaseUriProvider) attribute;
-            return openApiBaseUriProvider.getBaseUri();
+        if (attribute instanceof OpenApiBaseUriSupplier) {
+            OpenApiBaseUriSupplier openApiBaseUriSupplier = (OpenApiBaseUriSupplier) attribute;
+            return openApiBaseUriSupplier.getBaseUri();
         }
         // this happens if the OpenApiBaseUriProviderForWebFluxWebFilter is running later than requesting this access
         throw new IllegalStateException("Cannot find attribute " + ATTRIBUTE_NAME);
@@ -41,7 +41,7 @@ public class OpenApiBaseUriProviderForWebFlux implements OpenApiBaseUriProvider,
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        exchange.getAttributes().put(ATTRIBUTE_NAME, (OpenApiBaseUriProvider) () -> getBaseUri(exchange.getRequest()));
+        exchange.getAttributes().put(ATTRIBUTE_NAME, (OpenApiBaseUriSupplier) () -> getBaseUri(exchange.getRequest()));
         return chain.filter(exchange);
     }
 

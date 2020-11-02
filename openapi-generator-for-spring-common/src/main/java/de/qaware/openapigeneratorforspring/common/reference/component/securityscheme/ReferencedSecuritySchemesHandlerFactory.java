@@ -4,7 +4,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotatio
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandlerFactory;
 import de.qaware.openapigeneratorforspring.common.security.OpenApiSecuritySchemesSupplier;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationAnnotationsSupplier;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.webmvc;
 
 import de.qaware.openapigeneratorforspring.common.OpenApiRequestParameterProvider;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiBaseUriProvider;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -12,7 +12,7 @@ import java.util.List;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.emptyListIfNull;
 
 @RequiredArgsConstructor
-public class OpenApiRequestAwareProviderForWebMvc implements OpenApiRequestParameterProvider, OpenApiBaseUriProvider {
+public class OpenApiRequestAwareSupplierForWebMvc implements OpenApiRequestParameterProvider, OpenApiBaseUriSupplier {
 
     private final WebRequest webRequest;
     private final HttpServletRequest httpServletRequest;

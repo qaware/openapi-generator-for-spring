@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.util;
+package de.qaware.openapigeneratorforspring.common.supplier;
 
 import java.lang.annotation.Annotation;
 import java.util.Optional;

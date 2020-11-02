@@ -3,7 +3,7 @@ package de.qaware.openapigeneratorforspring.common.reference.component.securitys
 import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedComponentHandler;
 import de.qaware.openapigeneratorforspring.common.security.OpenApiSecuritySchemesSupplier;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationAnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.security.SecurityScheme;
 

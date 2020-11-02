@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiObjectMapperSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

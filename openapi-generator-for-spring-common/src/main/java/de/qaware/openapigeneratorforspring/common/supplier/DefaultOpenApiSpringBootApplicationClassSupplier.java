@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.util;
+package de.qaware.openapigeneratorforspring.common.supplier;
 
 import lombok.Setter;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

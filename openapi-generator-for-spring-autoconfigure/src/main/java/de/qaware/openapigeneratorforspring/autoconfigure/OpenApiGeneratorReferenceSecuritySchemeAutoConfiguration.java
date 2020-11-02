@@ -3,7 +3,7 @@ package de.qaware.openapigeneratorforspring.autoconfigure;
 import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.reference.component.securityscheme.ReferencedSecuritySchemesHandlerFactory;
 import de.qaware.openapigeneratorforspring.common.security.OpenApiSecuritySchemesSupplier;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiSpringBootApplicationAnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationAnnotationsSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 

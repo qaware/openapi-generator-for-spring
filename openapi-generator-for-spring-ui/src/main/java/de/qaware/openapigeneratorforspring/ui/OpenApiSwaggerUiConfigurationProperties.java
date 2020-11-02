@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.ui;
 
-import de.qaware.openapigeneratorforspring.common.util.OpenApiConfigurationPropertiesUtil;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiConfigurationPropertiesUtils.ConfigurationPropertyCondition;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiConstants;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ public class OpenApiSwaggerUiConfigurationProperties {
     private boolean enabled = true;
     private String path = "/swagger-ui";
 
-    public static class EnabledCondition extends OpenApiConfigurationPropertiesUtil.ConfigurationPropertyCondition<OpenApiSwaggerUiConfigurationProperties> {
+    public static class EnabledCondition extends ConfigurationPropertyCondition<OpenApiSwaggerUiConfigurationProperties> {
         public EnabledCondition() {
             super(OpenApiSwaggerUiConfigurationProperties.class, OpenApiSwaggerUiConfigurationProperties::isEnabled);
         }

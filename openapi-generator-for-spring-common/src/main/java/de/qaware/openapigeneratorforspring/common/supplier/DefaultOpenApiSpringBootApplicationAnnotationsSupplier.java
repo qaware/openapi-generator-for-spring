@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.common.util;
+package de.qaware.openapigeneratorforspring.common.supplier;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import lombok.RequiredArgsConstructor;
