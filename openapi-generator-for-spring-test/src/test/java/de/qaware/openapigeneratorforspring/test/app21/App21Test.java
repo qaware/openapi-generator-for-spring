@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
@@ -19,7 +22,8 @@ import static org.assertj.core.api.Assertions.entry;
 @TestPropertySource(properties = {
         "openapi-generator-for-spring.api-docs-path=/my/own-path/to-api-docs",
         "openapi-generator-for-spring.ui.path=/my/own-path/to-swagger-ui",
-        "server.servlet.context-path=/my-context-path"
+        "server.servlet.context-path=/my-context-path",
+        "server.forward-headers-strategy = framework"
 })
 public class App21Test extends AbstractOpenApiGeneratorWebMvcBaseIntTest {
 
@@ -45,13 +49,19 @@ public class App21Test extends AbstractOpenApiGeneratorWebMvcBaseIntTest {
 
     @Test
     public void testSwaggerUiRedirectToIndexHtml() throws Exception {
-        assertRedirectEntity(getResponseEntity("/my/own-path/to-swagger-ui"));
-        assertRedirectEntity(getResponseEntity("/my/own-path/to-swagger-ui/"));
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.put("x-forwarded-host", singletonList("forwarded-host"));
+        httpHeaders.put("x-forwarded-port", singletonList("1337"));
+        httpHeaders.put("x-forwarded-proto", singletonList("https"));
+        assertRedirectEntity(getResponseEntity("/my/own-path/to-swagger-ui", httpHeaders));
+        assertRedirectEntity(getResponseEntity("/my/own-path/to-swagger-ui/", httpHeaders));
     }
 
     private void assertRedirectEntity(ResponseEntity<String> redirectEntity1) {
         assertThat(redirectEntity1.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-        assertThat(redirectEntity1.getHeaders()).contains(entry("Location", singletonList(buildUrl("/my/own-path/to-swagger-ui/index.html"))));
+        assertThat(redirectEntity1.getHeaders()).contains(entry("Location",
+                singletonList("https://forwarded-host:1337/my-context-path/my/own-path/to-swagger-ui/index.html")
+        ));
     }
 
     @Test
@@ -69,7 +79,12 @@ public class App21Test extends AbstractOpenApiGeneratorWebMvcBaseIntTest {
     }
 
     private ResponseEntity<String> getResponseEntity(String path) {
-        return testRestTemplate.getForEntity(buildUrl(path), String.class);
+        return getResponseEntity(path, new HttpHeaders());
+    }
+
+    private ResponseEntity<String> getResponseEntity(String path, HttpHeaders requestHeaders) {
+        HttpEntity<Void> entity = new HttpEntity<>(null, requestHeaders);
+        return testRestTemplate.exchange(buildUrl(path), HttpMethod.GET, entity, String.class);
     }
 
     protected String buildUrl(String path) {

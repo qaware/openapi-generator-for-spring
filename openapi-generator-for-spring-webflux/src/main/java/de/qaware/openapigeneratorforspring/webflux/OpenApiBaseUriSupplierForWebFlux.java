@@ -8,6 +8,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +22,7 @@ public class OpenApiBaseUriSupplierForWebFlux implements OpenApiBaseUriSupplier,
     private final OpenApiConfigurationProperties properties;
 
     @Override
-    public String getBaseUri() {
+    public UriComponents getBaseUri() {
         ServerHttpRequest request = SERVER_HTTP_REQUEST_THREAD_LOCAL.get();
         if (request == null) {
             throw new IllegalStateException("No request present in thread local. Probably accessed outside of OpenApi building? Consider using the static exchange variant.");
@@ -29,7 +30,7 @@ public class OpenApiBaseUriSupplierForWebFlux implements OpenApiBaseUriSupplier,
         return getBaseUri(request);
     }
 
-    public static String getBaseUri(ServerWebExchange serverWebExchange) {
+    public static UriComponents getBaseUri(ServerWebExchange serverWebExchange) {
         Object attribute = serverWebExchange.getAttribute(ATTRIBUTE_NAME);
         if (attribute instanceof OpenApiBaseUriSupplier) {
             OpenApiBaseUriSupplier openApiBaseUriSupplier = (OpenApiBaseUriSupplier) attribute;
@@ -45,7 +46,7 @@ public class OpenApiBaseUriSupplierForWebFlux implements OpenApiBaseUriSupplier,
         return chain.filter(exchange);
     }
 
-    private String getBaseUri(ServerHttpRequest request) {
+    private UriComponents getBaseUri(ServerHttpRequest request) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpRequest(request);
         String uriPath = uriBuilder.build().getPath();
         String basePath = uriPath != null && uriPath.endsWith(properties.getApiDocsPath()) ?
@@ -53,7 +54,7 @@ public class OpenApiBaseUriSupplierForWebFlux implements OpenApiBaseUriSupplier,
                 : null;
         return uriBuilder
                 .replacePath(StringUtils.isBlank(basePath) ? "/" : basePath)
-                .toUriString();
+                .build();
     }
 
 }

@@ -20,7 +20,7 @@ public class DefaultOpenApiDefaultServerSupplier implements OpenApiServersSuppli
 
         return Collections.singletonList(Server.builder()
                 .description("Default Server")
-                .url(openApiBaseUriSupplier.getBaseUri())
+                .url(openApiBaseUriSupplier.getBaseUri().toString())
                 .build()
         );
     }

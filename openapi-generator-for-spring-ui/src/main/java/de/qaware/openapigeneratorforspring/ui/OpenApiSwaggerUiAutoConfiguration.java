@@ -1,9 +1,27 @@
 package de.qaware.openapigeneratorforspring.ui;
 
+import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
+import de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiIndexHtmlWebJarResourceTransformerFactory;
+import de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiSupport;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 
 @EnableConfigurationProperties(OpenApiSwaggerUiConfigurationProperties.class)
 public class OpenApiSwaggerUiAutoConfiguration {
-    static final String INDEX_HTML_FILE = "index.html";
-    static final String SWAGGER_UI_WEB_JAR = "swagger-ui";
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SwaggerUiIndexHtmlWebJarResourceTransformerFactory swaggerUiIndexHtmlWebJarResourceTransformerFactory(
+            OpenApiConfigurationProperties openApiConfigurationProperties
+    ) {
+        return new SwaggerUiIndexHtmlWebJarResourceTransformerFactory(openApiConfigurationProperties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SwaggerUiSupport swaggerUiSupport(OpenApiSwaggerUiConfigurationProperties openApiSwaggerUiConfigurationProperties) {
+        return new SwaggerUiSupport(openApiSwaggerUiConfigurationProperties);
+    }
+
 }

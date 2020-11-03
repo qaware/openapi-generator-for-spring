@@ -5,6 +5,7 @@ import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplie
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponents;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -18,9 +19,9 @@ public class OpenApiRequestAwareSupplierForWebMvc implements OpenApiRequestParam
     private final HttpServletRequest httpServletRequest;
 
     @Override
-    public String getBaseUri() {
-        // works because we're in request scope here
-        return ServletUriComponentsBuilder.fromContextPath(httpServletRequest).toUriString();
+    public UriComponents getBaseUri() {
+        // Accessing request-scoped httpServletRequest works here because we're in request scope
+        return ServletUriComponentsBuilder.fromContextPath(httpServletRequest).build();
     }
 
     @Override
