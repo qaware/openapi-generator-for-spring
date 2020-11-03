@@ -1,11 +1,9 @@
 package de.qaware.openapigeneratorforspring.test;
 
 import org.junit.Test;
-import org.springframework.test.context.TestPropertySource;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@TestPropertySource(properties = "openapi-generator-for-spring.server.add-default = false")
 public abstract class AbstractOpenApiGeneratorWebMvcIntTest extends AbstractOpenApiGeneratorWebMvcBaseIntTest {
 
     private final String expectedJsonFile;

@@ -2,9 +2,7 @@ package de.qaware.openapigeneratorforspring.test.app18;
 
 import de.qaware.openapigeneratorforspring.test.AbstractOpenApiGeneratorWebFluxBaseIntTest;
 import org.junit.Test;
-import org.springframework.test.context.TestPropertySource;
 
-@TestPropertySource(properties = "openapi-generator-for-spring.server.add-default = false")
 public class App18Test extends AbstractOpenApiGeneratorWebFluxBaseIntTest {
 
     @Test

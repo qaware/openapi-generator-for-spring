@@ -2,11 +2,9 @@ package de.qaware.openapigeneratorforspring.test.app10;
 
 import de.qaware.openapigeneratorforspring.test.AbstractOpenApiGeneratorWebMvcBaseIntTest;
 import org.junit.Test;
-import org.springframework.test.context.TestPropertySource;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@TestPropertySource(properties = "openapi-generator-for-spring.server.add-default = false")
 public class App10Test extends AbstractOpenApiGeneratorWebMvcBaseIntTest {
 
     @Test

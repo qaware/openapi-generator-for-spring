@@ -14,13 +14,6 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.O
 public class OpenApiConfigurationProperties {
     private boolean enabled = true;
     private String apiDocsPath = OPEN_API_DOCS_DEFAULT_PATH;
-    private Server server = new Server();
-
-    @Getter
-    @Setter
-    public static class Server {
-        private boolean addDefault = true;
-    }
 
     public static class EnabledCondition extends ConfigurationPropertyCondition<OpenApiConfigurationProperties> {
         public EnabledCondition() {

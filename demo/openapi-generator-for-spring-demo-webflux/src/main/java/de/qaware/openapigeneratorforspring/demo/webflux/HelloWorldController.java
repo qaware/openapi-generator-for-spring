@@ -1,4 +1,4 @@
-package de.qaware.openapigeneratorforspring.demo.webmvc;
+package de.qaware.openapigeneratorforspring.demo.webflux;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,9 +14,6 @@ import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 @RequestMapping(path = "hello-world")
 @Tag(name = "hello-world")
 public class HelloWorldController {
-
-    public static final String GREETING = "Hello from the demo app! Nice to meet you, ";
-
     @GetMapping(value = "greeting", produces = TEXT_PLAIN_VALUE)
     public Mono<String> getGreeting(@RequestParam(value = "name", required = false) @Parameter(description = "Your name") String nameMono) {
         return Mono.justOrEmpty(nameMono)

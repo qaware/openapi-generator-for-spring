@@ -13,6 +13,7 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemSuppor
 import de.qaware.openapigeneratorforspring.common.supplier.DefaultOpenApiDefaultServerSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenAPIDefinitionAnnotationSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiDefaultServersSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiServersSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationAnnotationsSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -72,10 +73,9 @@ public class OpenApiGeneratorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OpenApiServersSupplier defaultOpenApiDefaultServerSupplier(
-            OpenApiBaseUriSupplier openApiBaseUriSupplier, // provided by WebMVC or WebFlux
-            OpenApiConfigurationProperties properties
+    public OpenApiDefaultServersSupplier defaultOpenApiDefaultServerSupplier(
+            OpenApiBaseUriSupplier openApiBaseUriSupplier // provided by WebMVC or WebFlux
     ) {
-        return new DefaultOpenApiDefaultServerSupplier(openApiBaseUriSupplier, properties);
+        return new DefaultOpenApiDefaultServerSupplier(openApiBaseUriSupplier);
     }
 }

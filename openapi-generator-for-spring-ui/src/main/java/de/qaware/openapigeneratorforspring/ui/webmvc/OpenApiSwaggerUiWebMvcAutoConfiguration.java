@@ -14,6 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.TransformedResource;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -44,14 +45,17 @@ public class OpenApiSwaggerUiWebMvcAutoConfiguration {
                 registry.addResourceHandler(swaggerUiSupport.getUiPath() + "/**")
                         .addResourceLocations(swaggerUiSupport.getWebJarClassPath())
                         .resourceChain(false) // TODO investigate if caching should really be disabled
-                        .addTransformer((request, inputResource, transformerChain) -> {
-                            Resource outputResource = transformerChain.transform(request, inputResource);
-                            return transformerSupportFactory.create().transformResourceIfMatching(outputResource, transformer -> {
-                                String content = new BufferedReader(new InputStreamReader(outputResource.getInputStream(), StandardCharsets.UTF_8)).lines()
-                                        .collect(Collectors.joining(System.lineSeparator()));
-                                return new TransformedResource(outputResource, transformer.transform(content).getBytes());
-                            });
-                        });
+                        .addTransformer((request, inputResource, transformerChain) ->
+                                transformResourceIfMatching(transformerChain.transform(request, inputResource))
+                        );
+            }
+
+            private Resource transformResourceIfMatching(Resource outputResource) throws IOException {
+                return transformerSupportFactory.create().transformResourceIfMatching(outputResource, transformer -> {
+                    String content = new BufferedReader(new InputStreamReader(outputResource.getInputStream(), StandardCharsets.UTF_8)).lines()
+                            .collect(Collectors.joining(System.lineSeparator()));
+                    return new TransformedResource(outputResource, transformer.transform(content).getBytes());
+                });
             }
 
             @Override

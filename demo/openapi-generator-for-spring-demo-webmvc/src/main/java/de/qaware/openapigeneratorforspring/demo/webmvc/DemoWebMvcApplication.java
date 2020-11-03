@@ -5,13 +5,15 @@ import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
 @OpenAPIDefinition(info = @Info(
-        description = "Demo API",
-        version = "1.0"
+		description = "Demo API",
+		version = "1.0"
 ))
-public class WebFluxDemoApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(WebFluxDemoApplication.class, args);
-    }
+@SpringBootApplication
+public class DemoWebMvcApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(DemoWebMvcApplication.class, args);
+	}
+
 }

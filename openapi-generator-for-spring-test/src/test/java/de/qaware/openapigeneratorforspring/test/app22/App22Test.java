@@ -25,10 +25,6 @@ import static org.assertj.core.api.Assertions.entry;
 })
 public class App22Test extends AbstractOpenApiGeneratorWebFluxBaseIntTest {
 
-    private static final String X_FORWARDED_HOST = "forwarded-host";
-    private static final String X_FORWARDED_PORT = "1337";
-    private static final String X_FORWARDED_PROTO = "https";
-
     @Autowired
     private TestRestTemplate testRestTemplate;
     @LocalServerPort
@@ -37,7 +33,8 @@ public class App22Test extends AbstractOpenApiGeneratorWebFluxBaseIntTest {
     @Test
     public void testWithCustomApiDocsPath() throws Exception {
         assertResponseBodyMatchesOpenApiJson("app22.json", () ->
-                getResponseBody("/my/own-path/to-api-docs").replace("http://localhost:" + serverPort, "http://localhost")
+                getResponseBody("/my/own-path/to-api-docs")
+                        .replace("http://localhost:" + serverPort, "http://localhost")
         );
     }
 
