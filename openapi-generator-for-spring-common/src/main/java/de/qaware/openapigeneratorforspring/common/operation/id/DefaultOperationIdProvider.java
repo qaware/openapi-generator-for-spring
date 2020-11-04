@@ -5,6 +5,6 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationInfo;
 public class DefaultOperationIdProvider implements OperationIdProvider {
     @Override
     public String getOperationId(OperationInfo operationInfo) {
-        return operationInfo.getHandlerMethod().getMethod().getName();
+        return operationInfo.getHandlerMethod().getIdentifier();
     }
 }

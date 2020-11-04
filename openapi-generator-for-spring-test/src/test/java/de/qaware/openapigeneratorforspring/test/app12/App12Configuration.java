@@ -16,7 +16,7 @@ public class App12Configuration {
 
     @Bean
     public OperationParameterPreFilter ignoreSpecificHeaderParameterFilter() {
-        return (methodParameter, parameterAnnotationsSupplier) -> Optional.ofNullable(parameterAnnotationsSupplier.findFirstAnnotation(RequestHeader.class))
+        return methodParameter -> Optional.ofNullable(methodParameter.getAnnotationsSupplier().findFirstAnnotation(RequestHeader.class))
                 .map(annotation -> !annotation.value().equals(X_FILTERED_HEADER_NAME))
                 .orElse(true);
     }

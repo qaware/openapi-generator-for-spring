@@ -1,7 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.operation.response;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.reference.component.response.ReferencedApiResponsesConsumer;
@@ -12,7 +11,6 @@ import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +23,6 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
 
     private final ApiResponseAnnotationMapper apiResponseAnnotationMapper;
     private final List<OperationApiResponsesCustomizer> operationApiResponsesCustomizers;
-    private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
     public void customize(Operation operation, OperationBuilderContext context) {
@@ -39,10 +36,7 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
 
     private ApiResponses buildFromMethodAnnotations(Operation operation, OperationBuilderContext context) {
         ApiResponses apiResponses = Optional.ofNullable(operation.getResponses()).orElseGet(ApiResponses::new);
-
-        Method method = context.getOperationInfo().getHandlerMethod().getMethod();
-
-        AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method);
+        AnnotationsSupplier annotationsSupplier = context.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
         annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.responses.ApiResponse.class).forEach(apiResponseAnnotation -> {
             String responseCode = apiResponseAnnotation.responseCode();
             if (StringUtils.isBlank(responseCode)) {

@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.mapper.CallbackAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.OperationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
@@ -22,6 +21,7 @@ import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationI
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdProvider;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvider;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodParameterTypeMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -37,10 +37,8 @@ public class OpenApiGeneratorOperationAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OperationBuilder operationBuilder(OperationAnnotationMapper operationAnnotationMapper,
-                                             List<OperationCustomizer> operationCustomizers,
-                                             AnnotationsSupplierFactory annotationsSupplierFactory) {
-        return new OperationBuilder(operationAnnotationMapper, operationCustomizers, annotationsSupplierFactory);
+    public OperationBuilder operationBuilder(OperationAnnotationMapper operationAnnotationMapper, List<OperationCustomizer> operationCustomizers) {
+        return new OperationBuilder(operationAnnotationMapper, operationCustomizers);
     }
 
     @Bean
@@ -57,44 +55,32 @@ public class OpenApiGeneratorOperationAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultDeprecatedOperationCustomizer defaultDeprecatedOperationCustomizer(AnnotationsSupplierFactory annotationsSupplierFactory) {
-        return new DefaultDeprecatedOperationCustomizer(annotationsSupplierFactory);
+    public DefaultDeprecatedOperationCustomizer defaultDeprecatedOperationCustomizer() {
+        return new DefaultDeprecatedOperationCustomizer();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationTagsCustomizer defaultOperationTagsCustomizer(
-            TagAnnotationMapper tagAnnotationMapper,
-            AnnotationsSupplierFactory annotationsSupplierFactory
-    ) {
-        return new DefaultOperationTagsCustomizer(tagAnnotationMapper, annotationsSupplierFactory);
+    public DefaultOperationTagsCustomizer defaultOperationTagsCustomizer(TagAnnotationMapper tagAnnotationMapper) {
+        return new DefaultOperationTagsCustomizer(tagAnnotationMapper);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationSecuritySchemesCustomizer defaultOperationSecuritySchemesCustomizer(
-            SecuritySchemeAnnotationMapper securitySchemeAnnotationMapper,
-            AnnotationsSupplierFactory annotationsSupplierFactory
-    ) {
-        return new DefaultOperationSecuritySchemesCustomizer(securitySchemeAnnotationMapper, annotationsSupplierFactory);
+    public DefaultOperationSecuritySchemesCustomizer defaultOperationSecuritySchemesCustomizer(SecuritySchemeAnnotationMapper securitySchemeAnnotationMapper) {
+        return new DefaultOperationSecuritySchemesCustomizer(securitySchemeAnnotationMapper);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationServersCustomizer defaultOperationServersCustomizer(
-            ServerAnnotationMapper serverAnnotationMapper,
-            AnnotationsSupplierFactory annotationsSupplierFactory
-    ) {
-        return new DefaultOperationServersCustomizer(serverAnnotationMapper, annotationsSupplierFactory);
+    public DefaultOperationServersCustomizer defaultOperationServersCustomizer(ServerAnnotationMapper serverAnnotationMapper) {
+        return new DefaultOperationServersCustomizer(serverAnnotationMapper);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationSecurityRequirementCustomizer DefaultOperationSecurityRequirementCustomizer(
-            SecurityRequirementAnnotationMapper securityRequirementAnnotationMapper,
-            AnnotationsSupplierFactory annotationsSupplierFactory
-    ) {
-        return new DefaultOperationSecurityRequirementCustomizer(securityRequirementAnnotationMapper, annotationsSupplierFactory);
+    public DefaultOperationSecurityRequirementCustomizer DefaultOperationSecurityRequirementCustomizer(SecurityRequirementAnnotationMapper securityRequirementAnnotationMapper) {
+        return new DefaultOperationSecurityRequirementCustomizer(securityRequirementAnnotationMapper);
     }
 
     @Bean
@@ -107,18 +93,15 @@ public class OpenApiGeneratorOperationAutoConfiguration {
     @ConditionalOnMissingBean
     public DefaultRequestBodyOperationCustomizer defaultRequestBodyOperationCustomizer(
             RequestBodyAnnotationMapper requestBodyAnnotationMapper,
-            AnnotationsSupplierFactory annotationsSupplierFactory,
+            HandlerMethodParameterTypeMapper handlerMethodParameterTypeMapper,
             SchemaResolver schemaResolver
     ) {
-        return new DefaultRequestBodyOperationCustomizer(requestBodyAnnotationMapper, annotationsSupplierFactory, schemaResolver);
+        return new DefaultRequestBodyOperationCustomizer(requestBodyAnnotationMapper, handlerMethodParameterTypeMapper, schemaResolver);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationCallbackCustomizer defaultOperationCallbackCustomizer(
-            CallbackAnnotationMapper callbackAnnotationMapper,
-            AnnotationsSupplierFactory annotationsSupplierFactory
-    ) {
-        return new DefaultOperationCallbackCustomizer(callbackAnnotationMapper, annotationsSupplierFactory);
+    public DefaultOperationCallbackCustomizer defaultOperationCallbackCustomizer(CallbackAnnotationMapper callbackAnnotationMapper) {
+        return new DefaultOperationCallbackCustomizer(callbackAnnotationMapper);
     }
 }

@@ -1,7 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.mapper.SecurityRequirementAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
@@ -20,11 +19,10 @@ public class DefaultOperationSecurityRequirementCustomizer implements OperationC
     public static final int ORDER = DEFAULT_ORDER;
 
     private final SecurityRequirementAnnotationMapper securityRequirementAnnotationMapper;
-    private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMethodWithDeclaringClass(operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod());
+        AnnotationsSupplier annotationsSupplier = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
 
         // the following code assumes that all security requirements we find must be fulfilled at the same time,
         // it's more safe to assume that multiple requirements "add up" instead of requiring them as OR

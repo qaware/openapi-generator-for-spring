@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.mapper.ContentAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
@@ -17,6 +16,7 @@ import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOper
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesDescriptionCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesFromMethodCustomizer;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodReturnTypeMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -29,10 +29,9 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
     @ConditionalOnMissingBean
     public DefaultOperationResponseCustomizer defaultOperationResponseCustomizer(
             ApiResponseAnnotationMapper apiResponseAnnotationMapper,
-            List<OperationApiResponsesCustomizer> apiResponsesCustomizers,
-            AnnotationsSupplierFactory annotationsSupplierFactory
+            List<OperationApiResponsesCustomizer> apiResponsesCustomizers
     ) {
-        return new DefaultOperationResponseCustomizer(apiResponseAnnotationMapper, apiResponsesCustomizers, annotationsSupplierFactory);
+        return new DefaultOperationResponseCustomizer(apiResponseAnnotationMapper, apiResponsesCustomizers);
     }
 
     @Bean
@@ -53,10 +52,9 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
             ApiResponseCodeMapper apiResponseCodeMapper,
             ApiResponseDefaultProvider apiResponseDefaultProvider,
             SchemaResolver schemaResolver,
-            AnnotationsSupplierFactory annotationsSupplierFactory
+            HandlerMethodReturnTypeMapper handlerMethodReturnTypeMapper
     ) {
-        return new DefaultOperationApiResponsesFromMethodCustomizer(apiResponseCodeMapper, apiResponseDefaultProvider,
-                schemaResolver, annotationsSupplierFactory);
+        return new DefaultOperationApiResponsesFromMethodCustomizer(apiResponseCodeMapper, apiResponseDefaultProvider, schemaResolver, handlerMethodReturnTypeMapper);
     }
 
     @Bean
@@ -74,7 +72,7 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ApiResponseCodeMapper defaultApiResponseCodeMapper(AnnotationsSupplierFactory annotationsSupplierFactory) {
-        return new DefaultApiResponseCodeMapper(annotationsSupplierFactory);
+    public ApiResponseCodeMapper defaultApiResponseCodeMapper() {
+        return new DefaultApiResponseCodeMapper();
     }
 }

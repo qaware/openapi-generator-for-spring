@@ -3,6 +3,7 @@ package de.qaware.openapigeneratorforspring.webflux;
 import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
+import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.InitialSchemaBuilderForFlux;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.InitialSchemaBuilderForMono;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForFlux;
@@ -25,8 +26,11 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public HandlerMethodsProvider handlerMethodsProviderFromWebMvc(RequestMappingHandlerMapping requestMappingHandlerMapping) {
-        return new HandlerMethodsProviderForWebFlux(requestMappingHandlerMapping);
+    public HandlerMethodsProvider handlerMethodsProviderFromWebMvc(
+            RequestMappingHandlerMapping requestMappingHandlerMapping,
+            SpringWebHandlerMethodBuilder springWebHandlerMethodBuilder
+    ) {
+        return new HandlerMethodsProviderForWebFlux(requestMappingHandlerMapping, springWebHandlerMethodBuilder);
     }
 
     @Bean

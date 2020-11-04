@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.response;
 
-import java.lang.reflect.Method;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 
 public interface ApiResponseCodeMapper {
-    String getFromMethod(Method method);
+    String map(HandlerMethod operationInfo);
 }

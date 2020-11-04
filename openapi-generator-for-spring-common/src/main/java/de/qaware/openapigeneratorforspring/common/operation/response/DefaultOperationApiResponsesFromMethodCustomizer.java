@@ -1,8 +1,9 @@
 package de.qaware.openapigeneratorforspring.common.operation.response;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodReturnTypeMapper;
 import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.model.media.Content;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,30 +27,28 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
     private final ApiResponseCodeMapper apiResponseCodeMapper;
     private final ApiResponseDefaultProvider apiResponseDefaultProvider;
     private final SchemaResolver schemaResolver;
-    private final AnnotationsSupplierFactory annotationsSupplierFactory;
+    private final HandlerMethodReturnTypeMapper handlerMethodReturnTypeMapper;
 
     @Override
     public void customize(ApiResponses apiResponses, OperationBuilderContext operationBuilderContext) {
-        Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
+        HandlerMethod handlerMethod = operationBuilderContext.getOperationInfo().getHandlerMethod();
 
-        ApiResponse defaultApiResponse = getAndReplaceDefaultApiResponse(apiResponses, apiResponseCodeMapper.getFromMethod(method));
+        ApiResponse defaultApiResponse = getAndReplaceDefaultApiResponse(apiResponses, apiResponseCodeMapper.map(handlerMethod));
 
-        if (Void.TYPE.equals(method.getReturnType()) || Void.class.equals(method.getReturnType())) {
+        HandlerMethod.ReturnType handlerMethodReturnType = handlerMethodReturnTypeMapper.map(handlerMethod);
+        if (handlerMethodReturnType == null) {
             return;
         }
 
         Content content = getOrCreateEmptyContent(defaultApiResponse);
-
-        AnnotationsSupplier annotationsSupplierFromMethodWithDeclaringClass = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method);
-        List<String> producesContentType = getProducesContentType(annotationsSupplierFromMethodWithDeclaringClass);
-
+        List<String> producesContentType = getProducesContentType(handlerMethod);
         for (String contentType : producesContentType) {
             MediaType mediaType = content.computeIfAbsent(contentType, ignored -> new MediaType());
             // just using resolveFromClass here with method.getReturnType() does not work for generic return types
-            // TODO check if supplying annotations from type, method and method's declaring class isn't too much searching
-            AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(method.getReturnType())
-                    .andThen(annotationsSupplierFromMethodWithDeclaringClass);
-            schemaResolver.resolveFromType(method.getGenericReturnType(), annotationsSupplier,
+            // TODO check if supplying annotations from return type, method and method's declaring class isn't too much searching
+            AnnotationsSupplier annotationsSupplier = handlerMethodReturnType.getAnnotationsSupplier()
+                    .andThen(handlerMethod.getAnnotationsSupplier());
+            schemaResolver.resolveFromType(handlerMethodReturnType.getType(), annotationsSupplier,
                     operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedSchemaConsumer.class),
                     mediaType::setSchema
             );
@@ -99,9 +97,9 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
         return content;
     }
 
-    private static List<String> getProducesContentType(AnnotationsSupplier annotationsSupplierFromMethodWithDeclaringClass) {
+    private static List<String> getProducesContentType(HandlerMethod handlerMethod) {
         // TODO check if that logic here correctly mimics the way Spring is treating the "produces" property
-        return annotationsSupplierFromMethodWithDeclaringClass
+        return handlerMethod.getAnnotationsSupplier()
                 .findAnnotations(RequestMapping.class)
                 .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.produces()))
                 .findFirst()

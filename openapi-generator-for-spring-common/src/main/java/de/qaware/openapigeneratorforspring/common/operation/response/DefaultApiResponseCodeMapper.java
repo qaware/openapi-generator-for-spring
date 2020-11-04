@@ -1,13 +1,11 @@
 package de.qaware.openapigeneratorforspring.common.operation.response;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
-import java.lang.reflect.Method;
 
 @RequiredArgsConstructor
 public class DefaultApiResponseCodeMapper implements ApiResponseCodeMapper {
@@ -17,12 +15,9 @@ public class DefaultApiResponseCodeMapper implements ApiResponseCodeMapper {
             .getDefaultValue("responseCode", String.class)
             .orElseThrow(() -> new IllegalStateException("Cannot infer default response code from ApiResponse annotation"));
 
-    private final AnnotationsSupplierFactory annotationsSupplierFactory;
-
     @Override
-    public String getFromMethod(Method method) {
-        ResponseStatus responseStatus = annotationsSupplierFactory.createFromMethodWithDeclaringClass(method)
-                .findFirstAnnotation(ResponseStatus.class);
+    public String map(HandlerMethod handlerMethod) {
+        ResponseStatus responseStatus = handlerMethod.getAnnotationsSupplier().findFirstAnnotation(ResponseStatus.class);
         if (responseStatus != null) {
             return Integer.toString(responseStatus.code().value());
         }

@@ -1,7 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.reference.tag.ReferencedTagsConsumer;
@@ -22,7 +21,6 @@ public class DefaultOperationTagsCustomizer implements OperationCustomizer {
     public static final int ORDER = DEFAULT_ORDER;
 
     private final TagAnnotationMapper tagAnnotationMapper;
-    private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
@@ -41,7 +39,7 @@ public class DefaultOperationTagsCustomizer implements OperationCustomizer {
     }
 
     private Stream<String> collectTagsFromMethodAndClass(OperationBuilderContext operationBuilderContext) {
-        AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMethodWithDeclaringClass(operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod());
+        AnnotationsSupplier annotationsSupplier = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
         List<Tag> tags = annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.tags.Tag.class)
                 .map(tagAnnotationMapper::map)
                 .collect(Collectors.toList());

@@ -1,13 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.operation;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.mapper.OperationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import lombok.RequiredArgsConstructor;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +13,6 @@ public class OperationBuilder {
 
     private final OperationAnnotationMapper operationAnnotationMapper;
     private final List<OperationCustomizer> operationCustomizers;
-    private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     public Operation buildOperation(OperationBuilderContext context) {
         try {
@@ -27,11 +23,8 @@ public class OperationBuilder {
     }
 
     public Operation getOperationInternal(OperationBuilderContext context) {
-        Method method = context.getOperationInfo().getHandlerMethod().getMethod();
-
-        AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(method);
-        io.swagger.v3.oas.annotations.Operation operationAnnotation
-                = annotationsSupplier.findFirstAnnotation(io.swagger.v3.oas.annotations.Operation.class);
+        io.swagger.v3.oas.annotations.Operation operationAnnotation = context.getOperationInfo().getHandlerMethod().getAnnotationsSupplier()
+                .findFirstAnnotation(io.swagger.v3.oas.annotations.Operation.class);
 
         Operation operation = Optional.ofNullable(operationAnnotation)
                 .map(annotation -> operationAnnotationMapper.map(annotation, context.getReferencedItemConsumerSupplier()))

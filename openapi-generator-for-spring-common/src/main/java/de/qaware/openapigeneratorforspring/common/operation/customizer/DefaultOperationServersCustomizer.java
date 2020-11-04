@@ -1,7 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
@@ -20,7 +19,6 @@ public class DefaultOperationServersCustomizer implements OperationCustomizer {
     public static final int ORDER = DEFAULT_ORDER;
 
     private final ServerAnnotationMapper serverAnnotationMapper;
-    private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
@@ -34,7 +32,7 @@ public class DefaultOperationServersCustomizer implements OperationCustomizer {
     }
 
     private Stream<Server> collectServersFromMethodAndClass(OperationBuilderContext operationBuilderContext) {
-        AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromMethodWithDeclaringClass(operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod());
+        AnnotationsSupplier annotationsSupplier = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
         return annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.servers.Server.class).map(serverAnnotationMapper::map);
     }
 

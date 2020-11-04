@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.converter;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import org.springframework.core.Ordered;
 
@@ -12,5 +12,5 @@ public interface ParameterMethodConverter extends Ordered {
     int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 1000;
 
     @Nullable
-    Parameter convert(java.lang.reflect.Parameter methodParameter, AnnotationsSupplier parameterAnnotationsSupplier);
+    Parameter convert(HandlerMethod.Parameter handlerMethodParameter);
 }

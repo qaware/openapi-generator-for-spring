@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.converter;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +15,8 @@ public abstract class ParameterMethodConverterFromAnnotation<A extends Annotatio
 
     @Nullable
     @Override
-    public Parameter convert(java.lang.reflect.Parameter methodParameter, AnnotationsSupplier parameterAnnotationsSupplier) {
-        A annotation = parameterAnnotationsSupplier.findFirstAnnotation(annotationClass);
+    public Parameter convert(HandlerMethod.Parameter handlerMethodParameter) {
+        A annotation = handlerMethodParameter.getAnnotationsSupplier().findFirstAnnotation(annotationClass);
         if (annotation != null) {
             return buildParameter(annotation);
         }

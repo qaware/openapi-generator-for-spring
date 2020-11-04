@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.customizer;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,9 +10,9 @@ import javax.annotation.Nullable;
 @Slf4j
 public class DefaultOperationParameterNullableCustomizer implements OperationParameterCustomizer {
     @Override
-    public void customize(Parameter parameter, AnnotationsSupplier parameterAnnotationsSupplier) {
+    public void customize(Parameter parameter, HandlerMethod.Parameter handlerMethodParameter, OperationBuilderContext operationBuilderContext) {
         // TODO support more @Nullable / @NotNull annotations? combine with other places where @Nullable is checked?
-        if (parameterAnnotationsSupplier.findFirstAnnotation(Nullable.class) != null) {
+        if (handlerMethodParameter.getAnnotationsSupplier().findFirstAnnotation(Nullable.class) != null) {
             Boolean required = parameter.getRequired();
             if (required != null && required) {
                 LOGGER.warn("Method parameter {} marked as required but annotated as nullable. Ignoring annotation.", parameter);

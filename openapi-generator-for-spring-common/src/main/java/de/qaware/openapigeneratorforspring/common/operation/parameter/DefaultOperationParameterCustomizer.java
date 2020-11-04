@@ -1,13 +1,12 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterPostFilter;
 import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterPreFilter;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizer;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.reference.component.parameter.ReferencedParametersConsumer;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +35,6 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
     private final List<ParameterMethodConverter> parameterMethodConverters;
     private final List<OperationParameterCustomizer> parameterCustomizers;
     private final ParameterAnnotationMapper parameterAnnotationMapper;
-    private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
     public void customizeWithAnnotationPresent(Operation operation, OperationBuilderContext operationBuilderContext,
@@ -53,12 +50,11 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
     }
 
     private List<Parameter> buildParameters(OperationBuilderContext operationBuilderContext, Stream<io.swagger.v3.oas.annotations.Parameter> additionalParameterAnnotations) {
-        Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
-        AnnotationsSupplier methodAnnotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(method);
+        HandlerMethod handlerMethod = operationBuilderContext.getOperationInfo().getHandlerMethod();
 
         Map<String, io.swagger.v3.oas.annotations.Parameter> parameterAnnotationMap = Stream.concat(
                 additionalParameterAnnotations,
-                methodAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.Parameter.class)
+                handlerMethod.getAnnotationsSupplier().findAnnotations(io.swagger.v3.oas.annotations.Parameter.class)
         )
                 .collect(Collectors.toMap(
                         io.swagger.v3.oas.annotations.Parameter::name,
@@ -95,27 +91,25 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
     }
 
     private List<Parameter> getParametersFromHandlerMethod(OperationBuilderContext operationBuilderContext) {
-        Method method = operationBuilderContext.getOperationInfo().getHandlerMethod().getMethod();
-        return Stream.of(method.getParameters())
+        return operationBuilderContext.getOperationInfo().getHandlerMethod().getParameters().stream()
                 .map(methodParameter -> convertFromMethodParameter(methodParameter, operationBuilderContext))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
     @Nullable
-    private Parameter convertFromMethodParameter(java.lang.reflect.Parameter methodParameter, OperationBuilderContext operationBuilderContext) {
-        AnnotationsSupplier parameterAnnotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(methodParameter);
-        if (!parameterPreFilters.stream().allMatch(filter -> filter.preAccept(methodParameter, parameterAnnotationsSupplier))) {
+    private Parameter convertFromMethodParameter(HandlerMethod.Parameter methodParameter, OperationBuilderContext operationBuilderContext) {
+        if (!parameterPreFilters.stream().allMatch(filter -> filter.preAccept(methodParameter))) {
             return null;
         }
         return parameterMethodConverters.stream()
-                .map(converter -> converter.convert(methodParameter, parameterAnnotationsSupplier))
+                .map(converter -> converter.convert(methodParameter))
                 .filter(Objects::nonNull)
                 .findFirst() // converters are ordered and the first one not returning null will be used
                 .map(parameter -> {
                     // apply customizers after conversion
                     parameterCustomizers.forEach(customizer ->
-                            customizer.customize(parameter, methodParameter, parameterAnnotationsSupplier, operationBuilderContext)
+                            customizer.customize(parameter, methodParameter, operationBuilderContext)
                     );
                     return parameter;
                 })
