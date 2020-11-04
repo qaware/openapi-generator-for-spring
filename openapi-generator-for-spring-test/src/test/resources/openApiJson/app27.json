@@ -1,0 +1,8 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App27",
+    "version": "unknown"
+  },
+  "paths": {}
+}
