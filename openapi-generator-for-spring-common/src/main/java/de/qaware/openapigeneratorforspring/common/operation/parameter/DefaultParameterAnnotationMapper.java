@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIf;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
 @RequiredArgsConstructor
@@ -55,7 +56,9 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
             parameter.setAllowReserved(true);
         }
         ReferencedSchemaConsumer referencedSchemaConsumer = referencedItemConsumerSupplier.get(ReferencedSchemaConsumer.class);
-        schemaAnnotationMapper.buildFromAnnotation(annotation.schema(), referencedSchemaConsumer, parameter::setSchema);
+        setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(annotation.schema(), referencedSchemaConsumer),
+                schema -> referencedSchemaConsumer.maybeAsReference(schema, parameter::setSchema)
+        );
         // TODO handle @ArraySchema as well?
         setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), referencedItemConsumerSupplier), parameter::setContent);
         ReferencedExamplesConsumer referencedExamplesConsumer = referencedItemConsumerSupplier.get(ReferencedExamplesConsumer.class);

@@ -9,13 +9,20 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResol
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForFlux;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForMono;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
+import de.qaware.openapigeneratorforspring.webflux.function.OpenApiGeneratorWebFluxRouterFunctionAutoConfiguration;
+import de.qaware.openapigeneratorforspring.webflux.function.RouterFunctionHandlerMethodWithInfoBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Import;
+import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 
+import java.util.Map;
+
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@Import(OpenApiGeneratorWebFluxRouterFunctionAutoConfiguration.class)
 public class OpenApiGeneratorWebFluxAutoConfiguration {
 
     @Bean
@@ -30,9 +37,14 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
     public HandlerMethodsProvider handlerMethodsProviderFromWebFlux(
             RequestMappingHandlerMapping requestMappingHandlerMapping,
             SpringWebHandlerMethodBuilder springWebHandlerMethodBuilder,
-            SpringWebRequestMethodsMapper springWebRequestMethodsMapper
+            SpringWebRequestMethodsMapper springWebRequestMethodsMapper,
+            Map<String, RouterFunction<?>> routerFunctions,
+            RouterFunctionHandlerMethodWithInfoBuilder routerFunctionHandlerMethodWithInfoBuilder
     ) {
-        return new HandlerMethodsProviderForWebFlux(requestMappingHandlerMapping, springWebHandlerMethodBuilder, springWebRequestMethodsMapper);
+        return new HandlerMethodsProviderForWebFlux(
+                requestMappingHandlerMapping, springWebHandlerMethodBuilder, springWebRequestMethodsMapper,
+                routerFunctions, routerFunctionHandlerMethodWithInfoBuilder
+        );
     }
 
     @Bean

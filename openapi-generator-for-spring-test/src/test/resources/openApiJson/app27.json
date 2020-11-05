@@ -4,5 +4,74 @@
     "title": "API for App27",
     "version": "unknown"
   },
-  "paths": {}
+  "paths": {
+    "/mapping1": {
+      "get": {
+        "operationId": "lambdaMapping1",
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/default"
+          }
+        }
+      }
+    },
+    "/mapping2": {
+      "get": {
+        "operationId": "lambdaMapping2",
+        "responses": {
+          "default": {
+            "description": "Default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mapping3": {
+      "get": {
+        "operationId": "lambdaMapping3",
+        "responses": {
+          "default": {
+            "description": "Default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "UUID"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mapping4": {
+      "post": {
+        "operationId": "lambdaMapping4",
+        "parameters": [
+          {
+            "name": "header-1",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/default"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "default": {
+        "description": "Default response"
+      }
+    }
+  }
 }

@@ -3,6 +3,7 @@ package de.qaware.openapigeneratorforspring.ui.webflux;
 import de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiSupport;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerFactory;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -35,6 +36,7 @@ public class OpenApiSwaggerUiWebFluxAutoConfiguration {
     }
 
     @Bean
+    @Hidden
     public RouterFunction<ServerResponse> redirectToSwaggerUiIndexHtml(SwaggerUiSupport swaggerUiSupport) {
         return route(GET(swaggerUiSupport.getUiPath()), req ->
                 ServerResponse.status(HttpStatus.FOUND)

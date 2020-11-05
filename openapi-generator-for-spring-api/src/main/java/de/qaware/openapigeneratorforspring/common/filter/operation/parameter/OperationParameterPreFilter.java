@@ -4,5 +4,5 @@ import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 
 @FunctionalInterface
 public interface OperationParameterPreFilter {
-    boolean preAccept(HandlerMethod.Parameter methodParameter);
+    boolean preAccept(HandlerMethod.Parameter handlerMethodParameter);
 }

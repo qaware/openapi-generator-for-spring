@@ -7,6 +7,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseDefaultProvider;
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseCodeMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseDefaultProvider;
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOperationApiResponsesDescriptionCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOperationApiResponsesFromMethodCustomizer;
@@ -61,10 +62,15 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
         return new DefaultOperationApiResponsesDescriptionCustomizer();
     }
 
-
     @Bean
     @ConditionalOnMissingBean
     public ApiResponseDefaultProvider defaultApiResponseDefaultProvider() {
         return new DefaultApiResponseDefaultProvider();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultApiResponseCodeMapper defaultApiResponseCodeMapper() {
+        return new DefaultApiResponseCodeMapper();
     }
 }

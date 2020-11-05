@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,9 +34,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
     private final SchemaResolver schemaResolver;
 
     @Override
-    public void buildFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation,
-                                    ReferencedSchemaConsumer referencedSchemaConsumer,
-                                    Consumer<Schema> schemaSetter) {
+    public Schema buildFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
         Schema schema;
         if (!Void.class.equals(schemaAnnotation.implementation())) {
             // reference tracking will be done once the annotation is applied
@@ -45,14 +42,8 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         } else {
             schema = Schema.builder().build();
         }
-
         applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer);
-
-        if (schema.isEmpty()) {
-            return;
-        }
-
-        referencedSchemaConsumer.maybeAsReference(schema, schemaSetter);
+        return schema;
     }
 
     @Override

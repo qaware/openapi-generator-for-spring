@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.Map;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
+
 @RequiredArgsConstructor
 public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
     private final SchemaAnnotationMapper schemaAnnotationMapper;
@@ -35,7 +37,9 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
             header.setRequired(true);
         }
         ReferencedSchemaConsumer referencedSchemaConsumer = referencedItemConsumerSupplier.get(ReferencedSchemaConsumer.class);
-        schemaAnnotationMapper.buildFromAnnotation(headerAnnotation.schema(), referencedSchemaConsumer, header::setSchema);
+        setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(headerAnnotation.schema(), referencedSchemaConsumer),
+                schema -> referencedSchemaConsumer.maybeAsReference(schema, header::setSchema)
+        );
         OpenApiStringUtils.setStringIfNotBlank(headerAnnotation.ref(), header::setRef);
         return header;
     }

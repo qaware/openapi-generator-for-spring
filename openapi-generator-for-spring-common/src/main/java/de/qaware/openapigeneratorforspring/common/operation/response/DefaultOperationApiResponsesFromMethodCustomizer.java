@@ -49,6 +49,7 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
             MediaType mediaType = content.computeIfAbsent(contentType, ignored -> new MediaType());
             // just using resolveFromClass here with method.getReturnType() does not work for generic return types
             // TODO check if supplying annotations from return type, method and method's declaring class isn't too much searching
+
             AnnotationsSupplier annotationsSupplier = handlerMethodReturnType.getAnnotationsSupplier()
                     .andThen(handlerMethod.getAnnotationsSupplier());
             schemaResolver.resolveFromType(handlerMethodReturnType.getType(), annotationsSupplier,

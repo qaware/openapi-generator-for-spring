@@ -11,15 +11,11 @@ import java.util.List;
 public interface HandlerMethod {
     String getIdentifier();
     AnnotationsSupplier getAnnotationsSupplier();
-
     List<Parameter> getParameters();
 
     interface Parameter {
-        @Nullable
         String getName();
-
         AnnotationsSupplier getAnnotationsSupplier();
-
         // annotations from parameter type are useful for SchemaResolver
         AnnotationsSupplier getAnnotationsSupplierForType();
     }
@@ -27,14 +23,14 @@ public interface HandlerMethod {
     interface RequestBodyParameter {
         List<String> getConsumesContentTypes();
 
-        void customize(RequestBody requestBody);
+        default void customize(RequestBody requestBody) {
+            // do nothing, customization callback is optional
+        }
     }
 
     interface ReturnType {
         Type getType();
-
         List<String> getProducesContentTypes();
-
         AnnotationsSupplier getAnnotationsSupplier();
     }
 

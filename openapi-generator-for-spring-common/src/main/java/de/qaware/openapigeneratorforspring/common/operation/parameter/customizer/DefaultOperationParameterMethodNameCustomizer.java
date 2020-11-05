@@ -10,9 +10,6 @@ public class DefaultOperationParameterMethodNameCustomizer implements OperationP
     @Override
     public void customize(Parameter parameter, HandlerMethod.Parameter handlerMethodParameter, OperationBuilderContext operationBuilderContext) {
         String methodParameterName = handlerMethodParameter.getName();
-        if (methodParameterName == null) {
-            return;
-        }
         String parameterName = parameter.getName();
         if (parameterName == null) {
             parameter.setName(methodParameterName);
