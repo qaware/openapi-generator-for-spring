@@ -12,7 +12,13 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.O
 @Getter
 @Setter
 public class OpenApiConfigurationProperties {
+    /**
+     * Flag to provide the OpenAPI spec as an accessible endpoint.
+     */
     private boolean enabled = true;
+    /**
+     * Path to OpenAPI spec. Default is <code>/v3/api-docs</code>.
+     */
     private String apiDocsPath = OPEN_API_DOCS_DEFAULT_PATH;
 
     public static class EnabledCondition extends ConfigurationPropertyCondition<OpenApiConfigurationProperties> {

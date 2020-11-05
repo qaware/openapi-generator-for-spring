@@ -9,6 +9,14 @@ import java.util.Map;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.CONFIG_PROPERTIES_PREFIX;
 
+/**
+ * Configuration properties for the OpenApi information.
+ * <p>
+ * Always take precedence over annotations and other
+ * inferred information when building the specification.
+ *
+ * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#infoObject"
+ */
 @ConfigurationProperties(CONFIG_PROPERTIES_PREFIX + ".info")
 @Getter
 @Setter

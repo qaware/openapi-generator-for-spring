@@ -1,10 +1,12 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolverConfigurationProperties.Format;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaTypeResolver;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.RequiredArgsConstructor;
 
@@ -12,7 +14,11 @@ import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.Instant;
 
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS;
+import static de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolverConfigurationProperties.Format.INFER_FROM_OBJECT_MAPPER;
 import static de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolverConfigurationProperties.Format.ISO8601;
+import static de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolverConfigurationProperties.Format.UNIX_EPOCH_SECONDS;
 
 @RequiredArgsConstructor
 public class DefaultJava8TimeInitialSchemaBuilder implements Java8TimeInitialSchemaBuilder {
@@ -20,24 +26,33 @@ public class DefaultJava8TimeInitialSchemaBuilder implements Java8TimeInitialSch
     public static final int ORDER = DEFAULT_ORDER;
 
     private final Java8TimeTypeResolverConfigurationProperties properties;
+    private final OpenApiObjectMapperSupplier openApiObjectMapperSupplier;
 
     @Nullable
     @Override
     public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
         Class<?> rawClass = javaType.getRawClass();
-        Format format = properties.getFormat();
-        Schema.SchemaBuilder schemaBuilder = createSchemaBuilderWithType(format);
-
-        // TODO maybe improve with static map and add more types?
+        // TODO maybe improve with static map and add more time types?
         if (rawClass.equals(Instant.class)) {
+            Format format = getFormat(WRITE_DATES_AS_TIMESTAMPS);
+            Schema.SchemaBuilder schemaBuilder = createSchemaBuilderWithType(format);
             if (format == ISO8601) {
                 return InitialSchema.of(schemaBuilder.format("date-time").build());
             }
             return InitialSchema.of(schemaBuilder.build());
         } else if (rawClass.equals(Duration.class)) {
+            Format format = getFormat(WRITE_DURATIONS_AS_TIMESTAMPS);
+            Schema.SchemaBuilder schemaBuilder = createSchemaBuilderWithType(format);
             return InitialSchema.of(schemaBuilder.build());
         }
         return null;
+    }
+
+    private Format getFormat(SerializationFeature serializationFeature) {
+        if (properties.getFormat() == INFER_FROM_OBJECT_MAPPER) {
+            return openApiObjectMapperSupplier.get().isEnabled(serializationFeature) ? UNIX_EPOCH_SECONDS : ISO8601;
+        }
+        return properties.getFormat();
     }
 
     private static Schema.SchemaBuilder createSchemaBuilderWithType(Format format) {
