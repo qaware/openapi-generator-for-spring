@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ValueConstants;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
-public class DefaultParameterBuilderFromSpringWebAnnotation {
+public class SpringWebOpenApiParameterBuilder {
 
     Parameter build(ParameterIn in, String name, boolean required) {
         Parameter parameter = new Parameter();

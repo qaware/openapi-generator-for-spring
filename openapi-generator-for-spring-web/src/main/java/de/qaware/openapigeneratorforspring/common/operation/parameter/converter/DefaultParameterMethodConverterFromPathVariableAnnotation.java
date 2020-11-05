@@ -10,9 +10,9 @@ public class DefaultParameterMethodConverterFromPathVariableAnnotation extends P
 
     public static final int ORDER = DEFAULT_ORDER;
 
-    private final DefaultParameterBuilderFromSpringWebAnnotation parameterBuilder;
+    private final SpringWebOpenApiParameterBuilder parameterBuilder;
 
-    public DefaultParameterMethodConverterFromPathVariableAnnotation(DefaultParameterBuilderFromSpringWebAnnotation parameterBuilder) {
+    public DefaultParameterMethodConverterFromPathVariableAnnotation(SpringWebOpenApiParameterBuilder parameterBuilder) {
         super(PathVariable.class);
         this.parameterBuilder = parameterBuilder;
     }

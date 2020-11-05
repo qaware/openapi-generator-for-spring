@@ -6,13 +6,11 @@ import de.qaware.openapigeneratorforspring.model.OpenApi;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RestController;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.CONFIG_PROPERTIES_PREFIX;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.OPEN_API_DOCS_DEFAULT_PATH;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-@RestController
 @Hidden
 public abstract class AbstractOpenApiResource {
 

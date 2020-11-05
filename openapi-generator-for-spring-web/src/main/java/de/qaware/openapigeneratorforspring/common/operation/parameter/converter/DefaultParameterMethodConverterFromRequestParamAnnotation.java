@@ -10,9 +10,9 @@ public class DefaultParameterMethodConverterFromRequestParamAnnotation extends P
 
     public static final int ORDER = DEFAULT_ORDER;
 
-    private final DefaultParameterBuilderFromSpringWebAnnotation parameterBuilder;
+    private final SpringWebOpenApiParameterBuilder parameterBuilder;
 
-    public DefaultParameterMethodConverterFromRequestParamAnnotation(DefaultParameterBuilderFromSpringWebAnnotation parameterBuilder) {
+    public DefaultParameterMethodConverterFromRequestParamAnnotation(SpringWebOpenApiParameterBuilder parameterBuilder) {
         super(RequestParam.class);
         this.parameterBuilder = parameterBuilder;
     }

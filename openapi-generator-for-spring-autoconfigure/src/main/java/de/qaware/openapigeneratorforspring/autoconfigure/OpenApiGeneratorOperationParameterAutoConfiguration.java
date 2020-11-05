@@ -8,10 +8,6 @@ import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapp
 import de.qaware.openapigeneratorforspring.common.operation.parameter.DefaultOperationParameterCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.DefaultParameterAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.ParameterAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterBuilderFromSpringWebAnnotation;
-import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromPathVariableAnnotation;
-import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromRequestHeaderAnnotation;
-import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromRequestParamAnnotation;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterAnnotationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterDeprecatedCustomizer;
@@ -19,7 +15,7 @@ import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterNullableCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterSchemaCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizer;
-import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodParameterTypeMapper;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -85,40 +81,8 @@ public class OpenApiGeneratorOperationParameterAutoConfiguration {
     @ConditionalOnMissingBean
     public DefaultOperationParameterSchemaCustomizer defaultOperationParameterSchemaCustomizer(
             SchemaResolver schemaResolver,
-            HandlerMethodParameterTypeMapper handlerMethodParameterTypeMapper
+            List<HandlerMethod.ParameterTypeMapper> handlerMethodParameterTypeMappers
     ) {
-        return new DefaultOperationParameterSchemaCustomizer(schemaResolver, handlerMethodParameterTypeMapper);
+        return new DefaultOperationParameterSchemaCustomizer(schemaResolver, handlerMethodParameterTypeMappers);
     }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public DefaultParameterBuilderFromSpringWebAnnotation defaultParameterBuilderFromSpringWebAnnotation() {
-        return new DefaultParameterBuilderFromSpringWebAnnotation();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public DefaultParameterMethodConverterFromPathVariableAnnotation defaultParameterMethodConverterFromPathVariableAnnotation(
-            DefaultParameterBuilderFromSpringWebAnnotation defaultParameterBuilderFromSpringWebAnnotation
-    ) {
-        return new DefaultParameterMethodConverterFromPathVariableAnnotation(defaultParameterBuilderFromSpringWebAnnotation);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public DefaultParameterMethodConverterFromRequestHeaderAnnotation defaultParameterMethodConverterFromRequestHeaderAnnotation(
-            DefaultParameterBuilderFromSpringWebAnnotation defaultParameterBuilderFromSpringWebAnnotation
-    ) {
-        return new DefaultParameterMethodConverterFromRequestHeaderAnnotation(defaultParameterBuilderFromSpringWebAnnotation);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public DefaultParameterMethodConverterFromRequestParamAnnotation defaultParameterMethodConverterFromRequestParamAnnotation(
-            DefaultParameterBuilderFromSpringWebAnnotation defaultParameterBuilderFromSpringWebAnnotation
-    ) {
-        return new DefaultParameterMethodConverterFromRequestParamAnnotation(defaultParameterBuilderFromSpringWebAnnotation);
-    }
-
-
 }

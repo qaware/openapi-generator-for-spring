@@ -8,11 +8,11 @@ import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsum
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.path.PathItem;
 import de.qaware.openapigeneratorforspring.model.path.Paths;
+import de.qaware.openapigeneratorforspring.model.path.RequestMethod;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;

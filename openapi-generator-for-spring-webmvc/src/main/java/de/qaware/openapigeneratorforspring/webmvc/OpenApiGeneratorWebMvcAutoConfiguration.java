@@ -4,6 +4,7 @@ import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
+import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodsMapper;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -28,9 +29,10 @@ public class OpenApiGeneratorWebMvcAutoConfiguration {
     @ConditionalOnMissingBean
     public HandlerMethodsProvider handlerMethodsProviderFromWebMvc(
             RequestMappingHandlerMapping requestMappingHandlerMapping,
-            SpringWebHandlerMethodBuilder springWebHandlerMethodBuilder
+            SpringWebHandlerMethodBuilder springWebHandlerMethodBuilder,
+            SpringWebRequestMethodsMapper springWebRequestMethodsMapper
     ) {
-        return new HandlerMethodsProviderForWebMvc(requestMappingHandlerMapping, springWebHandlerMethodBuilder);
+        return new HandlerMethodsProviderForWebMvc(requestMappingHandlerMapping, springWebHandlerMethodBuilder, springWebRequestMethodsMapper);
     }
 
     @Bean

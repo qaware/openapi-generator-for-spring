@@ -21,7 +21,7 @@ import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationI
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdProvider;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvider;
-import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodParameterTypeMapper;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -91,17 +91,19 @@ public class OpenApiGeneratorOperationAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultRequestBodyOperationCustomizer defaultRequestBodyOperationCustomizer(
-            RequestBodyAnnotationMapper requestBodyAnnotationMapper,
-            HandlerMethodParameterTypeMapper handlerMethodParameterTypeMapper,
-            SchemaResolver schemaResolver
-    ) {
-        return new DefaultRequestBodyOperationCustomizer(requestBodyAnnotationMapper, handlerMethodParameterTypeMapper, schemaResolver);
+    public DefaultOperationCallbackCustomizer defaultOperationCallbackCustomizer(CallbackAnnotationMapper callbackAnnotationMapper) {
+        return new DefaultOperationCallbackCustomizer(callbackAnnotationMapper);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationCallbackCustomizer defaultOperationCallbackCustomizer(CallbackAnnotationMapper callbackAnnotationMapper) {
-        return new DefaultOperationCallbackCustomizer(callbackAnnotationMapper);
+    public DefaultRequestBodyOperationCustomizer defaultRequestBodyOperationCustomizer(
+            RequestBodyAnnotationMapper requestBodyAnnotationMapper,
+            List<HandlerMethod.ParameterTypeMapper> handlerMethodParameterTypeMappers,
+            List<HandlerMethod.RequestBodyParameterMapper> handlerMethodRequestBodyParameterMappers,
+            SchemaResolver schemaResolver
+    ) {
+        return new DefaultRequestBodyOperationCustomizer(requestBodyAnnotationMapper, handlerMethodParameterTypeMappers,
+                handlerMethodRequestBodyParameterMappers, schemaResolver);
     }
 }

@@ -40,7 +40,7 @@ public class PathItem implements HasExtensions {
                 }, LinkedHashMap::new));
     }
 
-    public void addOperation(String requestMethodName, Operation operation) {
-        operations.put(requestMethodName.toLowerCase(), operation);
+    public void setOperation(RequestMethod requestMethod, Operation operation) {
+        operations.put(requestMethod.name().toLowerCase(), operation);
     }
 }

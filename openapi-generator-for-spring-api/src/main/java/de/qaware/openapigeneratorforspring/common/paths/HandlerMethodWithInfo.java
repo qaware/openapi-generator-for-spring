@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.paths;
 
+import de.qaware.openapigeneratorforspring.model.path.RequestMethod;
 import lombok.Value;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Set;
 

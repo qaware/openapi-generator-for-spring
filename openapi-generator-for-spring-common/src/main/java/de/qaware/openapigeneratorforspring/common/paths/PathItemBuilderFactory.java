@@ -9,11 +9,11 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationWithInfo;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.path.PathItem;
+import de.qaware.openapigeneratorforspring.model.path.RequestMethod;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 import java.util.Map;
@@ -51,7 +51,7 @@ public class PathItemBuilderFactory {
                     if (operationId != null) {
                         operationsById.add(operationId, OperationWithInfo.of(operation, operationInfo));
                     }
-                    pathItem.addOperation(requestMethod.name(), operation);
+                    pathItem.setOperation(requestMethod, operation);
                 }
             });
             pathItemCustomizers.forEach(pathItemCustomizer -> pathItemCustomizer.customize(pathItem, pathPattern, referencedItemConsumerSupplier));

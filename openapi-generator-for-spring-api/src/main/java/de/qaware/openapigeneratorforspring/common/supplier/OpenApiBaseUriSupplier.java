@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.supplier;
 
-import org.springframework.web.util.UriComponents;
+import java.net.URI;
 
 public interface OpenApiBaseUriSupplier {
-    UriComponents getBaseUri();
+    URI getBaseUri();
 }

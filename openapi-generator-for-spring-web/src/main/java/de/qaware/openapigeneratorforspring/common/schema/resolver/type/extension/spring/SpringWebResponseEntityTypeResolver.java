@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 
 import javax.annotation.Nullable;
 
-public class DefaultSpringResponseEntityTypeResolver implements InitialSchemaBuilder {
+public class SpringWebResponseEntityTypeResolver implements InitialSchemaBuilder {
 
     public static final int ORDER = DEFAULT_ORDER;
 

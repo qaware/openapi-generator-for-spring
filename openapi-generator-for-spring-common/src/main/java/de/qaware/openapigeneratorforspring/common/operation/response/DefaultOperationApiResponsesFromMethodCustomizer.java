@@ -3,7 +3,6 @@ package de.qaware.openapigeneratorforspring.common.operation.response;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
-import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodReturnTypeMapper;
 import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.model.media.Content;
@@ -11,37 +10,41 @@ import de.qaware.openapigeneratorforspring.model.media.MediaType;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.core.annotation.MergedAnnotation;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseCodeMapper.DEFAULT_ANNOTATION_RESPONSE_CODE;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 
 @RequiredArgsConstructor
 public class DefaultOperationApiResponsesFromMethodCustomizer implements OperationApiResponsesFromMethodCustomizer {
 
-    private final ApiResponseCodeMapper apiResponseCodeMapper;
+    static final String DEFAULT_ANNOTATION_RESPONSE_CODE = MergedAnnotation.of(io.swagger.v3.oas.annotations.responses.ApiResponse.class)
+            .getDefaultValue("responseCode", String.class)
+            .orElseThrow(() -> new IllegalStateException("Cannot infer default response code from ApiResponse annotation"));
+
+
+    private final List<HandlerMethod.ApiResponseCodeMapper> apiResponseCodeMappers;
     private final ApiResponseDefaultProvider apiResponseDefaultProvider;
     private final SchemaResolver schemaResolver;
-    private final HandlerMethodReturnTypeMapper handlerMethodReturnTypeMapper;
+    private final List<HandlerMethod.ReturnTypeMapper> handlerMethodReturnTypeMappers;
 
     @Override
     public void customize(ApiResponses apiResponses, OperationBuilderContext operationBuilderContext) {
         HandlerMethod handlerMethod = operationBuilderContext.getOperationInfo().getHandlerMethod();
+        ApiResponse defaultApiResponse = getAndReplaceDefaultApiResponse(apiResponses,
+                firstNonNull(apiResponseCodeMappers, mapper -> mapper.map(handlerMethod))
+                        .orElseThrow(() -> new IllegalStateException("Cannot find api response code for " + handlerMethod))
+        );
+        firstNonNull(handlerMethodReturnTypeMappers, mapper -> mapper.map(handlerMethod)).ifPresent(handlerMethodReturnType -> {
+            Content content = getOrCreateEmptyContent(defaultApiResponse);
+            addMediaTypesToContent(operationBuilderContext, handlerMethod, handlerMethodReturnType, content);
+        });
+    }
 
-        ApiResponse defaultApiResponse = getAndReplaceDefaultApiResponse(apiResponses, apiResponseCodeMapper.map(handlerMethod));
-
-        HandlerMethod.ReturnType handlerMethodReturnType = handlerMethodReturnTypeMapper.map(handlerMethod);
-        if (handlerMethodReturnType == null) {
-            return;
-        }
-
-        Content content = getOrCreateEmptyContent(defaultApiResponse);
-        List<String> producesContentType = getProducesContentType(handlerMethod);
+    private void addMediaTypesToContent(OperationBuilderContext operationBuilderContext, HandlerMethod handlerMethod, HandlerMethod.ReturnType handlerMethodReturnType, Content content) {
+        List<String> producesContentType = handlerMethodReturnType.getProducesContentTypes();
         for (String contentType : producesContentType) {
             MediaType mediaType = content.computeIfAbsent(contentType, ignored -> new MediaType());
             // just using resolveFromClass here with method.getReturnType() does not work for generic return types
@@ -53,7 +56,6 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
                     mediaType::setSchema
             );
         }
-
     }
 
     private ApiResponse getAndReplaceDefaultApiResponse(ApiResponses apiResponses, String responseCodeFromMethod) {
@@ -95,16 +97,5 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
         Content content = new Content();
         apiResponse.setContent(content);
         return content;
-    }
-
-    private static List<String> getProducesContentType(HandlerMethod handlerMethod) {
-        // TODO check if that logic here correctly mimics the way Spring is treating the "produces" property
-        return handlerMethod.getAnnotationsSupplier()
-                .findAnnotations(RequestMapping.class)
-                .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.produces()))
-                .findFirst()
-                .map(requestMappingAnnotation -> Arrays.asList(requestMappingAnnotation.produces()))
-                // fallback to "all value" if nothing has been specified
-                .orElse(Collections.singletonList(org.springframework.http.MediaType.ALL_VALUE));
     }
 }

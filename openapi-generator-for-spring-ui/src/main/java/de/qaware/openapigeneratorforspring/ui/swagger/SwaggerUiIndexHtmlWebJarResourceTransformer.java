@@ -5,14 +5,15 @@ import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 import static de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiSupport.INDEX_HTML_FILE;
 
 @RequiredArgsConstructor
 public class SwaggerUiIndexHtmlWebJarResourceTransformer implements WebJarResourceTransformer {
-    private final UriComponents baseUri;
+    private final URI baseUri;
     private final OpenApiConfigurationProperties properties;
 
     @Override
@@ -26,7 +27,7 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformer implements WebJarResour
 
     @Override
     public String transform(String resourceContent) {
-        String apiDocsUri = UriComponentsBuilder.fromUri(baseUri.toUri())
+        String apiDocsUri = UriComponentsBuilder.fromUri(baseUri)
                 // .path appends to the base uri path
                 .path(properties.getApiDocsPath())
                 .build().toUriString();

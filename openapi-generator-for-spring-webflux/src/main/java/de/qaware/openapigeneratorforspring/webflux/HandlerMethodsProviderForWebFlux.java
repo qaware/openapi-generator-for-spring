@@ -3,6 +3,7 @@ package de.qaware.openapigeneratorforspring.webflux;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodWithInfo;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
+import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodsMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
@@ -18,6 +19,7 @@ public class HandlerMethodsProviderForWebFlux implements HandlerMethodsProvider 
 
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
     private final SpringWebHandlerMethodBuilder springWebHandlerMethodBuilder;
+    private final SpringWebRequestMethodsMapper springWebRequestMethodsMapper;
 
     @Override
     public List<HandlerMethodWithInfo> getHandlerMethods() {
@@ -27,7 +29,7 @@ public class HandlerMethodsProviderForWebFlux implements HandlerMethodsProvider 
                         entry.getKey().getPatternsCondition().getPatterns().stream()
                                 .map(PathPattern::toString)
                                 .collect(Collectors.toCollection(LinkedHashSet::new)),
-                        entry.getKey().getMethodsCondition().getMethods()
+                        springWebRequestMethodsMapper.map(entry.getKey().getMethodsCondition().getMethods())
                 ))
                 .collect(Collectors.toList());
     }

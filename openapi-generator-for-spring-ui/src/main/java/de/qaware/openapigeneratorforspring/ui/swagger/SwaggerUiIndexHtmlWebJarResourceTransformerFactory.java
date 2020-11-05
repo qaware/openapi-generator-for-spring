@@ -4,7 +4,8 @@ import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformer;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.util.UriComponents;
+
+import java.net.URI;
 
 @RequiredArgsConstructor
 public class SwaggerUiIndexHtmlWebJarResourceTransformerFactory implements WebJarResourceTransformerFactory {
@@ -12,7 +13,7 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformerFactory implements WebJa
     private final OpenApiConfigurationProperties properties;
 
     @Override
-    public WebJarResourceTransformer create(UriComponents baseUri) {
+    public WebJarResourceTransformer create(URI baseUri) {
         return new SwaggerUiIndexHtmlWebJarResourceTransformer(baseUri, properties);
     }
 }

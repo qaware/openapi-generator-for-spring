@@ -6,7 +6,9 @@ import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class OpenApiResourceForWebMvc extends AbstractOpenApiResource {
 
     public OpenApiResourceForWebMvc(OpenApiGenerator openApiGenerator, OpenApiObjectMapperSupplier objectMapperSupplier) {

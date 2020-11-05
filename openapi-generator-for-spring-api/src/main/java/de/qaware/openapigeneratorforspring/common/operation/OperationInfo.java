@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.operation;
 
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
+import de.qaware.openapigeneratorforspring.model.path.RequestMethod;
 import lombok.Value;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 @Value(staticConstructor = "of")
 public class OperationInfo {

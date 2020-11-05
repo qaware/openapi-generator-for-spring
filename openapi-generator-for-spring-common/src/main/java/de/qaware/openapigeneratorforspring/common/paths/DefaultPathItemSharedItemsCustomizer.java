@@ -20,7 +20,7 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionU
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotNull;
 
 /**
- * Shared items are {@link PathItem#parameters} and {@link PathItem#servers}.
+ * Shared items are {@link PathItem#getParameters} and {@link PathItem#getServers}.
  * They are collected from operations as part of the given path item.
  */
 public class DefaultPathItemSharedItemsCustomizer implements PathItemCustomizer {

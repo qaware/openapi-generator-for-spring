@@ -7,7 +7,9 @@ import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSu
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class OpenApiResourceForWebFlux extends AbstractOpenApiResource {
 
     /**
