@@ -26,7 +26,7 @@ public interface TypeResolver extends Ordered {
     RecursionKey resolve(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType);
 
     interface RecursionKey {
-        boolean equals(Object obj);
+        boolean equals(Object other);
 
         int hashCode();
     }

@@ -16,7 +16,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.Sch
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilter;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilterForIgnoredMembers;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollections;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForProperties;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForCollectionLikeType;
@@ -54,17 +54,18 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public TypeResolverForCollections defaultTypeResolverForCollections() {
-        return new TypeResolverForCollections();
+    public TypeResolverForCollectionLikeType defaultTypeResolverForCollectionLikeType(InitialSchemaBuilderForCollectionLikeType initialSchemaBuilder) {
+        return new TypeResolverForCollectionLikeType(initialSchemaBuilder);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public TypeResolverForProperties defaultTypeResolverForProperties(
+            InitialSchemaBuilderForObject initialSchemaBuilder,
             List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers,
             AnnotationsSupplierFactory annotationsSupplierFactory
     ) {
-        return new TypeResolverForProperties(schemaPropertiesCustomizers, annotationsSupplierFactory);
+        return new TypeResolverForProperties(initialSchemaBuilder, schemaPropertiesCustomizers, annotationsSupplierFactory);
     }
 
     @Bean

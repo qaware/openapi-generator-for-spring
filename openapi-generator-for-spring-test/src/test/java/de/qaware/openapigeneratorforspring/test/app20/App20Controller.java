@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
+import java.util.List;
+
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class App20Controller {
@@ -32,6 +35,11 @@ public class App20Controller {
 
     @PostMapping(value = "/mapping-4", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<SomeDto> mapping4(@RequestBody @Schema(description = "request body DTO") SomeDto someDto) {
+        return null;
+    }
+
+    @PutMapping("/mapping-5")
+    public Flux<List<Instant>> mapping5() {
         return null;
     }
 

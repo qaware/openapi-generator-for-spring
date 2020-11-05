@@ -5,35 +5,33 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverSupport;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 
 import javax.annotation.Nullable;
 
-@RequiredArgsConstructor
-public class InitialSchemaBuilderForCollectionLikeType implements InitialSchemaBuilder, TypeResolverSupport {
+public class InitialSchemaBuilderForFlux implements InitialSchemaBuilder, TypeResolverSupport {
 
     public static final int ORDER = DEFAULT_ORDER;
 
     @Nullable
     @Override
     public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
-        return javaType.isCollectionLikeType() ? buildArrayInitialSchema() : null;
+        if (javaType.getRawClass().equals(Flux.class)) {
+            return InitialSchema.builder().schema(new FluxSchema()).build();
+        }
+        return null;
+    }
+
+    @EqualsAndHashCode(callSuper = true)
+    private static class FluxSchema extends Schema {
+        public FluxSchema() {
+            setType("array");
+        }
     }
 
     @Override
     public boolean supports(InitialSchema initialSchema) {
-        return initialSchema.getSchema() instanceof ArraySchema;
-    }
-
-    public InitialSchema buildArrayInitialSchema() {
-        return InitialSchema.builder().schema(new ArraySchema()).build();
-    }
-
-    @EqualsAndHashCode(callSuper = true)
-    static class ArraySchema extends Schema {
-        public ArraySchema() {
-            setType("array");
-        }
+        return initialSchema.getSchema() instanceof FluxSchema;
     }
 
     @Override

@@ -7,6 +7,7 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaBuilderFromType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForObject;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,8 @@ import java.util.Map;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 
-@RequiredArgsConstructor
 @Slf4j
-public class TypeResolverForProperties implements TypeResolver {
+public class TypeResolverForProperties extends AbstractTypeResolver {
 
     // this resolver does not have any condition, so run this always later then the other resolvers as a fallback
     public static final int ORDER = DEFAULT_ORDER + 100;
@@ -28,19 +28,24 @@ public class TypeResolverForProperties implements TypeResolver {
     private final List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
+    public TypeResolverForProperties(InitialSchemaBuilderForObject initialSchemaBuilderForObject,
+                                     List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers, AnnotationsSupplierFactory annotationsSupplierFactory) {
+        super(initialSchemaBuilderForObject);
+        this.schemaPropertiesCustomizers = schemaPropertiesCustomizers;
+        this.annotationsSupplierFactory = annotationsSupplierFactory;
+    }
+
+    @Override
     @Nullable
-    public RecursionKey resolve(
+    public RecursionKey resolveInternal(
             InitialSchema initialSchema,
             JavaType javaType,
             AnnotationsSupplier annotationsSupplier,
             SchemaBuilderFromType schemaBuilderFromType
     ) {
         Map<String, AnnotatedMember> properties = initialSchema.getProperties();
-        if (properties.isEmpty()) {
-            return null;
-        }
-
-        Map<String, PropertyCustomizer> propertyCustomizers = customizeSchemaProperties(initialSchema.getSchema(), javaType, annotationsSupplier, properties);
+        Map<String, PropertyCustomizer> propertyCustomizers = buildPropertyCustomizers(initialSchema.getSchema(),
+                javaType, annotationsSupplier, properties);
 
         properties.forEach((propertyName, member) -> {
             PropertyCustomizer propertyCustomizer = propertyCustomizers.get(propertyName);
@@ -62,7 +67,7 @@ public class TypeResolverForProperties implements TypeResolver {
         private final int schemaHash;
     }
 
-    private Map<String, PropertyCustomizer> customizeSchemaProperties(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Map<String, AnnotatedMember> properties) {
+    private Map<String, PropertyCustomizer> buildPropertyCustomizers(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Map<String, AnnotatedMember> properties) {
         Map<String, PropertyCustomizer> customizerProperties = buildStringMapFromStream(
                 properties.entrySet().stream(),
                 Map.Entry::getKey,

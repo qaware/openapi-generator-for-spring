@@ -6,6 +6,7 @@ import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -17,9 +18,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@ToString(onlyExplicitlyIncluded = true)
 class SpringWebHandlerMethod implements HandlerMethod {
 
     @Getter(AccessLevel.PACKAGE)
+    @ToString.Include
     private final Method method;
     @Getter
     private final AnnotationsSupplier annotationsSupplier;

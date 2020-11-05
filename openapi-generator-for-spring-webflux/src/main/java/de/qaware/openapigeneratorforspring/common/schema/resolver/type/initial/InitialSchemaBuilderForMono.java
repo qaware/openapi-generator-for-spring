@@ -1,10 +1,7 @@
-package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
+package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaTypeResolver;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.Nullable;

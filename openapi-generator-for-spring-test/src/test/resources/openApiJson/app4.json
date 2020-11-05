@@ -256,6 +256,23 @@
           }
         }
       }
+    },
+    "/post1": {
+      "post": {
+        "operationId": "postMapping1",
+        "responses": {
+          "200": {
+            "description": "Default response for post mapping",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
