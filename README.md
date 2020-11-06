@@ -3,7 +3,7 @@
 This library automagically generates a OpenApi v3 specification at runtime for Spring Boot applications.
 
 It aims at fully supporting the Swagger Annotations to provide
-a self-descriptive API specifcation of your application.
+a self-descriptive API specification of your application.
 
 ## Getting started
 
@@ -17,13 +17,15 @@ Inside your Spring Boot application, add the following (maven) dependency:
 </dependency>
 ```
 
-After starting your application, 
-the [OpenApi v3](https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md) compliant
-specification of your application is provided at `/v3/api-docs`. 
-This specification can be viewed at `/swagger-ui` inside your browser.
+After starting your application, the [OpenApi
+v3](https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md)
+compliant specification of your application is provided at
+`/v3/api-docs` as JSON. This specification can be viewed by visiting
+`/swagger-ui` inside your browser (relative to context path).
 
-Have a look at the [Demo for WebMVC](demo/openapi-generator-for-spring-demo-webmvc) 
-and [Demo for WebFlux](demo/openapi-generator-for-spring-demo-webflux).
+Have a look at the [Demo for
+WebMVC](demo/openapi-generator-for-spring-demo-webmvc) and [Demo for
+WebFlux](demo/openapi-generator-for-spring-demo-webflux) for a first impression.
 
 ## Configuration Properties
 
@@ -45,35 +47,51 @@ The library supports filtering at the following stages during OpenApi specificat
 1. [HandlerMethodFilter](openapi-generator-for-spring-api/src/main/java/de/qaware/openapigeneratorforspring/common/filter/handlermethod/HandlerMethodFilter.java)
 filters before passing on the found handler methods to the path building.
 1. [OperationPreFilter](openapi-generator-for-spring-api/src/main/java/de/qaware/openapigeneratorforspring/common/filter/operation/OperationPreFilter.java)
+filters before the `Operation` model object is built.
 1. [OperationParameterPreFilter](openapi-generator-for-spring-api/src/main/java/de/qaware/openapigeneratorforspring/common/filter/operation/parameter/OperationParameterPreFilter.java)
+filters before a `Parameter` model object of an operation is built.
 1. [OperationParameterPostFilter](openapi-generator-for-spring-api/src/main/java/de/qaware/openapigeneratorforspring/common/filter/operation/parameter/OperationParameterPostFilter.java)
+filters after a `Parameter` has been built.
 1. [OperationPostFilter](openapi-generator-for-spring-api/src/main/java/de/qaware/openapigeneratorforspring/common/filter/operation/OperationPostFilter.java)
+filters after a `Operation` has been built. All information has been set except referenced components.
 1. [PathItemFilter](openapi-generator-for-spring-api/src/main/java/de/qaware/openapigeneratorforspring/common/filter/pathitem/PathItemFilter.java)
+filters after a `PathItem` is fully constructed. All information has been set except referenced components.
 
 Insert a bean extending one or more of the above interfaces, which will be picked up by the library.
 
-The later the filter is called, the more work has already been done, but
-also more information is supplied to make the filtering decision. Note
-that referenced components might be cleared later on if filtering happened
-too late. It is thus recommended applying filtering as early as possible.
+The later the filter is called, the more work has already been done,
+but also more information is supplied to base the filtering decision
+upon. Note that referenced components must be manually cleared later
+on in an extra customization step if filtering happened too late.
+It is thus recommended applying filtering as early as possible.
 
 ### How to obtain a grouped OpenAPI specification?
 
 Grouping is realized by applying filters, preferably a `OperationPreFilter`,
 while building the OpenAPI specification. Query and header parameters
 of the HTTP request to `/v3/api-docs` can be obtained within the
-filter by auto-wiring the bean `OpenApiRequestParameterProvider`. 
+filter by auto-wiring the bean of type `OpenApiRequestParameterProvider`. 
 
-This way, you can control which operations are considered
-for the specification when `/v3/api-docs?group=MyGroup` is called whereas 
+This way, you can control which operations are considered for the
+specification when `/v3/api-docs?group=MyGroup`. The Swagger UI
+can also be customized to display more than one specification by
+providing a bean of type `OpenApiSwaggerUiApiDocsUrisSupplier`.
 
 See this [integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app10/App10Test.java) 
 or this [integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app18/App18Test.java)
-for a fully working WebMVC or WebFlux example, respectively. 
+for a fully working WebMVC or WebFlux example, respectively.
 
 ### How to customize the specification?
 
-TODO write about customization
+The library offers a large number of customizers, which allow the
+library user to (hopefully) adapt to any use case which comes to mind.
+
+The following shows some examples for
+customizers. Feel free to investigate the [API
+sources](openapi-generator-for-spring-api/src/main/java/de/qaware/openapigeneratorforspring/common)
+for more details.
+
+TODO add examples
 
 ### How to customize the included Swagger UI?
 
@@ -121,10 +139,16 @@ Offers UI Resource transformation for WebMVC and WebFlux and sets up correct red
 
 **[test](openapi-generator-for-spring-test)** contains all integration tests for WebMVC and WebFlux.
 
+**[shaded](openapi-generator-for-spring-shaded)** contains shaded
+*dependencies to avoid interence with Spring Boot autoconfiguration.
+*This library does not want to trigger Mustache or WebJar exposure
+*for users of this library. Shading is the only mechanism which
+*still allows to use such code but hide it from Spring Boot.
+
 Each module aims to have minimal dependencies. General library dependencies are:
 * Jackson 
 * Spring Core (Web/WebMVC/WebFlux are optional)
 * Swagger Annotations
-* WebJar for Swagger UI
+* WebJar for Swagger UI (shaded)
+* Mustache (shaded)
 * Apache Commons
-
