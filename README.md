@@ -60,15 +60,24 @@ too late. It is thus recommended applying filtering as early as possible.
 ### How to obtain a grouped OpenAPI specification?
 
 Grouping is realized by applying filters, preferably a `OperationPreFilter`,
-while building the OpenAPI specification. Query and header parameters can be
-obtained during the build phase the bean `OpenApiRequestParameterProvider`.
+while building the OpenAPI specification. Query and header parameters
+of the HTTP request to `/v3/api-docs` can be obtained within the
+filter by auto-wiring the bean `OpenApiRequestParameterProvider`. 
+
+This way, you can control which operations are considered
+for the specification when `/v3/api-docs?group=MyGroup` is called whereas 
 
 See this [integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app10/App10Test.java) 
-for an example.
+or this [integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app18/App18Test.java)
+for a fully working WebMVC or WebFlux example, respectively. 
 
 ### How to customize the specification?
 
 TODO write about customization
+
+### How to customize the included Swagger UI?
+
+TODO write about it and also include a test for it
 
 ## Basic design principles
 
@@ -105,7 +114,7 @@ auto configuration of common beans.
 **[webflux](openapi-generator-for-spring-webflux)** supports Spring WebFlux via Spring Boot auto configuration.
 
 **[ui](openapi-generator-for-spring-ui)** Provides Swagger UI below `/swagger-ui`. 
-Also offers UI Resource transformation for WebMVC and WebFlux and sets up correct redirect routes.  
+Offers UI Resource transformation for WebMVC and WebFlux and sets up correct redirect routes.  
 
 **[starter](openapi-generator-for-spring-starter)** Opinionated choice of
 *dependencies. Enables Swagger UI and support for WebMVC and WebFlux if present.
