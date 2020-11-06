@@ -10,7 +10,7 @@ import static org.springframework.util.AntPathMatcher.DEFAULT_PATH_SEPARATOR;
 @RequiredArgsConstructor
 public class SwaggerUiSupport {
     static final String INDEX_HTML_FILE = "index.html";
-    static final String SWAGGER_UI_WEB_JAR = "swagger-ui";
+    private static final String SWAGGER_UI_WEB_JAR = "swagger-ui";
 
     private final OpenApiSwaggerUiConfigurationProperties swaggerUiProperties;
 

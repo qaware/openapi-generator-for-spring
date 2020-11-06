@@ -14,13 +14,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 public class OpenApiSwaggerUiConfigurationProperties {
     /**
-     * Flag if exposing Swagger UI is enabled.
+     * Flag if exposing Swagger UI is enabled. Default true.
      */
     private boolean enabled = true;
     /**
      * Path to the Swagger UI.
      */
     private String path = "/swagger-ui";
+    /**
+     * Enable caching of the Swagger UI resources.
+     */
+    private boolean cacheUiResources = false;
 
     public static class EnabledCondition extends ConfigurationPropertyCondition<OpenApiSwaggerUiConfigurationProperties> {
         public EnabledCondition() {

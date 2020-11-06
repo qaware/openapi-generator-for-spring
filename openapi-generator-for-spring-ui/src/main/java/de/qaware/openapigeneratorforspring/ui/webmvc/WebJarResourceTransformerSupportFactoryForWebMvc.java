@@ -4,6 +4,7 @@ import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplie
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformer;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerFactory;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerSupport;
+import de.qaware.openapigeneratorforspring.ui.webjar.WebJarTransformedResourceBuilder;
 import lombok.RequiredArgsConstructor;
 
 import java.net.URI;
@@ -15,12 +16,13 @@ public class WebJarResourceTransformerSupportFactoryForWebMvc {
 
     private final List<WebJarResourceTransformerFactory> resourceTransformerFactories;
     private final OpenApiBaseUriSupplier openApiBaseUriSupplier;
+    private final WebJarTransformedResourceBuilder transformedResourceBuilder;
 
     WebJarResourceTransformerSupport create() {
         URI baseUri = openApiBaseUriSupplier.getBaseUri();
         List<WebJarResourceTransformer> transformers = resourceTransformerFactories.stream()
                 .map(factory -> factory.create(baseUri))
                 .collect(Collectors.toList());
-        return new WebJarResourceTransformerSupport(transformers);
+        return new WebJarResourceTransformerSupport(transformers, transformedResourceBuilder);
     }
 }

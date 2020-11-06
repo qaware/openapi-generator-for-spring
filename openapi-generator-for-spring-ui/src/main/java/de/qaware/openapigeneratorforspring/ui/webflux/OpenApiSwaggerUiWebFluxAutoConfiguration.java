@@ -3,6 +3,7 @@ package de.qaware.openapigeneratorforspring.ui.webflux;
 import de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiSupport;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerFactory;
+import de.qaware.openapigeneratorforspring.ui.webjar.WebJarTransformedResourceBuilder;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +16,6 @@ import org.springframework.web.reactive.config.ResourceHandlerRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.springframework.web.reactive.resource.TransformedResource;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -31,8 +31,11 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class OpenApiSwaggerUiWebFluxAutoConfiguration {
 
     @Bean
-    public WebJarResourceTransformerSupportFactoryForWebFlux webJarResourceTransformersFactoryForWebFlux(List<WebJarResourceTransformerFactory> webJarResourceTransformerFactories) {
-        return new WebJarResourceTransformerSupportFactoryForWebFlux(webJarResourceTransformerFactories);
+    public WebJarResourceTransformerSupportFactoryForWebFlux webJarResourceTransformersFactoryForWebFlux(
+            List<WebJarResourceTransformerFactory> webJarResourceTransformerFactories,
+            WebJarTransformedResourceBuilder transformedResourceBuilder
+    ) {
+        return new WebJarResourceTransformerSupportFactoryForWebFlux(webJarResourceTransformerFactories, transformedResourceBuilder);
     }
 
     @Bean
@@ -48,6 +51,7 @@ public class OpenApiSwaggerUiWebFluxAutoConfiguration {
     @Bean
     public WebFluxConfigurer swaggerUiWebFluxConfigurer(
             SwaggerUiSupport swaggerUiSupport,
+            OpenApiSwaggerUiConfigurationProperties uiProperties,
             WebJarResourceTransformerSupportFactoryForWebFlux transformerSupportFactory
     ) {
         String classPathToSwaggerUi = swaggerUiSupport.getWebJarClassPath();
@@ -56,20 +60,20 @@ public class OpenApiSwaggerUiWebFluxAutoConfiguration {
             public void addResourceHandlers(ResourceHandlerRegistry registry) {
                 registry.addResourceHandler(swaggerUiSupport.getUiPath() + "/**")
                         .addResourceLocations(classPathToSwaggerUi)
-                        .resourceChain(false) // TODO investigate if caching should really be disabled
+                        .resourceChain(uiProperties.isCacheUiResources())
                         .addTransformer((exchange, inputResource, transformerChain) -> transformerChain.transform(exchange, inputResource)
                                 .flatMap(outputResource -> transformResourceIfMatching(exchange, outputResource))
                         );
             }
 
             private Mono<Resource> transformResourceIfMatching(ServerWebExchange exchange, Resource outputResource) {
-                return transformerSupportFactory.create(exchange).transformResourceIfMatching(outputResource, Mono::just, transformer ->
+                return transformerSupportFactory.create(exchange).transformResourceIfMatching(outputResource, Mono::just, (transformer, resourceBuilder) ->
                         DataBufferUtils.join(DataBufferUtils.read(outputResource, exchange.getResponse().bufferFactory(), StreamUtils.BUFFER_SIZE))
                                 .map(dataBuffer -> {
                                     CharBuffer charBuffer = StandardCharsets.UTF_8.decode(dataBuffer.asByteBuffer());
-                                    String transformedContent = transformer.transform(charBuffer.toString());
+                                    String transformedContent = transformer.apply(charBuffer.toString());
                                     DataBufferUtils.release(dataBuffer);
-                                    return new TransformedResource(outputResource, transformedContent.getBytes());
+                                    return resourceBuilder.apply(transformedContent);
                                 })
                 );
             }

@@ -3,9 +3,12 @@ package de.qaware.openapigeneratorforspring.ui;
 import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiIndexHtmlWebJarResourceTransformerFactory;
 import de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiSupport;
+import de.qaware.openapigeneratorforspring.ui.webjar.DefaultWebJarTransformedResourceBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+
+import java.time.Instant;
 
 @EnableConfigurationProperties(OpenApiSwaggerUiConfigurationProperties.class)
 public class OpenApiSwaggerUiAutoConfiguration {
@@ -13,9 +16,10 @@ public class OpenApiSwaggerUiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public SwaggerUiIndexHtmlWebJarResourceTransformerFactory swaggerUiIndexHtmlWebJarResourceTransformerFactory(
-            OpenApiConfigurationProperties openApiConfigurationProperties
+            OpenApiConfigurationProperties openApiConfigurationProperties,
+            OpenApiSwaggerUiApiDocsUrisSupplier swaggerUiApiDocsUrisSupplier
     ) {
-        return new SwaggerUiIndexHtmlWebJarResourceTransformerFactory(openApiConfigurationProperties);
+        return new SwaggerUiIndexHtmlWebJarResourceTransformerFactory(openApiConfigurationProperties, swaggerUiApiDocsUrisSupplier);
     }
 
     @Bean
@@ -24,4 +28,15 @@ public class OpenApiSwaggerUiAutoConfiguration {
         return new SwaggerUiSupport(openApiSwaggerUiConfigurationProperties);
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public OpenApiSwaggerUiApiDocsUrisSupplier openApiSwaggerUiApiDocsUrisSupplier(OpenApiConfigurationProperties openApiConfigurationProperties) {
+        return new DefaultOpenApiSwaggerUiApiDocsUrisSupplier(openApiConfigurationProperties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultWebJarTransformedResourceBuilder defaultWebJarTransformedResourceBuilder(OpenApiSwaggerUiConfigurationProperties openApiSwaggerUiConfigurationProperties) {
+        return new DefaultWebJarTransformedResourceBuilder(openApiSwaggerUiConfigurationProperties, Instant::now);
+    }
 }

@@ -2,8 +2,8 @@ package de.qaware.openapigeneratorforspring.ui.webjar;
 
 import org.springframework.core.io.Resource;
 
-public interface WebJarResourceTransformer {
-    boolean matches(Resource resource);
+import java.util.function.Function;
 
-    String transform(String resourceContent);
+public interface WebJarResourceTransformer extends Function<String, String> {
+    boolean matches(Resource resource);
 }

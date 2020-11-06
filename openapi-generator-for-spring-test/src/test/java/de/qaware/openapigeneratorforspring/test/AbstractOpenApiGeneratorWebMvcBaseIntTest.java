@@ -1,7 +1,6 @@
 package de.qaware.openapigeneratorforspring.test;
 
 import org.junit.runner.RunWith;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,9 +9,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.concurrent.Callable;
-
-import static de.qaware.openapigeneratorforspring.test.OpenApiJsonFileLoader.readOpenApiJsonFile;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -24,13 +20,7 @@ public abstract class AbstractOpenApiGeneratorWebMvcBaseIntTest {
     protected MockMvc mockMvc;
 
     protected static void assertResponseBodyMatchesOpenApiJson(String expectedJsonFile, ResultActions performResult) throws Exception {
-        assertResponseBodyMatchesOpenApiJson(expectedJsonFile, () -> getResponseBodyAsString(performResult));
-    }
-
-    protected static void assertResponseBodyMatchesOpenApiJson(String expectedJsonFile, Callable<String> responseBodySupplier) throws Exception {
-        String expectedJson = readOpenApiJsonFile(expectedJsonFile);
-        String actualJson = responseBodySupplier.call();
-        JSONAssert.assertEquals(expectedJson, actualJson, true);
+        OpenApiJsonIntegrationTestUtils.assertMatchesOpenApiJson(expectedJsonFile, () -> getResponseBodyAsString(performResult));
     }
 
     protected static String getResponseBodyAsString(ResultActions performResult) throws Exception {

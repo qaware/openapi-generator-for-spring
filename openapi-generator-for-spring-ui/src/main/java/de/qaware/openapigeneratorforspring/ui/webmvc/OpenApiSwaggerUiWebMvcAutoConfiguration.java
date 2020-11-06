@@ -4,6 +4,7 @@ import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplie
 import de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiSupport;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerFactory;
+import de.qaware.openapigeneratorforspring.ui.webjar.WebJarTransformedResourceBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -11,7 +12,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.resource.TransformedResource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,14 +29,16 @@ public class OpenApiSwaggerUiWebMvcAutoConfiguration {
     @Bean
     public WebJarResourceTransformerSupportFactoryForWebMvc webJarResourceTransformersFactoryForWebMvc(
             List<WebJarResourceTransformerFactory> webJarResourceTransformerFactories,
-            OpenApiBaseUriSupplier openApiBaseUriSupplier
+            OpenApiBaseUriSupplier openApiBaseUriSupplier,
+            WebJarTransformedResourceBuilder transformedResourceBuilder
     ) {
-        return new WebJarResourceTransformerSupportFactoryForWebMvc(webJarResourceTransformerFactories, openApiBaseUriSupplier);
+        return new WebJarResourceTransformerSupportFactoryForWebMvc(webJarResourceTransformerFactories, openApiBaseUriSupplier, transformedResourceBuilder);
     }
 
     @Bean
     public WebMvcConfigurer swaggerUiWebMvcConfigurer(
             SwaggerUiSupport swaggerUiSupport,
+            OpenApiSwaggerUiConfigurationProperties uiProperties,
             WebJarResourceTransformerSupportFactoryForWebMvc transformerSupportFactory
     ) {
         return new WebMvcConfigurer() {
@@ -44,18 +46,16 @@ public class OpenApiSwaggerUiWebMvcAutoConfiguration {
             public void addResourceHandlers(ResourceHandlerRegistry registry) {
                 registry.addResourceHandler(swaggerUiSupport.getUiPath() + "/**")
                         .addResourceLocations(swaggerUiSupport.getWebJarClassPath())
-                        .resourceChain(false) // TODO investigate if caching should really be disabled
+                        .resourceChain(uiProperties.isCacheUiResources())
                         .addTransformer((request, inputResource, transformerChain) ->
                                 transformResourceIfMatching(transformerChain.transform(request, inputResource))
                         );
             }
 
             private Resource transformResourceIfMatching(Resource outputResource) throws IOException {
-                return transformerSupportFactory.create().transformResourceIfMatching(outputResource, transformer -> {
-                    String content = new BufferedReader(new InputStreamReader(outputResource.getInputStream(), StandardCharsets.UTF_8)).lines()
-                            .collect(Collectors.joining(System.lineSeparator()));
-                    return new TransformedResource(outputResource, transformer.transform(content).getBytes());
-                });
+                return transformerSupportFactory.create().transformResourceIfMatching(outputResource,
+                        () -> new BufferedReader(new InputStreamReader(outputResource.getInputStream(), StandardCharsets.UTF_8)).lines()
+                                .collect(Collectors.joining(System.lineSeparator())));
             }
 
             @Override
