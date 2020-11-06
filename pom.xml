@@ -21,14 +21,18 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <swagger-api.version>2.1.4</swagger-api.version>
-        <commons.io.version>2.7</commons.io.version>
+
         <lombok.version>1.18.12</lombok.version>
         <jsr305.version>3.0.2</jsr305.version>
+        <swagger-annotations.version>2.1.4</swagger-annotations.version>
+        <webjars.swaggerui.version>3.36.1</webjars.swaggerui.version>
+        <classgraph.version>4.8.69</classgraph.version>
+        <commons.io.version>2.7</commons.io.version>
     </properties>
 
     <modules>
         <module>openapi-generator-for-spring-common</module>
+        <module>openapi-generator-for-spring-shaded</module>
         <module>openapi-generator-for-spring-web</module>
         <module>openapi-generator-for-spring-webmvc</module>
         <module>openapi-generator-for-spring-webflux</module>
@@ -57,6 +61,12 @@
             <dependency>
                 <groupId>de.qaware.openapi-generator-for-spring</groupId>
                 <artifactId>openapi-generator-for-spring-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <artifactId>openapi-generator-for-spring-shaded</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -96,21 +106,29 @@
                 <version>${project.version}</version>
             </dependency>
 
-
-            <!-- swagger dependencies -->
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
-                <version>${swagger-api.version}</version>
+                <version>${swagger-annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.webjars</groupId>
+                <artifactId>swagger-ui</artifactId>
+                <version>${webjars.swaggerui.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.classgraph</groupId>
+                <artifactId>classgraph</artifactId>
+                <version>${classgraph.version}</version>
             </dependency>
 
+            <!-- Test dependencies -->
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons.io.version}</version>
                 <scope>test</scope>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -130,6 +148,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

@@ -15,12 +15,10 @@
         <dependency>
             <groupId>de.qaware.openapi-generator-for-spring</groupId>
             <artifactId>openapi-generator-for-spring-common</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webflux</artifactId>
-            <scope>provided</scope>
+            <groupId>de.qaware.openapi-generator-for-spring</groupId>
+            <artifactId>openapi-generator-for-spring-shaded</artifactId>
         </dependency>
         <dependency>
             <groupId>de.qaware.openapi-generator-for-spring</groupId>
@@ -32,28 +30,19 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
+            <artifactId>spring-boot-autoconfigure-processor</artifactId>
+            <optional>true</optional>
         </dependency>
-
-        <!-- see https://www.webjars.org/documentation#springboot -->
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>webjars-locator-core</artifactId>
-            <version>0.46</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>swagger-ui</artifactId>
-            <version>3.36.1</version>
-        </dependency>
-
     </dependencies>
-
 </project>
