@@ -15,9 +15,9 @@ import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 @Tag(name = "hello-world")
 public class HelloWorldController {
     @GetMapping(value = "greeting", produces = TEXT_PLAIN_VALUE)
-    public Mono<String> getGreeting(@RequestParam(value = "name", required = false) @Parameter(description = "Your name") String nameMono) {
-        return Mono.justOrEmpty(nameMono)
+    public Mono<String> getGreeting(@RequestParam(value = "name", required = false) @Parameter(description = "Your name") String name) {
+        return Mono.justOrEmpty(name)
                 .switchIfEmpty(Mono.just("unknown friend"))
-                .map(name -> "Hello from the demo app! Nice to meet you, " + name);
+                .map(n -> "Hello from the demo app! Nice to meet you, " + n);
     }
 }
