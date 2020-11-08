@@ -3,6 +3,7 @@ package de.qaware.openapigeneratorforspring.model.parameter;
 import de.qaware.openapigeneratorforspring.model.example.Example;
 import de.qaware.openapigeneratorforspring.model.media.Content;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
+import de.qaware.openapigeneratorforspring.model.trait.HasContent;
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
 import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
 import de.qaware.openapigeneratorforspring.model.trait.HasReference;
@@ -16,7 +17,7 @@ import java.util.Map;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#parameterObject"
  */
 @Data
-public class Parameter implements HasExtensions, HasReference<Parameter>, HasIsEmpty<Parameter> {
+public class Parameter implements HasContent, HasExtensions, HasReference<Parameter>, HasIsEmpty<Parameter> {
     private String name;
     private String in;
     private String description;

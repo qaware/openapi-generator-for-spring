@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.model.requestbody;
 
 import de.qaware.openapigeneratorforspring.model.media.Content;
+import de.qaware.openapigeneratorforspring.model.trait.HasContent;
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
 import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
 import de.qaware.openapigeneratorforspring.model.trait.HasReference;
@@ -14,7 +15,7 @@ import java.util.Map;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#requestBodyObject"
  */
 @Data
-public class RequestBody implements HasExtensions, HasReference<RequestBody>, HasIsEmpty<RequestBody> {
+public class RequestBody implements HasContent, HasExtensions, HasReference<RequestBody>, HasIsEmpty<RequestBody> {
     private String description;
     private Content content;
     private Boolean required;
