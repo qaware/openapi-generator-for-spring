@@ -5,9 +5,11 @@ import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.Ope
 import de.qaware.openapigeneratorforspring.common.mapper.MapperContext;
 import de.qaware.openapigeneratorforspring.common.mapper.ParameterAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.operation.OperationInfo;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizerContext;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.reference.component.parameter.ReferencedParametersConsumer;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
@@ -43,6 +45,7 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
         // this customizer explicitly overrides already present parameters built from the operation annotation,
         // as the order of parameters is important and should not be determined
         // by the order of information to build those parameters!
+        // TODO consider making the above choice about parameter ordering better bean-customizable?
         List<Parameter> parameters = buildParameters(operationBuilderContext, operationAnnotation);
         setParametersToOperation(operation, parameters, operationBuilderContext);
     }
@@ -74,7 +77,7 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
             Parameter parameter = parameterAnnotationMapper.buildFromAnnotation(iterator.next(), mapperContext);
             iterator.forEachRemaining(parameterAnnotation -> parameterAnnotationMapper.applyFromAnnotation(parameter, parameterAnnotation, mapperContext));
             // also customizers should be applied to parameters not coming from method parameters
-            applyParameterCustomizers(parameter, null, operationBuilderContext);
+            applyParameterCustomizers(parameter, OperationParameterCustomizerContextImpl.of(operationBuilderContext, null));
             setIfNotEmpty(parameter, parameters::add);
         });
 
@@ -92,24 +95,44 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
     private List<Parameter> getParametersFromHandlerMethod(OperationBuilderContext operationBuilderContext) {
         return operationBuilderContext.getOperationInfo().getHandlerMethod().getParameters().stream()
                 .filter(methodParameter -> parameterPreFilters.stream().allMatch(filter -> filter.preAccept(methodParameter)))
-                .map(methodParameter -> convertFromMethodParameter(methodParameter, operationBuilderContext))
+                .flatMap(methodParameter ->
+                        // converters are ordered and the first one not returning null will be used
+                        firstNonNull(parameterMethodConverters, converter -> converter.convert(methodParameter))
+                                // apply customizers after conversion
+                                .map(parameter -> applyParameterCustomizers(parameter, OperationParameterCustomizerContextImpl.of(operationBuilderContext, methodParameter)))
+                                .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
+                )
                 .filter(parameter -> !parameter.isEmpty())
                 .collect(toList());
     }
 
-    private Parameter convertFromMethodParameter(HandlerMethod.Parameter methodParameter, OperationBuilderContext operationBuilderContext) {
-        // converters are ordered and the first one not returning null will be used
-        return firstNonNull(parameterMethodConverters, converter -> converter.convert(methodParameter))
-                .map(parameter -> applyParameterCustomizers(parameter, methodParameter, operationBuilderContext))
-                // request body method parameters are typical candidates which are ignored
-                .orElseGet(Parameter::new);
-    }
-
-    private Parameter applyParameterCustomizers(Parameter parameter, @Nullable HandlerMethod.Parameter methodParameter, OperationBuilderContext operationBuilderContext) {
-        // apply customizers after conversion
-        parameterCustomizers.forEach(customizer -> customizer.customize(parameter, methodParameter, operationBuilderContext));
+    private Parameter applyParameterCustomizers(Parameter parameter, OperationParameterCustomizerContext operationParameterCustomizerContext) {
+        parameterCustomizers.forEach(customizer -> customizer.customize(parameter, operationParameterCustomizerContext));
         // return value for convenience in map
         return parameter;
+    }
+
+    @RequiredArgsConstructor(staticName = "of")
+    private static class OperationParameterCustomizerContextImpl implements OperationParameterCustomizerContext {
+        private final OperationBuilderContext operationBuilderContext;
+        @Nullable
+        private final HandlerMethod.Parameter handlerMethodParameter;
+
+        @Override
+        public OperationInfo getOperationInfo() {
+            return operationBuilderContext.getOperationInfo();
+        }
+
+        @Override
+        public MapperContext getMapperContext() {
+            // TODO extend with media types
+            return operationBuilderContext.getMapperContext();
+        }
+
+        @Override
+        public Optional<HandlerMethod.Parameter> getHandlerMethodParameter() {
+            return Optional.ofNullable(handlerMethodParameter);
+        }
     }
 
     @Override
