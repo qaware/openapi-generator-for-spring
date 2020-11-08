@@ -1,9 +1,12 @@
 package de.qaware.openapigeneratorforspring.webflux.function;
 
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.annotation.Nullable;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RouterFunctionHandlerMethodMapper {
 
     public static class RequestBodyParameterMapper implements HandlerMethod.RequestBodyParameterMapper {

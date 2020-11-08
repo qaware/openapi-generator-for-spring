@@ -6,13 +6,7 @@ import de.qaware.openapigeneratorforspring.model.ExternalDocumentation;
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
 import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
 import de.qaware.openapigeneratorforspring.model.trait.HasReference;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.With;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -35,7 +29,7 @@ public class Schema implements HasExtensions, HasReference<Schema>, HasIsEmpty<S
     private String name;
 
     @JsonProperty("default")
-    private Object _default;
+    private Object defaultValue;
     private String title;
     private BigDecimal multipleOf;
     private BigDecimal maximum;
@@ -67,7 +61,7 @@ public class Schema implements HasExtensions, HasReference<Schema>, HasIsEmpty<S
     private Boolean deprecated;
     private XML xml;
     @JsonProperty("enum")
-    private List<Object> _enum;
+    private List<Object> enumValues;
     private Discriminator discriminator;
     private Schema items;
     private Map<String, Object> extensions;

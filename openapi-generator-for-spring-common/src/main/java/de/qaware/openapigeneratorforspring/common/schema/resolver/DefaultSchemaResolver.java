@@ -79,19 +79,17 @@ public class DefaultSchemaResolver implements SchemaResolver {
             TypeResolverActions actions = new TypeResolverActions();
             for (TypeResolver typeResolver : typeResolvers) {
                 TypeResolver.RecursionKey recursionKey = typeResolver.resolve(initialSchema, javaType, annotationsSupplier, actions::add);
-                if (actions.isEmpty()) {
-                    continue;
+                if (!actions.isEmpty()) {
+                    // prevent depth-first recursion if we already know this schema
+                    Schema knownSchema = checkKnownSchema(schema, recursionKey);
+                    if (knownSchema != null) {
+                        return knownSchema;
+                    }
+                    actions.runRecursively();
+                    if (recursionKey != null) {
+                        return new RecursiveSchema(schema, recursionKey);
+                    }
                 }
-                // prevent depth-first recursion if we already know this schema
-                Schema knownSchema = checkKnownSchema(schema, recursionKey);
-                if (knownSchema != null) {
-                    return knownSchema;
-                }
-                actions.runRecursively();
-                if (recursionKey != null) {
-                    return new RecursiveSchema(schema, recursionKey);
-                }
-                break;
             }
             return schema;
         }

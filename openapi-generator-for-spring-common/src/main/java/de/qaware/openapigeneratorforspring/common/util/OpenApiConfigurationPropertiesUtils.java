@@ -13,13 +13,14 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Predicate;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OpenApiConfigurationPropertiesUtils {
 
     @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-    public static abstract class ConfigurationPropertyCondition<T> extends SpringBootCondition {
+    public abstract static class ConfigurationPropertyCondition<T> extends SpringBootCondition {
         private final Class<T> propertiesClass;
         private final Predicate<T> predicate;
 
@@ -33,8 +34,8 @@ public class OpenApiConfigurationPropertiesUtils {
                     .bind(ConfigurationPropertyName.of(findPrefixFromClass()), Bindable.of(propertiesClass))
                     .orElseGet(() -> {
                         try {
-                            return propertiesClass.newInstance();
-                        } catch (InstantiationException | IllegalAccessException e) {
+                            return propertiesClass.getDeclaredConstructor().newInstance();
+                        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
                             throw new IllegalStateException("Cannot create instance of " + propertiesClass);
                         }
                     });

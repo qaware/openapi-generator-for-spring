@@ -29,9 +29,9 @@ public class DefaultServerVariableAnnotationMapper implements ServerVariableAnno
     @Override
     public ServerVariable map(io.swagger.v3.oas.annotations.servers.ServerVariable serverVariableAnnotation) {
         ServerVariable serverVariable = new ServerVariable();
-        OpenApiStringUtils.setStringIfNotBlank(serverVariableAnnotation.defaultValue(), serverVariable::set_default);
+        OpenApiStringUtils.setStringIfNotBlank(serverVariableAnnotation.defaultValue(), serverVariable::setDefaultValue);
         OpenApiStringUtils.setStringIfNotBlank(serverVariableAnnotation.description(), serverVariable::setDescription);
-        setCollectionIfNotEmpty(Arrays.asList(serverVariableAnnotation.allowableValues()), serverVariable::set_enum);
+        setCollectionIfNotEmpty(Arrays.asList(serverVariableAnnotation.allowableValues()), serverVariable::setEnumValues);
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(serverVariableAnnotation.extensions()), serverVariable::setExtensions);
         return serverVariable;
     }

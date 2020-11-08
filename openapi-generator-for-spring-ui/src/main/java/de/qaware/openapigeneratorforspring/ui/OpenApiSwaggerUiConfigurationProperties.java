@@ -20,6 +20,7 @@ public class OpenApiSwaggerUiConfigurationProperties {
     /**
      * Path to the Swagger UI.
      */
+    @SuppressWarnings("java:S1075") // suppress hard coded URL warning
     private String path = "/swagger-ui";
     /**
      * Enable caching of the Swagger UI resources.

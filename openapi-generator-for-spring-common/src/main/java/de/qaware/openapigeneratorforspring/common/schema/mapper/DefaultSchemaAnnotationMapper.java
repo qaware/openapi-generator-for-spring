@@ -70,9 +70,9 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         List<Object> allowableValues = Stream.of(annotation.allowableValues())
                 .map(parsableValueMapper::parse)
                 .collect(Collectors.toList());
-        setCollectionIfNotEmpty(allowableValues, schema::set_enum);
+        setCollectionIfNotEmpty(allowableValues, schema::setEnumValues);
 
-        setStringIfNotBlank(annotation.defaultValue(), value -> schema.set_default(parsableValueMapper.parse(value)));
+        setStringIfNotBlank(annotation.defaultValue(), value -> schema.setDefaultValue(parsableValueMapper.parse(value)));
 
         setDiscriminator(schema, annotation, referencedSchemaConsumer);
 

@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 public class RouterFunctionParameterMethodConverter implements ParameterMethodConverter {
 
-    public static int ORDER = DEFAULT_ORDER;
+    public static final int ORDER = DEFAULT_ORDER;
 
     @Nullable
     @Override

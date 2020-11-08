@@ -15,9 +15,9 @@ import java.util.Map;
 @Data
 public class ServerVariable implements HasExtensions {
     @JsonProperty("enum")
-    private List<String> _enum;
+    private List<String> enumValues;
     @JsonProperty("default")
-    private String _default;
+    private String defaultValue;
     private String description;
     private Map<String, Object> extensions;
 }

@@ -5,6 +5,7 @@ import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
@@ -71,7 +72,7 @@ public class OpenApiProxyUtils {
     @FunctionalInterface
     private interface InvocationHandler<M> {
         @Nullable
-        Object handle(M mappedMethod, Object firstArg) throws Exception;
+        Object handle(M mappedMethod, Object firstArg) throws InvocationTargetException, IllegalAccessException;
     }
 
     public static Map<String, Method> buildGettersBySetterName(Class<?> clazz, Set<String> setterNames) {

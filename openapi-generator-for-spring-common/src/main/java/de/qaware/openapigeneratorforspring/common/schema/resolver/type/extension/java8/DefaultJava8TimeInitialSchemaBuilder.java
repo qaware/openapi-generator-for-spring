@@ -54,11 +54,10 @@ public class DefaultJava8TimeInitialSchemaBuilder implements Java8TimeInitialSch
     }
 
     private static Schema.SchemaBuilder createSchemaBuilderWithType(Format format) {
-        switch (format) {
-            case ISO8601:
-                return Schema.builder().type("string");
-            case UNIX_EPOCH_SECONDS:
-                return Schema.builder().type("number").format("int64");
+        if (format == ISO8601) {
+            return Schema.builder().type("string");
+        } else if (format == UNIX_EPOCH_SECONDS) {
+            return Schema.builder().type("number").format("int64");
         }
         throw new IllegalArgumentException("Unsupported Java8 Time Format " + format);
     }

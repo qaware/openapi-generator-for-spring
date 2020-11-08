@@ -25,7 +25,6 @@ public class PathItem implements HasExtensions {
     private String description;
     private List<Server> servers;
     private List<Parameter> parameters;
-    private String $ref;
 
     @JsonIgnore // merged into extensions
     private Map<String, Operation> operations = new LinkedHashMap<>();

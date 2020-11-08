@@ -25,7 +25,7 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils
 
 @RequiredArgsConstructor
 public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
-    public static int ORDER = DEFAULT_ORDER;
+    public static final int ORDER = DEFAULT_ORDER;
 
     private final ServerAnnotationMapper serverAnnotationMapper;
     private final ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper;

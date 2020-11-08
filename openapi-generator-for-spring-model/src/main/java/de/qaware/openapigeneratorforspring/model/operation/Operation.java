@@ -10,11 +10,7 @@ import de.qaware.openapigeneratorforspring.model.server.Server;
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -49,7 +45,7 @@ public class Operation implements HasExtensions {
         if (security == null) {
             security = new ArrayList<>();
         }
-        if (security.size() > 0) {
+        if (!security.isEmpty()) {
             security.set(0, securityRequirement);
         }
         security.add(securityRequirement);

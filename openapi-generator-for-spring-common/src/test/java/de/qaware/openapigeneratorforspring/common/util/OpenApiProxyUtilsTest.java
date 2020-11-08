@@ -55,8 +55,8 @@ public class OpenApiProxyUtilsTest {
         immutableParameter.setExtensions(Collections.singletonMap("key1", true)); // ignored
         immutableParameter.setExtensions(Collections.singletonMap("key2", true)); // ok
 
-        assertThat(parameter.getExtensions().get("key1")).isEqualTo("value1");
-        assertThat(parameter.getExtensions().get("key2")).isEqualTo(true);
+        assertThat(parameter.getExtensions()).containsEntry("key1", "value1");
+        assertThat(parameter.getExtensions()).containsEntry("key2", true);
     }
 
     @Test

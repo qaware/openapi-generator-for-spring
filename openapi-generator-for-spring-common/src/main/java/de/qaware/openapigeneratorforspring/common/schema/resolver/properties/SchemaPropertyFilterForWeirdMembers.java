@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class SchemaPropertyFilterForWeirdMembers implements SchemaPropertyFilter {
 
-    public static int ORDER = DEFAULT_ORDER - 100; // Run a little bit earlier to get rid of weird properties early
+    public static final int ORDER = DEFAULT_ORDER - 100; // Run a little bit earlier to get rid of weird properties early
 
     @Override
     public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType) {

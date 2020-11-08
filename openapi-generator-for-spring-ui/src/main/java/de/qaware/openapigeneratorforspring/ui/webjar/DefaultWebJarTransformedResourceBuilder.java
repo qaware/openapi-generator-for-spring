@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.ui.webjar;
 
 import de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiConfigurationProperties;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -25,6 +26,7 @@ public class DefaultWebJarTransformedResourceBuilder implements WebJarTransforme
     }
 
     @Getter
+    @EqualsAndHashCode(callSuper = true)
     private static class StringResourceWithLastModified extends ByteArrayResource {
         private final LastModifiedSupplier lastModifiedSupplier;
         private final String filename; // important for correct content type!

@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 public class InitialSchemaBuilderForRouterFunctionReturnType implements InitialSchemaBuilder {
-    public static int ORDER = InitialSchemaBuilderForSchemaAnnotation.ORDER + 10;
+    public static final int ORDER = InitialSchemaBuilderForSchemaAnnotation.ORDER + 10;
 
     private static final ReferencedSchemaConsumer NOOP_CONSUMER = new ReferencedSchemaConsumer() {
         @Override

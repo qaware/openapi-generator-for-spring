@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 
 public class SchemaPropertyFilterForIgnoredMembers implements SchemaPropertyFilter {
 
-    public static int ORDER = DEFAULT_ORDER;
+    public static final int ORDER = DEFAULT_ORDER;
 
     @Override
     public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType) {

@@ -50,12 +50,12 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformer implements WebJarResour
         return INDEX_HTML_MUSTACHE_TEMPLATE.execute(context);
     }
 
-    private List<TemplateContext.Url> mapApiDocsUris(List<OpenApiSwaggerUiApiDocsUrisSupplier.ApiDocsUriWithName> apiDocsUris) {
+    private List<TemplateContext.UrlItem> mapApiDocsUris(List<OpenApiSwaggerUiApiDocsUrisSupplier.ApiDocsUriWithName> apiDocsUris) {
         if (apiDocsUris.size() == 1) {
             return Collections.emptyList();
         }
         return apiDocsUris.stream()
-                .map(uri -> TemplateContext.Url.of(uri.getName(), uri.getApiDocsUri()))
+                .map(uri -> TemplateContext.UrlItem.of(uri.getName(), uri.getApiDocsUri()))
                 .collect(Collectors.toList());
     }
 
@@ -64,11 +64,11 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformer implements WebJarResour
     private static class TemplateContext {
         @Nullable
         private final URI url;
-        private final List<Url> urls;
+        private final List<UrlItem> urls;
 
         @RequiredArgsConstructor(staticName = "of")
         @Getter
-        private static class Url {
+        private static class UrlItem {
             private final String name;
             private final URI url;
         }

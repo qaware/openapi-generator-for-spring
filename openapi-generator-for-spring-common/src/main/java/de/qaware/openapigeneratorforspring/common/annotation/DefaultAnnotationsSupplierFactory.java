@@ -29,7 +29,7 @@ public class DefaultAnnotationsSupplierFactory implements AnnotationsSupplierFac
         return new AnnotationsSupplierFromAnnotatedElement(annotatedElement);
     }
 
-    private static abstract class RepeatableContainerAwareAnnotationsSupplier implements AnnotationsSupplier {
+    private abstract static class RepeatableContainerAwareAnnotationsSupplier implements AnnotationsSupplier {
         @Override
         public final <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
             // always append possible repeatable annotations

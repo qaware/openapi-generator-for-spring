@@ -65,7 +65,7 @@ public class OpenApiGeneratorOperationAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationSecurityRequirementCustomizer DefaultOperationSecurityRequirementCustomizer(SecurityRequirementAnnotationMapper securityRequirementAnnotationMapper) {
+    public DefaultOperationSecurityRequirementCustomizer defaultOperationSecurityRequirementCustomizer(SecurityRequirementAnnotationMapper securityRequirementAnnotationMapper) {
         return new DefaultOperationSecurityRequirementCustomizer(securityRequirementAnnotationMapper);
     }
 
