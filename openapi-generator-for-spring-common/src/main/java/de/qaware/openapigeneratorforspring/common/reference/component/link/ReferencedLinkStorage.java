@@ -10,13 +10,10 @@ import de.qaware.openapigeneratorforspring.model.link.Link;
 import java.util.Collections;
 import java.util.Map;
 
-import static de.qaware.openapigeneratorforspring.common.reference.ReferenceType.HEADER;
-
 
 public class ReferencedLinkStorage extends AbstractReferencedItemStorage<Link> {
     ReferencedLinkStorage(ReferenceDeciderForType<Link> referenceDecider, ReferenceIdentifierBuilderForType<Link> referenceIdentifierFactory, ReferenceIdentifierConflictResolverForType<Link> referenceIdentifierConflictResolver) {
-        super(ReferenceType.LINK, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Link::new,
-                Collections.singletonList(HEADER));
+        super(ReferenceType.LINK, referenceDecider, referenceIdentifierFactory, referenceIdentifierConflictResolver, Link::new, Collections.emptyList());
     }
 
     public void maybeReferenceLinks(Map<String, Link> links) {
