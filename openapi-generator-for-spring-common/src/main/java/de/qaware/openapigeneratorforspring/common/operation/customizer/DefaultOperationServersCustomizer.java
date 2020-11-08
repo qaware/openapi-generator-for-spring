@@ -7,6 +7,7 @@ import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.server.Server;
 import lombok.RequiredArgsConstructor;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,7 +22,7 @@ public class DefaultOperationServersCustomizer implements OperationCustomizer {
     private final ServerAnnotationMapper serverAnnotationMapper;
 
     @Override
-    public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
+    public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
         List<Server> servers = Stream.concat(
                 operation.getServers() == null ? Stream.empty() : operation.getServers().stream(),
                 collectServersFromMethodAndClass(operationBuilderContext)

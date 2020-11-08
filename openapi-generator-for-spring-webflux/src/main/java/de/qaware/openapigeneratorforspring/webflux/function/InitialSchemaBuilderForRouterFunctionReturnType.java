@@ -38,7 +38,7 @@ public class InitialSchemaBuilderForRouterFunctionReturnType implements InitialS
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
         if (javaType.getRawClass().equals(RouterFunctionHandlerMethod.ReturnType.class)) {
             io.swagger.v3.oas.annotations.media.Schema schemaAnnotation = annotationsSupplier.findFirstAnnotation(io.swagger.v3.oas.annotations.media.Schema.class);
             if (schemaAnnotation != null) {

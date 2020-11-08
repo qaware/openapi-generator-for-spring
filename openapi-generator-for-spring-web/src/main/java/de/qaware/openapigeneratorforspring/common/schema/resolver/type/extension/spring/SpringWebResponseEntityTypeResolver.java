@@ -15,9 +15,9 @@ public class SpringWebResponseEntityTypeResolver implements InitialSchemaBuilder
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
         if (javaType.getRawClass().equals(ResponseEntity.class)) {
-            return fallbackResolver.resolveFromType(javaType.containedType(0), annotationsSupplier);
+            return resolver.resolveFromType(javaType.containedType(0), annotationsSupplier);
         }
         return null;
     }

@@ -11,10 +11,10 @@ public class InitialSchemaBuilderForReferenceType implements InitialSchemaBuilde
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
         if (javaType.isReferenceType()) {
             // TODO append annotationSupplier with contained generic type!
-            InitialSchema initialSchema = fallbackResolver.resolveFromType(javaType.getContentType(), annotationsSupplier);
+            InitialSchema initialSchema = resolver.resolveFromType(javaType.getContentType(), annotationsSupplier);
             if (initialSchema != null && initialSchema.getSchema().getNullable() == null) {
                 // TODO check if all jackson reference types should be considered @Nullable by default
                 initialSchema.getSchema().setNullable(true);

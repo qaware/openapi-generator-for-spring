@@ -8,7 +8,7 @@ import static de.qaware.openapigeneratorforspring.common.operation.response.Defa
 import static org.springframework.core.Ordered.LOWEST_PRECEDENCE;
 
 @RequiredArgsConstructor
-@Order(LOWEST_PRECEDENCE)
+@Order(LOWEST_PRECEDENCE) // really should be last fallback option
 public class DefaultApiResponseCodeMapper implements HandlerMethod.ApiResponseCodeMapper {
     @Override
     public String map(HandlerMethod handlerMethod) {

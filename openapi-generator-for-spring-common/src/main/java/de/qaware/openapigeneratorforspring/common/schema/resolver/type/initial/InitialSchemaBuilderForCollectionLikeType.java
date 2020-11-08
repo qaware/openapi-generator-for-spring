@@ -16,7 +16,7 @@ public class InitialSchemaBuilderForCollectionLikeType implements InitialSchemaB
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
         return javaType.isCollectionLikeType() ? buildArrayInitialSchema() : null;
     }
 

@@ -21,7 +21,7 @@ public class InitialSchemaBuilderForObject implements InitialSchemaBuilder, Type
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
         return InitialSchema.builder()
                 .schema(Schema.builder()
                         .type("object")

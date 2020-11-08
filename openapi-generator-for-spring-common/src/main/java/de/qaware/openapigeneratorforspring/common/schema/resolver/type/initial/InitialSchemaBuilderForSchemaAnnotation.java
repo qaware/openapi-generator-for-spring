@@ -20,11 +20,11 @@ public class InitialSchemaBuilderForSchemaAnnotation implements InitialSchemaBui
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver fallbackResolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
         return Optional.ofNullable(annotationsSupplier.findFirstAnnotation(Schema.class))
                 .map(Schema::implementation)
                 .filter(clazz -> !Void.class.equals(clazz))
-                .map(clazz -> fallbackResolver.resolveFromType(
+                .map(clazz -> resolver.resolveFromType(
                         openApiObjectMapperSupplier.get().constructType(clazz),
                         annotationsSupplierFactory.createFromAnnotatedElement(clazz)
                 ))

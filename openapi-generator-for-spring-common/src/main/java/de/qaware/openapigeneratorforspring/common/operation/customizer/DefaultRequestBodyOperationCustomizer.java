@@ -32,7 +32,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
     private final SchemaResolver schemaResolver;
 
     @Override
-    public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
+    public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
         setIfNotEmpty(
                 applyFromMethod(operation.getRequestBody(), operationBuilderContext),
                 requestBody -> operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedRequestBodyConsumer.class)

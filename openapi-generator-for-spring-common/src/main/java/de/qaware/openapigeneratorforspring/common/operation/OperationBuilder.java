@@ -18,25 +18,18 @@ public class OperationBuilder {
         try {
             return getOperationInternal(context);
         } catch (Exception e) {
-            throw new RuntimeException("Exception encountered while building operation with " + context.getOperationInfo(), e);
+            // wrap it into exception to help debugging failed open api builds
+            throw new OperationBuilderException("Exception encountered while building operation with " + context.getOperationInfo(), e);
         }
     }
 
     public Operation getOperationInternal(OperationBuilderContext context) {
         io.swagger.v3.oas.annotations.Operation operationAnnotation = context.getOperationInfo().getHandlerMethod().getAnnotationsSupplier()
                 .findFirstAnnotation(io.swagger.v3.oas.annotations.Operation.class);
-
         Operation operation = Optional.ofNullable(operationAnnotation)
                 .map(annotation -> operationAnnotationMapper.map(annotation, context.getReferencedItemConsumerSupplier()))
                 .orElseGet(Operation::new);
-
-        for (OperationCustomizer operationCustomizer : operationCustomizers) {
-            if (operationAnnotation != null) {
-                operationCustomizer.customizeWithAnnotationPresent(operation, context, operationAnnotation);
-            } else {
-                operationCustomizer.customize(operation, context);
-            }
-        }
+        operationCustomizers.forEach(customizer -> customizer.customize(operation, operationAnnotation, context));
         return operation;
     }
 }

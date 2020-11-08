@@ -18,9 +18,10 @@ import javax.annotation.Nullable;
  * for non-recursive schema resolution from type.
  */
 @SuppressWarnings("squid:S1214") // suppress warning about constant in interface
+@FunctionalInterface
 public interface TypeResolver extends Ordered {
 
-    int DEFAULT_ORDER = Ordered.LOWEST_PRECEDENCE - 1000;
+    int DEFAULT_ORDER = 0;
 
     @Nullable
     RecursionKey resolve(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType);
@@ -29,5 +30,10 @@ public interface TypeResolver extends Ordered {
         boolean equals(Object other);
 
         int hashCode();
+    }
+
+    @Override
+    default int getOrder() {
+        return DEFAULT_ORDER;
     }
 }

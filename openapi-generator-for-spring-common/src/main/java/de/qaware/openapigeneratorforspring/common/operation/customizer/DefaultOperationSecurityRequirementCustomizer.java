@@ -7,6 +7,7 @@ import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,7 @@ public class DefaultOperationSecurityRequirementCustomizer implements OperationC
     private final SecurityRequirementAnnotationMapper securityRequirementAnnotationMapper;
 
     @Override
-    public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
+    public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
         AnnotationsSupplier annotationsSupplier = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
 
         // the following code assumes that all security requirements we find must be fulfilled at the same time,

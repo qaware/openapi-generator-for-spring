@@ -5,6 +5,8 @@ import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvid
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import lombok.RequiredArgsConstructor;
 
+import javax.annotation.Nullable;
+
 @RequiredArgsConstructor
 public class DefaultOperationIdCustomizer implements OperationCustomizer {
 
@@ -13,7 +15,7 @@ public class DefaultOperationIdCustomizer implements OperationCustomizer {
     private final OperationIdProvider operationIdProvider;
 
     @Override
-    public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
+    public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
         if (operation.getOperationId() == null) {
             operation.setOperationId(operationIdProvider.getOperationId(operationBuilderContext.getOperationInfo()));
         }
