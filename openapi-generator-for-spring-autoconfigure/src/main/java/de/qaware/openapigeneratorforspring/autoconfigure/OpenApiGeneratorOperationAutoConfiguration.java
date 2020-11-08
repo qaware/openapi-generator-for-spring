@@ -23,8 +23,14 @@ public class OpenApiGeneratorOperationAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OperationBuilder operationBuilder(OperationAnnotationMapper operationAnnotationMapper, List<OperationCustomizer> operationCustomizers) {
-        return new OperationBuilder(operationAnnotationMapper, operationCustomizers);
+    public OperationBuilder operationBuilder(
+            OperationAnnotationMapper operationAnnotationMapper,
+            List<OperationCustomizer> operationCustomizers,
+            List<HandlerMethod.ReturnTypeMapper> handlerMethodReturnTypeMappers,
+            List<HandlerMethod.RequestBodyParameterMapper> handlerMethodRequestBodyParameterMappers
+    ) {
+        return new OperationBuilder(operationAnnotationMapper, operationCustomizers,
+                handlerMethodReturnTypeMappers, handlerMethodRequestBodyParameterMappers);
     }
 
     @Bean
@@ -85,9 +91,8 @@ public class OpenApiGeneratorOperationAutoConfiguration {
     @ConditionalOnMissingBean
     public DefaultRequestBodyOperationCustomizer defaultRequestBodyOperationCustomizer(
             RequestBodyAnnotationMapper requestBodyAnnotationMapper,
-            List<HandlerMethod.RequestBodyParameterMapper> handlerMethodRequestBodyParameterMappers,
             SchemaResolver schemaResolver
     ) {
-        return new DefaultRequestBodyOperationCustomizer(requestBodyAnnotationMapper, handlerMethodRequestBodyParameterMappers, schemaResolver);
+        return new DefaultRequestBodyOperationCustomizer(requestBodyAnnotationMapper, schemaResolver);
     }
 }

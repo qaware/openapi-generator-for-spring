@@ -5,6 +5,7 @@ import de.qaware.openapigeneratorforspring.common.reference.component.schema.Ref
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.model.media.Content;
 import de.qaware.openapigeneratorforspring.model.media.MediaType;
+import de.qaware.openapigeneratorforspring.model.trait.HasContent;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -27,14 +28,14 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
     private final ExampleObjectAnnotationMapper exampleObjectAnnotationMapper;
 
     @Override
-    public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations, MapperContext mapperContext) {
+    public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations, Class<? extends HasContent> owningType, MapperContext mapperContext) {
         return Arrays.stream(contentAnnotations)
                 .flatMap(contentAnnotation -> {
                     MediaType mediaTypeValue = map(contentAnnotation, mapperContext);
                     if (StringUtils.isBlank(contentAnnotation.mediaType())) {
                         // if the mapperContext doesn't have any suggested media types,
                         // the mediaTypeValue is discarded!
-                        return mapperContext.getSuggestedMediaTypes().stream()
+                        return mapperContext.getSuggestedMediaTypes(owningType).stream()
                                 .map(mediaType -> Pair.of(mediaType, mediaTypeValue));
                     }
                     return Stream.of(Pair.of(contentAnnotation.mediaType(), mediaTypeValue));

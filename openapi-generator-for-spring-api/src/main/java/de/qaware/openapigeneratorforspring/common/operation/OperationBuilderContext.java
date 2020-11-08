@@ -1,12 +1,16 @@
 package de.qaware.openapigeneratorforspring.common.operation;
 
 import de.qaware.openapigeneratorforspring.common.mapper.MapperContext;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 
-@RequiredArgsConstructor
-@Getter
-public class OperationBuilderContext {
-    private final OperationInfo operationInfo;
-    private final MapperContext mapperContext;
+import java.util.Optional;
+
+public interface OperationBuilderContext {
+    OperationInfo getOperationInfo();
+
+    MapperContext getMapperContext();
+
+    Optional<HandlerMethod.ReturnType> getHandlerMethodReturnType();
+
+    Optional<HandlerMethod.RequestBodyParameter> getHandlerMethodRequestBodyParameter();
 }

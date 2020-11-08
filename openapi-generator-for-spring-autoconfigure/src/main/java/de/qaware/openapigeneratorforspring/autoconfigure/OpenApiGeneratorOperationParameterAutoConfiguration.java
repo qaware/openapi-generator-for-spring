@@ -4,8 +4,10 @@ import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.Ope
 import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterPreFilter;
 import de.qaware.openapigeneratorforspring.common.mapper.*;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.DefaultOperationParameterCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.OperationParameterCustomizerContextFactory;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.*;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -22,11 +24,14 @@ public class OpenApiGeneratorOperationParameterAutoConfiguration {
             List<OperationParameterPostFilter> operationParameterPostFilters,
             List<ParameterMethodConverter> parameterMethodConverters,
             List<OperationParameterCustomizer> operationParameterCustomizers,
+            OperationParameterCustomizerContextFactory operationParameterCustomizerContextFactory,
             ParameterAnnotationMapper parameterAnnotationMapper
     ) {
         return new DefaultOperationParameterCustomizer(
                 operationParameterPreFilters, operationParameterPostFilters,
-                parameterMethodConverters, operationParameterCustomizers, parameterAnnotationMapper
+                parameterMethodConverters, operationParameterCustomizers,
+                operationParameterCustomizerContextFactory,
+                parameterAnnotationMapper
         );
     }
 
@@ -41,6 +46,12 @@ public class OpenApiGeneratorOperationParameterAutoConfiguration {
         return new DefaultParameterAnnotationMapper(
                 schemaAnnotationMapper, contentAnnotationMapper, exampleObjectAnnotationMapper, extensionAnnotationMapper
         );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OperationParameterCustomizerContextFactory operationParameterCustomizerContextFactory(List<HandlerMethod.MediaTypesParameterMapper> handlerMethodMediaTypesParameterMappers) {
+        return new OperationParameterCustomizerContextFactory(handlerMethodMediaTypesParameterMappers);
     }
 
     @Bean

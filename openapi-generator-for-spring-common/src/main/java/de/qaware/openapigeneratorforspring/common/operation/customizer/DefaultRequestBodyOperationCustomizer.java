@@ -3,7 +3,6 @@ package de.qaware.openapigeneratorforspring.common.operation.customizer;
 import de.qaware.openapigeneratorforspring.common.mapper.MapperContext;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import de.qaware.openapigeneratorforspring.common.operation.OperationInfo;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.reference.component.requestbody.ReferencedRequestBodyConsumer;
 import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
@@ -15,11 +14,8 @@ import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
 
 @RequiredArgsConstructor
@@ -27,7 +23,6 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
     public static final int ORDER = DEFAULT_ORDER;
 
     private final RequestBodyAnnotationMapper requestBodyAnnotationMapper;
-    private final List<HandlerMethod.RequestBodyParameterMapper> handlerMethodRequestBodyParameterMappers;
     private final SchemaResolver schemaResolver;
 
     @Override
@@ -40,33 +35,27 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
     }
 
     private RequestBody applyFromMethod(@Nullable RequestBody existingRequestBody, OperationBuilderContext operationBuilderContext) {
-        OperationInfo operationInfo = operationBuilderContext.getOperationInfo();
-        MapperContext mapperContext = operationBuilderContext.getMapperContext();
-        return operationInfo.getHandlerMethod().getParameters().stream()
-                .flatMap(methodParameter -> firstNonNull(handlerMethodRequestBodyParameterMappers, mapper -> mapper.map(methodParameter))
-                        .map(handlerMethodRequestBody -> buildRequestBody(handlerMethodRequestBody, methodParameter, existingRequestBody, mapperContext))
-                        .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
-                )
-                .reduce((a, b) -> {
-                    throw new IllegalStateException("Found more than one @RequestBody annotation on " + operationInfo);
-                })
+        // TODO use the request body parameter as a suggested identifier for possible referencing?
+        return operationBuilderContext.getHandlerMethodRequestBodyParameter()
+                .map(requestBodyParameter -> buildRequestBody(requestBodyParameter, existingRequestBody, operationBuilderContext.getMapperContext()))
                 .orElseGet(RequestBody::new);
     }
 
-    private RequestBody buildRequestBody(HandlerMethod.RequestBodyParameter handlerMethodRequestBody, HandlerMethod.Parameter methodParameter, @Nullable RequestBody existingRequestBody, MapperContext mapperContext) {
-        RequestBody requestBody = getRequestBodyFromAnnotation(existingRequestBody, methodParameter, mapperContext);
-        handlerMethodRequestBody.customize(requestBody);
-        for (String contentType : handlerMethodRequestBody.getConsumesContentTypes()) {
-            MediaType mediaType = getMediaType(contentType, requestBody);
+    private RequestBody buildRequestBody(HandlerMethod.RequestBodyParameter handlerMethodRequestBodyParameter, @Nullable RequestBody existingRequestBody, MapperContext mapperContext) {
+        RequestBody requestBody = getRequestBodyFromAnnotation(existingRequestBody, handlerMethodRequestBodyParameter, mapperContext);
+        for (String contentType : handlerMethodRequestBodyParameter.getConsumesContentTypes()) {
+            MediaType mediaType = addMediaTypeIfNotPresent(contentType, requestBody);
             if (mediaType.getSchema() == null) {
-                methodParameter.getType().ifPresent(parameterType -> schemaResolver.resolveFromType(
+                handlerMethodRequestBodyParameter.getType().ifPresent(parameterType -> schemaResolver.resolveFromType(
                         parameterType,
-                        methodParameter.getAnnotationsSupplier().andThen(methodParameter.getAnnotationsSupplierForType()),
+                        handlerMethodRequestBodyParameter.getAnnotationsSupplier()
+                                .andThen(handlerMethodRequestBodyParameter.getAnnotationsSupplierForType()),
                         mapperContext.getReferenceConsumer(ReferencedSchemaConsumer.class),
                         mediaType::setSchema
                 ));
             }
         }
+        handlerMethodRequestBodyParameter.customize(requestBody);
         return requestBody;
     }
 
@@ -82,7 +71,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
                 .orElseGet(() -> existingRequestBody != null ? existingRequestBody : new RequestBody());
     }
 
-    private static MediaType getMediaType(String contentType, RequestBody requestBody) {
+    private static MediaType addMediaTypeIfNotPresent(String contentType, RequestBody requestBody) {
         if (requestBody.getContent() == null) {
             Content content = new Content();
             requestBody.setContent(content);

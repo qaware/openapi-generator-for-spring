@@ -37,10 +37,9 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
 
     @Override
-    public Operation map(io.swagger.v3.oas.annotations.Operation operationAnnotation,
-                         MapperContext mapperContext) {
+    public Operation map(io.swagger.v3.oas.annotations.Operation operationAnnotation, MapperContext mapperContext) {
         Operation operation = new Operation();
-        // operationAnnotation.method() ignored here, as its managed by caller if at all
+        // operationAnnotation.method() ignored here, as its managed by caller (if at all)
         setTags(operation, operationAnnotation.tags(), mapperContext);
         setStringIfNotBlank(operationAnnotation.summary(), operation::setSummary);
         setStringIfNotBlank(operationAnnotation.description(), operation::setDescription);

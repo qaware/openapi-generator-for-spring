@@ -33,12 +33,12 @@ public class DefaultApiResponseAnnotationMapper implements ApiResponseAnnotation
         );
         setMapIfNotEmpty(linkAnnotationMapper.mapArray(annotation.links()),
                 links -> mapperContext.getReferenceConsumer(ReferencedLinksConsumer.class).maybeAsReference(links,
-                        linksMap -> mergeWithExistingMap(apiResponse::getLinks, apiResponse::setLinks, links
-                        )
+                        linksMap -> mergeWithExistingMap(apiResponse::getLinks, apiResponse::setLinks, links)
                 )
         );
-        mergeWithExistingMap(apiResponse::getContent, apiResponse::setContent, contentAnnotationMapper.mapArray(annotation.content(), mapperContext));
+        mergeWithExistingMap(apiResponse::getContent, apiResponse::setContent, contentAnnotationMapper.mapArray(annotation.content(), ApiResponse.class, mapperContext));
         mergeWithExistingMap(apiResponse::getExtensions, apiResponse::setExtensions, extensionAnnotationMapper.mapArray(annotation.extensions()));
-        // TODO treat provided ref specially when present!
+
+        // TODO treat ref as suggested identifier here?
     }
 }

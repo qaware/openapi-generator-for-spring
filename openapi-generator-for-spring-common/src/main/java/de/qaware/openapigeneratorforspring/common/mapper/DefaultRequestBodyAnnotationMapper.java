@@ -21,7 +21,7 @@ public class DefaultRequestBodyAnnotationMapper implements RequestBodyAnnotation
     @Override
     public void applyFromAnnotation(RequestBody requestBody, io.swagger.v3.oas.annotations.parameters.RequestBody annotation, MapperContext mapperContext) {
         setStringIfNotBlank(annotation.description(), requestBody::setDescription);
-        setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), mapperContext), requestBody::setContent);
+        setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), RequestBody.class, mapperContext), requestBody::setContent);
         if (annotation.required()) {
             requestBody.setRequired(true);
         }

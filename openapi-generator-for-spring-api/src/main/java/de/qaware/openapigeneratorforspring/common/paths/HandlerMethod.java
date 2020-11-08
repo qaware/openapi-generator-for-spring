@@ -16,15 +16,13 @@ public interface HandlerMethod {
 
     interface Parameter {
         String getName();
-
         Optional<Type> getType();
-
         AnnotationsSupplier getAnnotationsSupplier();
         // annotations from parameter type are useful for SchemaResolver
         AnnotationsSupplier getAnnotationsSupplierForType();
     }
 
-    interface RequestBodyParameter {
+    interface RequestBodyParameter extends Parameter {
         List<String> getConsumesContentTypes();
 
         default void customize(RequestBody requestBody) {
@@ -34,8 +32,17 @@ public interface HandlerMethod {
 
     interface ReturnType {
         Type getType();
+
         List<String> getProducesContentTypes();
+
         AnnotationsSupplier getAnnotationsSupplier();
+    }
+
+    // TODO use this at least for Spring Web!
+    @FunctionalInterface
+    @Order(0)
+    interface MediaTypesParameterMapper {
+        List<String> map(Parameter parameter);
     }
 
     @FunctionalInterface

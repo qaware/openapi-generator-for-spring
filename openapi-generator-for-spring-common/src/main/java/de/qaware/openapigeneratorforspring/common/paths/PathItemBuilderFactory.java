@@ -2,9 +2,7 @@ package de.qaware.openapigeneratorforspring.common.paths;
 
 import de.qaware.openapigeneratorforspring.common.filter.operation.OperationPostFilter;
 import de.qaware.openapigeneratorforspring.common.filter.operation.OperationPreFilter;
-import de.qaware.openapigeneratorforspring.common.mapper.DefaultMapperContext;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
-import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.OperationInfo;
 import de.qaware.openapigeneratorforspring.common.operation.OperationWithInfo;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
@@ -45,8 +43,7 @@ public class PathItemBuilderFactory {
                 if (isNotAcceptedByAllOperationPreFilters(operationInfo)) {
                     return;
                 }
-                OperationBuilderContext operationBuilderContext = new OperationBuilderContext(operationInfo, DefaultMapperContext.of(referencedItemConsumerSupplier));
-                Operation operation = operationBuilder.buildOperation(operationBuilderContext);
+                Operation operation = operationBuilder.buildOperation(operationInfo, referencedItemConsumerSupplier);
                 if (isAcceptedByAllOperationPostFilters(operation, handlerMethod)) {
                     String operationId = operation.getOperationId();
                     if (operationId != null) {

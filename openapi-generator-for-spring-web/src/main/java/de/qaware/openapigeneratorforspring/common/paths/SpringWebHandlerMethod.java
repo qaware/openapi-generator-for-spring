@@ -57,7 +57,7 @@ class SpringWebHandlerMethod implements HandlerMethod {
             this.annotationsSupplierForType = annotationsSupplierForType;
         }
 
-        @Getter(AccessLevel.PACKAGE)
+        @Getter(AccessLevel.PROTECTED)
         private final SpringWebHandlerMethod parentMethod;
         @Getter(AccessLevel.PACKAGE)
         private final java.lang.reflect.Parameter parameter;
@@ -75,18 +75,20 @@ class SpringWebHandlerMethod implements HandlerMethod {
         }
     }
 
-    @RequiredArgsConstructor
-    static class SpringWebRequestBodyParameter implements RequestBodyParameter {
-
-        private final AnnotationsSupplier handlerMethodAnnotationsSupplier;
+    static class SpringWebRequestBodyParameter extends SpringWebParameter implements RequestBodyParameter {
         private final org.springframework.web.bind.annotation.RequestBody springRequestBodyAnnotation;
+
+        public SpringWebRequestBodyParameter(SpringWebParameter delegate, org.springframework.web.bind.annotation.RequestBody springRequestBodyAnnotation) {
+            super(delegate.getParentMethod(), delegate.getParameter(), delegate.getAnnotationsSupplier(), delegate.getAnnotationsSupplierForType());
+            this.springRequestBodyAnnotation = springRequestBodyAnnotation;
+        }
 
         @Override
         public List<String> getConsumesContentTypes() {
             // TODO check if that logic here correctly mimics the way Spring is treating the "consumes" property
             // Spring uses it to conditionally check if that handler method is supposed to accept that request,
             // and we need an information on what is supposed to be sent from the client for that method
-            return handlerMethodAnnotationsSupplier
+            return getParentMethod().getAnnotationsSupplier()
                     .findAnnotations(RequestMapping.class)
                     .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.consumes()))
                     .findFirst()

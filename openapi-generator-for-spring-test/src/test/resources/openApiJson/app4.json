@@ -86,6 +86,7 @@
                 "description": "Description header 2",
                 "required": true,
                 "deprecated": true,
+                "style": "simple",
                 "schema": {
                   "type": "string"
                 }
@@ -221,6 +222,7 @@
               "header2": {
                 "description": "Description header 2",
                 "required": true,
+                "style": "simple",
                 "schema": {
                   "type": "string"
                 }

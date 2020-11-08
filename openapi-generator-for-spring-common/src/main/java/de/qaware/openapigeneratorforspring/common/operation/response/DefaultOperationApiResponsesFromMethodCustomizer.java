@@ -28,7 +28,6 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
     private final List<HandlerMethod.ApiResponseCodeMapper> apiResponseCodeMappers;
     private final ApiResponseDefaultProvider apiResponseDefaultProvider;
     private final SchemaResolver schemaResolver;
-    private final List<HandlerMethod.ReturnTypeMapper> handlerMethodReturnTypeMappers;
 
     @Override
     public void customize(ApiResponses apiResponses, OperationBuilderContext operationBuilderContext) {
@@ -37,7 +36,7 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
                 firstNonNull(apiResponseCodeMappers, mapper -> mapper.map(handlerMethod))
                         .orElseThrow(() -> new IllegalStateException("Cannot find api response code for " + handlerMethod))
         );
-        firstNonNull(handlerMethodReturnTypeMappers, mapper -> mapper.map(handlerMethod)).ifPresent(handlerMethodReturnType -> {
+        operationBuilderContext.getHandlerMethodReturnType().ifPresent(handlerMethodReturnType -> {
             Content content = getOrCreateEmptyContent(defaultApiResponse);
             addMediaTypesToContent(operationBuilderContext, handlerMethod, handlerMethodReturnType, content);
         });

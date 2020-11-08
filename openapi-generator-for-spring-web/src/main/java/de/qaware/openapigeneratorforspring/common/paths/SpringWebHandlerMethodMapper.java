@@ -1,6 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.paths;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethod.SpringWebRequestBodyParameter;
+import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethod.SpringWebReturnType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +20,10 @@ public class SpringWebHandlerMethodMapper {
         public HandlerMethod.RequestBodyParameter map(HandlerMethod.Parameter parameter) {
             if (parameter instanceof SpringWebHandlerMethod.SpringWebParameter) {
                 SpringWebHandlerMethod.SpringWebParameter springWebParameter = (SpringWebHandlerMethod.SpringWebParameter) parameter;
-                org.springframework.web.bind.annotation.RequestBody springWebRequestBodyAnnotation = springWebParameter.getAnnotationsSupplier().findFirstAnnotation(org.springframework.web.bind.annotation.RequestBody.class);
+                org.springframework.web.bind.annotation.RequestBody springWebRequestBodyAnnotation = springWebParameter.getAnnotationsSupplier()
+                        .findFirstAnnotation(org.springframework.web.bind.annotation.RequestBody.class);
                 if (springWebRequestBodyAnnotation != null) {
-                    return new SpringWebHandlerMethod.SpringWebRequestBodyParameter(springWebParameter.getParentMethod().getAnnotationsSupplier(), springWebRequestBodyAnnotation);
+                    return new SpringWebRequestBodyParameter(springWebParameter, springWebRequestBodyAnnotation);
                 }
             }
             return null;
@@ -41,7 +44,7 @@ public class SpringWebHandlerMethodMapper {
                 if (Void.TYPE.equals(returnType) || Void.class.equals(returnType)) {
                     return null;
                 }
-                return new SpringWebHandlerMethod.SpringWebReturnType(
+                return new SpringWebReturnType(
                         // using method.getReturnType() does not work for generic return types
                         springWebHandlerMethod.getMethod().getGenericReturnType(),
                         annotationsSupplierFactory.createFromAnnotatedElement(returnType),
