@@ -5,6 +5,7 @@ import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotation
 import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils;
 import de.qaware.openapigeneratorforspring.model.header.Header;
+import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
@@ -36,10 +37,17 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
             header.setRequired(true);
         }
         ReferencedSchemaConsumer referencedSchemaConsumer = referencedItemConsumerSupplier.getReferenceConsumer(ReferencedSchemaConsumer.class);
-        setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(headerAnnotation.schema(), referencedSchemaConsumer),
-                schema -> referencedSchemaConsumer.maybeAsReference(schema, header::setSchema)
-        );
-        OpenApiStringUtils.setStringIfNotBlank(headerAnnotation.ref(), header::setRef);
+        setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(headerAnnotation.schema(), referencedSchemaConsumer), schema -> {
+            // when schema is not empty, we specify simple style according to spec,
+            // the alternative would be to set the content property, which is not supported by @Header annotation
+            header.setStyle(ParameterStyle.SIMPLE.toString());
+            referencedSchemaConsumer.maybeAsReference(schema, header::setSchema);
+        });
+
+        // content is specified, but @Header annotation is missing support for it
+        // example(s) are specified, but @Header annotation is missing support for it
+
+        // TODO use ref for suggestedIdentifier
         return header;
     }
 }

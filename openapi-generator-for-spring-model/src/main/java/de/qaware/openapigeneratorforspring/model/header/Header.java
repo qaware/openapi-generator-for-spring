@@ -17,16 +17,17 @@ import java.util.Map;
 @Data
 public class Header implements HasExtensions, HasReference<Header> {
     private String description;
-    private String ref;
     private Boolean required;
     private Boolean deprecated;
     private String style;
     private Boolean explode;
     private Schema schema;
+    private Content content;
     private Map<String, Example> examples;
     private Object example;
-    private Content content;
+
     private Map<String, Object> extensions;
+    private String ref;
 
     @Override
     public Header createInstance() {
