@@ -6,7 +6,6 @@ import de.qaware.openapigeneratorforspring.common.mapper.*;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.DefaultOperationParameterCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.*;
-import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -70,10 +69,7 @@ public class OpenApiGeneratorOperationParameterAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationParameterSchemaCustomizer defaultOperationParameterSchemaCustomizer(
-            SchemaResolver schemaResolver,
-            List<HandlerMethod.ParameterTypeMapper> handlerMethodParameterTypeMappers
-    ) {
-        return new DefaultOperationParameterSchemaCustomizer(schemaResolver, handlerMethodParameterTypeMappers);
+    public DefaultOperationParameterSchemaCustomizer defaultOperationParameterSchemaCustomizer(SchemaResolver schemaResolver) {
+        return new DefaultOperationParameterSchemaCustomizer(schemaResolver);
     }
 }

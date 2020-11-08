@@ -15,6 +15,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -66,6 +67,11 @@ class SpringWebHandlerMethod implements HandlerMethod {
         @Override
         public String getName() {
             return parameter.getName();
+        }
+
+        @Override
+        public Optional<Type> getType() {
+            return Optional.of(parameter.getParameterizedType());
         }
     }
 

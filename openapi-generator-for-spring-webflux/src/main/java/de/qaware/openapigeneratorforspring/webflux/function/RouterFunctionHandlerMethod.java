@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
@@ -54,6 +55,11 @@ class RouterFunctionHandlerMethod implements HandlerMethod {
         @Override
         public AnnotationsSupplier getAnnotationsSupplierForType() {
             return EMPTY_ANNOTATIONS_SUPPLIER;
+        }
+
+        @Override
+        public Optional<Type> getType() {
+            return Optional.empty();
         }
     }
 

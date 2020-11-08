@@ -22,12 +22,6 @@ public class OpenApiGeneratorWebAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SpringWebHandlerMethodMapper.ParameterTypeMapper springWebHandlerMethodParameterTypeMapper() {
-        return new SpringWebHandlerMethodMapper.ParameterTypeMapper();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
     public SpringWebHandlerMethodMapper.RequestBodyParameterMapper springWebHandSpringWebRequestBodyParameterMapper() {
         return new SpringWebHandlerMethodMapper.RequestBodyParameterMapper();
     }

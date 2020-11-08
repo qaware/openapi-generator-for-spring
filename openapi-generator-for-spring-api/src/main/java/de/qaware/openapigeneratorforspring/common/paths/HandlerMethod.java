@@ -7,6 +7,7 @@ import org.springframework.core.annotation.Order;
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Optional;
 
 public interface HandlerMethod {
     String getIdentifier();
@@ -15,6 +16,9 @@ public interface HandlerMethod {
 
     interface Parameter {
         String getName();
+
+        Optional<Type> getType();
+
         AnnotationsSupplier getAnnotationsSupplier();
         // annotations from parameter type are useful for SchemaResolver
         AnnotationsSupplier getAnnotationsSupplierForType();
@@ -32,13 +36,6 @@ public interface HandlerMethod {
         Type getType();
         List<String> getProducesContentTypes();
         AnnotationsSupplier getAnnotationsSupplier();
-    }
-
-    @FunctionalInterface
-    @Order(0)
-    interface ParameterTypeMapper {
-        @Nullable
-        Type map(Parameter parameter);
     }
 
     @FunctionalInterface

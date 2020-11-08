@@ -27,7 +27,6 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
     public static final int ORDER = DEFAULT_ORDER;
 
     private final RequestBodyAnnotationMapper requestBodyAnnotationMapper;
-    private final List<HandlerMethod.ParameterTypeMapper> handlerMethodParameterTypeMappers;
     private final List<HandlerMethod.RequestBodyParameterMapper> handlerMethodRequestBodyParameterMappers;
     private final SchemaResolver schemaResolver;
 
@@ -60,13 +59,12 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
         for (String contentType : handlerMethodRequestBody.getConsumesContentTypes()) {
             MediaType mediaType = getMediaType(contentType, requestBody);
             if (mediaType.getSchema() == null) {
-                firstNonNull(handlerMethodParameterTypeMappers, mapper -> mapper.map(methodParameter))
-                        .ifPresent(parameterType -> schemaResolver.resolveFromType(
-                                parameterType,
-                                methodParameter.getAnnotationsSupplier().andThen(methodParameter.getAnnotationsSupplierForType()),
-                                mapperContext.getReferenceConsumer(ReferencedSchemaConsumer.class),
-                                mediaType::setSchema
-                        ));
+                methodParameter.getType().ifPresent(parameterType -> schemaResolver.resolveFromType(
+                        parameterType,
+                        methodParameter.getAnnotationsSupplier().andThen(methodParameter.getAnnotationsSupplierForType()),
+                        mapperContext.getReferenceConsumer(ReferencedSchemaConsumer.class),
+                        mediaType::setSchema
+                ));
             }
         }
         return requestBody;

@@ -8,21 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Type;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SpringWebHandlerMethodMapper {
-
-    public static class ParameterTypeMapper implements HandlerMethod.ParameterTypeMapper {
-        @Nullable
-        @Override
-        public Type map(HandlerMethod.Parameter parameter) {
-            if (parameter instanceof SpringWebHandlerMethod.SpringWebParameter) {
-                return ((SpringWebHandlerMethod.SpringWebParameter) parameter).getParameter().getParameterizedType();
-            }
-            return null;
-        }
-    }
 
     public static class RequestBodyParameterMapper implements HandlerMethod.RequestBodyParameterMapper {
         @Nullable
