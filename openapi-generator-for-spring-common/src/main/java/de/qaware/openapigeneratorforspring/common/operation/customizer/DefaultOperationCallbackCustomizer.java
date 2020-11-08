@@ -2,8 +2,8 @@ package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.mapper.CallbackAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.MapperContext;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
-import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.common.reference.component.callback.ReferencedCallbacksConsumer;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +23,14 @@ public class DefaultOperationCallbackCustomizer implements OperationCustomizer {
     @Override
     public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
         AnnotationsSupplier annotationsSupplier = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
-        ReferencedItemConsumerSupplier referencedItemConsumerSupplier = operationBuilderContext.getReferencedItemConsumerSupplier();
+        MapperContext mapperContext = operationBuilderContext.getMapperContext();
         setMapIfNotEmpty(
                 buildStringMapFromStream(
                         annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.callbacks.Callback.class),
                         io.swagger.v3.oas.annotations.callbacks.Callback::name,
-                        callbackAnnotation -> callbackAnnotationMapper.map(callbackAnnotation, referencedItemConsumerSupplier)
+                        callbackAnnotation -> callbackAnnotationMapper.map(callbackAnnotation, mapperContext)
                 ),
-                callbacks -> referencedItemConsumerSupplier.get(ReferencedCallbacksConsumer.class)
+                callbacks -> mapperContext.getReferenceConsumer(ReferencedCallbacksConsumer.class)
                         .maybeAsReference(callbacks, operation::setCallbacks)
         );
     }

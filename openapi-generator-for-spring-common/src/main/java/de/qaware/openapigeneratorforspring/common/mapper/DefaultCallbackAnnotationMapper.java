@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.model.operation.Callback;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.path.PathItem;
@@ -18,13 +17,13 @@ public class DefaultCallbackAnnotationMapper implements CallbackAnnotationMapper
     private final OperationAnnotationMapper operationAnnotationMapper;
 
     @Override
-    public Callback map(io.swagger.v3.oas.annotations.callbacks.Callback callbackAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    public Callback map(io.swagger.v3.oas.annotations.callbacks.Callback callbackAnnotation, MapperContext mapperContext) {
         Callback callback = new Callback();
         setStringRequireNonBlank(callbackAnnotation.callbackUrlExpression(), callback::setCallbackUrlExpression);
         Map<String, Operation> operations = buildStringMapFromStream(
                 Arrays.stream(callbackAnnotation.operation()),
                 io.swagger.v3.oas.annotations.Operation::method,
-                operationAnnotation -> operationAnnotationMapper.map(operationAnnotation, referencedItemConsumerSupplier)
+                operationAnnotation -> operationAnnotationMapper.map(operationAnnotation, mapperContext)
         );
         if (!operations.isEmpty()) {
             PathItem pathItem = new PathItem();

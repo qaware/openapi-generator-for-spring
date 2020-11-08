@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import lombok.RequiredArgsConstructor;
 
@@ -13,16 +12,16 @@ public class DefaultRequestBodyAnnotationMapper implements RequestBodyAnnotation
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
 
     @Override
-    public RequestBody buildFromAnnotation(io.swagger.v3.oas.annotations.parameters.RequestBody requestBodyAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    public RequestBody buildFromAnnotation(io.swagger.v3.oas.annotations.parameters.RequestBody requestBodyAnnotation, MapperContext mapperContext) {
         RequestBody requestBody = new RequestBody();
-        applyFromAnnotation(requestBody, requestBodyAnnotation, referencedItemConsumerSupplier);
+        applyFromAnnotation(requestBody, requestBodyAnnotation, mapperContext);
         return requestBody;
     }
 
     @Override
-    public void applyFromAnnotation(RequestBody requestBody, io.swagger.v3.oas.annotations.parameters.RequestBody annotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    public void applyFromAnnotation(RequestBody requestBody, io.swagger.v3.oas.annotations.parameters.RequestBody annotation, MapperContext mapperContext) {
         setStringIfNotBlank(annotation.description(), requestBody::setDescription);
-        setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), referencedItemConsumerSupplier), requestBody::setContent);
+        setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), mapperContext), requestBody::setContent);
         if (annotation.required()) {
             requestBody.setRequired(true);
         }

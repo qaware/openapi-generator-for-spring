@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
@@ -18,16 +17,16 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
     private final SchemaAnnotationMapper schemaAnnotationMapper;
 
     @Override
-    public Map<String, Header> mapArray(io.swagger.v3.oas.annotations.headers.Header[] headerAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    public Map<String, Header> mapArray(io.swagger.v3.oas.annotations.headers.Header[] headerAnnotations, MapperContext mapperContext) {
         return OpenApiMapUtils.buildStringMapFromStream(
                 Arrays.stream(headerAnnotations),
                 io.swagger.v3.oas.annotations.headers.Header::name,
-                headerAnnotation -> map(headerAnnotation, referencedItemConsumerSupplier)
+                headerAnnotation -> map(headerAnnotation, mapperContext)
         );
     }
 
     @Override
-    public Header map(io.swagger.v3.oas.annotations.headers.Header headerAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    public Header map(io.swagger.v3.oas.annotations.headers.Header headerAnnotation, MapperContext referencedItemConsumerSupplier) {
         Header header = new Header();
         OpenApiStringUtils.setStringIfNotBlank(headerAnnotation.description(), header::setDescription);
         if (headerAnnotation.deprecated()) {
@@ -36,7 +35,7 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
         if (headerAnnotation.required()) {
             header.setRequired(true);
         }
-        ReferencedSchemaConsumer referencedSchemaConsumer = referencedItemConsumerSupplier.get(ReferencedSchemaConsumer.class);
+        ReferencedSchemaConsumer referencedSchemaConsumer = referencedItemConsumerSupplier.getReferenceConsumer(ReferencedSchemaConsumer.class);
         setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(headerAnnotation.schema(), referencedSchemaConsumer),
                 schema -> referencedSchemaConsumer.maybeAsReference(schema, header::setSchema)
         );

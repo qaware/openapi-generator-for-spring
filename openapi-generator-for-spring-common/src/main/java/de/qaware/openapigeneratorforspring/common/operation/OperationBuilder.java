@@ -27,7 +27,7 @@ public class OperationBuilder {
         io.swagger.v3.oas.annotations.Operation operationAnnotation = context.getOperationInfo().getHandlerMethod().getAnnotationsSupplier()
                 .findFirstAnnotation(io.swagger.v3.oas.annotations.Operation.class);
         Operation operation = Optional.ofNullable(operationAnnotation)
-                .map(annotation -> operationAnnotationMapper.map(annotation, context.getReferencedItemConsumerSupplier()))
+                .map(annotation -> operationAnnotationMapper.map(annotation, context.getMapperContext()))
                 .orElseGet(Operation::new);
         operationCustomizers.forEach(customizer -> customizer.customize(operation, operationAnnotation, context));
         return operation;

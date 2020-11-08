@@ -10,10 +10,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAn
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.paths.PathsBuilder;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemSupportFactory;
-import de.qaware.openapigeneratorforspring.common.supplier.DefaultOpenApiDefaultServerSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenAPIDefinitionAnnotationSupplier;
-import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplier;
-import de.qaware.openapigeneratorforspring.common.supplier.OpenApiDefaultServersSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiServersSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationAnnotationsSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -34,6 +31,7 @@ import java.util.List;
         OpenApiGeneratorPathsAutoConfiguration.class,
         OpenApiGeneratorReferenceAutoConfiguration.class,
         OpenApiGeneratorSchemaAutoConfiguration.class,
+        OpenApiGeneratorSupplierAutoConfiguration.class,
         OpenApiGeneratorUtilAutoConfiguration.class,
 })
 @EnableConfigurationProperties(OpenApiConfigurationProperties.class)
@@ -69,13 +67,5 @@ public class OpenApiGeneratorAutoConfiguration {
                 springBootApplicationAnnotationsSupplier,
                 openAPIDefinitionAnnotationSupplier
         );
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public OpenApiDefaultServersSupplier defaultOpenApiDefaultServerSupplier(
-            OpenApiBaseUriSupplier openApiBaseUriSupplier // provided by WebMVC or WebFlux
-    ) {
-        return new DefaultOpenApiDefaultServerSupplier(openApiBaseUriSupplier);
     }
 }

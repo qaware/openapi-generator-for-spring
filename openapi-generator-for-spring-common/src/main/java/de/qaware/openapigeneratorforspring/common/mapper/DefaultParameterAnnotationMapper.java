@@ -1,9 +1,5 @@
-package de.qaware.openapigeneratorforspring.common.operation.parameter;
+package de.qaware.openapigeneratorforspring.common.mapper;
 
-import de.qaware.openapigeneratorforspring.common.mapper.ContentAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.common.reference.component.example.ReferencedExamplesConsumer;
 import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
@@ -28,17 +24,14 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
 
     @Nullable
     @Override
-    public Parameter buildFromAnnotation(io.swagger.v3.oas.annotations.Parameter parameterAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    public Parameter buildFromAnnotation(io.swagger.v3.oas.annotations.Parameter parameterAnnotation, MapperContext mapperContext) {
         Parameter parameter = new Parameter();
-        applyFromAnnotation(parameter, parameterAnnotation, referencedItemConsumerSupplier);
-        if (parameter.isEmpty()) {
-            return null;
-        }
+        applyFromAnnotation(parameter, parameterAnnotation, mapperContext);
         return parameter;
     }
 
     @Override
-    public void applyFromAnnotation(Parameter parameter, io.swagger.v3.oas.annotations.Parameter annotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    public void applyFromAnnotation(Parameter parameter, io.swagger.v3.oas.annotations.Parameter annotation, MapperContext mapperContext) {
         setStringIfNotBlank(annotation.name(), parameter::setName);
         setStringIfNotBlank(annotation.in().toString(), parameter::setIn);
         setStringIfNotBlank(annotation.description(), parameter::setDescription);
@@ -55,13 +48,13 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
         if (annotation.allowReserved()) {
             parameter.setAllowReserved(true);
         }
-        ReferencedSchemaConsumer referencedSchemaConsumer = referencedItemConsumerSupplier.get(ReferencedSchemaConsumer.class);
+        ReferencedSchemaConsumer referencedSchemaConsumer = mapperContext.getReferenceConsumer(ReferencedSchemaConsumer.class);
         setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(annotation.schema(), referencedSchemaConsumer),
                 schema -> referencedSchemaConsumer.maybeAsReference(schema, parameter::setSchema)
         );
         // TODO handle @ArraySchema as well?
-        setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), referencedItemConsumerSupplier), parameter::setContent);
-        ReferencedExamplesConsumer referencedExamplesConsumer = referencedItemConsumerSupplier.get(ReferencedExamplesConsumer.class);
+        setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), mapperContext), parameter::setContent);
+        ReferencedExamplesConsumer referencedExamplesConsumer = mapperContext.getReferenceConsumer(ReferencedExamplesConsumer.class);
         setMapIfNotEmpty(exampleObjectAnnotationMapper.mapArray(annotation.examples()),
                 examples -> referencedExamplesConsumer.maybeAsReference(examples, parameter::setExamples)
         );

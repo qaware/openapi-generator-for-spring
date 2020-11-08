@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.response;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.mapper.ApiResponseAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.reference.component.response.ReferencedApiResponsesConsumer;
@@ -31,7 +32,7 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
         for (OperationApiResponsesCustomizer customizer : operationApiResponsesCustomizers) {
             customizer.customize(apiResponses, context);
         }
-        ReferencedApiResponsesConsumer referencedApiResponsesConsumer = context.getReferencedItemConsumerSupplier().get(ReferencedApiResponsesConsumer.class);
+        ReferencedApiResponsesConsumer referencedApiResponsesConsumer = context.getMapperContext().getReferenceConsumer(ReferencedApiResponsesConsumer.class);
         setMapIfNotEmpty(apiResponses, responses -> referencedApiResponsesConsumer.maybeAsReference(responses, operation::setResponses));
     }
 
@@ -46,7 +47,7 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
             }
             ApiResponse apiResponse = apiResponses.computeIfAbsent(responseCode, ignored -> new ApiResponse());
             ApiResponse smartImmutableApiResponse = OpenApiProxyUtils.smartImmutableProxy(apiResponse, OpenApiProxyUtils::addNonExistingKeys);
-            apiResponseAnnotationMapper.applyFromAnnotation(smartImmutableApiResponse, apiResponseAnnotation, context.getReferencedItemConsumerSupplier());
+            apiResponseAnnotationMapper.applyFromAnnotation(smartImmutableApiResponse, apiResponseAnnotation, context.getMapperContext());
         });
 
         return apiResponses;

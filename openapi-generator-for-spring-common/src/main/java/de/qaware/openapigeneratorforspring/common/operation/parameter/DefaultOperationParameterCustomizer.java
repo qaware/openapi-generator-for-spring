@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.common.operation.parameter;
 
 import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterPostFilter;
 import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterPreFilter;
+import de.qaware.openapigeneratorforspring.common.mapper.ParameterAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -53,17 +55,16 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
         for (Parameter parameterFromMethod : getParametersFromHandlerMethod(operationBuilderContext)) {
             io.swagger.v3.oas.annotations.Parameter parameterAnnotation = parameterAnnotationsByName.remove(parameterFromMethod.getName());
             if (parameterAnnotation != null) {
-                parameterAnnotationMapper.applyFromAnnotation(parameterFromMethod, parameterAnnotation, operationBuilderContext.getReferencedItemConsumerSupplier());
+                parameterAnnotationMapper.applyFromAnnotation(parameterFromMethod, parameterAnnotation, operationBuilderContext.getMapperContext());
             }
             parameters.add(parameterFromMethod);
         }
 
         // add leftover parameters from annotation only afterwards
         for (io.swagger.v3.oas.annotations.Parameter parameterAnnotation : parameterAnnotationsByName.values()) {
-            Parameter parameter = parameterAnnotationMapper.buildFromAnnotation(parameterAnnotation, operationBuilderContext.getReferencedItemConsumerSupplier());
-            if (parameter != null) {
-                parameters.add(parameter);
-            }
+            setIfNotEmpty(parameterAnnotationMapper.buildFromAnnotation(parameterAnnotation, operationBuilderContext.getMapperContext()),
+                    parameters::add
+            );
         }
         return parameters;
     }
@@ -72,7 +73,7 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
         List<Parameter> filteredParameters = parameters.stream()
                 .filter(parameter -> parameterPostFilters.stream().allMatch(filter -> filter.postAccept(parameter)))
                 .collect(Collectors.toList());
-        ReferencedParametersConsumer referencedParametersConsumer = operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedParametersConsumer.class);
+        ReferencedParametersConsumer referencedParametersConsumer = operationBuilderContext.getMapperContext().getReferenceConsumer(ReferencedParametersConsumer.class);
         setCollectionIfNotEmpty(filteredParameters, p -> referencedParametersConsumer.withOwner(operation).maybeAsReference(p, operation::setParameters));
     }
 

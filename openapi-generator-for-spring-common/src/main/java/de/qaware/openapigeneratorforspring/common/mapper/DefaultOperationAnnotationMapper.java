@@ -1,8 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import de.qaware.openapigeneratorforspring.common.operation.parameter.ParameterAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.common.reference.component.parameter.ReferencedParametersConsumer;
 import de.qaware.openapigeneratorforspring.common.reference.component.requestbody.ReferencedRequestBodyConsumer;
 import de.qaware.openapigeneratorforspring.common.reference.component.response.ReferencedApiResponsesConsumer;
@@ -41,17 +38,17 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
 
     @Override
     public Operation map(io.swagger.v3.oas.annotations.Operation operationAnnotation,
-                         ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+                         MapperContext mapperContext) {
         Operation operation = new Operation();
         // operationAnnotation.method() ignored here, as its managed by caller if at all
-        setTags(operation, operationAnnotation.tags(), referencedItemConsumerSupplier);
+        setTags(operation, operationAnnotation.tags(), mapperContext);
         setStringIfNotBlank(operationAnnotation.summary(), operation::setSummary);
         setStringIfNotBlank(operationAnnotation.description(), operation::setDescription);
-        setRequestBody(operation::setRequestBody, operationAnnotation.requestBody(), referencedItemConsumerSupplier);
+        setRequestBody(operation::setRequestBody, operationAnnotation.requestBody(), mapperContext);
         setIfNotEmpty(externalDocumentationAnnotationMapper.map(operationAnnotation.externalDocs()), operation::setExternalDocs);
         setStringIfNotBlank(operationAnnotation.operationId(), operation::setOperationId);
-        setParameters(operation::setParameters, operationAnnotation.parameters(), referencedItemConsumerSupplier.withOwner(operation));
-        setResponses(operation::setResponses, operationAnnotation.responses(), referencedItemConsumerSupplier);
+        setParameters(operation::setParameters, operationAnnotation.parameters(), mapperContext.withReferenceOwner(operation));
+        setResponses(operation::setResponses, operationAnnotation.responses(), mapperContext);
         if (operationAnnotation.deprecated()) {
             operation.setDeprecated(true);
         }
@@ -61,35 +58,37 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
         return operation;
     }
 
-    private void setParameters(Consumer<List<Parameter>> setter, io.swagger.v3.oas.annotations.Parameter[] parameterAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    private void setParameters(Consumer<List<Parameter>> setter, io.swagger.v3.oas.annotations.Parameter[] parameterAnnotations, MapperContext mapperContext) {
         setCollectionIfNotEmpty(
                 Arrays.stream(parameterAnnotations)
-                        .map(annotation -> parameterAnnotationMapper.buildFromAnnotation(annotation, referencedItemConsumerSupplier))
+                        .map(annotation -> parameterAnnotationMapper.buildFromAnnotation(annotation, mapperContext))
+                        .filter(parameter -> !parameter.isEmpty())
                         .collect(Collectors.toList()),
-                parameters -> referencedItemConsumerSupplier.get(ReferencedParametersConsumer.class).maybeAsReference(parameters, setter)
+                parameters -> mapperContext.getReferenceConsumer(ReferencedParametersConsumer.class).maybeAsReference(parameters, setter)
         );
     }
 
-    private void setResponses(Consumer<ApiResponses> setter, ApiResponse[] apiResponseAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    private void setResponses(Consumer<ApiResponses> setter, ApiResponse[] apiResponseAnnotations, MapperContext mapperContext) {
         setMapIfNotEmpty(
                 buildStringMapFromStream(Arrays.stream(apiResponseAnnotations),
                         ApiResponse::responseCode,
-                        annotation -> apiResponseAnnotationMapper.buildFromAnnotation(annotation, referencedItemConsumerSupplier),
+                        annotation -> apiResponseAnnotationMapper.buildFromAnnotation(annotation, mapperContext),
                         ApiResponses::new
                 ),
-                apiResponses -> referencedItemConsumerSupplier.get(ReferencedApiResponsesConsumer.class)
+                apiResponses -> mapperContext.getReferenceConsumer(ReferencedApiResponsesConsumer.class)
                         .maybeAsReference(apiResponses, setter)
         );
     }
 
-    private void setRequestBody(Consumer<RequestBody> setter, io.swagger.v3.oas.annotations.parameters.RequestBody requestBodyAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    private void setRequestBody(Consumer<RequestBody> setter, io.swagger.v3.oas.annotations.parameters.RequestBody requestBodyAnnotation,
+                                MapperContext mapperContext) {
         setIfNotEmpty(
-                requestBodyAnnotationMapper.buildFromAnnotation(requestBodyAnnotation, referencedItemConsumerSupplier),
-                requestBody -> referencedItemConsumerSupplier.get(ReferencedRequestBodyConsumer.class).maybeAsReference(requestBody, setter)
+                requestBodyAnnotationMapper.buildFromAnnotation(requestBodyAnnotation, mapperContext),
+                requestBody -> mapperContext.getReferenceConsumer(ReferencedRequestBodyConsumer.class).maybeAsReference(requestBody, setter)
         );
     }
 
-    private static void setTags(Operation operation, String[] tags, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    private static void setTags(Operation operation, String[] tags, MapperContext mapperContext) {
         setCollectionIfNotEmpty(
                 Stream.of(tags)
                         .filter(StringUtils::isNotBlank)
@@ -98,7 +97,7 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
                 tagNames -> {
                     // also consume tag names here, even if no description or additional information is present
                     // the tags consumer is smart enough to merge tags with identical names
-                    referencedItemConsumerSupplier.get(ReferencedTagsConsumer.class).accept(
+                    mapperContext.getReferenceConsumer(ReferencedTagsConsumer.class).accept(
                             tagNames.stream()
                                     .map(tagName -> new Tag().withName(tagName))
                                     .collect(Collectors.toList())

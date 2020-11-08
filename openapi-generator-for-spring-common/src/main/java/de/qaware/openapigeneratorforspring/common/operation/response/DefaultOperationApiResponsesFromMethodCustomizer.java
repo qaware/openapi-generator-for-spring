@@ -53,7 +53,7 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
             AnnotationsSupplier annotationsSupplier = handlerMethodReturnType.getAnnotationsSupplier()
                     .andThen(handlerMethod.getAnnotationsSupplier());
             schemaResolver.resolveFromType(handlerMethodReturnType.getType(), annotationsSupplier,
-                    operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedSchemaConsumer.class),
+                    operationBuilderContext.getMapperContext().getReferenceConsumer(ReferencedSchemaConsumer.class),
                     mediaType::setSchema
             );
         }

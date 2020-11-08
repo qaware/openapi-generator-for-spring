@@ -6,19 +6,16 @@ import de.qaware.openapigeneratorforspring.common.security.OpenApiSecurityScheme
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationAnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.security.SecurityScheme;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.ensureKeyIsNotBlank;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.*;
 
+@Slf4j
 public class ReferencedSecuritySchemesHandlerImpl implements ReferencedComponentHandler, ReferencedSecuritySchemesConsumer {
 
     private final Map<String, SecurityScheme> securitySchemes;
@@ -38,7 +35,12 @@ public class ReferencedSecuritySchemesHandlerImpl implements ReferencedComponent
                         .map(Supplier::get)
                         .map(Map::entrySet)
                         .flatMap(Collection::stream)
-        ).collect(Collectors.toMap(ensureKeyIsNotBlank(Map.Entry::getKey), Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
+        ).collect(Collectors.toMap(ensureKeyIsNotBlank(Map.Entry::getKey), Map.Entry::getValue, (a, b) -> {
+            if(!Objects.equals(a, b)) {
+                LOGGER.debug("Non-identical security scheme with conflicting name found. Preferring {} over {}", b, a);
+            }
+            return b;
+        }, LinkedHashMap::new));
     }
 
     @Override

@@ -1,20 +1,7 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
-import de.qaware.openapigeneratorforspring.common.mapper.ContentAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseDefaultProvider;
-import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseCodeMapper;
-import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseDefaultProvider;
-import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOperationApiResponsesDescriptionCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOperationApiResponsesFromMethodCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOperationResponseCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesDescriptionCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesFromMethodCustomizer;
+import de.qaware.openapigeneratorforspring.common.mapper.*;
+import de.qaware.openapigeneratorforspring.common.operation.response.*;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

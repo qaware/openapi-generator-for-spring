@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
-import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.common.reference.component.header.ReferencedHeadersConsumer;
 import de.qaware.openapigeneratorforspring.model.media.Encoding;
 import lombok.RequiredArgsConstructor;
@@ -20,16 +19,16 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
 
     @Override
-    public Map<String, Encoding> mapArray(io.swagger.v3.oas.annotations.media.Encoding[] encodingAnnotations, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    public Map<String, Encoding> mapArray(io.swagger.v3.oas.annotations.media.Encoding[] encodingAnnotations, MapperContext mapperContext) {
         return buildStringMapFromStream(
                 Arrays.stream(encodingAnnotations),
                 io.swagger.v3.oas.annotations.media.Encoding::name,
-                encodingAnnotation -> map(encodingAnnotation, referencedItemConsumerSupplier)
+                encodingAnnotation -> map(encodingAnnotation, mapperContext)
         );
     }
 
     @Override
-    public Encoding map(io.swagger.v3.oas.annotations.media.Encoding encodingAnnotation, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    public Encoding map(io.swagger.v3.oas.annotations.media.Encoding encodingAnnotation, MapperContext mapperContext) {
         Encoding encoding = new Encoding();
 
         setStringIfNotBlank(encodingAnnotation.contentType(), encoding::setContentType);
@@ -42,8 +41,8 @@ public class DefaultEncodingAnnotationMapper implements EncodingAnnotationMapper
             encoding.setAllowReserved(true);
         }
 
-        setMapIfNotEmpty(headerAnnotationMapper.mapArray(encodingAnnotation.headers(), referencedItemConsumerSupplier),
-                headers -> referencedItemConsumerSupplier.get(ReferencedHeadersConsumer.class).maybeAsReference(headers, encoding::setHeaders)
+        setMapIfNotEmpty(headerAnnotationMapper.mapArray(encodingAnnotation.headers(), mapperContext),
+                headers -> mapperContext.getReferenceConsumer(ReferencedHeadersConsumer.class).maybeAsReference(headers, encoding::setHeaders)
         );
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(encodingAnnotation.extensions()), encoding::setExtensions);
 

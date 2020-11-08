@@ -1,10 +1,10 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
+import de.qaware.openapigeneratorforspring.common.mapper.MapperContext;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.OperationInfo;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
-import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.common.reference.component.requestbody.ReferencedRequestBodyConsumer;
 import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
@@ -35,17 +35,17 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
     public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
         setIfNotEmpty(
                 applyFromMethod(operation.getRequestBody(), operationBuilderContext),
-                requestBody -> operationBuilderContext.getReferencedItemConsumerSupplier().get(ReferencedRequestBodyConsumer.class)
+                requestBody -> operationBuilderContext.getMapperContext().getReferenceConsumer(ReferencedRequestBodyConsumer.class)
                         .maybeAsReference(requestBody, operation::setRequestBody)
         );
     }
 
     private RequestBody applyFromMethod(@Nullable RequestBody existingRequestBody, OperationBuilderContext operationBuilderContext) {
         OperationInfo operationInfo = operationBuilderContext.getOperationInfo();
-        ReferencedItemConsumerSupplier referencedItemConsumerSupplier = operationBuilderContext.getReferencedItemConsumerSupplier();
+        MapperContext mapperContext = operationBuilderContext.getMapperContext();
         return operationInfo.getHandlerMethod().getParameters().stream()
                 .flatMap(methodParameter -> firstNonNull(handlerMethodRequestBodyParameterMappers, mapper -> mapper.map(methodParameter))
-                        .map(handlerMethodRequestBody -> buildRequestBody(handlerMethodRequestBody, methodParameter, existingRequestBody, referencedItemConsumerSupplier))
+                        .map(handlerMethodRequestBody -> buildRequestBody(handlerMethodRequestBody, methodParameter, existingRequestBody, mapperContext))
                         .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
                 )
                 .reduce((a, b) -> {
@@ -54,8 +54,8 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
                 .orElseGet(RequestBody::new);
     }
 
-    private RequestBody buildRequestBody(HandlerMethod.RequestBodyParameter handlerMethodRequestBody, HandlerMethod.Parameter methodParameter, @Nullable RequestBody existingRequestBody, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
-        RequestBody requestBody = getRequestBodyFromAnnotation(existingRequestBody, methodParameter, referencedItemConsumerSupplier);
+    private RequestBody buildRequestBody(HandlerMethod.RequestBodyParameter handlerMethodRequestBody, HandlerMethod.Parameter methodParameter, @Nullable RequestBody existingRequestBody, MapperContext mapperContext) {
+        RequestBody requestBody = getRequestBodyFromAnnotation(existingRequestBody, methodParameter, mapperContext);
         handlerMethodRequestBody.customize(requestBody);
         for (String contentType : handlerMethodRequestBody.getConsumesContentTypes()) {
             MediaType mediaType = getMediaType(contentType, requestBody);
@@ -64,7 +64,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
                         .ifPresent(parameterType -> schemaResolver.resolveFromType(
                                 parameterType,
                                 methodParameter.getAnnotationsSupplier().andThen(methodParameter.getAnnotationsSupplierForType()),
-                                referencedItemConsumerSupplier.get(ReferencedSchemaConsumer.class),
+                                mapperContext.getReferenceConsumer(ReferencedSchemaConsumer.class),
                                 mediaType::setSchema
                         ));
             }
@@ -72,14 +72,14 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
         return requestBody;
     }
 
-    private RequestBody getRequestBodyFromAnnotation(@Nullable RequestBody existingRequestBody, HandlerMethod.Parameter methodParameter, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
+    private RequestBody getRequestBodyFromAnnotation(@Nullable RequestBody existingRequestBody, HandlerMethod.Parameter methodParameter, MapperContext mapperContext) {
         return Optional.ofNullable(methodParameter.getAnnotationsSupplier().findFirstAnnotation(io.swagger.v3.oas.annotations.parameters.RequestBody.class))
                 .map(swaggerRequestBodyAnnotation -> {
                     if (existingRequestBody != null) {
-                        requestBodyAnnotationMapper.applyFromAnnotation(existingRequestBody, swaggerRequestBodyAnnotation, referencedItemConsumerSupplier);
+                        requestBodyAnnotationMapper.applyFromAnnotation(existingRequestBody, swaggerRequestBodyAnnotation, mapperContext);
                         return existingRequestBody;
                     }
-                    return requestBodyAnnotationMapper.buildFromAnnotation(swaggerRequestBodyAnnotation, referencedItemConsumerSupplier);
+                    return requestBodyAnnotationMapper.buildFromAnnotation(swaggerRequestBodyAnnotation, mapperContext);
                 })
                 .orElseGet(() -> existingRequestBody != null ? existingRequestBody : new RequestBody());
     }

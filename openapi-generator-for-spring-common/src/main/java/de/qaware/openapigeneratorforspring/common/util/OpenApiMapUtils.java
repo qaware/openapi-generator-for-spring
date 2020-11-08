@@ -67,7 +67,6 @@ public class OpenApiMapUtils {
             Function<? super T, ? extends V> valueMapper,
             Supplier<? extends M> mapSupplier
     ) {
-        // TODO handle possible duplicate entries here?
         return stream.collect(Collectors.toMap(
                 keyMapper,
                 valueMapper,
