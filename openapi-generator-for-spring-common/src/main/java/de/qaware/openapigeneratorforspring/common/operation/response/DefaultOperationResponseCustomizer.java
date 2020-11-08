@@ -2,8 +2,10 @@ package de.qaware.openapigeneratorforspring.common.operation.response;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.mapper.ApiResponseAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.MapperContext;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.reference.component.response.ReferencedApiResponsesConsumer;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiProxyUtils;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
@@ -16,6 +18,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
 
     private final ApiResponseAnnotationMapper apiResponseAnnotationMapper;
     private final List<OperationApiResponsesCustomizer> operationApiResponsesCustomizers;
+    private final List<HandlerMethod.ReturnTypeMapper> handlerMethodReturnTypeMappers;
 
     @Override
     public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext context) {
@@ -37,8 +41,12 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
     }
 
     private ApiResponses buildFromMethodAnnotations(Operation operation, OperationBuilderContext context) {
+        HandlerMethod handlerMethod = context.getOperationInfo().getHandlerMethod();
+        MapperContext mapperContextWithMediaTypes = firstNonNull(handlerMethodReturnTypeMappers, mapper -> mapper.map(handlerMethod))
+                .map(returnType -> context.getMapperContext().withSuggestedMediaTypes(returnType.getProducesContentTypes()))
+                .orElse(context.getMapperContext());
         ApiResponses apiResponses = Optional.ofNullable(operation.getResponses()).orElseGet(ApiResponses::new);
-        AnnotationsSupplier annotationsSupplier = context.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
+        AnnotationsSupplier annotationsSupplier = handlerMethod.getAnnotationsSupplier();
         annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.responses.ApiResponse.class).forEach(apiResponseAnnotation -> {
             String responseCode = apiResponseAnnotation.responseCode();
             if (StringUtils.isBlank(responseCode)) {
@@ -47,7 +55,7 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
             }
             ApiResponse apiResponse = apiResponses.computeIfAbsent(responseCode, ignored -> new ApiResponse());
             ApiResponse smartImmutableApiResponse = OpenApiProxyUtils.smartImmutableProxy(apiResponse, OpenApiProxyUtils::addNonExistingKeys);
-            apiResponseAnnotationMapper.applyFromAnnotation(smartImmutableApiResponse, apiResponseAnnotation, context.getMapperContext());
+            apiResponseAnnotationMapper.applyFromAnnotation(smartImmutableApiResponse, apiResponseAnnotation, mapperContextWithMediaTypes);
         });
 
         return apiResponses;

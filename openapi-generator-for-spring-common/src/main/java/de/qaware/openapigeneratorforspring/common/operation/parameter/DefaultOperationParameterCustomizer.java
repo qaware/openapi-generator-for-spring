@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.common.operation.parameter;
 
 import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterPostFilter;
 import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterPreFilter;
+import de.qaware.openapigeneratorforspring.common.mapper.MapperContext;
 import de.qaware.openapigeneratorforspring.common.mapper.ParameterAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
@@ -9,7 +10,6 @@ import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizer;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.reference.component.parameter.ReferencedParametersConsumer;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +17,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.ensureKeyIsNotBlank;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -37,6 +40,9 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
 
     @Override
     public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
+        // this customizer explicitly overrides already present parameters built from the operation annotation,
+        // as the order of parameters is important and should not be determined
+        // by the order of information to build those parameters!
         List<Parameter> parameters = buildParameters(operationBuilderContext, operationAnnotation);
         setParametersToOperation(operation, parameters, operationBuilderContext);
     }
@@ -44,64 +50,66 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
     private List<Parameter> buildParameters(OperationBuilderContext operationBuilderContext, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation) {
         HandlerMethod handlerMethod = operationBuilderContext.getOperationInfo().getHandlerMethod();
 
-        Map<String, io.swagger.v3.oas.annotations.Parameter> parameterAnnotationsByName = OpenApiMapUtils.buildStringMapFromStream(Stream.concat(
+        Map<String, List<io.swagger.v3.oas.annotations.Parameter>> parameterAnnotationsByName = Stream.concat(
                 Optional.ofNullable(operationAnnotation).map(io.swagger.v3.oas.annotations.Operation::parameters).map(Arrays::stream).orElse(Stream.empty()),
                 handlerMethod.getAnnotationsSupplier().findAnnotations(io.swagger.v3.oas.annotations.Parameter.class)
-        ), io.swagger.v3.oas.annotations.Parameter::name, x -> x);
+        ).collect(groupingBy(ensureKeyIsNotBlank(io.swagger.v3.oas.annotations.Parameter::name), LinkedHashMap::new, toList()));
 
         List<Parameter> parameters = new ArrayList<>();
+        MapperContext mapperContext = operationBuilderContext.getMapperContext();
 
         // first start with the parameters from the handler method, keep the order!
         for (Parameter parameterFromMethod : getParametersFromHandlerMethod(operationBuilderContext)) {
-            io.swagger.v3.oas.annotations.Parameter parameterAnnotation = parameterAnnotationsByName.remove(parameterFromMethod.getName());
-            if (parameterAnnotation != null) {
-                parameterAnnotationMapper.applyFromAnnotation(parameterFromMethod, parameterAnnotation, operationBuilderContext.getMapperContext());
+            List<io.swagger.v3.oas.annotations.Parameter> parameterAnnotations = parameterAnnotationsByName.remove(parameterFromMethod.getName());
+            if (parameterAnnotations != null) {
+                parameterAnnotations.forEach(parameterAnnotation -> parameterAnnotationMapper.applyFromAnnotation(parameterFromMethod, parameterAnnotation, mapperContext));
             }
             parameters.add(parameterFromMethod);
         }
 
         // add leftover parameters from annotation only afterwards
-        for (io.swagger.v3.oas.annotations.Parameter parameterAnnotation : parameterAnnotationsByName.values()) {
-            setIfNotEmpty(parameterAnnotationMapper.buildFromAnnotation(parameterAnnotation, operationBuilderContext.getMapperContext()),
-                    parameters::add
-            );
-        }
+        parameterAnnotationsByName.forEach((parameterName, parameterAnnotations) -> {
+            // there must be at least one parameter annotation, as the map is a result of a groupingBy collector
+            Iterator<io.swagger.v3.oas.annotations.Parameter> iterator = parameterAnnotations.iterator();
+            Parameter parameter = parameterAnnotationMapper.buildFromAnnotation(iterator.next(), mapperContext);
+            iterator.forEachRemaining(parameterAnnotation -> parameterAnnotationMapper.applyFromAnnotation(parameter, parameterAnnotation, mapperContext));
+            // also customizers should be applied to parameters not coming from method parameters
+            applyParameterCustomizers(parameter, null, operationBuilderContext);
+            setIfNotEmpty(parameter, parameters::add);
+        });
+
         return parameters;
     }
 
     private void setParametersToOperation(Operation operation, List<Parameter> parameters, OperationBuilderContext operationBuilderContext) {
         List<Parameter> filteredParameters = parameters.stream()
                 .filter(parameter -> parameterPostFilters.stream().allMatch(filter -> filter.postAccept(parameter)))
-                .collect(Collectors.toList());
+                .collect(toList());
         ReferencedParametersConsumer referencedParametersConsumer = operationBuilderContext.getMapperContext().getReferenceConsumer(ReferencedParametersConsumer.class);
         setCollectionIfNotEmpty(filteredParameters, p -> referencedParametersConsumer.withOwner(operation).maybeAsReference(p, operation::setParameters));
     }
 
     private List<Parameter> getParametersFromHandlerMethod(OperationBuilderContext operationBuilderContext) {
         return operationBuilderContext.getOperationInfo().getHandlerMethod().getParameters().stream()
+                .filter(methodParameter -> parameterPreFilters.stream().allMatch(filter -> filter.preAccept(methodParameter)))
                 .map(methodParameter -> convertFromMethodParameter(methodParameter, operationBuilderContext))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .filter(parameter -> !parameter.isEmpty())
+                .collect(toList());
     }
 
-    @Nullable
     private Parameter convertFromMethodParameter(HandlerMethod.Parameter methodParameter, OperationBuilderContext operationBuilderContext) {
-        if (!parameterPreFilters.stream().allMatch(filter -> filter.preAccept(methodParameter))) {
-            return null;
-        }
-        return parameterMethodConverters.stream()
-                .map(converter -> converter.convert(methodParameter))
-                .filter(Objects::nonNull)
-                .findFirst() // converters are ordered and the first one not returning null will be used
-                .map(parameter -> {
-                    // apply customizers after conversion
-                    parameterCustomizers.forEach(customizer ->
-                            customizer.customize(parameter, methodParameter, operationBuilderContext)
-                    );
-                    return parameter;
-                })
-                // body method parameters are typical candidates which are ignored
-                .orElse(null);
+        // converters are ordered and the first one not returning null will be used
+        return firstNonNull(parameterMethodConverters, converter -> converter.convert(methodParameter))
+                .map(parameter -> applyParameterCustomizers(parameter, methodParameter, operationBuilderContext))
+                // request body method parameters are typical candidates which are ignored
+                .orElseGet(Parameter::new);
+    }
+
+    private Parameter applyParameterCustomizers(Parameter parameter, @Nullable HandlerMethod.Parameter methodParameter, OperationBuilderContext operationBuilderContext) {
+        // apply customizers after conversion
+        parameterCustomizers.forEach(customizer -> customizer.customize(parameter, methodParameter, operationBuilderContext));
+        // return value for convenience in map
+        return parameter;
     }
 
     @Override

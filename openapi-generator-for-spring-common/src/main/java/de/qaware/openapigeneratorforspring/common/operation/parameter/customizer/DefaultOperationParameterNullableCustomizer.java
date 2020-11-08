@@ -8,9 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import javax.annotation.Nullable;
 
 @Slf4j
-public class DefaultOperationParameterNullableCustomizer implements OperationParameterCustomizer {
+public class DefaultOperationParameterNullableCustomizer extends AbstractHandlerMethodParameterCustomizer {
     @Override
-    public void customize(Parameter parameter, HandlerMethod.Parameter handlerMethodParameter, OperationBuilderContext operationBuilderContext) {
+    public void customizeWithHandlerMethod(Parameter parameter, HandlerMethod.Parameter handlerMethodParameter, OperationBuilderContext operationBuilderContext) {
         // TODO support more @Nullable / @NotNull annotations? combine with other places where @Nullable is checked?
         if (handlerMethodParameter.getAnnotationsSupplier().findFirstAnnotation(Nullable.class) != null) {
             Boolean required = parameter.getRequired();

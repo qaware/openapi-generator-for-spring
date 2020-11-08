@@ -54,6 +54,7 @@ public class SpringWebHandlerMethodMapper {
                     return null;
                 }
                 return new SpringWebHandlerMethod.SpringWebReturnType(
+                        // using method.getReturnType() does not work for generic return types
                         springWebHandlerMethod.getMethod().getGenericReturnType(),
                         annotationsSupplierFactory.createFromAnnotatedElement(returnType),
                         handlerMethod.getAnnotationsSupplier()

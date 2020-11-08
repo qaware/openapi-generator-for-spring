@@ -20,10 +20,10 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionU
 @RequiredArgsConstructor
 public class DefaultOperationApiResponsesFromMethodCustomizer implements OperationApiResponsesFromMethodCustomizer {
 
+    // TODO turn this into a supplier bean!
     static final String DEFAULT_ANNOTATION_RESPONSE_CODE = MergedAnnotation.of(io.swagger.v3.oas.annotations.responses.ApiResponse.class)
             .getDefaultValue("responseCode", String.class)
             .orElseThrow(() -> new IllegalStateException("Cannot infer default response code from ApiResponse annotation"));
-
 
     private final List<HandlerMethod.ApiResponseCodeMapper> apiResponseCodeMappers;
     private final ApiResponseDefaultProvider apiResponseDefaultProvider;
@@ -47,9 +47,12 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
         List<String> producesContentType = handlerMethodReturnType.getProducesContentTypes();
         for (String contentType : producesContentType) {
             MediaType mediaType = content.computeIfAbsent(contentType, ignored -> new MediaType());
-            // just using resolveFromClass here with method.getReturnType() does not work for generic return types
+            if (mediaType.getSchema() != null) {
+                // we might have already set some media type, only amend this if the schema is not present
+                // this gives annotations a higher preference than the schema inferred from the method return type
+                continue;
+            }
             // TODO check if supplying annotations from return type, method and method's declaring class isn't too much searching
-
             AnnotationsSupplier annotationsSupplier = handlerMethodReturnType.getAnnotationsSupplier()
                     .andThen(handlerMethod.getAnnotationsSupplier());
             schemaResolver.resolveFromType(handlerMethodReturnType.getType(), annotationsSupplier,

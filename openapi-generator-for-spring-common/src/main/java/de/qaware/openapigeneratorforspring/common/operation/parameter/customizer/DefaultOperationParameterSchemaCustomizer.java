@@ -12,12 +12,12 @@ import java.util.List;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 
 @RequiredArgsConstructor
-public class DefaultOperationParameterSchemaCustomizer implements OperationParameterCustomizer {
+public class DefaultOperationParameterSchemaCustomizer extends AbstractHandlerMethodParameterCustomizer {
     private final SchemaResolver schemaResolver;
     private final List<HandlerMethod.ParameterTypeMapper> handlerMethodParameterTypeMappers;
 
     @Override
-    public void customize(Parameter parameter, HandlerMethod.Parameter handlerMethodParameter, OperationBuilderContext operationBuilderContext) {
+    public void customizeWithHandlerMethod(Parameter parameter, HandlerMethod.Parameter handlerMethodParameter, OperationBuilderContext operationBuilderContext) {
         firstNonNull(handlerMethodParameterTypeMappers, mapper -> mapper.map(handlerMethodParameter)).ifPresent(parameterType -> {
             // TODO handle explode setting of annotation?
             ReferencedSchemaConsumer referencedSchemaConsumer = operationBuilderContext.getMapperContext().getReferenceConsumer(ReferencedSchemaConsumer.class);

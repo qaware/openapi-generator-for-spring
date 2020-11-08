@@ -7,11 +7,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DefaultOperationParameterAnnotationCustomizer implements OperationParameterCustomizer {
+public class DefaultOperationParameterAnnotationCustomizer extends AbstractHandlerMethodParameterCustomizer {
     private final ParameterAnnotationMapper parameterAnnotationMapper;
 
     @Override
-    public void customize(de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter, HandlerMethod.Parameter handlerMethodParameter, OperationBuilderContext operationBuilderContext) {
+    public void customizeWithHandlerMethod(de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter, HandlerMethod.Parameter handlerMethodParameter, OperationBuilderContext operationBuilderContext) {
         Parameter parameterAnnotation = handlerMethodParameter.getAnnotationsSupplier().findFirstAnnotation(Parameter.class);
         if (parameterAnnotation != null) {
             parameterAnnotationMapper.applyFromAnnotation(parameter, parameterAnnotation, operationBuilderContext.getMapperContext());

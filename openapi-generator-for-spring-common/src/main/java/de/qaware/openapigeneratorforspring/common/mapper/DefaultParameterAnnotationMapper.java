@@ -6,6 +6,7 @@ import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotation
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 
@@ -25,14 +26,17 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
     @Nullable
     @Override
     public Parameter buildFromAnnotation(io.swagger.v3.oas.annotations.Parameter parameterAnnotation, MapperContext mapperContext) {
+        if (StringUtils.isBlank(parameterAnnotation.name())) {
+            throw new IllegalStateException("Blank parameter name in parameter annotation");
+        }
         Parameter parameter = new Parameter();
+        parameter.setName(parameterAnnotation.name());
         applyFromAnnotation(parameter, parameterAnnotation, mapperContext);
         return parameter;
     }
 
     @Override
     public void applyFromAnnotation(Parameter parameter, io.swagger.v3.oas.annotations.Parameter annotation, MapperContext mapperContext) {
-        setStringIfNotBlank(annotation.name(), parameter::setName);
         setStringIfNotBlank(annotation.in().toString(), parameter::setIn);
         setStringIfNotBlank(annotation.description(), parameter::setDescription);
         if (annotation.required()) {

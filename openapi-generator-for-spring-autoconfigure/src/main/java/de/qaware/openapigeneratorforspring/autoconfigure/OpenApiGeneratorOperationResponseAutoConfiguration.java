@@ -15,9 +15,10 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
     @ConditionalOnMissingBean
     public DefaultOperationResponseCustomizer defaultOperationResponseCustomizer(
             ApiResponseAnnotationMapper apiResponseAnnotationMapper,
-            List<OperationApiResponsesCustomizer> apiResponsesCustomizers
+            List<OperationApiResponsesCustomizer> apiResponsesCustomizers,
+            List<HandlerMethod.ReturnTypeMapper> handlerMethodReturnTypeMappers
     ) {
-        return new DefaultOperationResponseCustomizer(apiResponseAnnotationMapper, apiResponsesCustomizers);
+        return new DefaultOperationResponseCustomizer(apiResponseAnnotationMapper, apiResponsesCustomizers, handlerMethodReturnTypeMappers);
     }
 
     @Bean

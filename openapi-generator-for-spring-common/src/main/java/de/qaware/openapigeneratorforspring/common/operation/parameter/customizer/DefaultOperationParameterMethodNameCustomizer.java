@@ -6,9 +6,9 @@ import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class DefaultOperationParameterMethodNameCustomizer implements OperationParameterCustomizer {
+public class DefaultOperationParameterMethodNameCustomizer extends AbstractHandlerMethodParameterCustomizer {
     @Override
-    public void customize(Parameter parameter, HandlerMethod.Parameter handlerMethodParameter, OperationBuilderContext operationBuilderContext) {
+    public void customizeWithHandlerMethod(Parameter parameter, HandlerMethod.Parameter handlerMethodParameter, OperationBuilderContext operationBuilderContext) {
         String methodParameterName = handlerMethodParameter.getName();
         String parameterName = parameter.getName();
         if (parameterName == null) {
