@@ -5,7 +5,7 @@ import de.qaware.openapigeneratorforspring.model.trait.HasContent;
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
 import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
 import de.qaware.openapigeneratorforspring.model.trait.HasReference;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Map;
 
@@ -15,10 +15,14 @@ import java.util.Map;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#requestBodyObject"
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class RequestBody implements HasContent, HasExtensions, HasReference<RequestBody>, HasIsEmpty<RequestBody> {
     private String description;
     private Content content;
     private Boolean required;
+    @Singular
     private Map<String, Object> extensions;
     private String ref;
 

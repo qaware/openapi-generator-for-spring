@@ -7,7 +7,7 @@ import de.qaware.openapigeneratorforspring.model.trait.HasContent;
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
 import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
 import de.qaware.openapigeneratorforspring.model.trait.HasReference;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Map;
 
@@ -17,6 +17,9 @@ import java.util.Map;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#parameterObject"
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Parameter implements HasContent, HasExtensions, HasReference<Parameter>, HasIsEmpty<Parameter> {
     private String name;
     private String in;
@@ -30,9 +33,11 @@ public class Parameter implements HasContent, HasExtensions, HasReference<Parame
     private Boolean explode;
     private Boolean allowReserved;
     private Schema schema;
+    @Singular
     private Map<String, Example> examples;
     private Object example;
     private Content content;
+    @Singular
     private Map<String, Object> extensions;
 
     @Override

@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @Data
 @Builder
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Schema implements HasExtensions, HasReference<Schema>, HasIsEmpty<Schema> {
     @JsonIgnore

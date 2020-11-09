@@ -5,7 +5,7 @@ import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import de.qaware.openapigeneratorforspring.model.server.Server;
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -20,10 +20,15 @@ import java.util.stream.Stream;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#pathItemObject"
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PathItem implements HasExtensions {
     private String summary;
     private String description;
+    @Singular
     private List<Server> servers;
+    @Singular
     private List<Parameter> parameters;
 
     @JsonIgnore // merged into extensions

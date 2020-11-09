@@ -8,7 +8,7 @@ import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 import de.qaware.openapigeneratorforspring.model.security.SecurityRequirement;
 import de.qaware.openapigeneratorforspring.model.server.Server;
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
-import lombok.Data;
+import lombok.*;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -19,19 +19,28 @@ import java.util.stream.Stream;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#operationObject"
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Operation implements HasExtensions {
+    @Singular
     private List<String> tags;
     private String summary;
     private String description;
     private ExternalDocumentation externalDocs;
     private String operationId;
+    @Singular
     private List<Parameter> parameters;
     private RequestBody requestBody;
     private ApiResponses responses;
+    @Singular
     private Map<String, Callback> callbacks;
     private Boolean deprecated;
+    @Singular("security")
     private List<SecurityRequirement> security;
+    @Singular
     private List<Server> servers;
+    @Singular
     private Map<String, Object> extensions;
 
     @JsonIgnore
