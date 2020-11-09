@@ -26,4 +26,20 @@
         </dependency>
     </dependencies>
 
+    <!-- suppress warning about empty jar -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <!-- Ignore src/main in JAR packaging -->
+                <configuration>
+                    <classesDirectory>src</classesDirectory>
+                    <excludes>
+                        <exclude>main</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

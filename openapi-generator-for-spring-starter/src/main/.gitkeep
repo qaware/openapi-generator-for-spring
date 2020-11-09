@@ -1,0 +1,4 @@
+# suppress warning of maven-jar-plugin
+# this starter is an empty jar, just defining dependencies
+# making this packaging=pom makes including it more painful
+# and is NOT spring boot convention
