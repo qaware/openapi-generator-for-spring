@@ -11,9 +11,9 @@ import java.util.List;
  */
 public class SecurityRequirement extends LinkedHashMap<String, List<String>> {
 
-    public SecurityRequirement requirement(String securitySchemeName, String... scopes) {
+    public SecurityRequirement require(String securitySchemeName, String... scopes) {
         put(securitySchemeName, Arrays.asList(scopes));
-        return this;
+        return this; // fluent
     }
 
 }
