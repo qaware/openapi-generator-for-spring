@@ -11,7 +11,7 @@ public class MustacheTemplate {
 
     public MustacheTemplate(String templateClassPath) {
         InputStreamReader reader = new InputStreamReader(MustacheTemplate.class.getResourceAsStream(templateClassPath));
-        template = Mustache.compiler().nullValue("").compile(reader);
+        template = Mustache.compiler().nullValue("").escapeHTML(false).compile(reader);
     }
 
     public String execute(Object context) {

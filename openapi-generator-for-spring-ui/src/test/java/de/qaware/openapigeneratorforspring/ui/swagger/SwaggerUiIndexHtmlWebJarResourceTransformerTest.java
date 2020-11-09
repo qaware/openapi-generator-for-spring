@@ -8,12 +8,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SwaggerUiIndexHtmlWebJarResourceTransformerTest {
@@ -32,7 +33,7 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformerTest {
 
     @Before
     public void setUp() throws Exception {
-        Mockito.when(properties.getApiDocsPath()).thenReturn(API_DOCS_PATH);
+        when(properties.getApiDocsPath()).thenReturn(API_DOCS_PATH);
         sut = new SwaggerUiIndexHtmlWebJarResourceTransformer(URI.create(BASE_URI), properties, swaggerUiApiDocsUrisSupplier);
     }
 
@@ -44,12 +45,12 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformerTest {
 
     @Test
     public void apply_oneUrl() throws Exception {
-        URI apiDocsUri = URI.create(API_DOCS_URI);
-        Mockito.when(swaggerUiApiDocsUrisSupplier.getApiDocsUris(apiDocsUri))
-                .thenReturn(Collections.singletonList(ApiDocsUriWithName.of("name1", apiDocsUri)));
+        URI apiDocsUriWithQuery = URI.create(API_DOCS_URI + "?some=query");
+        when(swaggerUiApiDocsUrisSupplier.getApiDocsUris(URI.create(API_DOCS_URI)))
+                .thenReturn(Collections.singletonList(ApiDocsUriWithName.of("name1", apiDocsUriWithQuery)));
         String actual = sut.apply(IGNORED_CONTENT);
         Assertions.assertThat(actual)
-                .contains("url: \"http://base-uri/api-docs-path\"")
+                .contains("url: \"http://base-uri/api-docs-path?some=query\"")
                 .doesNotContain("urls", "name1", "StandaloneLayout", "SwaggerUIStandalonePreset");
     }
 
@@ -58,7 +59,7 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformerTest {
         URI apiDocsUri = URI.create(API_DOCS_URI);
         URI apiDocsUri1 = URI.create(API_DOCS_URI + "?query1");
         URI apiDocsUri2 = URI.create(API_DOCS_URI + "?query2");
-        Mockito.when(swaggerUiApiDocsUrisSupplier.getApiDocsUris(apiDocsUri))
+        when(swaggerUiApiDocsUrisSupplier.getApiDocsUris(apiDocsUri))
                 .thenReturn(Arrays.asList(ApiDocsUriWithName.of("name1", apiDocsUri1), ApiDocsUriWithName.of("name2", apiDocsUri2)));
         String actual = sut.apply(IGNORED_CONTENT);
         Assertions.assertThat(actual).contains("name1", apiDocsUri1.toString(), "name2", apiDocsUri2.toString(),

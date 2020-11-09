@@ -19,7 +19,7 @@ public class App10Configuration {
             // important to get group inside the lambda, otherwise we're outside of request scope
             return parameterProvider.getFirstQueryParameter("pathPrefix")
                     .map(pathPrefix -> operationInfo.getPathPattern().startsWith(pathPrefix))
-                    .orElse(true);
+                    .orElse(true); // we have another header-based filter, so don't DENY ALL by default
         };
     }
 
@@ -29,7 +29,7 @@ public class App10Configuration {
             // important to get group inside the lambda, otherwise we're outside of request scope
             return parameterProvider.getFirstHeaderValue("x-path-prefix")
                     .map(pathPrefix -> operationInfo.getPathPattern().startsWith(pathPrefix))
-                    .orElse(true);
+                    .orElse(true);  // we have another query-based filter, so don't DENY ALL by default
         };
     }
 

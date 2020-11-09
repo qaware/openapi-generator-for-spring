@@ -44,5 +44,12 @@
             <artifactId>spring-boot-autoconfigure-processor</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <!-- Get unit tests working in IntelliJ for shaded dependency -->
+        <dependency>
+            <groupId>com.samskivert</groupId>
+            <artifactId>jmustache</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
