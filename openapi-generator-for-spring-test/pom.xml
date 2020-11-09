@@ -11,6 +11,12 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <!-- This module only has tests to execute, so we don't need to release it -->
+        <maven.install.skip>true</maven.install.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>de.qaware.openapi-generator-for-spring</groupId>
@@ -48,10 +54,11 @@
         </dependency>
     </dependencies>
 
-    <!-- Make shaded classes/resources available also for IntelliJ in target/ folder by unpacking the shaded jar
-         `mvn package` must be run at least once to get it working in IntelliJ -->
+
     <build>
         <plugins>
+            <!-- Make shaded classes/resources available also for IntelliJ in target/ folder by unpacking the shaded jar
+                 `mvn package -DskipTests` must be run at least once to get it working in IntelliJ -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -77,6 +84,39 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Disable some unnecessary plugin executions, as we're just focusing on tests here -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-resources</id>
+                        <phase/>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <phase/>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase/>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

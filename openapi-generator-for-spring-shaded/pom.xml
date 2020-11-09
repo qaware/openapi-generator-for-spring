@@ -27,7 +27,6 @@
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.69</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -56,8 +55,8 @@
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>META-INF/MANIFEST.MF</exclude>
-                                        <exclude>META-INF/maven/com.samskivert/*</exclude>
-                                        <exclude>module-info.java</exclude>
+                                        <exclude>META-INF/maven/*</exclude>
+                                        <exclude>module-info.class</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
