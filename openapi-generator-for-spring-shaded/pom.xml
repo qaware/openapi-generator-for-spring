@@ -59,6 +59,14 @@
                                         <exclude>module-info.class</exclude>
                                     </excludes>
                                 </filter>
+                                <filter>
+                                    <artifact>org.webjars:swagger-ui</artifact>
+                                    <excludes>
+                                        <!-- No need to ship map files, just the minified code is enough -->
+                                        <exclude>**/*.map</exclude>
+                                    </excludes>
+                                </filter>
+
                             </filters>
                             <artifactSet>
                                 <includes>
