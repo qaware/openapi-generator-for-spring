@@ -18,6 +18,5 @@ public class Contact implements HasExtensions {
     private String name;
     private String url;
     private String email;
-    @Singular
     private Map<String, Object> extensions;
 }

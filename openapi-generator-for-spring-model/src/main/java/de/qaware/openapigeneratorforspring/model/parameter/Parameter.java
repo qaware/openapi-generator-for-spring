@@ -33,11 +33,9 @@ public class Parameter implements HasContent, HasExtensions, HasReference<Parame
     private Boolean explode;
     private Boolean allowReserved;
     private Schema schema;
-    @Singular
     private Map<String, Example> examples;
     private Object example;
     private Content content;
-    @Singular
     private Map<String, Object> extensions;
 
     @Override

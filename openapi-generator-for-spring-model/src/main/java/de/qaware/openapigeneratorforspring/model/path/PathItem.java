@@ -26,9 +26,7 @@ import java.util.stream.Stream;
 public class PathItem implements HasExtensions {
     private String summary;
     private String description;
-    @Singular
     private List<Server> servers;
-    @Singular
     private List<Parameter> parameters;
 
     @JsonIgnore // merged into extensions

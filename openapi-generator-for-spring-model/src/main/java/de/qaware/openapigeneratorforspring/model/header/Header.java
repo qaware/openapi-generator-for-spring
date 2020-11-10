@@ -29,7 +29,6 @@ public class Header implements HasExtensions, HasReference<Header> {
     private Map<String, Example> examples;
     private Object example;
 
-    @Singular
     private Map<String, Object> extensions;
     private String ref;
 

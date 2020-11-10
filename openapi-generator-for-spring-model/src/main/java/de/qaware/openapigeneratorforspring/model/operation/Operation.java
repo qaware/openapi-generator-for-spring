@@ -23,24 +23,18 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Operation implements HasExtensions {
-    @Singular
     private List<String> tags;
     private String summary;
     private String description;
     private ExternalDocumentation externalDocs;
     private String operationId;
-    @Singular
     private List<Parameter> parameters;
     private RequestBody requestBody;
     private ApiResponses responses;
-    @Singular
     private Map<String, Callback> callbacks;
     private Boolean deprecated;
-    @Singular("security")
     private List<SecurityRequirement> security;
-    @Singular
     private List<Server> servers;
-    @Singular
     private Map<String, Object> extensions;
 
     @JsonIgnore

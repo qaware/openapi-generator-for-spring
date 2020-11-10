@@ -22,7 +22,6 @@ public class RequestBody implements HasContent, HasExtensions, HasReference<Requ
     private String description;
     private Content content;
     private Boolean required;
-    @Singular
     private Map<String, Object> extensions;
     private String ref;
 

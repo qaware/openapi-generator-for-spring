@@ -19,11 +19,9 @@ import java.util.Map;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Encoding implements HasExtensions {
     private String contentType;
-    @Singular
     private Map<String, Header> headers;
     private String style;
     private Boolean explode;
     private Boolean allowReserved;
-    @Singular
     private Map<String, Object> extensions;
 }

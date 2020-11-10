@@ -21,12 +21,9 @@ import java.util.Map;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApiResponse implements HasContent, HasExtensions, HasReference<ApiResponse> {
     private String description;
-    @Singular
     private Map<String, Header> headers;
     private Content content;
-    @Singular
     private Map<String, Link> links;
-    @Singular
     private Map<String, Object> extensions;
     private String ref;
 

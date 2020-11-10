@@ -17,12 +17,9 @@ import java.util.Map;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MediaType implements HasExtensions {
     private Schema schema;
-    @Singular
     private Map<String, Example> examples;
     private Object example;
-    @Singular("encoding")
     private Map<String, Encoding> encoding;
-    @Singular
     private Map<String, Object> extensions;
 }
 
