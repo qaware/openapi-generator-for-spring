@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 
@@ -38,13 +37,7 @@ public class OperationBuilder {
         HandlerMethod handlerMethod = operationInfo.getHandlerMethod();
 
         Optional<HandlerMethod.ReturnType> returnType = firstNonNull(handlerMethodReturnTypeMappers, mapper -> mapper.map(handlerMethod));
-        Optional<HandlerMethod.RequestBodyParameter> requestBodyParameter = handlerMethod.getParameters().stream()
-                .flatMap(methodParameter -> firstNonNull(handlerMethodRequestBodyParameterMappers, mapper -> mapper.map(methodParameter))
-                        .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
-                )
-                .reduce((a, b) -> {
-                    throw new IllegalStateException("Found more than one request body parameter on " + operationInfo);
-                });
+        Optional<HandlerMethod.RequestBodyParameter> requestBodyParameter = firstNonNull(handlerMethodRequestBodyParameterMappers, mapper -> mapper.map(handlerMethod));
 
         MapperContext mapperContext = MapperContextImpl.of(referencedItemConsumerSupplier)
                 .withSuggestedMediaTypesSupplierFor(RequestBody.class, () ->

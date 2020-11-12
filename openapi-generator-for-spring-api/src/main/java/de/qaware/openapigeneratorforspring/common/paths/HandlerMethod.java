@@ -11,13 +11,18 @@ import java.util.Optional;
 
 public interface HandlerMethod {
     String getIdentifier();
+
     AnnotationsSupplier getAnnotationsSupplier();
-    List<Parameter> getParameters();
+
+    List<? extends Parameter> getParameters();
 
     interface Parameter {
         String getName();
+
         Optional<Type> getType();
+
         AnnotationsSupplier getAnnotationsSupplier();
+
         // annotations from parameter type are useful for SchemaResolver
         AnnotationsSupplier getAnnotationsSupplierForType();
     }
@@ -42,6 +47,7 @@ public interface HandlerMethod {
     @FunctionalInterface
     @Order(0)
     interface MediaTypesParameterMapper {
+        @Nullable
         List<String> map(Parameter parameter);
     }
 
@@ -49,7 +55,7 @@ public interface HandlerMethod {
     @Order(0)
     interface RequestBodyParameterMapper {
         @Nullable
-        RequestBodyParameter map(Parameter parameter);
+        RequestBodyParameter map(HandlerMethod handlerMethod);
     }
 
     @FunctionalInterface

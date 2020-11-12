@@ -12,7 +12,7 @@ public class RouterFunctionHandlerMethodMapper {
     public static class RequestBodyParameterMapper implements HandlerMethod.RequestBodyParameterMapper {
         @Nullable
         @Override
-        public HandlerMethod.RequestBodyParameter map(HandlerMethod.Parameter parameter) {
+        public HandlerMethod.RequestBodyParameter map(HandlerMethod handlerMethod) {
             // TODO implement when dummy parameter type is seen on non-empty content type header?
             return null;
         }

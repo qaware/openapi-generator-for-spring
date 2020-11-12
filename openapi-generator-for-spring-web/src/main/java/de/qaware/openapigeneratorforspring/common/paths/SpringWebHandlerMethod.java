@@ -28,7 +28,7 @@ class SpringWebHandlerMethod implements HandlerMethod {
     @Getter
     private final AnnotationsSupplier annotationsSupplier;
     @Getter
-    private final List<Parameter> parameters;
+    private final List<SpringWebParameter> parameters;
 
     SpringWebHandlerMethod(Method method, AnnotationsSupplierFactory annotationsSupplierFactory) {
         this.method = method;

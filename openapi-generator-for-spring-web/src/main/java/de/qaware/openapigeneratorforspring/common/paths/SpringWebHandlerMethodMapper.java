@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.annotation.Nullable;
+import java.util.stream.Stream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SpringWebHandlerMethodMapper {
@@ -17,14 +18,22 @@ public class SpringWebHandlerMethodMapper {
     public static class RequestBodyParameterMapper implements HandlerMethod.RequestBodyParameterMapper {
         @Nullable
         @Override
-        public HandlerMethod.RequestBodyParameter map(HandlerMethod.Parameter parameter) {
-            if (parameter instanceof SpringWebHandlerMethod.SpringWebParameter) {
-                SpringWebHandlerMethod.SpringWebParameter springWebParameter = (SpringWebHandlerMethod.SpringWebParameter) parameter;
-                org.springframework.web.bind.annotation.RequestBody springWebRequestBodyAnnotation = springWebParameter.getAnnotationsSupplier()
-                        .findFirstAnnotation(org.springframework.web.bind.annotation.RequestBody.class);
-                if (springWebRequestBodyAnnotation != null) {
-                    return new SpringWebRequestBodyParameter(springWebParameter, springWebRequestBodyAnnotation);
-                }
+        public HandlerMethod.RequestBodyParameter map(HandlerMethod handlerMethod) {
+            if (handlerMethod instanceof SpringWebHandlerMethod) {
+                SpringWebHandlerMethod springWebHandlerMethod = (SpringWebHandlerMethod) handlerMethod;
+                return springWebHandlerMethod.getParameters().stream()
+                        .flatMap(parameter -> {
+                            org.springframework.web.bind.annotation.RequestBody springWebRequestBodyAnnotation = parameter.getAnnotationsSupplier()
+                                    .findFirstAnnotation(org.springframework.web.bind.annotation.RequestBody.class);
+                            if (springWebRequestBodyAnnotation != null) {
+                                return Stream.of(new SpringWebRequestBodyParameter(parameter, springWebRequestBodyAnnotation));
+                            }
+                            return Stream.empty();
+                        })
+                        .reduce((a, b) -> {
+                            throw new IllegalStateException("Found more than one request body parameter on " + handlerMethod);
+                        })
+                        .orElse(null);
             }
             return null;
         }
