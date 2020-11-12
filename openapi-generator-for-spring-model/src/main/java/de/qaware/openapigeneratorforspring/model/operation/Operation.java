@@ -8,9 +8,17 @@ import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 import de.qaware.openapigeneratorforspring.model.security.SecurityRequirement;
 import de.qaware.openapigeneratorforspring.model.server.Server;
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**

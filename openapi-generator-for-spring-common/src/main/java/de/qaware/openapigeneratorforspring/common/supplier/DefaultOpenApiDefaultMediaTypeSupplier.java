@@ -9,7 +9,7 @@ public class DefaultOpenApiDefaultMediaTypeSupplier implements OpenApiDefaultMed
 
     @Override
     public List<String> get(List<String> suggestedMediaTypes) {
-        if(suggestedMediaTypes.isEmpty()) {
+        if (suggestedMediaTypes.isEmpty()) {
             return singletonList(DEFAULT_MEDIA_TYPE_VALUE);
         }
         return suggestedMediaTypes;

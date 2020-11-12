@@ -27,6 +27,6 @@ public class ReferencedApiResponseStorage extends AbstractReferencedItemStorage<
         // if this method is called again for the same owner instance of apiResponses,
         // any previously defined reference consumers need to be removed first
         removeEntriesOwnedBy(apiResponses);
-       addEntriesFromMap(apiResponses);
+        addEntriesFromMap(apiResponses);
     }
 }

@@ -7,6 +7,7 @@ import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.paths.DefaultPathItemSharedItemsCustomizer;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.PathItemBuilderFactory;
 import de.qaware.openapigeneratorforspring.common.paths.PathItemCustomizer;
@@ -21,12 +22,13 @@ public class OpenApiGeneratorPathsAutoConfiguration {
     @ConditionalOnMissingBean
     public PathsBuilder pathsBuilder(
             HandlerMethodsProvider handlerMethodsProvider,
+            List<HandlerMethod.Merger> handlerMethodMergers,
             PathItemBuilderFactory pathItemBuilderFactory,
             List<PathItemFilter> pathItemFilters,
             List<HandlerMethodFilter> handlerMethodFilters,
             OperationIdConflictResolver operationIdConflictResolver
     ) {
-        return new PathsBuilder(handlerMethodsProvider, pathItemBuilderFactory, pathItemFilters, handlerMethodFilters, operationIdConflictResolver);
+        return new PathsBuilder(handlerMethodsProvider, handlerMethodMergers, pathItemBuilderFactory, pathItemFilters, handlerMethodFilters, operationIdConflictResolver);
     }
 
     @Bean

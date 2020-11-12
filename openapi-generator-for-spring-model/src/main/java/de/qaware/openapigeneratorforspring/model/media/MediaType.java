@@ -2,7 +2,11 @@ package de.qaware.openapigeneratorforspring.model.media;
 
 import de.qaware.openapigeneratorforspring.model.example.Example;
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Map;
 

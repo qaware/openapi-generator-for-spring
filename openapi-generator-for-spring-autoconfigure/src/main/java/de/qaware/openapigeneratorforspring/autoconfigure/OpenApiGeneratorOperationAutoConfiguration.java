@@ -1,8 +1,22 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
-import de.qaware.openapigeneratorforspring.common.mapper.*;
+import de.qaware.openapigeneratorforspring.common.mapper.CallbackAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.OperationAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.SecurityRequirementAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
-import de.qaware.openapigeneratorforspring.common.operation.customizer.*;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultDeprecatedOperationCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationCallbackCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationIdCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationSecurityRequirementCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationSecuritySchemesCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationServersCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultOperationTagsCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.DefaultRequestBodyOperationCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdProvider;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
