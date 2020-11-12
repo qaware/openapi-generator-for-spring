@@ -5,6 +5,7 @@ import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter
 import de.qaware.openapigeneratorforspring.common.operation.OperationWithInfo;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.path.PathItem;
 import de.qaware.openapigeneratorforspring.model.path.Paths;
@@ -21,10 +22,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
+
 @RequiredArgsConstructor
 public class PathsBuilder {
 
     private final HandlerMethodsProvider handlerMethodsProvider;
+    private final List<HandlerMethod.Merger> handlerMethodMergers;
     private final PathItemBuilderFactory pathItemBuilderFactory;
     private final List<PathItemFilter> pathItemFilters;
     private final List<HandlerMethodFilter> handlerMethodFilters;
@@ -50,9 +54,18 @@ public class PathsBuilder {
                             .flatMap(handlerMethodWithInfo -> handlerMethodWithInfo.getRequestMethods().stream()
                                     .map(requestMethod -> Pair.of(requestMethod, handlerMethodWithInfo.getHandlerMethod())))
                             .sorted(Map.Entry.comparingByKey()) // natural order of the enum RequestMethod
-                            .collect(Collectors.toMap(Pair::getKey, Pair::getValue, (a, b) -> {
-                                throw new IllegalStateException("Found more than one request handler method for path " + pathPattern + ": " + a + " vs. " + b);
-                            }, LinkedHashMap::new));
+                            .collect(OpenApiStreamUtils.groupingByPairKeyAndCollectingValuesToList())
+                            .entrySet().stream()
+                            .map(entry -> {
+                                List<HandlerMethod> unmergedHandlerMethods = entry.getValue();
+                                if (unmergedHandlerMethods.size() == 1) {
+                                    return Pair.of(entry.getKey(), unmergedHandlerMethods.get(0));
+                                }
+                                return firstNonNull(handlerMethodMergers, merger -> merger.merge(unmergedHandlerMethods))
+                                        .map(mergedHandlerMethod -> Pair.of(entry.getKey(), mergedHandlerMethod))
+                                        .orElseThrow(() -> new IllegalStateException("Cannot merge handler methods for " + entry.getKey() + " " + pathPattern + ": " + unmergedHandlerMethods));
+                            })
+                            .collect(Collectors.toMap(Pair::getKey, Pair::getValue, (a, b) -> b, LinkedHashMap::new));
 
                     PathItemBuilderFactory.PathItemBuilder pathItemBuilder = pathItemBuilderFactory.create(referencedItemConsumerSupplier);
                     PathItem pathItem = pathItemBuilder.build(pathPattern, handlerMethods);

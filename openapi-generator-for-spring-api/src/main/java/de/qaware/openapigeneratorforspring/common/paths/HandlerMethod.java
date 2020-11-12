@@ -65,4 +65,11 @@ public interface HandlerMethod {
         @Nullable
         String map(HandlerMethod handlerMethod);
     }
+
+    @FunctionalInterface
+    @Order(0)
+    interface Merger {
+        @Nullable
+        HandlerMethod merge(List<HandlerMethod> handlerMethods);
+    }
 }
