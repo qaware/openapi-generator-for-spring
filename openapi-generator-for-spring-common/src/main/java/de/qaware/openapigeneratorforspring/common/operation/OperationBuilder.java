@@ -11,8 +11,10 @@ import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 
@@ -36,16 +38,18 @@ public class OperationBuilder {
     public Operation buildOperationInternal(OperationInfo operationInfo, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         HandlerMethod handlerMethod = operationInfo.getHandlerMethod();
 
-        Optional<HandlerMethod.ReturnType> returnType = firstNonNull(handlerMethodReturnTypeMappers, mapper -> mapper.map(handlerMethod));
-        Optional<HandlerMethod.RequestBodyParameter> requestBodyParameter = firstNonNull(handlerMethodRequestBodyParameterMappers, mapper -> mapper.map(handlerMethod));
+        Optional<List<HandlerMethod.ReturnType>> returnTypes = firstNonNull(handlerMethodReturnTypeMappers, mapper -> mapper.map(handlerMethod));
+        Optional<List<HandlerMethod.RequestBodyParameter>> requestBodyParameters = firstNonNull(handlerMethodRequestBodyParameterMappers, mapper -> mapper.map(handlerMethod));
 
         MapperContext mapperContext = MapperContextImpl.of(referencedItemConsumerSupplier)
                 .withSuggestedMediaTypesSupplierFor(RequestBody.class, () ->
-                        requestBodyParameter.map(HandlerMethod.RequestBodyParameter::getConsumesContentTypes)
+                        requestBodyParameters.map(Collection::stream)
+                                .map(p -> p.map(HandlerMethod.RequestBodyParameter::getConsumesContentTypes).flatMap(Collection::stream).collect(Collectors.toList()))
                                 .orElseThrow(() -> new IllegalStateException("No request body parameter found on handler method to supply media types"))
                 )
                 .withSuggestedMediaTypesSupplierFor(ApiResponse.class, () ->
-                        returnType.map(HandlerMethod.ReturnType::getProducesContentTypes)
+                        returnTypes.map(Collection::stream)
+                                .map(p -> p.map(HandlerMethod.ReturnType::getProducesContentTypes).flatMap(Collection::stream).collect(Collectors.toList()))
                                 .orElseThrow(() -> new IllegalStateException("No return type found on handler method to supply media types"))
                 );
 
@@ -56,7 +60,7 @@ public class OperationBuilder {
                 .map(annotation -> operationAnnotationMapper.map(annotation, mapperContext))
                 .orElseGet(Operation::new);
 
-        OperationBuilderContext operationBuilderContext = OperationBuilderContextImpl.of(operationInfo, mapperContext, returnType, requestBodyParameter);
+        OperationBuilderContext operationBuilderContext = OperationBuilderContextImpl.of(operationInfo, mapperContext, returnTypes, requestBodyParameters);
         operationCustomizers.forEach(customizer -> customizer.customize(operation, operationAnnotation, operationBuilderContext));
         return operation;
     }

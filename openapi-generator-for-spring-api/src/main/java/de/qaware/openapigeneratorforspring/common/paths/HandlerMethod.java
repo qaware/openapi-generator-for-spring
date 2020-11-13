@@ -55,14 +55,14 @@ public interface HandlerMethod {
     @Order(0)
     interface RequestBodyParameterMapper {
         @Nullable
-        RequestBodyParameter map(HandlerMethod handlerMethod);
+        List<RequestBodyParameter> map(HandlerMethod handlerMethod);
     }
 
     @FunctionalInterface
     @Order(0)
     interface ReturnTypeMapper {
         @Nullable
-        ReturnType map(HandlerMethod handlerMethod);
+        List<ReturnType> map(HandlerMethod handlerMethod);
     }
 
     @FunctionalInterface

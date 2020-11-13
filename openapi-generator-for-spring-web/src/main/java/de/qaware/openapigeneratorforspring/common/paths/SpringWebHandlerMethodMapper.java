@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -18,7 +21,7 @@ public class SpringWebHandlerMethodMapper {
     public static class RequestBodyParameterMapper implements HandlerMethod.RequestBodyParameterMapper {
         @Nullable
         @Override
-        public HandlerMethod.RequestBodyParameter map(HandlerMethod handlerMethod) {
+        public List<HandlerMethod.RequestBodyParameter> map(HandlerMethod handlerMethod) {
             if (handlerMethod instanceof SpringWebHandlerMethod) {
                 SpringWebHandlerMethod springWebHandlerMethod = (SpringWebHandlerMethod) handlerMethod;
                 return springWebHandlerMethod.getParameters().stream()
@@ -30,10 +33,7 @@ public class SpringWebHandlerMethodMapper {
                             }
                             return Stream.empty();
                         })
-                        .reduce((a, b) -> {
-                            throw new IllegalStateException("Found more than one request body parameter on " + handlerMethod);
-                        })
-                        .orElse(null);
+                        .collect(Collectors.toList());
             }
             return null;
         }
@@ -46,19 +46,20 @@ public class SpringWebHandlerMethodMapper {
 
         @Nullable
         @Override
-        public HandlerMethod.ReturnType map(HandlerMethod handlerMethod) {
+        public List<HandlerMethod.ReturnType> map(HandlerMethod handlerMethod) {
             if (handlerMethod instanceof SpringWebHandlerMethod) {
                 SpringWebHandlerMethod springWebHandlerMethod = (SpringWebHandlerMethod) handlerMethod;
                 Class<?> returnType = springWebHandlerMethod.getMethod().getReturnType();
                 if (Void.TYPE.equals(returnType) || Void.class.equals(returnType)) {
                     return null;
                 }
-                return new SpringWebReturnType(
+                SpringWebReturnType springWebReturnType = new SpringWebReturnType(
                         // using method.getReturnType() does not work for generic return types
                         springWebHandlerMethod.getMethod().getGenericReturnType(),
                         annotationsSupplierFactory.createFromAnnotatedElement(returnType),
                         handlerMethod.getAnnotationsSupplier()
                 );
+                return Collections.singletonList(springWebReturnType);
             }
             return null;
         }

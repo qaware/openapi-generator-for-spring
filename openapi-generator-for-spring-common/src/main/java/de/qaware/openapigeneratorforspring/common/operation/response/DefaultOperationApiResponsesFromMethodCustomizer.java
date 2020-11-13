@@ -36,9 +36,9 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
                 firstNonNull(apiResponseCodeMappers, mapper -> mapper.map(handlerMethod))
                         .orElseThrow(() -> new IllegalStateException("Cannot find api response code for " + handlerMethod))
         );
-        operationBuilderContext.getHandlerMethodReturnType().ifPresent(handlerMethodReturnType -> {
+        operationBuilderContext.getHandlerMethodReturnTypes().ifPresent(handlerMethodReturnTypes -> {
             Content content = getOrCreateEmptyContent(defaultApiResponse);
-            addMediaTypesToContent(operationBuilderContext, handlerMethod, handlerMethodReturnType, content);
+            handlerMethodReturnTypes.forEach(handlerMethodReturnType -> addMediaTypesToContent(operationBuilderContext, handlerMethod, handlerMethodReturnType, content));
         });
     }
 

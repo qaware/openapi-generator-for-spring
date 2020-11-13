@@ -14,6 +14,7 @@ import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Optional;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
@@ -36,39 +37,36 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
 
     private RequestBody applyFromMethod(@Nullable RequestBody existingRequestBody, OperationBuilderContext operationBuilderContext) {
         // TODO use the request body parameter as a suggested identifier for possible referencing?
-        return operationBuilderContext.getHandlerMethodRequestBodyParameter()
-                .map(requestBodyParameter -> buildRequestBody(requestBodyParameter, existingRequestBody, operationBuilderContext.getMapperContext()))
+        return operationBuilderContext.getHandlerMethodRequestBodyParameters()
+                .map(requestBodyParameters -> buildRequestBody(requestBodyParameters, existingRequestBody, operationBuilderContext.getMapperContext()))
                 .orElseGet(RequestBody::new);
     }
 
-    private RequestBody buildRequestBody(HandlerMethod.RequestBodyParameter handlerMethodRequestBodyParameter, @Nullable RequestBody existingRequestBody, MapperContext mapperContext) {
-        RequestBody requestBody = getRequestBodyFromAnnotation(existingRequestBody, handlerMethodRequestBodyParameter, mapperContext);
-        for (String contentType : handlerMethodRequestBodyParameter.getConsumesContentTypes()) {
-            MediaType mediaType = addMediaTypeIfNotPresent(contentType, requestBody);
-            if (mediaType.getSchema() == null) {
-                handlerMethodRequestBodyParameter.getType().ifPresent(parameterType -> schemaResolver.resolveFromType(
-                        parameterType,
-                        handlerMethodRequestBodyParameter.getAnnotationsSupplier()
-                                .andThen(handlerMethodRequestBodyParameter.getAnnotationsSupplierForType()),
-                        mapperContext.getReferenceConsumer(ReferencedSchemaConsumer.class),
-                        mediaType::setSchema
-                ));
+    private RequestBody buildRequestBody(List<HandlerMethod.RequestBodyParameter> handlerMethodRequestBodyParameters, @Nullable RequestBody existingRequestBody, MapperContext mapperContext) {
+        RequestBody requestBody = getRequestBodyFromAnnotations(existingRequestBody, handlerMethodRequestBodyParameters, mapperContext);
+        handlerMethodRequestBodyParameters.forEach(handlerMethodRequestBodyParameter -> {
+            for (String contentType : handlerMethodRequestBodyParameter.getConsumesContentTypes()) {
+                MediaType mediaType = addMediaTypeIfNotPresent(contentType, requestBody);
+                if (mediaType.getSchema() == null) {
+                    handlerMethodRequestBodyParameter.getType().ifPresent(parameterType -> schemaResolver.resolveFromType(
+                            parameterType,
+                            handlerMethodRequestBodyParameter.getAnnotationsSupplier()
+                                    .andThen(handlerMethodRequestBodyParameter.getAnnotationsSupplierForType()),
+                            mapperContext.getReferenceConsumer(ReferencedSchemaConsumer.class),
+                            mediaType::setSchema
+                    ));
+                }
             }
-        }
-        handlerMethodRequestBodyParameter.customize(requestBody);
+            handlerMethodRequestBodyParameter.customize(requestBody);
+        });
         return requestBody;
     }
 
-    private RequestBody getRequestBodyFromAnnotation(@Nullable RequestBody existingRequestBody, HandlerMethod.Parameter methodParameter, MapperContext mapperContext) {
-        return Optional.ofNullable(methodParameter.getAnnotationsSupplier().findFirstAnnotation(io.swagger.v3.oas.annotations.parameters.RequestBody.class))
-                .map(swaggerRequestBodyAnnotation -> {
-                    if (existingRequestBody != null) {
-                        requestBodyAnnotationMapper.applyFromAnnotation(existingRequestBody, swaggerRequestBodyAnnotation, mapperContext);
-                        return existingRequestBody;
-                    }
-                    return requestBodyAnnotationMapper.buildFromAnnotation(swaggerRequestBodyAnnotation, mapperContext);
-                })
-                .orElseGet(() -> existingRequestBody != null ? existingRequestBody : new RequestBody());
+    private RequestBody getRequestBodyFromAnnotations(@Nullable RequestBody existingRequestBody, List<? extends HandlerMethod.Parameter> methodParameters, MapperContext mapperContext) {
+        RequestBody requestBody = Optional.ofNullable(existingRequestBody).orElseGet(RequestBody::new);
+        methodParameters.stream().flatMap(methodParameter -> methodParameter.getAnnotationsSupplier().findAnnotations(io.swagger.v3.oas.annotations.parameters.RequestBody.class))
+                .forEach(swaggerRequestBodyAnnotation -> requestBodyAnnotationMapper.applyFromAnnotation(requestBody, swaggerRequestBodyAnnotation, mapperContext));
+        return requestBody;
     }
 
     private static MediaType addMediaTypeIfNotPresent(String contentType, RequestBody requestBody) {
