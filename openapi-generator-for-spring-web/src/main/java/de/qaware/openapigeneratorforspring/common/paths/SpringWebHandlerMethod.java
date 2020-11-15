@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
+
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString(onlyExplicitlyIncluded = true)
 class SpringWebHandlerMethod implements HandlerMethod {
 
@@ -47,15 +49,8 @@ class SpringWebHandlerMethod implements HandlerMethod {
     }
 
     @Getter
+    @RequiredArgsConstructor
     static class SpringWebParameter implements Parameter {
-
-        public SpringWebParameter(SpringWebHandlerMethod parentMethod, java.lang.reflect.Parameter parameter,
-                                  AnnotationsSupplier annotationsSupplier, AnnotationsSupplier annotationsSupplierForType) {
-            this.parentMethod = parentMethod;
-            this.parameter = parameter;
-            this.annotationsSupplier = annotationsSupplier;
-            this.annotationsSupplierForType = annotationsSupplierForType;
-        }
 
         @Getter(AccessLevel.PROTECTED)
         private final SpringWebHandlerMethod parentMethod;
@@ -93,7 +88,7 @@ class SpringWebHandlerMethod implements HandlerMethod {
                     .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.consumes()))
                     .findFirst()
                     .map(requestMappingAnnotation -> Arrays.asList(requestMappingAnnotation.consumes()))
-                    .orElse(Collections.singletonList(org.springframework.http.MediaType.ALL_VALUE));
+                    .orElse(singletonList(org.springframework.http.MediaType.ALL_VALUE));
         }
 
         @Override
@@ -120,7 +115,7 @@ class SpringWebHandlerMethod implements HandlerMethod {
                     .findFirst()
                     .map(requestMappingAnnotation -> Arrays.asList(requestMappingAnnotation.produces()))
                     // fallback to "all value" if nothing has been specified
-                    .orElse(Collections.singletonList(org.springframework.http.MediaType.ALL_VALUE));
+                    .orElse(singletonList(org.springframework.http.MediaType.ALL_VALUE));
         }
     }
 }

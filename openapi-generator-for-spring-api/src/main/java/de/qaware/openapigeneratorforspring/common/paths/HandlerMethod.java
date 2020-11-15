@@ -25,9 +25,20 @@ public interface HandlerMethod {
 
         // annotations from parameter type are useful for SchemaResolver
         AnnotationsSupplier getAnnotationsSupplierForType();
+
+        default void customize(de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter) {
+            // do nothing, customization callback is optional
+        }
     }
 
-    interface RequestBodyParameter extends Parameter {
+    interface RequestBodyParameter {
+        Optional<Type> getType();
+
+        AnnotationsSupplier getAnnotationsSupplier();
+
+        // annotations from parameter type are useful for SchemaResolver
+        AnnotationsSupplier getAnnotationsSupplierForType();
+
         List<String> getConsumesContentTypes();
 
         default void customize(RequestBody requestBody) {

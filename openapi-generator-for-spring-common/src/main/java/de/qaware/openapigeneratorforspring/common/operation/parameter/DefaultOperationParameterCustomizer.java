@@ -105,7 +105,10 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
                     OperationParameterCustomizerContext parameterCustomizerContext = operationParameterCustomizerContextFactory.create(operationBuilderContext, methodParameter);
                     // converters are ordered and the first one not returning null will be used
                     return firstNonNull(parameterMethodConverters, converter -> converter.convert(methodParameter))
-                            // apply customizers after conversion
+                            // apply customizers after conversion,
+                            // first callback of specific parameter implementation,
+                            .map(parameter -> applyCustomizeCallback(parameter, methodParameter))
+                            // then parameter customizers applying to any implementation
                             .map(parameter -> applyParameterCustomizers(parameter, parameterCustomizerContext))
                             .map(Stream::of).orElseGet(Stream::empty); // Optional.toStream()
                 })
@@ -113,9 +116,15 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
                 .collect(toList());
     }
 
+    private Parameter applyCustomizeCallback(Parameter parameter, HandlerMethod.Parameter methodParameter) {
+        methodParameter.customize(parameter);
+        // return value for convenience in .map
+        return parameter;
+    }
+
     private Parameter applyParameterCustomizers(Parameter parameter, OperationParameterCustomizerContext operationParameterCustomizerContext) {
         parameterCustomizers.forEach(customizer -> customizer.customize(parameter, operationParameterCustomizerContext));
-        // return value for convenience in map
+        // return value for convenience in .map
         return parameter;
     }
 

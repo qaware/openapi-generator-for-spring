@@ -62,7 +62,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
         return requestBody;
     }
 
-    private RequestBody getRequestBodyFromAnnotations(@Nullable RequestBody existingRequestBody, List<? extends HandlerMethod.Parameter> methodParameters, MapperContext mapperContext) {
+    private RequestBody getRequestBodyFromAnnotations(@Nullable RequestBody existingRequestBody, List<HandlerMethod.RequestBodyParameter> methodParameters, MapperContext mapperContext) {
         RequestBody requestBody = Optional.ofNullable(existingRequestBody).orElseGet(RequestBody::new);
         methodParameters.stream().flatMap(methodParameter -> methodParameter.getAnnotationsSupplier().findAnnotations(io.swagger.v3.oas.annotations.parameters.RequestBody.class))
                 .forEach(swaggerRequestBodyAnnotation -> requestBodyAnnotationMapper.applyFromAnnotation(requestBody, swaggerRequestBodyAnnotation, mapperContext));
