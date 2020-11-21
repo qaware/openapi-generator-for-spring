@@ -2,7 +2,6 @@ package de.qaware.openapigeneratorforspring.common.paths;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
-import de.qaware.openapigeneratorforspring.common.paths.AbstractSpringWebHandlerMethod.SpringWebRequestBody;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethod.SpringWebResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -17,8 +16,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 
@@ -30,39 +27,10 @@ public class SpringWebHandlerMethodMapper {
         @Override
         public List<HandlerMethod.RequestBody> map(HandlerMethod handlerMethod) {
             if (handlerMethod instanceof AbstractSpringWebHandlerMethod) {
-                AbstractSpringWebHandlerMethod springWebHandlerMethod = (AbstractSpringWebHandlerMethod) handlerMethod;
-                List<String> consumesContentTypes = findConsumesContentTypes(handlerMethod.getAnnotationsSupplier());
-                // TODO also return request body even if no request body parameter exists
-                return springWebHandlerMethod.getParameters().stream()
-                        .flatMap(parameter -> {
-                            org.springframework.web.bind.annotation.RequestBody springWebRequestBodyAnnotation = parameter.getAnnotationsSupplier()
-                                    .findFirstAnnotation(org.springframework.web.bind.annotation.RequestBody.class);
-                            if (springWebRequestBodyAnnotation != null) {
-                                SpringWebRequestBody springWebRequestBody = new SpringWebRequestBody(parameter.getAnnotationsSupplier(),
-                                        consumesContentTypes, springWebRequestBodyAnnotation.required(),
-                                        // TODO work on cast
-                                        ((AbstractSpringWebHandlerMethod.SpringWebParameter) parameter).getSpringWebType());
-                                return Stream.of(springWebRequestBody);
-                            }
-                            return Stream.empty();
-                        })
-                        .collect(Collectors.toList());
+                return ((AbstractSpringWebHandlerMethod) handlerMethod).getRequestBodies();
             }
-            return null;
+            return null; // indicates we can't map this method
         }
-
-        private List<String> findConsumesContentTypes(AnnotationsSupplier handlerMethodAnnotationsSupplier) {
-            // TODO check if that logic here correctly mimics the way Spring is treating the "consumes" property
-            // Spring uses it to conditionally check if that handler method is supposed to accept that request,
-            // and we need an information on what is supposed to be sent from the client for that method
-            return handlerMethodAnnotationsSupplier
-                    .findAnnotations(RequestMapping.class)
-                    .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.consumes()))
-                    .findFirst()
-                    .map(requestMappingAnnotation -> Arrays.asList(requestMappingAnnotation.consumes()))
-                    .orElse(singletonList(org.springframework.http.MediaType.ALL_VALUE));
-        }
-
     }
 
     @RequiredArgsConstructor

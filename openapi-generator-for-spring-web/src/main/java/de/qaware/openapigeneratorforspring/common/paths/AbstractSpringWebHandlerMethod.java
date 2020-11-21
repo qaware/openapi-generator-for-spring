@@ -5,12 +5,17 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
+
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
 
     @Getter
@@ -18,11 +23,18 @@ abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
     @Getter
     private final List<Parameter> parameters;
 
-    public AbstractSpringWebHandlerMethod(AnnotationsSupplier annotationsSupplier, java.lang.reflect.Parameter[] methodParameters, AnnotationsSupplierFactory annotationsSupplierFactory) {
-        this.annotationsSupplier = annotationsSupplier;
-        this.parameters = Stream.of(methodParameters)
-                .map(parameter -> SpringWebParameter.of(parameter, annotationsSupplierFactory))
-                .collect(Collectors.toList());
+    abstract List<HandlerMethod.RequestBody> getRequestBodies();
+
+    protected List<String> findConsumesContentTypes() {
+        // TODO check if that logic here correctly mimics the way Spring is treating the "consumes" property
+        // Spring uses it to conditionally check if that handler method is supposed to accept that request,
+        // and we need an information on what is supposed to be sent from the client for that method
+        return annotationsSupplier
+                .findAnnotations(RequestMapping.class)
+                .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.consumes()))
+                .findFirst()
+                .map(requestMappingAnnotation -> Arrays.asList(requestMappingAnnotation.consumes()))
+                .orElse(singletonList(org.springframework.http.MediaType.ALL_VALUE));
     }
 
     @RequiredArgsConstructor(staticName = "of")
@@ -32,51 +44,49 @@ abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
         private final AnnotationsSupplier annotationsSupplier;
     }
 
-    @RequiredArgsConstructor
+    @RequiredArgsConstructor(access = AccessLevel.PACKAGE, staticName = "of")
     static class SpringWebParameter implements Parameter {
 
         static SpringWebParameter of(java.lang.reflect.Parameter parameter, AnnotationsSupplierFactory annotationsSupplierFactory) {
-            AnnotationsSupplier annotationsSupplierForType = annotationsSupplierFactory.createFromAnnotatedElement(parameter.getType());
             return new SpringWebParameter(
-                    parameter.getName(),
-                    annotationsSupplierFactory.createFromAnnotatedElement(parameter),
-                    SpringWebType.of(parameter.getParameterizedType(), annotationsSupplierForType)
+                    // avoid building with some "arg1" auto-generated parameters
+                    parameter.isNamePresent() ? parameter.getName() : null,
+                    SpringWebType.of(parameter.getParameterizedType(), annotationsSupplierFactory.createFromAnnotatedElement(parameter.getType())),
+                    annotationsSupplierFactory.createFromAnnotatedElement(parameter)
             );
         }
 
-        @Getter
-        private final String name;
+        @Nullable
+        private final String parameterName;
+        private final Type parameterType;
         @Getter
         private final AnnotationsSupplier annotationsSupplier;
-        @Getter(AccessLevel.PACKAGE)
-        private final SpringWebType springWebType;
+
+        @Override
+        public Optional<String> getName() {
+            return Optional.ofNullable(parameterName);
+        }
 
         @Override
         public Optional<Type> getType() {
-            return Optional.of(springWebType);
+            return Optional.of(parameterType);
         }
     }
 
     @RequiredArgsConstructor
+    @Getter
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     static class SpringWebRequestBody implements RequestBody {
-        @Getter
         private final AnnotationsSupplier annotationsSupplier;
-        @Getter
         private final List<String> consumesContentTypes;
-        private final boolean isRequired;
-        private final SpringWebType springWebType;
+        private final Optional<Type> type;
 
-        @Override
-        public Optional<Type> getType() {
-            return Optional.of(springWebType);
-        }
-
-        @Override
-        public void customize(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody requestBody) {
-            if (requestBody.getRequired() == null) {
-                requestBody.setRequired(isRequired);
-            }
-        }
+//        @Override
+//        public void customize(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody requestBody) {
+//            if (requestBody.getRequired() == null) {
+//                requestBody.setRequired(isRequired);
+//            }
+//        }
     }
 
     @RequiredArgsConstructor

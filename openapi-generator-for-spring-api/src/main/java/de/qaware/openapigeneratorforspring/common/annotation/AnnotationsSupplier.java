@@ -7,6 +7,14 @@ import java.util.stream.Stream;
 
 @FunctionalInterface
 public interface AnnotationsSupplier {
+
+    AnnotationsSupplier EMPTY = new AnnotationsSupplier() {
+        @Override
+        public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
+            return Stream.empty();
+        }
+    };
+
     /**
      * Supply annotations for entity under investigation. Annotations
      * with highest precedence should appear first in returned stream.

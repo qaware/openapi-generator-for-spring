@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.webflux.function;
 
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodWithInfo;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class RouterFunctionHandlerMethodWithInfoBuilder {
                 new RouterFunctionHandlerMethod(
                         beanName,
                         beanFactoryMethod.map(annotationsSupplierFactory::createFromMethodWithDeclaringClass)
-                                .orElse(RouterFunctionHandlerMethod.EMPTY_ANNOTATIONS_SUPPLIER),
+                                .orElse(AnnotationsSupplier.EMPTY),
                         routerFunction,
                         routerFunctionAnalysisResult
                 ),

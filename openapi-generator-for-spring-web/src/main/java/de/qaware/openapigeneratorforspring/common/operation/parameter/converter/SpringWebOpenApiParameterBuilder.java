@@ -9,10 +9,11 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils
 
 public class SpringWebOpenApiParameterBuilder {
 
-    Parameter build(ParameterIn in, String name, boolean required) {
-        Parameter parameter = new Parameter();
-        parameter.setIn(in.toString());
-        parameter.setRequired(required);
+    Parameter build(ParameterIn in, String name, boolean requiredFlag) {
+        Parameter parameter = Parameter.builder()
+                .in(in.toString())
+                .required(requiredFlag)
+                .build();
         setStringIfNotBlank(name, parameter::setName);
         return parameter;
     }

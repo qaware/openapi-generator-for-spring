@@ -3,7 +3,7 @@ package de.qaware.openapigeneratorforspring.webflux;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodWithInfo;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
-import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodsMapper;
+import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodEnumMapper;
 import de.qaware.openapigeneratorforspring.webflux.function.RouterFunctionHandlerMethodWithInfoBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class HandlerMethodsProviderForWebFlux implements HandlerMethodsProvider 
 
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
     private final SpringWebHandlerMethodBuilder springWebHandlerMethodBuilder;
-    private final SpringWebRequestMethodsMapper springWebRequestMethodsMapper;
+    private final SpringWebRequestMethodEnumMapper springWebRequestMethodEnumMapper;
 
     private final Map<String, RouterFunction<?>> routerFunctions;
     private final RouterFunctionHandlerMethodWithInfoBuilder routerFunctionHandlerMethodWithInfoBuilder;
@@ -44,7 +44,7 @@ public class HandlerMethodsProviderForWebFlux implements HandlerMethodsProvider 
                         entry.getKey().getPatternsCondition().getPatterns().stream()
                                 .map(PathPattern::toString)
                                 .collect(Collectors.toCollection(LinkedHashSet::new)),
-                        springWebRequestMethodsMapper.map(entry.getKey().getMethodsCondition().getMethods())
+                        springWebRequestMethodEnumMapper.map(entry.getKey().getMethodsCondition().getMethods())
                 ));
     }
 

@@ -4,7 +4,7 @@ import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
-import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodsMapper;
+import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodEnumMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForFlux;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForFlux;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForMono;
@@ -37,12 +37,12 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
     public HandlerMethodsProvider handlerMethodsProviderFromWebFlux(
             RequestMappingHandlerMapping requestMappingHandlerMapping,
             SpringWebHandlerMethodBuilder springWebHandlerMethodBuilder,
-            SpringWebRequestMethodsMapper springWebRequestMethodsMapper,
+            SpringWebRequestMethodEnumMapper springWebRequestMethodEnumMapper,
             Map<String, RouterFunction<?>> routerFunctions,
             RouterFunctionHandlerMethodWithInfoBuilder routerFunctionHandlerMethodWithInfoBuilder
     ) {
         return new HandlerMethodsProviderForWebFlux(
-                requestMappingHandlerMapping, springWebHandlerMethodBuilder, springWebRequestMethodsMapper,
+                requestMappingHandlerMapping, springWebHandlerMethodBuilder, springWebRequestMethodEnumMapper,
                 routerFunctions, routerFunctionHandlerMethodWithInfoBuilder
         );
     }

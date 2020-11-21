@@ -1,2 +1,19 @@
 {
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App30",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping1": {
+      "post": {
+        "operationId": "mapping1_mapping2",
+        "responses": {
+          "default": {
+            "description": "Default response"
+          }
+        }
+      }
+    }
+  }
 }

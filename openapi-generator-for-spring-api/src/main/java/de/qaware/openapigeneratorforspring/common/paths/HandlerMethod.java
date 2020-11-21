@@ -21,7 +21,7 @@ public interface HandlerMethod {
     }
 
     interface Parameter {
-        String getName();
+        Optional<String> getName();
 
         Optional<Type> getType();
 

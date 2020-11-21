@@ -9,21 +9,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.web.reactive.function.server.RouterFunction;
 
-import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @ToString(onlyExplicitlyIncluded = true)
 class RouterFunctionHandlerMethod implements HandlerMethod {
-
-    static final AnnotationsSupplier EMPTY_ANNOTATIONS_SUPPLIER = new AnnotationsSupplier() {
-        @Override
-        public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
-            return Stream.empty();
-        }
-    };
 
     @ToString.Include
     @Getter
@@ -49,14 +40,18 @@ class RouterFunctionHandlerMethod implements HandlerMethod {
 
     @RequiredArgsConstructor
     static class Parameter implements HandlerMethod.Parameter {
-        @Getter
-        private final String name;
+        private final String routerParameterName;
         @Getter(AccessLevel.PACKAGE)
         private final ParameterIn parameterIn;
 
         @Override
+        public Optional<String> getName() {
+            return Optional.of(routerParameterName);
+        }
+
+        @Override
         public AnnotationsSupplier getAnnotationsSupplier() {
-            return EMPTY_ANNOTATIONS_SUPPLIER;
+            return AnnotationsSupplier.EMPTY;
         }
 
         @Override

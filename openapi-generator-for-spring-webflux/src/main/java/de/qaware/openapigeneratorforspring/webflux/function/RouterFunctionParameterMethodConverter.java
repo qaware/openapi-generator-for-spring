@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.webflux.function;
 
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 
 import javax.annotation.Nullable;
 
@@ -11,13 +12,14 @@ public class RouterFunctionParameterMethodConverter implements ParameterMethodCo
 
     @Nullable
     @Override
-    public de.qaware.openapigeneratorforspring.model.parameter.Parameter convert(HandlerMethod.Parameter handlerMethodParameter) {
+    public Parameter convert(HandlerMethod.Parameter handlerMethodParameter) {
         if (handlerMethodParameter instanceof RouterFunctionHandlerMethod.Parameter) {
-            RouterFunctionHandlerMethod.Parameter routerFunctionParameter = (RouterFunctionHandlerMethod.Parameter) handlerMethodParameter;
-            de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter = new de.qaware.openapigeneratorforspring.model.parameter.Parameter();
-            parameter.setName(routerFunctionParameter.getName());
-            parameter.setIn(routerFunctionParameter.getParameterIn().toString());
-            return parameter;
+            RouterFunctionHandlerMethod.Parameter parameter = (RouterFunctionHandlerMethod.Parameter) handlerMethodParameter;
+            return Parameter.builder()
+                    .name(parameter.getName()
+                            .orElseThrow(() -> new IllegalStateException("Router function parameter should always have a name")))
+                    .in(parameter.getParameterIn().toString())
+                    .build();
         }
         return null;
     }

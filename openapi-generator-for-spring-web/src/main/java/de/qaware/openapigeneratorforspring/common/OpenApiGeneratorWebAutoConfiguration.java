@@ -8,7 +8,8 @@ import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.
 import de.qaware.openapigeneratorforspring.common.paths.DefaultSpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodMapper;
-import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodsMapper;
+import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodMerger;
+import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodEnumMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.spring.SpringWebResponseEntityTypeResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +39,12 @@ public class OpenApiGeneratorWebAutoConfiguration {
         return new SpringWebHandlerMethodMapper.ResponseCodeMapper();
     }
 
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringWebHandlerMethodMerger defaultSpringWebHandlerMethodMerger() {
+        return new SpringWebHandlerMethodMerger();
+    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -72,7 +79,7 @@ public class OpenApiGeneratorWebAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SpringWebRequestMethodsMapper springWebRequestMethodMapper() {
-        return new SpringWebRequestMethodsMapper();
+    public SpringWebRequestMethodEnumMapper springWebRequestMethodEnumMapper() {
+        return new SpringWebRequestMethodEnumMapper();
     }
 }

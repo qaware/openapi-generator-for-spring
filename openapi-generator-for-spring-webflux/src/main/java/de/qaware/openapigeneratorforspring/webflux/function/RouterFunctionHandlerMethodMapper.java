@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.webflux.function;
 
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -7,8 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
-
-import static de.qaware.openapigeneratorforspring.webflux.function.RouterFunctionHandlerMethod.EMPTY_ANNOTATIONS_SUPPLIER;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RouterFunctionHandlerMethodMapper {
@@ -32,7 +31,7 @@ public class RouterFunctionHandlerMethodMapper {
                         routerFunctionHandlerMethod.getRouterFunctionAnalysisResult().getProducesContentTypesFromHeader(),
                         // Schema building could still use @Schema annotation from bean factory method,
                         // so supply a "dummy" type here for schema building
-                        new RouterFunctionHandlerMethod.RouterFunctionType(EMPTY_ANNOTATIONS_SUPPLIER, Void.class)
+                        new RouterFunctionHandlerMethod.RouterFunctionType(AnnotationsSupplier.EMPTY, Void.class)
                 );
                 return Collections.singletonList(returnType);
             }
