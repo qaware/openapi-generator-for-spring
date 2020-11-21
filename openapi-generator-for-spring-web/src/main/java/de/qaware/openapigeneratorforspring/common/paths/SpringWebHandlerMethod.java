@@ -9,8 +9,11 @@ import lombok.ToString;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Collections.singleton;
 
 @ToString(onlyExplicitlyIncluded = true)
 class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod {
@@ -36,19 +39,24 @@ class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod {
 
     @Override
     List<RequestBody> getRequestBodies() {
-        List<String> consumesContentTypes = findConsumesContentTypes();
-        return getParameters().stream().flatMap(parameter ->
-                parameter.getAnnotationsSupplier().findAnnotations(org.springframework.web.bind.annotation.RequestBody.class)
-                        .findFirst()
-                        .map(springWebRequestBodyAnnotation -> buildCustomizedSpringWebRequestBody(consumesContentTypes, parameter, springWebRequestBodyAnnotation.required()))
-                        .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
-        ).collect(Collectors.toList());
+        Set<String> consumesContentTypes = findConsumesContentTypes();
+        return getParameters().stream()
+                .flatMap(parameter -> buildSpringWebRequestBodies(parameter, consumesContentTypes))
+                .collect(Collectors.toList());
     }
 
-    private SpringWebRequestBody buildCustomizedSpringWebRequestBody(List<String> consumesContentTypes, Parameter parameter, boolean isRequired) {
+    static Stream<RequestBody> buildSpringWebRequestBodies(HandlerMethod.Parameter parameter, Set<String> consumesContentTypes) {
+        return parameter.getAnnotationsSupplier().findAnnotations(org.springframework.web.bind.annotation.RequestBody.class)
+                .map(org.springframework.web.bind.annotation.RequestBody::required)
+                .reduce((a, b) -> a || b) // TODO maybe log warning that there's a conflict in required flag?
+                .map(requiredFlag -> buildCustomizedSpringWebRequestBody(consumesContentTypes, parameter, requiredFlag))
+                .map(Stream::of).orElseGet(Stream::empty); // Optional.toStream()
+    }
+
+    private static RequestBody buildCustomizedSpringWebRequestBody(Set<String> consumesContentTypes, Parameter parameter, boolean isRequired) {
         return new SpringWebRequestBody(
                 parameter.getAnnotationsSupplier(),
-                consumesContentTypes,
+                consumesContentTypes.isEmpty() ? singleton(org.springframework.http.MediaType.ALL_VALUE) : consumesContentTypes,
                 parameter.getType()
         ) {
             @Override
@@ -63,7 +71,7 @@ class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod {
     @RequiredArgsConstructor
     static class SpringWebResponse implements Response {
         @Getter
-        private final List<String> producesContentTypes;
+        private final Set<String> producesContentTypes;
         private final SpringWebType springWebType;
 
         @Override

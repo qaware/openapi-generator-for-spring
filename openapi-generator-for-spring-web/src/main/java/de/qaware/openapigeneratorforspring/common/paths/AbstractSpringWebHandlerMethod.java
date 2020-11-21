@@ -9,11 +9,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.Collections.singletonList;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
@@ -25,7 +26,7 @@ abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
 
     abstract List<HandlerMethod.RequestBody> getRequestBodies();
 
-    protected List<String> findConsumesContentTypes() {
+    protected Set<String> findConsumesContentTypes() {
         // TODO check if that logic here correctly mimics the way Spring is treating the "consumes" property
         // Spring uses it to conditionally check if that handler method is supposed to accept that request,
         // and we need an information on what is supposed to be sent from the client for that method
@@ -33,8 +34,10 @@ abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
                 .findAnnotations(RequestMapping.class)
                 .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.consumes()))
                 .findFirst()
-                .map(requestMappingAnnotation -> Arrays.asList(requestMappingAnnotation.consumes()))
-                .orElse(singletonList(org.springframework.http.MediaType.ALL_VALUE));
+                .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
+                .map(RequestMapping::consumes)
+                .flatMap(Stream::of)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @RequiredArgsConstructor(staticName = "of")
@@ -78,21 +81,14 @@ abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     static class SpringWebRequestBody implements RequestBody {
         private final AnnotationsSupplier annotationsSupplier;
-        private final List<String> consumesContentTypes;
+        private final Set<String> consumesContentTypes;
         private final Optional<Type> type;
-
-//        @Override
-//        public void customize(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody requestBody) {
-//            if (requestBody.getRequired() == null) {
-//                requestBody.setRequired(isRequired);
-//            }
-//        }
     }
 
     @RequiredArgsConstructor
     static class SpringWebResponse implements Response {
         @Getter
-        private final List<String> producesContentTypes;
+        private final Set<String> producesContentTypes;
         private final SpringWebType springWebType;
 
         @Override

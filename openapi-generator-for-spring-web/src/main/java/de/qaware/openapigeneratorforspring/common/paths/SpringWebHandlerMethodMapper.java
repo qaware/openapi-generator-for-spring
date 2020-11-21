@@ -13,11 +13,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
-
-import static java.util.Collections.singletonList;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SpringWebHandlerMethodMapper {
@@ -45,7 +46,7 @@ public class SpringWebHandlerMethodMapper {
                 SpringWebHandlerMethod springWebHandlerMethod = (SpringWebHandlerMethod) handlerMethod;
                 Method method = springWebHandlerMethod.getMethod();
                 Class<?> returnType = method.getReturnType();
-                List<String> producesContentTypes = findProducesContentTypes(handlerMethod.getAnnotationsSupplier());
+                Set<String> producesContentTypes = findProducesContentTypes(handlerMethod.getAnnotationsSupplier());
                 // using method.getReturnType() does not work for generic return types
                 AbstractSpringWebHandlerMethod.SpringWebType springWebType = AbstractSpringWebHandlerMethod.SpringWebType.of(method.getGenericReturnType(), annotationsSupplierFactory.createFromAnnotatedElement(returnType));
                 SpringWebResponse springWebReturnType = new SpringWebResponse(producesContentTypes, springWebType);
@@ -54,14 +55,15 @@ public class SpringWebHandlerMethodMapper {
             return null;
         }
 
-        private List<String> findProducesContentTypes(AnnotationsSupplier handlerMethodAnnotationsSupplier) {
+        private Set<String> findProducesContentTypes(AnnotationsSupplier handlerMethodAnnotationsSupplier) {
             // TODO check if that logic here correctly mimics the way Spring is treating the "produces" property
             return handlerMethodAnnotationsSupplier.findAnnotations(RequestMapping.class)
                     .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.produces()))
                     .findFirst()
-                    .map(requestMappingAnnotation -> Arrays.asList(requestMappingAnnotation.produces()))
-                    // fallback to "all value" if nothing has been specified
-                    .orElse(singletonList(org.springframework.http.MediaType.ALL_VALUE));
+                    .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
+                    .map(RequestMapping::produces)
+                    .flatMap(Stream::of)
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
         }
 
     }

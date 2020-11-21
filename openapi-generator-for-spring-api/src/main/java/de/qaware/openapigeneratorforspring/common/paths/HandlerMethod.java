@@ -6,6 +6,7 @@ import org.springframework.core.annotation.Order;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface HandlerMethod {
     String getIdentifier();
@@ -35,7 +36,7 @@ public interface HandlerMethod {
     interface RequestBody {
         Optional<Type> getType();
 
-        List<String> getConsumesContentTypes();
+        Set<String> getConsumesContentTypes();
 
         AnnotationsSupplier getAnnotationsSupplier();
 
@@ -47,7 +48,7 @@ public interface HandlerMethod {
     interface Response {
         Optional<Type> getType();
 
-        List<String> getProducesContentTypes();
+        Set<String> getProducesContentTypes();
     }
 
     // TODO use this at least for Spring Web!

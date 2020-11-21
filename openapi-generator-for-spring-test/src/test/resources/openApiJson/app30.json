@@ -6,13 +6,34 @@
   },
   "paths": {
     "/mapping1": {
-      "post": {
-        "operationId": "mapping1_mapping2",
+      "get": {
+        "operationId": "mapping1_textHtml_mapping1",
         "responses": {
           "default": {
-            "description": "Default response"
+            "$ref": "#/components/responses/default"
           }
         }
+      },
+      "post": {
+        "operationId": "mapping2_textHtml_mapping2",
+        "requestBody": {
+          "content": {
+            "text/html": {},
+            "*/*": {}
+          }
+        },
+        "responses": {
+          "default": {
+            "$ref": "#/components/responses/default"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "default": {
+        "description": "Default response"
       }
     }
   }

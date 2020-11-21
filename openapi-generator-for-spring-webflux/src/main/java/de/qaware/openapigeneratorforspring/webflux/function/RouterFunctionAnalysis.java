@@ -152,7 +152,7 @@ class RouterFunctionAnalysis implements RouterFunctions.Visitor, RequestPredicat
         private final Set<RequestMethod> requestMethods = new LinkedHashSet<>();
         private final Set<String> paths = new LinkedHashSet<>();
         private final List<HandlerMethod.Parameter> parameters = new ArrayList<>();
-        private final List<String> consumesContentTypesFromHeader = new ArrayList<>();
-        private final List<String> producesContentTypesFromHeader = new ArrayList<>();
+        private final Set<String> consumesContentTypesFromHeader = new LinkedHashSet<>();
+        private final Set<String> producesContentTypesFromHeader = new LinkedHashSet<>();
     }
 }

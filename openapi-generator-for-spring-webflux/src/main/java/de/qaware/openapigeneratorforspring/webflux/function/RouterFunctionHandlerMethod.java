@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @ToString(onlyExplicitlyIncluded = true)
@@ -64,7 +65,7 @@ class RouterFunctionHandlerMethod implements HandlerMethod {
     @Getter
     static class Response implements HandlerMethod.Response {
 
-        private final List<String> producesContentTypes;
+        private final Set<String> producesContentTypes;
         private final RouterFunctionType routerFunctionType;
 
         @Override
