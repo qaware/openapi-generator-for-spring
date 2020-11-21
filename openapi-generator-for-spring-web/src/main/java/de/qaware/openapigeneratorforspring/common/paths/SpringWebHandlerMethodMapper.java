@@ -1,24 +1,17 @@
 package de.qaware.openapigeneratorforspring.common.paths;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
-import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethod.SpringWebResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static java.util.Collections.singleton;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SpringWebHandlerMethodMapper {
@@ -30,7 +23,7 @@ public class SpringWebHandlerMethodMapper {
             if (handlerMethod instanceof AbstractSpringWebHandlerMethod) {
                 return ((AbstractSpringWebHandlerMethod) handlerMethod).getRequestBodies();
             }
-            return null; // indicates we can't map this method
+            return null; // indicates we can't map this handler method instance
         }
     }
 
@@ -42,30 +35,11 @@ public class SpringWebHandlerMethodMapper {
         @Nullable
         @Override
         public List<HandlerMethod.Response> map(HandlerMethod handlerMethod) {
-            if (handlerMethod instanceof SpringWebHandlerMethod) {
-                SpringWebHandlerMethod springWebHandlerMethod = (SpringWebHandlerMethod) handlerMethod;
-                Method method = springWebHandlerMethod.getMethod();
-                Class<?> returnType = method.getReturnType();
-                Set<String> producesContentTypes = findProducesContentTypes(handlerMethod.getAnnotationsSupplier());
-                // using method.getReturnType() does not work for generic return types
-                AbstractSpringWebHandlerMethod.SpringWebType springWebType = AbstractSpringWebHandlerMethod.SpringWebType.of(method.getGenericReturnType(), annotationsSupplierFactory.createFromAnnotatedElement(returnType));
-                SpringWebResponse springWebReturnType = new SpringWebResponse(producesContentTypes, springWebType);
-                return Collections.singletonList(springWebReturnType);
+            if (handlerMethod instanceof AbstractSpringWebHandlerMethod) {
+                return ((AbstractSpringWebHandlerMethod) handlerMethod).getResponses(annotationsSupplierFactory);
             }
-            return null;
+            return null; // indicates we can't map this handler method instance
         }
-
-        private Set<String> findProducesContentTypes(AnnotationsSupplier handlerMethodAnnotationsSupplier) {
-            // TODO check if that logic here correctly mimics the way Spring is treating the "produces" property
-            return handlerMethodAnnotationsSupplier.findAnnotations(RequestMapping.class)
-                    .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.produces()))
-                    .findFirst()
-                    .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
-                    .map(RequestMapping::produces)
-                    .flatMap(Stream::of)
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
-        }
-
     }
 
     public static class ResponseCodeMapper implements HandlerMethod.ResponseCodeMapper {
@@ -79,7 +53,11 @@ public class SpringWebHandlerMethodMapper {
                 }
                 return Integer.toString(HttpStatus.OK.value());
             }
-            return null;
+            return null; // indicates we can't map this handler method instance
         }
+    }
+
+    static Set<String> ifEmptyUseSingleAllValue(Set<String> contentTypes) {
+        return contentTypes.isEmpty() ? singleton(org.springframework.http.MediaType.ALL_VALUE) : contentTypes;
     }
 }

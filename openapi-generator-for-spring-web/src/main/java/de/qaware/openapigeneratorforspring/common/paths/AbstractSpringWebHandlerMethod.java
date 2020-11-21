@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,16 +27,24 @@ abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
 
     abstract List<HandlerMethod.RequestBody> getRequestBodies();
 
-    protected Set<String> findConsumesContentTypes() {
-        // TODO check if that logic here correctly mimics the way Spring is treating the "consumes" property
-        // Spring uses it to conditionally check if that handler method is supposed to accept that request,
-        // and we need an information on what is supposed to be sent from the client for that method
-        return annotationsSupplier
-                .findAnnotations(RequestMapping.class)
-                .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.consumes()))
+    abstract List<HandlerMethod.Response> getResponses(AnnotationsSupplierFactory annotationsSupplierFactory);
+
+    Set<String> findConsumesContentTypes() {
+        return fromRequestMappingAnnotation(RequestMapping::consumes);
+    }
+
+    Set<String> findProducesContentTypes() {
+        return fromRequestMappingAnnotation(RequestMapping::produces);
+    }
+
+    private Set<String> fromRequestMappingAnnotation(Function<RequestMapping, String[]> mapper) {
+        return annotationsSupplier.findAnnotations(RequestMapping.class)
+                .filter(annotation -> !StringUtils.isAllBlank(mapper.apply(annotation)))
+                // Spring doc says the first one should win,
+                // ie. annotation on class level is overridden by method level
                 .findFirst()
                 .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
-                .map(RequestMapping::consumes)
+                .map(mapper)
                 .flatMap(Stream::of)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }

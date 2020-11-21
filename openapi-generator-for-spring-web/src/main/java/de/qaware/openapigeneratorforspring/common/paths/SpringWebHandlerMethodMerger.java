@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.paths;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.paths.AbstractSpringWebHandlerMethod.SpringWebParameter;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
 import lombok.Getter;
@@ -22,9 +23,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodMapper.ifEmptyUseSingleAllValue;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.groupingByPairKeyAndCollectingValuesToList;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singleton;
 
 @Slf4j
 public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
@@ -129,6 +130,12 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
             this.identifier = identifier;
             this.requestBodies = requestBodies;
         }
+
+        @Override
+        List<Response> getResponses(AnnotationsSupplierFactory annotationsSupplierFactory) {
+            // TODO implement logic for merging
+            return emptyList();
+        }
     }
 
 
@@ -179,7 +186,7 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
 
         @Override
         public Set<String> getConsumesContentTypes() {
-            return consumesContentTypes.isEmpty() ? singleton(org.springframework.http.MediaType.ALL_VALUE) : consumesContentTypes;
+            return ifEmptyUseSingleAllValue(consumesContentTypes);
         }
 
         @Override

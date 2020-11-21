@@ -7,13 +7,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Collections.singleton;
+import static de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodMapper.ifEmptyUseSingleAllValue;
 
 @ToString(onlyExplicitlyIncluded = true)
 class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod {
@@ -45,6 +46,15 @@ class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    List<Response> getResponses(AnnotationsSupplierFactory annotationsSupplierFactory) {
+        return Collections.singletonList(new SpringWebResponse(
+                ifEmptyUseSingleAllValue(findProducesContentTypes()),
+                // using method.getReturnType() does not work for generic return types
+                SpringWebType.of(method.getGenericReturnType(), annotationsSupplierFactory.createFromAnnotatedElement(method.getReturnType()))
+        ));
+    }
+
     static Stream<RequestBody> buildSpringWebRequestBodies(HandlerMethod.Parameter parameter, Set<String> consumesContentTypes) {
         return parameter.getAnnotationsSupplier().findAnnotations(org.springframework.web.bind.annotation.RequestBody.class)
                 .map(org.springframework.web.bind.annotation.RequestBody::required)
@@ -56,7 +66,7 @@ class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod {
     private static RequestBody buildCustomizedSpringWebRequestBody(Set<String> consumesContentTypes, Parameter parameter, boolean isRequired) {
         return new SpringWebRequestBody(
                 parameter.getAnnotationsSupplier(),
-                consumesContentTypes.isEmpty() ? singleton(org.springframework.http.MediaType.ALL_VALUE) : consumesContentTypes,
+                ifEmptyUseSingleAllValue(consumesContentTypes),
                 parameter.getType()
         ) {
             @Override
@@ -67,6 +77,7 @@ class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod {
             }
         };
     }
+
 
     @RequiredArgsConstructor
     static class SpringWebResponse implements Response {
