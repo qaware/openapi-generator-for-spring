@@ -10,13 +10,11 @@ import lombok.ToString;
 import org.springframework.web.reactive.function.server.RouterFunction;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-@Getter
 @ToString(onlyExplicitlyIncluded = true)
 class RouterFunctionHandlerMethod implements HandlerMethod {
 
@@ -28,16 +26,25 @@ class RouterFunctionHandlerMethod implements HandlerMethod {
     };
 
     @ToString.Include
+    @Getter
     private final String identifier;
+    @Getter
+    private final AnnotationsSupplier annotationsSupplier;
     @ToString.Include
     private final RouterFunction<?> routerFunction;
-    private final AnnotationsSupplier annotationsSupplier;
+    @Getter(AccessLevel.PACKAGE)
     private final RouterFunctionAnalysis.Result routerFunctionAnalysisResult;
 
     @Override
     public List<HandlerMethod.Parameter> getParameters() {
-        // TODO add dummy request body parameter here if content-type is not empty?
         return routerFunctionAnalysisResult.getParameters();
+    }
+
+    @RequiredArgsConstructor
+    @Getter
+    static class RouterFunctionType implements HandlerMethod.Type {
+        private final AnnotationsSupplier annotationsSupplier;
+        private final java.lang.reflect.Type type;
     }
 
     @RequiredArgsConstructor
@@ -53,11 +60,6 @@ class RouterFunctionHandlerMethod implements HandlerMethod {
         }
 
         @Override
-        public AnnotationsSupplier getAnnotationsSupplierForType() {
-            return EMPTY_ANNOTATIONS_SUPPLIER;
-        }
-
-        @Override
         public Optional<Type> getType() {
             return Optional.empty();
         }
@@ -65,20 +67,14 @@ class RouterFunctionHandlerMethod implements HandlerMethod {
 
     @RequiredArgsConstructor
     @Getter
-    static class ReturnType implements HandlerMethod.ReturnType {
+    static class Response implements HandlerMethod.Response {
 
         private final List<String> producesContentTypes;
+        private final RouterFunctionType routerFunctionType;
 
         @Override
-        public Type getType() {
-            // just a marker to get schema resolution working
-            // with @Schema on the bean factory method
-            return getClass();
-        }
-
-        @Override
-        public AnnotationsSupplier getAnnotationsSupplier() {
-            return EMPTY_ANNOTATIONS_SUPPLIER;
+        public Optional<Type> getType() {
+            return Optional.of(routerFunctionType);
         }
     }
 }

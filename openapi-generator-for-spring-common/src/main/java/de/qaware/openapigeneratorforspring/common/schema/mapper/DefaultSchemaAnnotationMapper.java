@@ -35,13 +35,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
 
     @Override
     public Schema buildFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
-        Schema schema;
-        if (!Void.class.equals(schemaAnnotation.implementation())) {
-            // reference tracking will be done once the annotation is applied
-            schema = schemaResolver.resolveFromClassWithoutReference(schemaAnnotation.implementation(), referencedSchemaConsumer);
-        } else {
-            schema = Schema.builder().build();
-        }
+        Schema schema = schemaResolver.resolveFromClassWithoutReference(schemaAnnotation.implementation(), referencedSchemaConsumer);
         applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer);
         return schema;
     }

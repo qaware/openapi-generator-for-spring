@@ -1,35 +1,48 @@
 package de.qaware.openapigeneratorforspring.common.paths;
 
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
-import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethod.SpringWebRequestBodyParameter;
-import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethod.SpringWebReturnType;
+import de.qaware.openapigeneratorforspring.common.paths.AbstractSpringWebHandlerMethod.SpringWebRequestBody;
+import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethod.SpringWebResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SpringWebHandlerMethodMapper {
 
-    public static class RequestBodyParameterMapper implements HandlerMethod.RequestBodyParameterMapper {
+    public static class RequestBodyMapper implements HandlerMethod.RequestBodyMapper {
         @Nullable
         @Override
-        public List<HandlerMethod.RequestBodyParameter> map(HandlerMethod handlerMethod) {
-            if (handlerMethod instanceof SpringWebHandlerMethod) {
-                SpringWebHandlerMethod springWebHandlerMethod = (SpringWebHandlerMethod) handlerMethod;
+        public List<HandlerMethod.RequestBody> map(HandlerMethod handlerMethod) {
+            if (handlerMethod instanceof AbstractSpringWebHandlerMethod) {
+                AbstractSpringWebHandlerMethod springWebHandlerMethod = (AbstractSpringWebHandlerMethod) handlerMethod;
+                List<String> consumesContentTypes = findConsumesContentTypes(handlerMethod.getAnnotationsSupplier());
+                // TODO also return request body even if no request body parameter exists
                 return springWebHandlerMethod.getParameters().stream()
                         .flatMap(parameter -> {
                             org.springframework.web.bind.annotation.RequestBody springWebRequestBodyAnnotation = parameter.getAnnotationsSupplier()
                                     .findFirstAnnotation(org.springframework.web.bind.annotation.RequestBody.class);
                             if (springWebRequestBodyAnnotation != null) {
-                                return Stream.of(new SpringWebRequestBodyParameter(parameter, springWebRequestBodyAnnotation));
+                                SpringWebRequestBody springWebRequestBody = new SpringWebRequestBody(parameter.getAnnotationsSupplier(),
+                                        consumesContentTypes, springWebRequestBodyAnnotation.required(),
+                                        // TODO work on cast
+                                        ((AbstractSpringWebHandlerMethod.SpringWebParameter) parameter).getSpringWebType());
+                                return Stream.of(springWebRequestBody);
                             }
                             return Stream.empty();
                         })
@@ -37,35 +50,55 @@ public class SpringWebHandlerMethodMapper {
             }
             return null;
         }
+
+        private List<String> findConsumesContentTypes(AnnotationsSupplier handlerMethodAnnotationsSupplier) {
+            // TODO check if that logic here correctly mimics the way Spring is treating the "consumes" property
+            // Spring uses it to conditionally check if that handler method is supposed to accept that request,
+            // and we need an information on what is supposed to be sent from the client for that method
+            return handlerMethodAnnotationsSupplier
+                    .findAnnotations(RequestMapping.class)
+                    .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.consumes()))
+                    .findFirst()
+                    .map(requestMappingAnnotation -> Arrays.asList(requestMappingAnnotation.consumes()))
+                    .orElse(singletonList(org.springframework.http.MediaType.ALL_VALUE));
+        }
+
     }
 
     @RequiredArgsConstructor
-    public static class ReturnTypeMapper implements HandlerMethod.ReturnTypeMapper {
+    public static class ResponseMapper implements HandlerMethod.ResponseMapper {
 
         private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
         @Nullable
         @Override
-        public List<HandlerMethod.ReturnType> map(HandlerMethod handlerMethod) {
+        public List<HandlerMethod.Response> map(HandlerMethod handlerMethod) {
             if (handlerMethod instanceof SpringWebHandlerMethod) {
                 SpringWebHandlerMethod springWebHandlerMethod = (SpringWebHandlerMethod) handlerMethod;
-                Class<?> returnType = springWebHandlerMethod.getMethod().getReturnType();
-                if (Void.TYPE.equals(returnType) || Void.class.equals(returnType)) {
-                    return null;
-                }
-                SpringWebReturnType springWebReturnType = new SpringWebReturnType(
-                        // using method.getReturnType() does not work for generic return types
-                        springWebHandlerMethod.getMethod().getGenericReturnType(),
-                        annotationsSupplierFactory.createFromAnnotatedElement(returnType),
-                        handlerMethod.getAnnotationsSupplier()
-                );
+                Method method = springWebHandlerMethod.getMethod();
+                Class<?> returnType = method.getReturnType();
+                List<String> producesContentTypes = findProducesContentTypes(handlerMethod.getAnnotationsSupplier());
+                // using method.getReturnType() does not work for generic return types
+                AbstractSpringWebHandlerMethod.SpringWebType springWebType = AbstractSpringWebHandlerMethod.SpringWebType.of(method.getGenericReturnType(), annotationsSupplierFactory.createFromAnnotatedElement(returnType));
+                SpringWebResponse springWebReturnType = new SpringWebResponse(producesContentTypes, springWebType);
                 return Collections.singletonList(springWebReturnType);
             }
             return null;
         }
+
+        private List<String> findProducesContentTypes(AnnotationsSupplier handlerMethodAnnotationsSupplier) {
+            // TODO check if that logic here correctly mimics the way Spring is treating the "produces" property
+            return handlerMethodAnnotationsSupplier.findAnnotations(RequestMapping.class)
+                    .filter(requestMappingAnnotation -> !StringUtils.isAllBlank(requestMappingAnnotation.produces()))
+                    .findFirst()
+                    .map(requestMappingAnnotation -> Arrays.asList(requestMappingAnnotation.produces()))
+                    // fallback to "all value" if nothing has been specified
+                    .orElse(singletonList(org.springframework.http.MediaType.ALL_VALUE));
+        }
+
     }
 
-    public static class ApiResponseCodeMapper implements HandlerMethod.ApiResponseCodeMapper {
+    public static class ResponseCodeMapper implements HandlerMethod.ResponseCodeMapper {
         @Override
         @Nullable
         public String map(HandlerMethod handlerMethod) {

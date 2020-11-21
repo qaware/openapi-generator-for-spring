@@ -9,7 +9,7 @@ import static org.springframework.core.Ordered.LOWEST_PRECEDENCE;
 
 @RequiredArgsConstructor
 @Order(LOWEST_PRECEDENCE) // really should be last fallback option
-public class DefaultApiResponseCodeMapper implements HandlerMethod.ApiResponseCodeMapper {
+public class DefaultResponseCodeMapper implements HandlerMethod.ResponseCodeMapper {
     @Override
     public String map(HandlerMethod handlerMethod) {
         return DEFAULT_ANNOTATION_RESPONSE_CODE;

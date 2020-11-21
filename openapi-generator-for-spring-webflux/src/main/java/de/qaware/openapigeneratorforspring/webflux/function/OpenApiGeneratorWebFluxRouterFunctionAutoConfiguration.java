@@ -18,14 +18,14 @@ public class OpenApiGeneratorWebFluxRouterFunctionAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RouterFunctionHandlerMethodMapper.RequestBodyParameterMapper routerFunctionRequestBodyParameterMapper() {
-        return new RouterFunctionHandlerMethodMapper.RequestBodyParameterMapper();
+    public RouterFunctionHandlerMethodMapper.RequestBodyMapper routerFunctionRequestBodyParameterMapper() {
+        return new RouterFunctionHandlerMethodMapper.RequestBodyMapper();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public RouterFunctionHandlerMethodMapper.ReturnTypeMapper routerFunctionReturnTypeMapper() {
-        return new RouterFunctionHandlerMethodMapper.ReturnTypeMapper();
+    public RouterFunctionHandlerMethodMapper.ResponseMapper routerFunctionReturnTypeMapper() {
+        return new RouterFunctionHandlerMethodMapper.ResponseMapper();
     }
 
 

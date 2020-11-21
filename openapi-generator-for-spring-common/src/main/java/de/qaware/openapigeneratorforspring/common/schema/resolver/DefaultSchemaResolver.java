@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiLoggingUtils.logPretty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiLoggingUtils.prettyPrintSchema;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -50,7 +51,9 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
     @Override
     public void resolveFromType(Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer, Consumer<Schema> schemaSetter) {
-        referencedSchemaConsumer.maybeAsReference(resolveFromTypeWithoutReference(type, annotationsSupplier, referencedSchemaConsumer), schemaSetter);
+        setIfNotEmpty(resolveFromTypeWithoutReference(type, annotationsSupplier, referencedSchemaConsumer),
+                schema -> referencedSchemaConsumer.maybeAsReference(schema, schemaSetter)
+        );
     }
 
     private Schema resolveFromTypeWithoutReference(Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer) {

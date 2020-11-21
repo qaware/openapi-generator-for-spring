@@ -7,11 +7,11 @@ import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapp
 import de.qaware.openapigeneratorforspring.common.mapper.HeaderAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.LinkAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.ApiResponseDefaultProvider;
-import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseCodeMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultApiResponseDefaultProvider;
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOperationApiResponsesDescriptionCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOperationApiResponsesFromMethodCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOperationResponseCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.response.DefaultResponseCodeMapper;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesDescriptionCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesFromMethodCustomizer;
@@ -48,11 +48,11 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public OperationApiResponsesFromMethodCustomizer defaultOperationApiResponsesFromMethodCustomizer(
-            List<HandlerMethod.ApiResponseCodeMapper> handlerMethodApiResponseCodeMappers,
+            List<HandlerMethod.ResponseCodeMapper> handlerMethodResponseCodeMappers,
             ApiResponseDefaultProvider apiResponseDefaultProvider,
             SchemaResolver schemaResolver
     ) {
-        return new DefaultOperationApiResponsesFromMethodCustomizer(handlerMethodApiResponseCodeMappers, apiResponseDefaultProvider, schemaResolver);
+        return new DefaultOperationApiResponsesFromMethodCustomizer(handlerMethodResponseCodeMappers, apiResponseDefaultProvider, schemaResolver);
     }
 
     @Bean
@@ -69,7 +69,7 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultApiResponseCodeMapper defaultApiResponseCodeMapper() {
-        return new DefaultApiResponseCodeMapper();
+    public DefaultResponseCodeMapper defaultApiResponseCodeMapper() {
+        return new DefaultResponseCodeMapper();
     }
 }

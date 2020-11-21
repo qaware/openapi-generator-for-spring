@@ -24,12 +24,12 @@ public interface AnnotationsSupplier {
                 .orElse(null);
     }
 
-    default AnnotationsSupplier withExcludedBy(Predicate<? super Annotation> annotationExclusion) {
-        AnnotationsSupplier annotationsSupplier = this;
+    default AnnotationsSupplier filteredBy(Predicate<? super Annotation> filter) {
+        final AnnotationsSupplier annotationsSupplier = this;
         return new AnnotationsSupplier() {
             @Override
             public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
-                return annotationsSupplier.findAnnotations(annotationType).filter(annotationExclusion.negate());
+                return annotationsSupplier.findAnnotations(annotationType).filter(filter);
             }
         };
     }

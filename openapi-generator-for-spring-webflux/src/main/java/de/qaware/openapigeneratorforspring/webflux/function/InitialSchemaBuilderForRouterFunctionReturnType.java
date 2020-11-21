@@ -33,13 +33,12 @@ public class InitialSchemaBuilderForRouterFunctionReturnType implements InitialS
         }
     };
 
-
     private final SchemaAnnotationMapperFactory schemaAnnotationMapperFactory;
 
     @Nullable
     @Override
     public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
-        if (javaType.getRawClass().equals(RouterFunctionHandlerMethod.ReturnType.class)) {
+        if (javaType.getRawClass().equals(RouterFunctionHandlerMethod.Response.class)) {
             io.swagger.v3.oas.annotations.media.Schema schemaAnnotation = annotationsSupplier.findFirstAnnotation(io.swagger.v3.oas.annotations.media.Schema.class);
             if (schemaAnnotation != null) {
                 AtomicBoolean interaction = new AtomicBoolean();

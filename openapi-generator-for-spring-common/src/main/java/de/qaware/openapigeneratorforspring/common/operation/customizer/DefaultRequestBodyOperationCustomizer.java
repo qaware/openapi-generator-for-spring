@@ -10,7 +10,6 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver
 import de.qaware.openapigeneratorforspring.model.media.Content;
 import de.qaware.openapigeneratorforspring.model.media.MediaType;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
-import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
@@ -35,23 +34,22 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
         );
     }
 
-    private RequestBody applyFromMethod(@Nullable RequestBody existingRequestBody, OperationBuilderContext operationBuilderContext) {
+    private de.qaware.openapigeneratorforspring.model.requestbody.RequestBody applyFromMethod(@Nullable de.qaware.openapigeneratorforspring.model.requestbody.RequestBody existingRequestBody, OperationBuilderContext operationBuilderContext) {
         // TODO use the request body parameter as a suggested identifier for possible referencing?
         return operationBuilderContext.getHandlerMethodRequestBodyParameters()
                 .map(requestBodyParameters -> buildRequestBody(requestBodyParameters, existingRequestBody, operationBuilderContext.getMapperContext()))
-                .orElseGet(RequestBody::new);
+                .orElseGet(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody::new);
     }
 
-    private RequestBody buildRequestBody(List<HandlerMethod.RequestBodyParameter> handlerMethodRequestBodyParameters, @Nullable RequestBody existingRequestBody, MapperContext mapperContext) {
-        RequestBody requestBody = getRequestBodyFromAnnotations(existingRequestBody, handlerMethodRequestBodyParameters, mapperContext);
-        handlerMethodRequestBodyParameters.forEach(handlerMethodRequestBodyParameter -> {
+    private de.qaware.openapigeneratorforspring.model.requestbody.RequestBody buildRequestBody(List<HandlerMethod.RequestBody> handlerMethodRequestBodies, @Nullable de.qaware.openapigeneratorforspring.model.requestbody.RequestBody existingRequestBody, MapperContext mapperContext) {
+        de.qaware.openapigeneratorforspring.model.requestbody.RequestBody requestBody = buildRequestBodyFromSwaggerAnnotations(existingRequestBody, handlerMethodRequestBodies, mapperContext);
+        handlerMethodRequestBodies.forEach(handlerMethodRequestBodyParameter -> {
             for (String contentType : handlerMethodRequestBodyParameter.getConsumesContentTypes()) {
                 MediaType mediaType = addMediaTypeIfNotPresent(contentType, requestBody);
                 if (mediaType.getSchema() == null) {
                     handlerMethodRequestBodyParameter.getType().ifPresent(parameterType -> schemaResolver.resolveFromType(
-                            parameterType,
-                            handlerMethodRequestBodyParameter.getAnnotationsSupplier()
-                                    .andThen(handlerMethodRequestBodyParameter.getAnnotationsSupplierForType()),
+                            parameterType.getType(),
+                            handlerMethodRequestBodyParameter.getAnnotationsSupplier().andThen(parameterType.getAnnotationsSupplier()),
                             mapperContext.getReferenceConsumer(ReferencedSchemaConsumer.class),
                             mediaType::setSchema
                     ));
@@ -62,14 +60,15 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
         return requestBody;
     }
 
-    private RequestBody getRequestBodyFromAnnotations(@Nullable RequestBody existingRequestBody, List<HandlerMethod.RequestBodyParameter> methodParameters, MapperContext mapperContext) {
-        RequestBody requestBody = Optional.ofNullable(existingRequestBody).orElseGet(RequestBody::new);
-        methodParameters.stream().flatMap(methodParameter -> methodParameter.getAnnotationsSupplier().findAnnotations(io.swagger.v3.oas.annotations.parameters.RequestBody.class))
+    private de.qaware.openapigeneratorforspring.model.requestbody.RequestBody buildRequestBodyFromSwaggerAnnotations(@Nullable de.qaware.openapigeneratorforspring.model.requestbody.RequestBody existingRequestBody, List<HandlerMethod.RequestBody> methodParameters, MapperContext mapperContext) {
+        de.qaware.openapigeneratorforspring.model.requestbody.RequestBody requestBody = Optional.ofNullable(existingRequestBody).orElseGet(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody::new);
+        methodParameters.stream()
+                .flatMap(methodParameter -> methodParameter.getAnnotationsSupplier().findAnnotations(io.swagger.v3.oas.annotations.parameters.RequestBody.class))
                 .forEach(swaggerRequestBodyAnnotation -> requestBodyAnnotationMapper.applyFromAnnotation(requestBody, swaggerRequestBodyAnnotation, mapperContext));
         return requestBody;
     }
 
-    private static MediaType addMediaTypeIfNotPresent(String contentType, RequestBody requestBody) {
+    private static MediaType addMediaTypeIfNotPresent(String contentType, de.qaware.openapigeneratorforspring.model.requestbody.RequestBody requestBody) {
         if (requestBody.getContent() == null) {
             Content content = new Content();
             requestBody.setContent(content);

@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.customizer;
 
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +11,14 @@ public class DefaultOperationParameterSchemaCustomizer implements OperationParam
 
     @Override
     public void customize(de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter, OperationParameterCustomizerContext context) {
-        context.getHandlerMethodParameter().ifPresent(handlerMethodParameter -> handlerMethodParameter.getType().ifPresent(parameterType -> {
-            // TODO handle explode setting of annotation?
-            ReferencedSchemaConsumer referencedSchemaConsumer = context.getMapperContext().getReferenceConsumer(ReferencedSchemaConsumer.class);
-            schemaResolver.resolveFromType(parameterType, handlerMethodParameter.getAnnotationsSupplier()
-                    .andThen(handlerMethodParameter.getAnnotationsSupplierForType()), referencedSchemaConsumer, parameter::setSchema);
-        }));
+        context.getHandlerMethodParameter().ifPresent(handlerMethodParameter ->
+                handlerMethodParameter.getType().ifPresent(parameterType -> {
+                    // TODO handle explode setting of annotation?
+                    ReferencedSchemaConsumer referencedSchemaConsumer = context.getMapperContext().getReferenceConsumer(ReferencedSchemaConsumer.class);
+                    AnnotationsSupplier annotationsSupplier = handlerMethodParameter.getAnnotationsSupplier()
+                            .andThen(parameterType.getAnnotationsSupplier());
+                    schemaResolver.resolveFromType(parameterType.getType(), annotationsSupplier, referencedSchemaConsumer, parameter::setSchema);
+                })
+        );
     }
 }

@@ -22,20 +22,20 @@ public class OpenApiGeneratorWebAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SpringWebHandlerMethodMapper.RequestBodyParameterMapper springWebHandSpringWebRequestBodyParameterMapper() {
-        return new SpringWebHandlerMethodMapper.RequestBodyParameterMapper();
+    public SpringWebHandlerMethodMapper.RequestBodyMapper springWebHandSpringWebRequestBodyParameterMapper() {
+        return new SpringWebHandlerMethodMapper.RequestBodyMapper();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public SpringWebHandlerMethodMapper.ReturnTypeMapper springWebHandlerMethodReturnTypeMapper(AnnotationsSupplierFactory annotationsSupplierFactory) {
-        return new SpringWebHandlerMethodMapper.ReturnTypeMapper(annotationsSupplierFactory);
+    public SpringWebHandlerMethodMapper.ResponseMapper springWebHandlerMethodReturnTypeMapper(AnnotationsSupplierFactory annotationsSupplierFactory) {
+        return new SpringWebHandlerMethodMapper.ResponseMapper(annotationsSupplierFactory);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public SpringWebHandlerMethodMapper.ApiResponseCodeMapper defaultSpringWebApiResponseCodeMapper() {
-        return new SpringWebHandlerMethodMapper.ApiResponseCodeMapper();
+    public SpringWebHandlerMethodMapper.ResponseCodeMapper defaultSpringWebApiResponseCodeMapper() {
+        return new SpringWebHandlerMethodMapper.ResponseCodeMapper();
     }
 
 

@@ -1,11 +1,9 @@
 package de.qaware.openapigeneratorforspring.common.paths;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +12,13 @@ public interface HandlerMethod {
 
     AnnotationsSupplier getAnnotationsSupplier();
 
-    List<? extends Parameter> getParameters();
+    List<Parameter> getParameters();
+
+    interface Type {
+        java.lang.reflect.Type getType();
+
+        AnnotationsSupplier getAnnotationsSupplier();
+    }
 
     interface Parameter {
         String getName();
@@ -23,35 +27,27 @@ public interface HandlerMethod {
 
         AnnotationsSupplier getAnnotationsSupplier();
 
-        // annotations from parameter type are useful for SchemaResolver
-        AnnotationsSupplier getAnnotationsSupplierForType();
-
         default void customize(de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter) {
             // do nothing, customization callback is optional
         }
     }
 
-    interface RequestBodyParameter {
+    interface RequestBody {
         Optional<Type> getType();
-
-        AnnotationsSupplier getAnnotationsSupplier();
-
-        // annotations from parameter type are useful for SchemaResolver
-        AnnotationsSupplier getAnnotationsSupplierForType();
 
         List<String> getConsumesContentTypes();
 
-        default void customize(RequestBody requestBody) {
+        AnnotationsSupplier getAnnotationsSupplier();
+
+        default void customize(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody requestBody) {
             // do nothing, customization callback is optional
         }
     }
 
-    interface ReturnType {
-        Type getType();
+    interface Response {
+        Optional<Type> getType();
 
         List<String> getProducesContentTypes();
-
-        AnnotationsSupplier getAnnotationsSupplier();
     }
 
     // TODO use this at least for Spring Web!
@@ -64,21 +60,21 @@ public interface HandlerMethod {
 
     @FunctionalInterface
     @Order(0)
-    interface RequestBodyParameterMapper {
+    interface RequestBodyMapper {
         @Nullable
-        List<RequestBodyParameter> map(HandlerMethod handlerMethod);
+        List<RequestBody> map(HandlerMethod handlerMethod);
     }
 
     @FunctionalInterface
     @Order(0)
-    interface ReturnTypeMapper {
+    interface ResponseMapper {
         @Nullable
-        List<ReturnType> map(HandlerMethod handlerMethod);
+        List<Response> map(HandlerMethod handlerMethod);
     }
 
     @FunctionalInterface
     @Order(0)
-    interface ApiResponseCodeMapper {
+    interface ResponseCodeMapper {
         @Nullable
         String map(HandlerMethod handlerMethod);
     }

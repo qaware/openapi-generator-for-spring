@@ -1,5 +1,9 @@
 package de.qaware.openapigeneratorforspring.common.paths;
 
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
@@ -26,5 +30,13 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
         }
         // TODO implement
         return null;
+    }
+
+    @RequiredArgsConstructor
+    @Getter
+    private static class MergedSpringWebHandlerMethod implements HandlerMethod {
+        private final String identifier;
+        private final AnnotationsSupplier annotationsSupplier;
+        private final List<HandlerMethod.Parameter> parameters;
     }
 }

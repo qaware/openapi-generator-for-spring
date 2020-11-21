@@ -7,7 +7,6 @@ import de.qaware.openapigeneratorforspring.common.operation.customizer.Operation
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
-import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -23,8 +22,8 @@ public class OperationBuilder {
 
     private final OperationAnnotationMapper operationAnnotationMapper;
     private final List<OperationCustomizer> operationCustomizers;
-    private final List<HandlerMethod.ReturnTypeMapper> handlerMethodReturnTypeMappers;
-    private final List<HandlerMethod.RequestBodyParameterMapper> handlerMethodRequestBodyParameterMappers;
+    private final List<HandlerMethod.ResponseMapper> handlerMethodResponseMappers;
+    private final List<HandlerMethod.RequestBodyMapper> handlerMethodRequestBodyMappers;
 
     public Operation buildOperation(OperationInfo operationInfo, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         try {
@@ -38,18 +37,18 @@ public class OperationBuilder {
     public Operation buildOperationInternal(OperationInfo operationInfo, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         HandlerMethod handlerMethod = operationInfo.getHandlerMethod();
 
-        Optional<List<HandlerMethod.ReturnType>> returnTypes = firstNonNull(handlerMethodReturnTypeMappers, mapper -> mapper.map(handlerMethod));
-        Optional<List<HandlerMethod.RequestBodyParameter>> requestBodyParameters = firstNonNull(handlerMethodRequestBodyParameterMappers, mapper -> mapper.map(handlerMethod));
+        Optional<List<HandlerMethod.Response>> returnTypes = firstNonNull(handlerMethodResponseMappers, mapper -> mapper.map(handlerMethod));
+        Optional<List<HandlerMethod.RequestBody>> requestBodyParameters = firstNonNull(handlerMethodRequestBodyMappers, mapper -> mapper.map(handlerMethod));
 
         MapperContext mapperContext = MapperContextImpl.of(referencedItemConsumerSupplier)
-                .withSuggestedMediaTypesSupplierFor(RequestBody.class, () ->
+                .withSuggestedMediaTypesSupplierFor(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody.class, () ->
                         requestBodyParameters.map(Collection::stream)
-                                .map(p -> p.map(HandlerMethod.RequestBodyParameter::getConsumesContentTypes).flatMap(Collection::stream).collect(Collectors.toList()))
+                                .map(p -> p.map(HandlerMethod.RequestBody::getConsumesContentTypes).flatMap(Collection::stream).collect(Collectors.toList()))
                                 .orElseThrow(() -> new IllegalStateException("No request body parameter found on handler method to supply media types"))
                 )
                 .withSuggestedMediaTypesSupplierFor(ApiResponse.class, () ->
                         returnTypes.map(Collection::stream)
-                                .map(p -> p.map(HandlerMethod.ReturnType::getProducesContentTypes).flatMap(Collection::stream).collect(Collectors.toList()))
+                                .map(p -> p.map(HandlerMethod.Response::getProducesContentTypes).flatMap(Collection::stream).collect(Collectors.toList()))
                                 .orElseThrow(() -> new IllegalStateException("No return type found on handler method to supply media types"))
                 );
 

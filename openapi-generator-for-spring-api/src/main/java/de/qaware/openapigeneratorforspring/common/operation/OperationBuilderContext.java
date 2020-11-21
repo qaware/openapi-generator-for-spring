@@ -11,7 +11,7 @@ public interface OperationBuilderContext {
 
     MapperContext getMapperContext();
 
-    Optional<List<HandlerMethod.ReturnType>> getHandlerMethodReturnTypes();
+    Optional<List<HandlerMethod.Response>> getHandlerMethodReturnTypes();
 
-    Optional<List<HandlerMethod.RequestBodyParameter>> getHandlerMethodRequestBodyParameters();
+    Optional<List<HandlerMethod.RequestBody>> getHandlerMethodRequestBodyParameters();
 }

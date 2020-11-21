@@ -21,7 +21,7 @@
         "operationId": "allDeprecatedGetMapping",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200_0"
+            "$ref": "#/components/responses/200"
           }
         },
         "deprecated": true
@@ -43,7 +43,7 @@
         "operationId": "deprecatedGetMapping",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200_0"
+            "$ref": "#/components/responses/200"
           }
         },
         "deprecated": true
@@ -71,7 +71,7 @@
         "operationId": "getMappingOperation1",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200_1"
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -86,7 +86,7 @@
         "operationId": "getMappingOperation2",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200_1"
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -104,7 +104,7 @@
         "operationId": "getMappingOperation3",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200_1"
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -114,7 +114,7 @@
         "operationId": "getMappingOperation4",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200_1"
+            "$ref": "#/components/responses/200"
           }
         },
         "servers": [
@@ -158,7 +158,7 @@
         "operationId": "getMappingReturnString",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200_1"
+            "$ref": "#/components/responses/200"
           }
         }
       }
@@ -185,29 +185,13 @@
     }
   },
   "components": {
-    "schemas": {
-      "deprecated_string": {
-        "type": "string",
-        "deprecated": true
-      }
-    },
     "responses": {
-      "200_1": {
+      "200": {
         "description": "Default response",
         "content": {
           "*/*": {
             "schema": {
               "type": "string"
-            }
-          }
-        }
-      },
-      "200_0": {
-        "description": "Default response",
-        "content": {
-          "*/*": {
-            "schema": {
-              "$ref": "#/components/schemas/deprecated_string"
             }
           }
         }

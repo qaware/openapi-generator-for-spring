@@ -9,6 +9,7 @@ import de.qaware.openapigeneratorforspring.model.media.Content;
 import de.qaware.openapigeneratorforspring.model.media.MediaType;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.MergedAnnotation;
 
@@ -25,7 +26,7 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
             .getDefaultValue("responseCode", String.class)
             .orElseThrow(() -> new IllegalStateException("Cannot infer default response code from ApiResponse annotation"));
 
-    private final List<HandlerMethod.ApiResponseCodeMapper> apiResponseCodeMappers;
+    private final List<HandlerMethod.ResponseCodeMapper> responseCodeMappers;
     private final ApiResponseDefaultProvider apiResponseDefaultProvider;
     private final SchemaResolver schemaResolver;
 
@@ -33,32 +34,40 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
     public void customize(ApiResponses apiResponses, OperationBuilderContext operationBuilderContext) {
         HandlerMethod handlerMethod = operationBuilderContext.getOperationInfo().getHandlerMethod();
         ApiResponse defaultApiResponse = getAndReplaceDefaultApiResponse(apiResponses,
-                firstNonNull(apiResponseCodeMappers, mapper -> mapper.map(handlerMethod))
+                firstNonNull(responseCodeMappers, mapper -> mapper.map(handlerMethod))
                         .orElseThrow(() -> new IllegalStateException("Cannot find api response code for " + handlerMethod))
         );
         operationBuilderContext.getHandlerMethodReturnTypes().ifPresent(handlerMethodReturnTypes -> {
             Content content = getOrCreateEmptyContent(defaultApiResponse);
             handlerMethodReturnTypes.forEach(handlerMethodReturnType -> addMediaTypesToContent(operationBuilderContext, handlerMethod, handlerMethodReturnType, content));
+            if (content.isEmpty()) {
+                defaultApiResponse.setContent(null);
+            }
         });
     }
 
-    private void addMediaTypesToContent(OperationBuilderContext operationBuilderContext, HandlerMethod handlerMethod, HandlerMethod.ReturnType handlerMethodReturnType, Content content) {
-        List<String> producesContentType = handlerMethodReturnType.getProducesContentTypes();
-        for (String contentType : producesContentType) {
-            MediaType mediaType = content.computeIfAbsent(contentType, ignored -> new MediaType());
-            if (mediaType.getSchema() != null) {
-                // we might have already set some media type, only amend this if the schema is not present
-                // this gives annotations a higher preference than the schema inferred from the method return type
-                continue;
+    private void addMediaTypesToContent(OperationBuilderContext operationBuilderContext, HandlerMethod handlerMethod, HandlerMethod.Response handlerMethodResponse, Content content) {
+        handlerMethodResponse.getProducesContentTypes().forEach(contentType -> {
+            MediaType mediaType = content.getOrDefault(contentType, new MediaType());
+            // we might have already set some media type, only amend this if the schema is not present
+            // this gives annotations a higher preference than the schema inferred from the method return type
+            if (mediaType.getSchema() == null) {
+                handlerMethodResponse.getType().ifPresent(responseType -> {
+                    AnnotationsSupplier annotationsSupplier = responseType.getAnnotationsSupplier()
+                            // restrict searching the annotations from the handler method to @Schema only
+                            // this prevents things like @Deprecated on the method to make the response schema also deprecated
+                            // but we can still use @Schema to modify properties of the "default" response
+                            .andThen(handlerMethod.getAnnotationsSupplier().filteredBy(annotation -> annotation.annotationType().equals(Schema.class)));
+                    schemaResolver.resolveFromType(responseType.getType(), annotationsSupplier,
+                            operationBuilderContext.getMapperContext().getReferenceConsumer(ReferencedSchemaConsumer.class),
+                            mediaType::setSchema
+                    );
+                });
+                if (!mediaType.isEmpty()) {
+                    content.put(contentType, mediaType);
+                }
             }
-            // TODO check if supplying annotations from return type, method and method's declaring class isn't too much searching
-            AnnotationsSupplier annotationsSupplier = handlerMethodReturnType.getAnnotationsSupplier()
-                    .andThen(handlerMethod.getAnnotationsSupplier());
-            schemaResolver.resolveFromType(handlerMethodReturnType.getType(), annotationsSupplier,
-                    operationBuilderContext.getMapperContext().getReferenceConsumer(ReferencedSchemaConsumer.class),
-                    mediaType::setSchema
-            );
-        }
+        });
     }
 
     private ApiResponse getAndReplaceDefaultApiResponse(ApiResponses apiResponses, String responseCodeFromMethod) {

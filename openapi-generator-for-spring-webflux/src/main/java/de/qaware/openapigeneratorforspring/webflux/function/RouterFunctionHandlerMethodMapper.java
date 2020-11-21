@@ -8,32 +8,33 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+import static de.qaware.openapigeneratorforspring.webflux.function.RouterFunctionHandlerMethod.EMPTY_ANNOTATIONS_SUPPLIER;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RouterFunctionHandlerMethodMapper {
 
-    public static class RequestBodyParameterMapper implements HandlerMethod.RequestBodyParameterMapper {
+    public static class RequestBodyMapper implements HandlerMethod.RequestBodyMapper {
         @Nullable
         @Override
-        public List<HandlerMethod.RequestBodyParameter> map(HandlerMethod handlerMethod) {
+        public List<HandlerMethod.RequestBody> map(HandlerMethod handlerMethod) {
             // TODO implement when dummy parameter type is seen on non-empty content type header?
-            return null;
+            return Collections.emptyList();
         }
     }
 
-    public static class ReturnTypeMapper implements HandlerMethod.ReturnTypeMapper {
+    public static class ResponseMapper implements HandlerMethod.ResponseMapper {
         @Nullable
         @Override
-        public List<HandlerMethod.ReturnType> map(HandlerMethod handlerMethod) {
+        public List<HandlerMethod.Response> map(HandlerMethod handlerMethod) {
             if (handlerMethod instanceof RouterFunctionHandlerMethod) {
                 RouterFunctionHandlerMethod routerFunctionHandlerMethod = (RouterFunctionHandlerMethod) handlerMethod;
-                io.swagger.v3.oas.annotations.media.Schema schemaAnnotation = handlerMethod.getAnnotationsSupplier()
-                        .findFirstAnnotation(io.swagger.v3.oas.annotations.media.Schema.class);
-                if (schemaAnnotation != null) {
-                    RouterFunctionHandlerMethod.ReturnType returnType = new RouterFunctionHandlerMethod.ReturnType(
-                            routerFunctionHandlerMethod.getRouterFunctionAnalysisResult().getProducesContentTypesFromHeader()
-                    );
-                    return Collections.singletonList(returnType);
-                }
+                RouterFunctionHandlerMethod.Response returnType = new RouterFunctionHandlerMethod.Response(
+                        routerFunctionHandlerMethod.getRouterFunctionAnalysisResult().getProducesContentTypesFromHeader(),
+                        // Schema building could still use @Schema annotation from bean factory method,
+                        // so supply a "dummy" type here for schema building
+                        new RouterFunctionHandlerMethod.RouterFunctionType(EMPTY_ANNOTATIONS_SUPPLIER, Void.class)
+                );
+                return Collections.singletonList(returnType);
             }
             return null;
         }

@@ -23,9 +23,9 @@ public class RouterFunctionHandlerMethodWithInfoBuilder {
         return new HandlerMethodWithInfo(
                 new RouterFunctionHandlerMethod(
                         beanName,
-                        routerFunction,
                         beanFactoryMethod.map(annotationsSupplierFactory::createFromMethodWithDeclaringClass)
                                 .orElse(RouterFunctionHandlerMethod.EMPTY_ANNOTATIONS_SUPPLIER),
+                        routerFunction,
                         routerFunctionAnalysisResult
                 ),
                 routerFunctionAnalysisResult.getPaths(),

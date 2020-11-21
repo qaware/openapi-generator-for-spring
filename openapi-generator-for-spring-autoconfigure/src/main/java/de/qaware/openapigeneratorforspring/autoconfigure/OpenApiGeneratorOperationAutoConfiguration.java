@@ -40,11 +40,11 @@ public class OpenApiGeneratorOperationAutoConfiguration {
     public OperationBuilder operationBuilder(
             OperationAnnotationMapper operationAnnotationMapper,
             List<OperationCustomizer> operationCustomizers,
-            List<HandlerMethod.ReturnTypeMapper> handlerMethodReturnTypeMappers,
-            List<HandlerMethod.RequestBodyParameterMapper> handlerMethodRequestBodyParameterMappers
+            List<HandlerMethod.ResponseMapper> handlerMethodResponseMappers,
+            List<HandlerMethod.RequestBodyMapper> handlerMethodRequestBodyMappers
     ) {
         return new OperationBuilder(operationAnnotationMapper, operationCustomizers,
-                handlerMethodReturnTypeMappers, handlerMethodRequestBodyParameterMappers);
+                handlerMethodResponseMappers, handlerMethodRequestBodyMappers);
     }
 
     @Bean
