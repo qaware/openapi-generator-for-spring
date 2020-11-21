@@ -5,6 +5,7 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.With;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -27,7 +28,7 @@ abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
 
     abstract List<HandlerMethod.RequestBody> getRequestBodies();
 
-    abstract List<HandlerMethod.Response> getResponses(AnnotationsSupplierFactory annotationsSupplierFactory);
+    abstract List<HandlerMethod.Response> getResponses();
 
     Set<String> findConsumesContentTypes() {
         return fromRequestMappingAnnotation(RequestMapping::consumes);
@@ -53,6 +54,7 @@ abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
     @Getter
     static class SpringWebType implements HandlerMethod.Type {
         private final java.lang.reflect.Type type;
+        @With
         private final AnnotationsSupplier annotationsSupplier;
     }
 
@@ -95,14 +97,11 @@ abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
     }
 
     @RequiredArgsConstructor
+    @Getter
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     static class SpringWebResponse implements Response {
-        @Getter
+        private final String responseCode;
         private final Set<String> producesContentTypes;
-        private final SpringWebType springWebType;
-
-        @Override
-        public Optional<Type> getType() {
-            return Optional.of(springWebType);
-        }
+        private final Optional<Type> type;
     }
 }

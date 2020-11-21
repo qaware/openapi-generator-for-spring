@@ -29,16 +29,9 @@ public class OpenApiGeneratorWebAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SpringWebHandlerMethodMapper.ResponseMapper springWebHandlerMethodReturnTypeMapper(AnnotationsSupplierFactory annotationsSupplierFactory) {
-        return new SpringWebHandlerMethodMapper.ResponseMapper(annotationsSupplierFactory);
+    public SpringWebHandlerMethodMapper.ResponseMapper springWebHandlerMethodReturnTypeMapper() {
+        return new SpringWebHandlerMethodMapper.ResponseMapper();
     }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public SpringWebHandlerMethodMapper.ResponseCodeMapper defaultSpringWebApiResponseCodeMapper() {
-        return new SpringWebHandlerMethodMapper.ResponseCodeMapper();
-    }
-
 
     @Bean
     @ConditionalOnMissingBean

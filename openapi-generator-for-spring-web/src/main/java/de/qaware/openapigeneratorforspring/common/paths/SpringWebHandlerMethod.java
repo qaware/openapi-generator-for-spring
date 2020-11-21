@@ -1,10 +1,14 @@
 package de.qaware.openapigeneratorforspring.common.paths;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.model.media.Content;
+import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
+import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -22,6 +26,7 @@ class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod {
     @Getter(AccessLevel.PACKAGE)
     @ToString.Include
     private final Method method;
+    private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     SpringWebHandlerMethod(Method method, AnnotationsSupplierFactory annotationsSupplierFactory) {
         super(
@@ -31,6 +36,7 @@ class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod {
                         .collect(Collectors.toList())
         );
         this.method = method;
+        this.annotationsSupplierFactory = annotationsSupplierFactory;
     }
 
     @Override
@@ -47,12 +53,38 @@ class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod {
     }
 
     @Override
-    List<Response> getResponses(AnnotationsSupplierFactory annotationsSupplierFactory) {
+    List<Response> getResponses() {
+        // using method.getReturnType() does not work for generic return types
         return Collections.singletonList(new SpringWebResponse(
+                getResponseCode(),
                 ifEmptyUseSingleAllValue(findProducesContentTypes()),
-                // using method.getReturnType() does not work for generic return types
-                SpringWebType.of(method.getGenericReturnType(), annotationsSupplierFactory.createFromAnnotatedElement(method.getReturnType()))
-        ));
+                Optional.of(getReturnType())
+        ) {
+            @Override
+            public void customize(ApiResponse apiResponse) {
+                Content content = apiResponse.getContent();
+                if (content != null && content.size() == 1
+                        && getProducesContentTypes().equals(content.keySet())
+                        && content.values().stream().allMatch(HasIsEmpty::isEmpty)
+                ) {
+                    apiResponse.setContent(null);
+                }
+            }
+        });
+    }
+
+    SpringWebType getReturnType() {
+        // even for Void method return type, there might still be @Schema annotation which could be useful
+        return SpringWebType.of(method.getGenericReturnType(), annotationsSupplierFactory.createFromAnnotatedElement(method.getReturnType()));
+    }
+
+    String getResponseCode() {
+        return getAnnotationsSupplier().findAnnotations(ResponseStatus.class)
+                .map(ResponseStatus::code)
+                .mapToInt(HttpStatus::value)
+                .mapToObj(Integer::toString)
+                .findFirst()
+                .orElseGet(() -> Integer.toString(HttpStatus.OK.value()));
     }
 
     static Stream<RequestBody> buildSpringWebRequestBodies(HandlerMethod.Parameter parameter, Set<String> consumesContentTypes) {
@@ -76,18 +108,5 @@ class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod {
                 }
             }
         };
-    }
-
-
-    @RequiredArgsConstructor
-    static class SpringWebResponse implements Response {
-        @Getter
-        private final Set<String> producesContentTypes;
-        private final SpringWebType springWebType;
-
-        @Override
-        public Optional<Type> getType() {
-            return Optional.of(springWebType);
-        }
     }
 }

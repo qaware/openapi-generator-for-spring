@@ -36,7 +36,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
 
     private de.qaware.openapigeneratorforspring.model.requestbody.RequestBody applyFromMethod(@Nullable de.qaware.openapigeneratorforspring.model.requestbody.RequestBody existingRequestBody, OperationBuilderContext operationBuilderContext) {
         // TODO use the request body parameter as a suggested identifier for possible referencing?
-        return operationBuilderContext.getHandlerMethodRequestBodyParameters()
+        return operationBuilderContext.getHandlerMethodRequestBodies()
                 .map(requestBodyParameters -> buildRequestBody(requestBodyParameters, existingRequestBody, operationBuilderContext.getMapperContext()))
                 .orElseGet(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody::new);
     }

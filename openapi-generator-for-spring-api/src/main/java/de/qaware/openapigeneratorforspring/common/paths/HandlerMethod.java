@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.paths;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
@@ -46,9 +47,15 @@ public interface HandlerMethod {
     }
 
     interface Response {
+        String getResponseCode();
+
         Optional<Type> getType();
 
         Set<String> getProducesContentTypes();
+
+        default void customize(ApiResponse apiResponse) {
+            // do nothing, customization callback is optional
+        }
     }
 
     // TODO use this at least for Spring Web!
@@ -71,13 +78,6 @@ public interface HandlerMethod {
     interface ResponseMapper {
         @Nullable
         List<Response> map(HandlerMethod handlerMethod);
-    }
-
-    @FunctionalInterface
-    @Order(0)
-    interface ResponseCodeMapper {
-        @Nullable
-        String map(HandlerMethod handlerMethod);
     }
 
     @FunctionalInterface

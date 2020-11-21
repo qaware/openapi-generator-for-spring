@@ -9,8 +9,16 @@
       "get": {
         "operationId": "mapping1_textHtml_mapping1",
         "responses": {
-          "default": {
-            "$ref": "#/components/responses/default"
+          "200": {
+            "description": "Default response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "*/*": {}
+            }
           }
         }
       },
@@ -18,22 +26,20 @@
         "operationId": "mapping2_textHtml_mapping2",
         "requestBody": {
           "content": {
-            "text/html": {},
+            "text/html": {
+              "schema": {
+                "type": "string"
+              }
+            },
             "*/*": {}
-          }
+          },
+          "required": true
         },
         "responses": {
-          "default": {
-            "$ref": "#/components/responses/default"
+          "200": {
+            "description": "Default response"
           }
         }
-      }
-    }
-  },
-  "components": {
-    "responses": {
-      "default": {
-        "description": "Default response"
       }
     }
   }

@@ -64,7 +64,7 @@ class RouterFunctionHandlerMethod implements HandlerMethod {
     @RequiredArgsConstructor
     @Getter
     static class Response implements HandlerMethod.Response {
-
+        private final String responseCode;
         private final Set<String> producesContentTypes;
         private final RouterFunctionType routerFunctionType;
 

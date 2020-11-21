@@ -14,6 +14,6 @@ import java.util.Optional;
 public class OperationBuilderContextImpl implements OperationBuilderContext {
     private final OperationInfo operationInfo;
     private final MapperContext mapperContext;
-    private final Optional<List<HandlerMethod.Response>> handlerMethodReturnTypes;
-    private final Optional<List<HandlerMethod.RequestBody>> handlerMethodRequestBodyParameters;
+    private final Optional<List<HandlerMethod.Response>> handlerMethodResponses;
+    private final Optional<List<HandlerMethod.RequestBody>> handlerMethodRequestBodies;
 }
