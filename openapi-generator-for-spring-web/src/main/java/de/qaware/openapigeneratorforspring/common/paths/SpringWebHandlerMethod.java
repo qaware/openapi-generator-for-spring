@@ -6,6 +6,7 @@ import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -14,7 +15,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,10 +46,30 @@ class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod {
 
     @Override
     List<RequestBody> getRequestBodies() {
-        Set<String> consumesContentTypes = findConsumesContentTypes();
+        return findRequestBodyParameter()
+                .map(requestBodyParameter -> new SpringWebRequestBody(
+                        requestBodyParameter.getParameter().getAnnotationsSupplier(),
+                        ifEmptyUseSingleAllValue(findConsumesContentTypes()),
+                        requestBodyParameter.getParameter().getType(),
+                        requestBodyParameter.isRequired()
+                ))
+                .map(RequestBody.class::cast)
+                .map(Collections::singletonList)
+                .orElseGet(Collections::emptyList);
+    }
+
+    Optional<RequestBodyParameter> findRequestBodyParameter() {
         return getParameters().stream()
-                .flatMap(parameter -> buildSpringWebRequestBodies(parameter, consumesContentTypes))
-                .collect(Collectors.toList());
+                .flatMap(parameter -> parameter.getAnnotationsSupplier()
+                        .findAnnotations(org.springframework.web.bind.annotation.RequestBody.class)
+                        .findFirst()
+                        .map(org.springframework.web.bind.annotation.RequestBody::required)
+                        .map(requiredFlag -> RequestBodyParameter.of(parameter, requiredFlag))
+                        .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
+                )
+                .reduce((a, b) -> {
+                    throw new IllegalStateException("Found more than one parameter marked with @RequestBody on " + this);
+                });
     }
 
     @Override
@@ -87,26 +107,10 @@ class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod {
                 .orElseGet(() -> Integer.toString(HttpStatus.OK.value()));
     }
 
-    static Stream<RequestBody> buildSpringWebRequestBodies(HandlerMethod.Parameter parameter, Set<String> consumesContentTypes) {
-        return parameter.getAnnotationsSupplier().findAnnotations(org.springframework.web.bind.annotation.RequestBody.class)
-                .map(org.springframework.web.bind.annotation.RequestBody::required)
-                .reduce((a, b) -> a || b) // TODO maybe log warning that there's a conflict in required flag?
-                .map(requiredFlag -> buildCustomizedSpringWebRequestBody(consumesContentTypes, parameter, requiredFlag))
-                .map(Stream::of).orElseGet(Stream::empty); // Optional.toStream()
-    }
-
-    private static RequestBody buildCustomizedSpringWebRequestBody(Set<String> consumesContentTypes, Parameter parameter, boolean isRequired) {
-        return new SpringWebRequestBody(
-                parameter.getAnnotationsSupplier(),
-                ifEmptyUseSingleAllValue(consumesContentTypes),
-                parameter.getType()
-        ) {
-            @Override
-            public void customize(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody requestBody) {
-                if (requestBody.getRequired() == null) {
-                    requestBody.setRequired(isRequired);
-                }
-            }
-        };
+    @RequiredArgsConstructor(staticName = "of", access = AccessLevel.PRIVATE)
+    @Getter
+    static class RequestBodyParameter {
+        private final Parameter parameter;
+        private final boolean required;
     }
 }

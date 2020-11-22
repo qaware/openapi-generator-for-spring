@@ -2,9 +2,7 @@ package de.qaware.openapigeneratorforspring.common.paths;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.paths.AbstractSpringWebHandlerMethod.SpringWebParameter;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
@@ -12,8 +10,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,25 +44,22 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
                 .reduce(AnnotationsSupplier::andThen)
                 .orElse(AnnotationsSupplier.EMPTY);
 
-        // group parameters by name after merging them
-        Map<String, SpringWebParameter> mergedParameters = OpenApiMapUtils.buildStringMapFromStream(
-                handlerMethods.stream()
-                        .map(HandlerMethod::getParameters)
-                        .flatMap(Collection::stream)
-                        .collect(Collectors.groupingBy(HandlerMethod.Parameter::getName, LinkedHashMap::new, Collectors.toList()))
-                        .entrySet().stream()
-                        .map(entry -> entry.getKey()
-                                .map(parameterName -> Pair.of(parameterName, mergeParameters(parameterName, entry.getValue())))
-                                .orElseThrow(() -> new IllegalStateException("Cannot merge handler methods with unnamed parameters: " + entry.getValue()))
-                        ),
-                Pair::getKey,
-                Pair::getValue
-        );
+        // merge parameters by name
+        List<HandlerMethod.Parameter> mergedParameters = handlerMethods.stream()
+                .map(HandlerMethod::getParameters)
+                .flatMap(Collection::stream)
+                .collect(Collectors.groupingBy(HandlerMethod.Parameter::getName, LinkedHashMap::new, Collectors.toList()))
+                .entrySet().stream()
+                .map(entry -> entry.getKey()
+                        .map(parameterName -> mergeParameters(parameterName, entry.getValue()))
+                        .orElseThrow(() -> new IllegalStateException("Cannot merge handler methods with unnamed parameters: " + entry.getValue()))
+                )
+                .collect(Collectors.toList());
 
         // until here, merging is independent of springWebHandlerMethods
         // but eventually providing merged request bodies and merged responses
         // requires assumptions about how Spring Web handler methods work
-        return new MergedSpringWebHandlerMethod(mergedIdentifier, mergedAnnotationSupplier, springWebHandlerMethods, mergedParameters);
+        return new MergedSpringWebHandlerMethod(mergedIdentifier, mergedAnnotationSupplier, mergedParameters, springWebHandlerMethods);
     }
 
     private static String mergeIdentifiers(List<HandlerMethod> handlerMethods) {
@@ -82,24 +77,41 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
         ).collect(Collectors.joining());
     }
 
-    private static SpringWebParameter mergeParameters(String parameterName, List<HandlerMethod.Parameter> parameters) {
-        AnnotationsSupplier mergedAnnotationsSupplier = parameters.stream()
-                .map(HandlerMethod.Parameter::getAnnotationsSupplier)
-                .reduce(AnnotationsSupplier::andThen)
-                .orElse(AnnotationsSupplier.EMPTY);
-        HandlerMethod.Type mergedType = parameters.stream()
-                .flatMap(parameter -> parameter.getType()
-                        .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
-                )
-                .reduce((a, b) -> AbstractSpringWebHandlerMethod.SpringWebType.of(chooseParameterType(a, b), a.getAnnotationsSupplier().andThen(b.getAnnotationsSupplier())))
+    private static HandlerMethod.Parameter mergeParameters(String parameterName, List<HandlerMethod.Parameter> parameters) {
+        AnnotationsSupplier mergedAnnotationsSupplier = mergeParametersAnnotationSupplier(parameters.stream());
+        HandlerMethod.Type mergedType = mergeParametersType(parameters.stream())
                 .orElseThrow(() -> new IllegalStateException("Grouped parameters should contain at least one entry"));
         return SpringWebParameter.of(parameterName, mergedType, mergedAnnotationsSupplier);
     }
 
-    private static Type chooseParameterType(HandlerMethod.Type a, HandlerMethod.Type b) {
-        if (a.getType().equals(b.getType())) {
-            return a.getType();
+    static AnnotationsSupplier mergeParametersAnnotationSupplier(Stream<HandlerMethod.Parameter> parameters) {
+        return parameters.map(HandlerMethod.Parameter::getAnnotationsSupplier)
+                .reduce(AnnotationsSupplier::andThen)
+                .orElse(AnnotationsSupplier.EMPTY);
+    }
+
+    static Optional<HandlerMethod.Type> mergeParametersType(Stream<HandlerMethod.Parameter> parameters) {
+        return parameters
+                .map(HandlerMethod.Parameter::getType)
+                .map(type -> type.orElseThrow(() -> new IllegalStateException("Spring Web Handler Method Parameter should always have a type present")))
+                .reduce(SpringWebHandlerMethodMerger::mergeType);
+    }
+
+    static AbstractSpringWebHandlerMethod.SpringWebType mergeType(HandlerMethod.Type a, HandlerMethod.Type b) {
+        if (isNotVoid(a) && isNotVoid(b) && !a.getType().equals(b.getType())) {
+            throw new IllegalStateException("Cannot merge conflicting types: " + a + " vs. " + b);
         }
-        throw new IllegalStateException("Cannot handle conflicting parameter type " + a + " vs. " + b);
+        return AbstractSpringWebHandlerMethod.SpringWebType.of(
+                chooseParameterType(a, b),
+                a.getAnnotationsSupplier().andThen(b.getAnnotationsSupplier())
+        );
+    }
+
+    private static Type chooseParameterType(HandlerMethod.Type a, HandlerMethod.Type b) {
+        return isNotVoid(a) ? a.getType() : b.getType();
+    }
+
+    private static boolean isNotVoid(HandlerMethod.Type type) {
+        return !void.class.equals(type.getType()) && !Void.class.equals(type.getType());
     }
 }
