@@ -3,20 +3,20 @@ package de.qaware.openapigeneratorforspring.common.paths;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.paths.AbstractSpringWebHandlerMethod.SpringWebParameter;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Slf4j
 public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
     @Nullable
     @Override
@@ -39,11 +39,7 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
             throw new IllegalStateException("Cannot map handler methods not purely of type " + SpringWebHandlerMethod.class.getSimpleName());
         }
 
-        // TODO find commonly shared prefix if possible
-        String mergedIdentifier = handlerMethods.stream()
-                .map(HandlerMethod::getIdentifier)
-                .distinct()
-                .collect(Collectors.joining("_"));
+        String mergedIdentifier = mergeIdentifiers(handlerMethods);
 
         AnnotationsSupplier mergedAnnotationSupplier = handlerMethods.stream()
                 .map(HandlerMethod::getAnnotationsSupplier)
@@ -71,7 +67,22 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
         return new MergedSpringWebHandlerMethod(mergedIdentifier, mergedAnnotationSupplier, springWebHandlerMethods, mergedParameters);
     }
 
-    static SpringWebParameter mergeParameters(String parameterName, List<HandlerMethod.Parameter> parameters) {
+    private static String mergeIdentifiers(List<HandlerMethod> handlerMethods) {
+        LinkedList<String> identifiers = handlerMethods.stream()
+                .map(HandlerMethod::getIdentifier)
+                .distinct()
+                .sorted()
+                .collect(Collectors.toCollection(LinkedList::new));
+        String commonPrefix = StringUtils.getCommonPrefix(identifiers.getFirst(), identifiers.getLast());
+        return Stream.concat(
+                Stream.of(commonPrefix),
+                identifiers.stream()
+                        .map(identifier -> identifier.substring(commonPrefix.length()))
+                        .filter(s -> !s.isEmpty())
+        ).collect(Collectors.joining());
+    }
+
+    private static SpringWebParameter mergeParameters(String parameterName, List<HandlerMethod.Parameter> parameters) {
         AnnotationsSupplier mergedAnnotationsSupplier = parameters.stream()
                 .map(HandlerMethod.Parameter::getAnnotationsSupplier)
                 .reduce(AnnotationsSupplier::andThen)
@@ -89,7 +100,6 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
         if (a.getType().equals(b.getType())) {
             return a.getType();
         }
-        LOGGER.warn("Cannot handle conflicting parameter type {} vs. {}, assuming Void", a.getType(), b.getType());
-        return Void.class;
+        throw new IllegalStateException("Cannot handle conflicting parameter type " + a + " vs. " + b);
     }
 }

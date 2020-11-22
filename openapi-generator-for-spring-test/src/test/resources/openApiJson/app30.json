@@ -7,7 +7,7 @@
   "paths": {
     "/mapping1": {
       "get": {
-        "operationId": "mapping1_textHtml_mapping1",
+        "operationId": "mapping1_textHtml",
         "responses": {
           "200": {
             "description": "Default response",
@@ -23,7 +23,7 @@
         }
       },
       "post": {
-        "operationId": "mapping2_textHtml_mapping2",
+        "operationId": "mapping2_textHtml",
         "requestBody": {
           "content": {
             "text/html": {
