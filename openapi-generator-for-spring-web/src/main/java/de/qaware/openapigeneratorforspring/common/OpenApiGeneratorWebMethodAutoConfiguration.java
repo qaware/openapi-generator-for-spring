@@ -15,7 +15,13 @@ public class OpenApiGeneratorWebMethodAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SpringWebHandlerMethodMapper.RequestBodyMapper springWebHandSpringWebRequestBodyParameterMapper(
+    public SpringWebHandlerMethodMapper.ContextModifierMapper springWebHandlerMethodContextAwareMapper(SpringWebHandlerMethodContentTypesMapper contentTypesMapper) {
+        return new SpringWebHandlerMethodMapper.ContextModifierMapper(contentTypesMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringWebHandlerMethodMapper.RequestBodyMapper springWebHandlerMethodRequestBodyMapper(
             SpringWebHandlerMethodContentTypesMapper springWebHandlerMethodContentTypesMapper,
             SpringWebHandlerMethodRequestBodyParameterMapper springWebHandlerMethodRequestBodyParameterMapper
     ) {
@@ -55,6 +61,4 @@ public class OpenApiGeneratorWebMethodAutoConfiguration {
     public SpringWebHandlerMethodContentTypesMapper springWebHandlerMethodContentTypesMapper() {
         return new SpringWebHandlerMethodContentTypesMapper();
     }
-
-
 }

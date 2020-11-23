@@ -13,7 +13,7 @@ public class DefaultOperationParameterAnnotationCustomizer implements OperationP
         context.getHandlerMethodParameter().ifPresent(handlerMethodParameter -> {
             Parameter parameterAnnotation = handlerMethodParameter.getAnnotationsSupplier().findFirstAnnotation(Parameter.class);
             if (parameterAnnotation != null) {
-                parameterAnnotationMapper.applyFromAnnotation(parameter, parameterAnnotation, context.getMapperContext());
+                parameterAnnotationMapper.applyFromAnnotation(parameter, parameterAnnotation, context.getMapperContext(handlerMethodParameter.getContext()));
             }
         });
     }

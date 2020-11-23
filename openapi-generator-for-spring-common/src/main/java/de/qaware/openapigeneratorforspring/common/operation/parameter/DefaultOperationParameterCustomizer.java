@@ -1,9 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterPostFilter;
 import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterPreFilter;
-import de.qaware.openapigeneratorforspring.common.mapper.MapperContext;
 import de.qaware.openapigeneratorforspring.common.mapper.ParameterAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
@@ -12,24 +10,25 @@ import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizerContext;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.reference.component.parameter.ReferencedParametersConsumer;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.ensureKeyIsNotBlank;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
@@ -42,7 +41,6 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
     private final List<OperationParameterPostFilter> parameterPostFilters;
     private final List<ParameterMethodConverter> parameterMethodConverters;
     private final List<OperationParameterCustomizer> parameterCustomizers;
-    private final OperationParameterCustomizerContextFactory operationParameterCustomizerContextFactory;
     private final ParameterAnnotationMapper parameterAnnotationMapper;
 
     @Override
@@ -56,22 +54,28 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
     }
 
     private List<Parameter> buildParameters(OperationBuilderContext operationBuilderContext) {
-        AnnotationsSupplier handlerMethodAnnotationsSupplier = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
-        Map<String, List<io.swagger.v3.oas.annotations.Parameter>> parameterAnnotationsByName = Stream.concat(
-                // TODO consider .findFirst() in case of merged handler method!
-                handlerMethodAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.Operation.class).findFirst()
-                        .map(io.swagger.v3.oas.annotations.Operation::parameters).map(Arrays::stream).orElse(Stream.empty()),
-                handlerMethodAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.Parameter.class)
-        ).collect(groupingBy(ensureKeyIsNotBlank(io.swagger.v3.oas.annotations.Parameter::name), LinkedHashMap::new, toList()));
+        HandlerMethod handlerMethod = operationBuilderContext.getOperationInfo().getHandlerMethod();
+        Map<String, List<ParameterAnnotation>> parameterAnnotationsByName = Stream.concat(
+                handlerMethod.findAnnotationsWithContext(io.swagger.v3.oas.annotations.Operation.class)
+                        .map((annotation, context) -> Pair.of(annotation.parameters(), context))
+                        .flatMap(pair -> Arrays.stream(pair.getLeft())
+                                .map(annotation -> new ParameterAnnotation(annotation, pair.getRight()))
+                        ),
+                handlerMethod.findAnnotationsWithContext(io.swagger.v3.oas.annotations.Parameter.class)
+                        .map(ParameterAnnotation::new)
+        ).collect(OpenApiStreamUtils.groupingByPairKeyAndCollectingValuesToList());
 
         List<Parameter> parameters = new ArrayList<>();
-        MapperContext mapperContext = operationBuilderContext.getMapperContext();
 
         // first start with the parameters from the handler method, keep the order!
         for (Parameter parameterFromMethod : getParametersFromHandlerMethod(operationBuilderContext)) {
-            List<io.swagger.v3.oas.annotations.Parameter> parameterAnnotations = parameterAnnotationsByName.remove(parameterFromMethod.getName());
+            List<ParameterAnnotation> parameterAnnotations = parameterAnnotationsByName.remove(parameterFromMethod.getName());
             if (parameterAnnotations != null) {
-                parameterAnnotations.forEach(parameterAnnotation -> parameterAnnotationMapper.applyFromAnnotation(parameterFromMethod, parameterAnnotation, mapperContext));
+                parameterAnnotations.forEach(annotation -> parameterAnnotationMapper.applyFromAnnotation(
+                        parameterFromMethod,
+                        annotation.get(),
+                        operationBuilderContext.getMapperContext(annotation.getContext())
+                ));
             }
             parameters.add(parameterFromMethod);
         }
@@ -79,15 +83,47 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
         // add leftover parameters from annotation only afterwards
         parameterAnnotationsByName.forEach((parameterName, parameterAnnotations) -> {
             // there must be at least one parameter annotation, as the map is a result of a groupingBy collector
-            Iterator<io.swagger.v3.oas.annotations.Parameter> iterator = parameterAnnotations.iterator();
-            Parameter parameter = parameterAnnotationMapper.buildFromAnnotation(iterator.next(), mapperContext);
-            iterator.forEachRemaining(parameterAnnotation -> parameterAnnotationMapper.applyFromAnnotation(parameter, parameterAnnotation, mapperContext));
+            Iterator<ParameterAnnotation> iterator = parameterAnnotations.iterator();
+            ParameterAnnotation firstAnnotation = iterator.next();
+            Parameter parameter = parameterAnnotationMapper.buildFromAnnotation(firstAnnotation.get(),
+                    operationBuilderContext.getMapperContext(firstAnnotation.getContext())
+            );
+            iterator.forEachRemaining(annotation -> parameterAnnotationMapper.applyFromAnnotation(parameter, annotation.get(),
+                    operationBuilderContext.getMapperContext(annotation.getContext()))
+            );
             // also customizers should be applied to parameters not coming from method parameters
-            applyParameterCustomizers(parameter, operationParameterCustomizerContextFactory.create(operationBuilderContext, null));
+            applyParameterCustomizers(parameter, OperationParameterCustomizerContextImpl.of(null, operationBuilderContext));
             setIfNotEmpty(parameter, parameters::add);
         });
 
         return parameters;
+    }
+
+    @RequiredArgsConstructor
+    @EqualsAndHashCode(callSuper = false)
+    private static class ParameterAnnotation extends Pair<String, ParameterAnnotation> {
+        private final transient io.swagger.v3.oas.annotations.Parameter annotation;
+        @Getter
+        private final transient HandlerMethod.Context context;
+
+        public io.swagger.v3.oas.annotations.Parameter get() {
+            return annotation;
+        }
+
+        @Override
+        public String getLeft() {
+            return annotation.name();
+        }
+
+        @Override
+        public ParameterAnnotation getRight() {
+            return this;
+        }
+
+        @Override
+        public ParameterAnnotation setValue(ParameterAnnotation value) {
+            return null;
+        }
     }
 
     private void setParametersToOperation(Operation operation, List<Parameter> parameters, OperationBuilderContext operationBuilderContext) {
@@ -102,7 +138,7 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
         return operationBuilderContext.getOperationInfo().getHandlerMethod().getParameters().stream()
                 .filter(methodParameter -> parameterPreFilters.stream().allMatch(filter -> filter.preAccept(methodParameter)))
                 .flatMap(methodParameter -> {
-                    OperationParameterCustomizerContext parameterCustomizerContext = operationParameterCustomizerContextFactory.create(operationBuilderContext, methodParameter);
+                    OperationParameterCustomizerContext parameterCustomizerContext = OperationParameterCustomizerContextImpl.of(methodParameter, operationBuilderContext);
                     // converters are ordered and the first one not returning null will be used
                     return firstNonNull(parameterMethodConverters, converter -> converter.convert(methodParameter))
                             // apply customizers after conversion,

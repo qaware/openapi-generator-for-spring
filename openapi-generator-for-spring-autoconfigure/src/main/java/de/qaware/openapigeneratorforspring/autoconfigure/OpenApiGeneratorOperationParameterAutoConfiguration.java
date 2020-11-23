@@ -8,7 +8,6 @@ import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotation
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ParameterAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.DefaultOperationParameterCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.parameter.OperationParameterCustomizerContextFactory;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterAnnotationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterDeprecatedCustomizer;
@@ -16,7 +15,6 @@ import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterNullableCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterSchemaCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizer;
-import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -33,13 +31,11 @@ public class OpenApiGeneratorOperationParameterAutoConfiguration {
             List<OperationParameterPostFilter> operationParameterPostFilters,
             List<ParameterMethodConverter> parameterMethodConverters,
             List<OperationParameterCustomizer> operationParameterCustomizers,
-            OperationParameterCustomizerContextFactory operationParameterCustomizerContextFactory,
             ParameterAnnotationMapper parameterAnnotationMapper
     ) {
         return new DefaultOperationParameterCustomizer(
                 operationParameterPreFilters, operationParameterPostFilters,
                 parameterMethodConverters, operationParameterCustomizers,
-                operationParameterCustomizerContextFactory,
                 parameterAnnotationMapper
         );
     }
@@ -55,12 +51,6 @@ public class OpenApiGeneratorOperationParameterAutoConfiguration {
         return new DefaultParameterAnnotationMapper(
                 schemaAnnotationMapper, contentAnnotationMapper, exampleObjectAnnotationMapper, extensionAnnotationMapper
         );
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public OperationParameterCustomizerContextFactory operationParameterCustomizerContextFactory(List<HandlerMethod.MediaTypesParameterMapper> handlerMethodMediaTypesParameterMappers) {
-        return new OperationParameterCustomizerContextFactory(handlerMethodMediaTypesParameterMappers);
     }
 
     @Bean

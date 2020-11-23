@@ -31,7 +31,7 @@ public class RouterFunctionHandlerMethodMapper {
                 RouterFunctionHandlerMethod routerFunctionHandlerMethod = (RouterFunctionHandlerMethod) handlerMethod;
                 RouterFunctionHandlerMethod.Response response = new RouterFunctionHandlerMethod.Response(
                         // TODO check if response code just from bean factory method is good enough
-                        findResponseCode(handlerMethod.getAnnotationsSupplier()),
+                        findResponseCode(handlerMethod),
                         routerFunctionHandlerMethod.getRouterFunctionAnalysisResult().getProducesContentTypesFromHeader(),
                         // Schema building could still use @Schema annotation from bean factory method,
                         // so supply a "dummy" type here for schema building
@@ -42,8 +42,8 @@ public class RouterFunctionHandlerMethodMapper {
             return null;
         }
 
-        private static String findResponseCode(AnnotationsSupplier annotationsSupplier) {
-            return annotationsSupplier.findAnnotations(ResponseStatus.class)
+        private static String findResponseCode(HandlerMethod handlerMethod) {
+            return handlerMethod.findAnnotations(ResponseStatus.class)
                     .map(ResponseStatus::code)
                     .mapToInt(HttpStatus::value)
                     .mapToObj(Integer::toString)

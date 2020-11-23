@@ -45,7 +45,7 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
 
     @Override
     public void applyFromAnnotation(Operation operation, io.swagger.v3.oas.annotations.Operation operationAnnotation, MapperContext mapperContext) {
-        // operationAnnotation.method() ignored here, as its managed by caller (if at all)
+        // operationAnnotation.method() ignored here, as its considered by caller when mapping callbacks
         setTags(operation, operationAnnotation.tags(), mapperContext);
         setStringIfNotBlank(operationAnnotation.summary(), operation::setSummary);
         setStringIfNotBlank(operationAnnotation.description(), operation::setDescription);

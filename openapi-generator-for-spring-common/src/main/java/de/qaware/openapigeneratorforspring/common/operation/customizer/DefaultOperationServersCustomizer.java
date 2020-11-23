@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
@@ -24,16 +23,17 @@ public class DefaultOperationServersCustomizer implements OperationCustomizer {
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
         List<Server> servers = Stream.concat(
                 operation.getServers() == null ? Stream.empty() : operation.getServers().stream(),
-                collectServersFromMethodAndClass(operationBuilderContext)
+                collectServersFromHandlerMethod(operationBuilderContext)
         )
                 .distinct()
                 .collect(Collectors.toList());
         setCollectionIfNotEmpty(servers, operation::setServers);
     }
 
-    private Stream<Server> collectServersFromMethodAndClass(OperationBuilderContext operationBuilderContext) {
-        AnnotationsSupplier annotationsSupplier = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
-        return annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.servers.Server.class).map(serverAnnotationMapper::map);
+    private Stream<Server> collectServersFromHandlerMethod(OperationBuilderContext operationBuilderContext) {
+        return operationBuilderContext.getOperationInfo().getHandlerMethod()
+                .findAnnotations(io.swagger.v3.oas.annotations.servers.Server.class)
+                .map(serverAnnotationMapper::map);
     }
 
     @Override

@@ -7,13 +7,10 @@ import de.qaware.openapigeneratorforspring.common.operation.customizer.Operation
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
-import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 
@@ -22,8 +19,7 @@ public class OperationBuilder {
 
     private final OperationAnnotationMapper operationAnnotationMapper;
     private final List<OperationCustomizer> operationCustomizers;
-    private final List<HandlerMethod.ResponseMapper> handlerMethodResponseMappers;
-    private final List<HandlerMethod.RequestBodyMapper> handlerMethodRequestBodyMappers;
+    private final List<HandlerMethod.ContextModifierMapper<MapperContext>> contextModifierMappersForMapperContext;
 
     public Operation buildOperation(OperationInfo operationInfo, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         try {
@@ -36,29 +32,25 @@ public class OperationBuilder {
 
     public Operation buildOperationInternal(OperationInfo operationInfo, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         HandlerMethod handlerMethod = operationInfo.getHandlerMethod();
+        OperationBuilderContext operationBuilderContext = OperationBuilderContextImpl.of(operationInfo,
+                context -> {
+                    MapperContextImpl mapperContext = MapperContextImpl.of(referencedItemConsumerSupplier);
+                    return firstNonNull(contextModifierMappersForMapperContext, mapper -> mapper.map(context))
+                            .map(modifier -> modifier.modify(mapperContext))
+                            .orElse(mapperContext);
+                },
+                referencedItemConsumerSupplier
+        );
 
-        Optional<List<HandlerMethod.Response>> responses = firstNonNull(handlerMethodResponseMappers, mapper -> mapper.map(handlerMethod));
-        Optional<List<HandlerMethod.RequestBody>> requestBodies = firstNonNull(handlerMethodRequestBodyMappers, mapper -> mapper.map(handlerMethod));
+        Operation operation = handlerMethod.findAnnotationsWithContext(io.swagger.v3.oas.annotations.Operation.class)
+                .map(Pair::of)
+                .reduce(new Operation(), (op, annotationWithContext) -> {
+                    operationAnnotationMapper.applyFromAnnotation(op, annotationWithContext.getLeft(),
+                            operationBuilderContext.getMapperContext(annotationWithContext.getRight())
+                    );
+                    return op;
+                }, (a, b) -> b);
 
-        MapperContext mapperContext = MapperContextImpl.of(referencedItemConsumerSupplier)
-                .withSuggestedMediaTypesSupplierFor(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody.class, () ->
-                        requestBodies.map(Collection::stream)
-                                .map(p -> p.map(HandlerMethod.RequestBody::getConsumesContentTypes).flatMap(Collection::stream).collect(Collectors.toList()))
-                                .orElseThrow(() -> new IllegalStateException("No request body found on handler method to supply media types"))
-                )
-                .withSuggestedMediaTypesSupplierFor(ApiResponse.class, () ->
-                        responses.map(Collection::stream)
-                                .map(p -> p.map(HandlerMethod.Response::getProducesContentTypes).flatMap(Collection::stream).collect(Collectors.toList()))
-                                .orElseThrow(() -> new IllegalStateException("No response found on handler method to supply media types"))
-                );
-
-        Operation operation = handlerMethod.getAnnotationsSupplier()
-                .findAnnotations(io.swagger.v3.oas.annotations.Operation.class)
-                .findFirst()
-                .map(annotation -> operationAnnotationMapper.buildFromAnnotation(annotation, mapperContext))
-                .orElseGet(Operation::new);
-
-        OperationBuilderContext operationBuilderContext = OperationBuilderContextImpl.of(operationInfo, mapperContext, referencedItemConsumerSupplier);
         operationCustomizers.forEach(customizer -> customizer.customize(operation, operationBuilderContext));
         return operation;
     }

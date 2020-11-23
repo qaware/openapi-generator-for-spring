@@ -9,27 +9,32 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.web.reactive.function.server.RouterFunction;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @ToString(onlyExplicitlyIncluded = true)
-class RouterFunctionHandlerMethod implements HandlerMethod {
+public class RouterFunctionHandlerMethod implements HandlerMethod {
 
     @ToString.Include
     @Getter
     private final String identifier;
-    @Getter
     private final AnnotationsSupplier annotationsSupplier;
     @ToString.Include
     private final RouterFunction<?> routerFunction;
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final RouterFunctionAnalysis.Result routerFunctionAnalysisResult;
 
     @Override
     public List<HandlerMethod.Parameter> getParameters() {
         return routerFunctionAnalysisResult.getParameters();
+    }
+
+    @Override
+    public <A extends Annotation> ContextAwareAnnotations<A> findAnnotationsWithContext(Class<A> annotationType) {
+        return () -> annotationsSupplier.findAnnotations(annotationType);
     }
 
     @RequiredArgsConstructor

@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.reference.component.securityscheme.ReferencedSecuritySchemesConsumer;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.security.SecurityScheme;
@@ -21,9 +21,9 @@ public class DefaultOperationSecuritySchemesCustomizer implements OperationCusto
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        AnnotationsSupplier annotationsSupplier = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
+        HandlerMethod handlerMethod = operationBuilderContext.getOperationInfo().getHandlerMethod();
         Map<String, SecurityScheme> securitySchemes = buildStringMapFromStream(
-                annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.security.SecurityScheme.class),
+                handlerMethod.findAnnotations(io.swagger.v3.oas.annotations.security.SecurityScheme.class),
                 io.swagger.v3.oas.annotations.security.SecurityScheme::name,
                 securitySchemeAnnotationMapper::map
         );

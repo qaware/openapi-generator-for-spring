@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.reference.tag.ReferencedTagsConsumer;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.tag.Tag;
@@ -39,8 +39,8 @@ public class DefaultOperationTagsCustomizer implements OperationCustomizer {
     }
 
     private Stream<String> collectTagsFromMethodAndClass(OperationBuilderContext operationBuilderContext) {
-        AnnotationsSupplier annotationsSupplier = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
-        List<Tag> tags = annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.tags.Tag.class)
+        HandlerMethod handlerMethod = operationBuilderContext.getOperationInfo().getHandlerMethod();
+        List<Tag> tags = handlerMethod.findAnnotations(io.swagger.v3.oas.annotations.tags.Tag.class)
                 .map(tagAnnotationMapper::map)
                 .collect(Collectors.toList());
         setCollectionIfNotEmpty(tags, nonEmptyTags -> operationBuilderContext.getReferencedItemConsumer(ReferencedTagsConsumer.class)

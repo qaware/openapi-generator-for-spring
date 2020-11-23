@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
-import de.qaware.openapigeneratorforspring.common.mapper.MapperContext;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
@@ -32,7 +31,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
         setIfNotEmpty(
                 applyFromMethod(operation.getRequestBody(), operationBuilderContext),
-                requestBody -> operationBuilderContext.getMapperContext().getReferencedItemConsumer(ReferencedRequestBodyConsumer.class)
+                requestBody -> operationBuilderContext.getReferencedItemConsumer(ReferencedRequestBodyConsumer.class)
                         .maybeAsReference(requestBody, operation::setRequestBody)
         );
     }
@@ -46,7 +45,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
 
     private RequestBody buildRequestBody(List<HandlerMethod.RequestBody> handlerMethodRequestBodies,
                                          @Nullable RequestBody existingRequestBody, OperationBuilderContext operationBuilderContext) {
-        RequestBody requestBody = buildRequestBodyFromSwaggerAnnotations(existingRequestBody, handlerMethodRequestBodies, operationBuilderContext.getMapperContext());
+        RequestBody requestBody = buildRequestBodyFromSwaggerAnnotations(handlerMethodRequestBodies, existingRequestBody, operationBuilderContext);
         handlerMethodRequestBodies.forEach(handlerMethodRequestBodyParameter -> {
             for (String contentType : handlerMethodRequestBodyParameter.getConsumesContentTypes()) {
                 MediaType mediaType = addMediaTypeIfNotPresent(contentType, requestBody);
@@ -64,11 +63,18 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
         return requestBody;
     }
 
-    private RequestBody buildRequestBodyFromSwaggerAnnotations(@Nullable RequestBody existingRequestBody, List<HandlerMethod.RequestBody> methodParameters, MapperContext mapperContext) {
+    private RequestBody buildRequestBodyFromSwaggerAnnotations(List<HandlerMethod.RequestBody> handlerMethodRequestBodies, @Nullable RequestBody existingRequestBody, OperationBuilderContext operationBuilderContext) {
         RequestBody requestBody = Optional.ofNullable(existingRequestBody).orElseGet(RequestBody::new);
-        methodParameters.stream()
-                .flatMap(methodParameter -> methodParameter.getAnnotationsSupplier().findAnnotations(io.swagger.v3.oas.annotations.parameters.RequestBody.class))
-                .forEach(swaggerRequestBodyAnnotation -> requestBodyAnnotationMapper.applyFromAnnotation(requestBody, swaggerRequestBodyAnnotation, mapperContext));
+        handlerMethodRequestBodies.forEach(handlerMethodRequestBody ->
+                handlerMethodRequestBody.getAnnotationsSupplier()
+                        .findAnnotations(io.swagger.v3.oas.annotations.parameters.RequestBody.class)
+                        .findFirst()
+                        .ifPresent(swaggerRequestBodyAnnotation ->
+                                requestBodyAnnotationMapper.applyFromAnnotation(requestBody, swaggerRequestBodyAnnotation,
+                                        operationBuilderContext.getMapperContext(handlerMethodRequestBody.getContext())
+                                )
+                        )
+        );
         return requestBody;
     }
 

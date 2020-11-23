@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.paths.method.merger;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethod;
 import lombok.RequiredArgsConstructor;
@@ -16,23 +15,18 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
 
     private final SpringWebHandlerMethodParameterMerger springWebHandlerMethodParameterMerger;
     private final SpringWebHandlerMethodIdentifierMerger springWebHandlerMethodIdentifierMerger;
-    private final SpringWebHandlerMethodRequestBodyMerger springWebHandlerMethodRequestBodyMerger;
-    private final SpringWebHandlerMethodResponseMerger springWebHandlerMethodResponseMerger;
 
     @Nullable
     @Override
     public HandlerMethod merge(List<HandlerMethod> handlerMethods) {
         return findSpringWebHandlerMethods(handlerMethods)
                 .map(springWebHandlerMethods -> new MergedSpringWebHandlerMethod(
-                        AnnotationsSupplier.merge(handlerMethods.stream()),
                         springWebHandlerMethodParameterMerger.mergeParameters(handlerMethods),
                         springWebHandlerMethodIdentifierMerger.mergeIdentifiers(handlerMethods),
                         // until here, merging is independent of springWebHandlerMethods
                         // but eventually providing merged request bodies and merged responses
                         // requires assumptions about how Spring Web handler methods work
-                        springWebHandlerMethods,
-                        springWebHandlerMethodRequestBodyMerger.mergeRequestBodies(springWebHandlerMethods),
-                        springWebHandlerMethodResponseMerger.mergeResponses(springWebHandlerMethods)
+                        springWebHandlerMethods
                 ))
                 .orElse(null);
     }

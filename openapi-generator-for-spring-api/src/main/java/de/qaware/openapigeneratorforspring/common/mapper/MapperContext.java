@@ -4,14 +4,14 @@ import de.qaware.openapigeneratorforspring.common.reference.HasReferencedItemCon
 import de.qaware.openapigeneratorforspring.model.trait.HasContent;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.function.Supplier;
+import java.util.Optional;
+import java.util.Set;
 
 public interface MapperContext extends HasReferencedItemConsumer {
 
     MapperContext withReferencedItemOwner(@Nullable Object owner);
 
-    List<String> getSuggestedMediaTypes(Class<? extends HasContent> owningType);
+    Optional<Set<String>> findMediaTypes(Class<? extends HasContent> owningType);
 
-    MapperContext withSuggestedMediaTypesSupplierFor(Class<? extends HasContent> owningType, Supplier<List<String>> suggestedMediaTypesSupplier);
+    MapperContext withMediaTypesProvider(MediaTypesProvider mediaTypesProvider);
 }

@@ -20,12 +20,9 @@ public class OpenApiGeneratorWebMethodMergerAutoConfiguration {
     @ConditionalOnMissingBean
     public SpringWebHandlerMethodMerger defaultSpringWebHandlerMethodMerger(
             SpringWebHandlerMethodParameterMerger springWebHandlerMethodParameterMerger,
-            SpringWebHandlerMethodIdentifierMerger springWebHandlerMethodIdentifierMerger,
-            SpringWebHandlerMethodRequestBodyMerger springWebHandlerMethodRequestBodyMerger,
-            SpringWebHandlerMethodResponseMerger springWebHandlerMethodResponseMerger
+            SpringWebHandlerMethodIdentifierMerger springWebHandlerMethodIdentifierMerger
     ) {
-        return new SpringWebHandlerMethodMerger(springWebHandlerMethodParameterMerger, springWebHandlerMethodIdentifierMerger,
-                springWebHandlerMethodRequestBodyMerger, springWebHandlerMethodResponseMerger);
+        return new SpringWebHandlerMethodMerger(springWebHandlerMethodParameterMerger, springWebHandlerMethodIdentifierMerger);
     }
 
     @Bean

@@ -14,11 +14,10 @@ public class DefaultDeprecatedOperationCustomizer implements OperationCustomizer
         if (operation.getDeprecated() != null) {
             return;
         }
-        Deprecated deprecatedOnMethodOrClass = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier()
-                .findFirstAnnotation(Deprecated.class);
-        if (deprecatedOnMethodOrClass != null) {
-            operation.setDeprecated(true);
-        }
+        operationBuilderContext.getOperationInfo().getHandlerMethod()
+                .findAnnotations(Deprecated.class)
+                .findAny()
+                .ifPresent(ignored -> operation.setDeprecated(true));
     }
 
     @Override

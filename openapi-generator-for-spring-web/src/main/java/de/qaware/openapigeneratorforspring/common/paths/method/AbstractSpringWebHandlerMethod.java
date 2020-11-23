@@ -18,8 +18,6 @@ import java.util.Set;
 public abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
 
     @Getter
-    private final AnnotationsSupplier annotationsSupplier;
-    @Getter
     private final List<Parameter> parameters;
 
     @RequiredArgsConstructor(staticName = "of")

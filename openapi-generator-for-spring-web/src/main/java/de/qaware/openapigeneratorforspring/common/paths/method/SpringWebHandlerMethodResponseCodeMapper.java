@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 public class SpringWebHandlerMethodResponseCodeMapper {
     public String getResponseCode(HandlerMethod handlerMethod) {
-        return handlerMethod.getAnnotationsSupplier().findAnnotations(ResponseStatus.class)
+        return handlerMethod.findAnnotations(ResponseStatus.class)
                 .map(ResponseStatus::code)
                 .mapToInt(HttpStatus::value)
                 .mapToObj(Integer::toString)

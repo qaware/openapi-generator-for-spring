@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.operation.response;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.mapper.ApiResponseAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
 import de.qaware.openapigeneratorforspring.common.operation.customizer.OperationCustomizer;
@@ -36,21 +35,23 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
         setMapIfNotEmpty(apiResponses, responses -> referencedApiResponsesConsumer.maybeAsReference(responses, operation::setResponses));
     }
 
-    private ApiResponses buildFromMethodAnnotations(Operation operation, OperationBuilderContext context) {
-        HandlerMethod handlerMethod = context.getOperationInfo().getHandlerMethod();
-
+    private ApiResponses buildFromMethodAnnotations(Operation operation, OperationBuilderContext operationBuilderContext) {
         ApiResponses apiResponses = Optional.ofNullable(operation.getResponses()).orElseGet(ApiResponses::new);
-        AnnotationsSupplier annotationsSupplier = handlerMethod.getAnnotationsSupplier();
-        annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.responses.ApiResponse.class).forEach(apiResponseAnnotation -> {
-            String responseCode = apiResponseAnnotation.responseCode();
-            if (StringUtils.isBlank(responseCode)) {
-                // at least it should be set to the "default" string
-                throw new IllegalStateException("Encountered ApiResponse annotation with empty response code");
-            }
-            ApiResponse apiResponse = apiResponses.computeIfAbsent(responseCode, ignored -> new ApiResponse());
-            ApiResponse smartImmutableApiResponse = OpenApiProxyUtils.smartImmutableProxy(apiResponse, OpenApiProxyUtils::addNonExistingKeys);
-            apiResponseAnnotationMapper.applyFromAnnotation(smartImmutableApiResponse, apiResponseAnnotation, context.getMapperContext());
-        });
+
+        HandlerMethod handlerMethod = operationBuilderContext.getOperationInfo().getHandlerMethod();
+        handlerMethod.findAnnotationsWithContext(io.swagger.v3.oas.annotations.responses.ApiResponse.class)
+                .forEach((annotation, handlerMethodContext) -> {
+                    String responseCode = annotation.responseCode();
+                    if (StringUtils.isBlank(responseCode)) {
+                        // at least it should be set to the "default" string
+                        throw new IllegalStateException("Encountered ApiResponse annotation with empty response code");
+                    }
+                    ApiResponse apiResponse = apiResponses.computeIfAbsent(responseCode, ignored -> new ApiResponse());
+                    ApiResponse smartImmutableApiResponse = OpenApiProxyUtils.smartImmutableProxy(apiResponse, OpenApiProxyUtils::addNonExistingKeys);
+                    apiResponseAnnotationMapper.applyFromAnnotation(smartImmutableApiResponse, annotation,
+                            operationBuilderContext.getMapperContext(handlerMethodContext)
+                    );
+                });
 
         return apiResponses;
     }

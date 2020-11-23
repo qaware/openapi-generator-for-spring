@@ -13,9 +13,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.MergedAnnotation;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 
@@ -56,7 +58,15 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
                             // restrict searching the annotations from the handler method to @Schema only
                             // this prevents things like @Deprecated on the method to make the response schema also deprecated
                             // but we can still use @Schema to modify properties of the "default" response
-                            .andThen(handlerMethod.getAnnotationsSupplier().filteredBy(annotation -> annotation.annotationType().equals(Schema.class)));
+                            .andThen(new AnnotationsSupplier() {
+                                @Override
+                                public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
+                                    if (annotationType.equals(Schema.class)) {
+                                        return handlerMethod.findAnnotations(annotationType);
+                                    }
+                                    return Stream.empty();
+                                }
+                            });
                     schemaResolver.resolveFromType(responseType.getType(), annotationsSupplier,
                             referencedSchemaConsumer,
                             mediaType::setSchema

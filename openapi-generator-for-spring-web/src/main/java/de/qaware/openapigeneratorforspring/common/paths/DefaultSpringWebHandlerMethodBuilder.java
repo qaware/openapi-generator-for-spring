@@ -6,7 +6,6 @@ import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerM
 import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,15 +19,11 @@ public class DefaultSpringWebHandlerMethodBuilder implements SpringWebHandlerMet
         Method method = springWebHandlerMethod.getMethod();
         return new SpringWebHandlerMethod(
                 annotationsSupplierFactory.createFromMethodWithDeclaringClass(method),
-                buildParameters(method.getParameters()),
+                Stream.of(method.getParameters())
+                        .map(this::buildParameter)
+                        .collect(Collectors.toList()),
                 method
         );
-    }
-
-    private List<HandlerMethod.Parameter> buildParameters(java.lang.reflect.Parameter[] parameters) {
-        return Stream.of(parameters)
-                .map(this::buildParameter)
-                .collect(Collectors.toList());
     }
 
     private AbstractSpringWebHandlerMethod.SpringWebParameter buildParameter(java.lang.reflect.Parameter parameter) {

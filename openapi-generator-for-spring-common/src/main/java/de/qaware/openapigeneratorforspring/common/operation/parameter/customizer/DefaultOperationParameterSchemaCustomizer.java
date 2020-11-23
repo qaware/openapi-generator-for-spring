@@ -14,7 +14,7 @@ public class DefaultOperationParameterSchemaCustomizer implements OperationParam
         context.getHandlerMethodParameter().ifPresent(handlerMethodParameter ->
                 handlerMethodParameter.getType().ifPresent(parameterType -> {
                     // TODO handle explode setting of annotation?
-                    ReferencedSchemaConsumer referencedSchemaConsumer = context.getMapperContext().getReferencedItemConsumer(ReferencedSchemaConsumer.class);
+                    ReferencedSchemaConsumer referencedSchemaConsumer = context.getReferencedItemConsumer(ReferencedSchemaConsumer.class);
                     AnnotationsSupplier annotationsSupplier = handlerMethodParameter.getAnnotationsSupplier()
                             .andThen(parameterType.getAnnotationsSupplier());
                     schemaResolver.resolveFromType(parameterType.getType(), annotationsSupplier, referencedSchemaConsumer, parameter::setSchema);

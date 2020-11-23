@@ -26,7 +26,7 @@ public class SpringWebHandlerMethodContentTypesMapper {
     }
 
     private static Set<String> fromRequestMappingAnnotation(HandlerMethod handlerMethod, Function<RequestMapping, String[]> mapper) {
-        return handlerMethod.getAnnotationsSupplier().findAnnotations(RequestMapping.class)
+        return handlerMethod.findAnnotations(RequestMapping.class)
                 .filter(annotation -> !StringUtils.isAllBlank(mapper.apply(annotation)))
                 // Spring doc says the first one should win,
                 // ie. annotation on class level is overridden by method level

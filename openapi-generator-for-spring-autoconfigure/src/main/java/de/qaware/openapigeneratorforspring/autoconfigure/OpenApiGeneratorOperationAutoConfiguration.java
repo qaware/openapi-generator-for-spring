@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.mapper.CallbackAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.MapperContext;
 import de.qaware.openapigeneratorforspring.common.mapper.OperationAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.RequestBodyAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.SecurityRequirementAnnotationMapper;
@@ -40,11 +41,9 @@ public class OpenApiGeneratorOperationAutoConfiguration {
     public OperationBuilder operationBuilder(
             OperationAnnotationMapper operationAnnotationMapper,
             List<OperationCustomizer> operationCustomizers,
-            List<HandlerMethod.ResponseMapper> handlerMethodResponseMappers,
-            List<HandlerMethod.RequestBodyMapper> handlerMethodRequestBodyMappers
+            List<HandlerMethod.ContextModifierMapper<MapperContext>> contextModifierMappersForMapperContext
     ) {
-        return new OperationBuilder(operationAnnotationMapper, operationCustomizers,
-                handlerMethodResponseMappers, handlerMethodRequestBodyMappers);
+        return new OperationBuilder(operationAnnotationMapper, operationCustomizers, contextModifierMappersForMapperContext);
     }
 
     @Bean

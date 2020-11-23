@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.operation.customizer;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.mapper.SecurityRequirementAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderContext;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +22,12 @@ public class DefaultOperationSecurityRequirementCustomizer implements OperationC
 
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
-        AnnotationsSupplier annotationsSupplier = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
+        HandlerMethod handlerMethod = operationBuilderContext.getOperationInfo().getHandlerMethod();
 
         // the following code assumes that all security requirements we find must be fulfilled at the same time,
         // it's more safe to assume that multiple requirements "add up" instead of requiring them as OR
         // the spec allows also an OR case, for which swagger annotation support seems to be missing though
-        SecurityRequirement securityRequirement = annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.security.SecurityRequirement.class)
+        SecurityRequirement securityRequirement = handlerMethod.findAnnotations(io.swagger.v3.oas.annotations.security.SecurityRequirement.class)
                 .map(securityRequirementAnnotationMapper::mapArray)
                 .flatMap(x -> x.entrySet().stream())
                 .collect(Collectors.toMap(ensureKeyIsNotBlank(Map.Entry::getKey), Map.Entry::getValue, (a, b) -> {

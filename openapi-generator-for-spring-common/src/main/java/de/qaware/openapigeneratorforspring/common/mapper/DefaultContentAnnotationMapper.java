@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,8 +36,10 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
                     if (StringUtils.isBlank(contentAnnotation.mediaType())) {
                         // if the mapperContext doesn't have any suggested media types,
                         // the mediaTypeValue is discarded!
-                        return mapperContext.getSuggestedMediaTypes(owningType).stream()
-                                .map(mediaType -> Pair.of(mediaType, mediaTypeValue));
+                        Set<String> mediaTypes = mapperContext.findMediaTypes(owningType)
+                                .orElseThrow(() -> new IllegalStateException("No media types available in context for " + owningType.getSimpleName()
+                                        + " and Content annotation has blank mediaType"));
+                        return mediaTypes.stream().map(mediaType -> Pair.of(mediaType, mediaTypeValue));
                     }
                     return Stream.of(Pair.of(contentAnnotation.mediaType(), mediaTypeValue));
                 })
