@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.model.info;
 
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
+import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +19,14 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Contact implements HasExtensions {
+public class Contact implements HasExtensions, HasIsEmpty<Contact> {
     private String name;
     private String url;
     private String email;
     private Map<String, Object> extensions;
+
+    @Override
+    public Contact createInstance() {
+        return new Contact();
+    }
 }

@@ -29,7 +29,7 @@ public class DefaultOperationSecurityRequirementCustomizer implements OperationC
         // it's more safe to assume that multiple requirements "add up" instead of requiring them as OR
         // the spec allows also an OR case, for which swagger annotation support seems to be missing though
         SecurityRequirement securityRequirement = annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.security.SecurityRequirement.class)
-                .map(securityRequirementAnnotationMapper::map)
+                .map(securityRequirementAnnotationMapper::mapArray)
                 .flatMap(x -> x.entrySet().stream())
                 .collect(Collectors.toMap(ensureKeyIsNotBlank(Map.Entry::getKey), Map.Entry::getValue, (a, b) -> {
                     throw new IllegalStateException("Conflicting security requirement annotation with same name found: " + a + " vs. " + b);

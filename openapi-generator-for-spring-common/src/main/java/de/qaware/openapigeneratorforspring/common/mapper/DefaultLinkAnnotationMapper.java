@@ -19,7 +19,6 @@ public class DefaultLinkAnnotationMapper implements LinkAnnotationMapper {
     private final LinkParameterAnnotationMapper linkParameterAnnotationMapper;
     private final ServerAnnotationMapper serverAnnotationMapper;
 
-
     @Override
     public Map<String, Link> mapArray(io.swagger.v3.oas.annotations.links.Link[] linkAnnotations) {
         return buildStringMapFromStream(

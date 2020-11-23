@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.model.info;
 
 import de.qaware.openapigeneratorforspring.model.trait.HasExtensions;
+import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +19,14 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class License implements HasExtensions {
+public class License implements HasExtensions, HasIsEmpty<License> {
     private String name;
     private String url;
     private Map<String, Object> extensions;
+
+    @Override
+    public License createInstance() {
+        return new License();
+    }
 }
 
