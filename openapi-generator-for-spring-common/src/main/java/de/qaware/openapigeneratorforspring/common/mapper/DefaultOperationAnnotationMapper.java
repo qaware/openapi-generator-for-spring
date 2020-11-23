@@ -52,7 +52,7 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
         setRequestBody(operation::setRequestBody, operationAnnotation.requestBody(), mapperContext);
         setIfNotEmpty(externalDocumentationAnnotationMapper.map(operationAnnotation.externalDocs()), operation::setExternalDocs);
         setStringIfNotBlank(operationAnnotation.operationId(), operation::setOperationId);
-        setParameters(operation::setParameters, operationAnnotation.parameters(), mapperContext.withReferenceOwner(operation));
+        setParameters(operation::setParameters, operationAnnotation.parameters(), mapperContext.withReferencedItemOwner(operation));
         setResponses(operation::setResponses, operationAnnotation.responses(), mapperContext);
         if (operationAnnotation.deprecated()) {
             operation.setDeprecated(true);
@@ -68,7 +68,7 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
                         .map(annotation -> parameterAnnotationMapper.buildFromAnnotation(annotation, mapperContext))
                         .filter(parameter -> !parameter.isEmpty())
                         .collect(Collectors.toList()),
-                parameters -> mapperContext.getReferenceConsumer(ReferencedParametersConsumer.class).maybeAsReference(parameters, setter)
+                parameters -> mapperContext.getReferencedItemConsumer(ReferencedParametersConsumer.class).maybeAsReference(parameters, setter)
         );
     }
 
@@ -79,7 +79,7 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
                         annotation -> apiResponseAnnotationMapper.buildFromAnnotation(annotation, mapperContext),
                         ApiResponses::new
                 ),
-                apiResponses -> mapperContext.getReferenceConsumer(ReferencedApiResponsesConsumer.class)
+                apiResponses -> mapperContext.getReferencedItemConsumer(ReferencedApiResponsesConsumer.class)
                         .maybeAsReference(apiResponses, setter)
         );
     }
@@ -88,7 +88,7 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
                                 MapperContext mapperContext) {
         setIfNotEmpty(
                 requestBodyAnnotationMapper.buildFromAnnotation(requestBodyAnnotation, mapperContext),
-                requestBody -> mapperContext.getReferenceConsumer(ReferencedRequestBodyConsumer.class).maybeAsReference(requestBody, setter)
+                requestBody -> mapperContext.getReferencedItemConsumer(ReferencedRequestBodyConsumer.class).maybeAsReference(requestBody, setter)
         );
     }
 
@@ -101,7 +101,7 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
                 tagNames -> {
                     // also consume tag names here, even if no description or additional information is present
                     // the tags consumer is smart enough to merge tags with identical names
-                    mapperContext.getReferenceConsumer(ReferencedTagsConsumer.class).accept(
+                    mapperContext.getReferencedItemConsumer(ReferencedTagsConsumer.class).accept(
                             tagNames.stream()
                                     .map(tagName -> new Tag().withName(tagName))
                                     .collect(Collectors.toList())

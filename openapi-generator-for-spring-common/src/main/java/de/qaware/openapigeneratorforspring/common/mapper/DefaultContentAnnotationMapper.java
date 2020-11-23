@@ -53,7 +53,7 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
         MediaType mediaType = new MediaType();
         setExampleOrExamples(mediaType, contentAnnotation.examples(), mapperContext);
         setMapIfNotEmpty(encodingAnnotationMapper.mapArray(contentAnnotation.encoding(), mapperContext), mediaType::setEncoding);
-        ReferencedSchemaConsumer referencedSchemaConsumer = mapperContext.getReferenceConsumer(ReferencedSchemaConsumer.class);
+        ReferencedSchemaConsumer referencedSchemaConsumer = mapperContext.getReferencedItemConsumer(ReferencedSchemaConsumer.class);
         setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(contentAnnotation.schema(), referencedSchemaConsumer),
                 schema -> referencedSchemaConsumer.maybeAsReference(schema, mediaType::setSchema)
         );
@@ -69,7 +69,7 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
                     example -> mediaType.setExample(example.getValue())
             );
         } else {
-            ReferencedExamplesConsumer referencedExamplesConsumer = mapperContext.getReferenceConsumer(ReferencedExamplesConsumer.class);
+            ReferencedExamplesConsumer referencedExamplesConsumer = mapperContext.getReferencedItemConsumer(ReferencedExamplesConsumer.class);
             setMapIfNotEmpty(exampleObjectAnnotationMapper.mapArray(exampleObjectAnnotations),
                     examples -> referencedExamplesConsumer.maybeAsReference(examples, mediaType::setExamples)
             );

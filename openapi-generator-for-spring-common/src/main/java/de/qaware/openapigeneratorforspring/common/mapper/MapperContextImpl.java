@@ -28,7 +28,7 @@ public class MapperContextImpl implements MapperContext {
     }
 
     @Override
-    public <T extends ReferencedItemConsumer> T getReferenceConsumer(Class<T> referencedItemConsumerClazz) {
+    public <T extends ReferencedItemConsumer> T getReferencedItemConsumer(Class<T> referencedItemConsumerClazz) {
         return referencedItemConsumerSupplier.get(referencedItemConsumerClazz);
     }
 
@@ -54,7 +54,7 @@ public class MapperContextImpl implements MapperContext {
     }
 
     @Override
-    public MapperContext withReferenceOwner(@Nullable Object owner) {
+    public MapperContext withReferencedItemOwner(@Nullable Object owner) {
         return new MapperContextImpl(referencedItemConsumerSupplier.withOwner(owner), suggestedMediaTypesSuppliers);
     }
 }

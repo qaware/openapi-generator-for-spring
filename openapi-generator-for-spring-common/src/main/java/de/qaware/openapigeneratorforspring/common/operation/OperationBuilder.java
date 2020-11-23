@@ -59,7 +59,7 @@ public class OperationBuilder {
                 .map(annotation -> operationAnnotationMapper.buildFromAnnotation(annotation, mapperContext))
                 .orElseGet(Operation::new);
 
-        OperationBuilderContext operationBuilderContext = OperationBuilderContextImpl.of(operationInfo, mapperContext);
+        OperationBuilderContext operationBuilderContext = OperationBuilderContextImpl.of(operationInfo, mapperContext, referencedItemConsumerSupplier);
         operationCustomizers.forEach(customizer -> customizer.customize(operation, operationAnnotation, operationBuilderContext));
         return operation;
     }

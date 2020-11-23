@@ -36,7 +36,7 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
         if (headerAnnotation.required()) {
             header.setRequired(true);
         }
-        ReferencedSchemaConsumer referencedSchemaConsumer = referencedItemConsumerSupplier.getReferenceConsumer(ReferencedSchemaConsumer.class);
+        ReferencedSchemaConsumer referencedSchemaConsumer = referencedItemConsumerSupplier.getReferencedItemConsumer(ReferencedSchemaConsumer.class);
         setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(headerAnnotation.schema(), referencedSchemaConsumer), schema -> {
             // when schema is not empty, we specify simple style according to spec,
             // the alternative would be to set the content property, which is not supported by @Header annotation

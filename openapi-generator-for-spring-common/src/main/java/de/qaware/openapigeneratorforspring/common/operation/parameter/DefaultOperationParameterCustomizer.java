@@ -94,7 +94,7 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
         List<Parameter> filteredParameters = parameters.stream()
                 .filter(parameter -> parameterPostFilters.stream().allMatch(filter -> filter.postAccept(parameter)))
                 .collect(toList());
-        ReferencedParametersConsumer referencedParametersConsumer = operationBuilderContext.getMapperContext().getReferenceConsumer(ReferencedParametersConsumer.class);
+        ReferencedParametersConsumer referencedParametersConsumer = operationBuilderContext.getReferencedItemConsumer(ReferencedParametersConsumer.class);
         setCollectionIfNotEmpty(filteredParameters, p -> referencedParametersConsumer.withOwner(operation).maybeAsReference(p, operation::setParameters));
     }
 

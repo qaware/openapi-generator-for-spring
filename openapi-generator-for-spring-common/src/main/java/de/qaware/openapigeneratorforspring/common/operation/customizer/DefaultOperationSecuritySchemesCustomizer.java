@@ -28,7 +28,7 @@ public class DefaultOperationSecuritySchemesCustomizer implements OperationCusto
                 io.swagger.v3.oas.annotations.security.SecurityScheme::name,
                 securitySchemeAnnotationMapper::map
         );
-        operationBuilderContext.getMapperContext().getReferenceConsumer(ReferencedSecuritySchemesConsumer.class)
+        operationBuilderContext.getReferencedItemConsumer(ReferencedSecuritySchemesConsumer.class)
                 .accept(securitySchemes);
     }
 
