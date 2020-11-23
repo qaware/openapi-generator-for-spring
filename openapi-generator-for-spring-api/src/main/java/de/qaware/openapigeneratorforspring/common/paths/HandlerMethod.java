@@ -1,6 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.paths;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.annotation.HasAnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import org.springframework.core.annotation.Order;
 
@@ -9,47 +9,38 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface HandlerMethod {
+public interface HandlerMethod extends HasAnnotationsSupplier {
     String getIdentifier();
-
-    AnnotationsSupplier getAnnotationsSupplier();
 
     List<Parameter> getParameters();
 
-    interface Type {
+    interface Type extends HasAnnotationsSupplier {
         java.lang.reflect.Type getType();
-
-        AnnotationsSupplier getAnnotationsSupplier();
     }
 
-    interface Parameter {
-        Optional<String> getName();
-
+    interface HasType {
         Optional<Type> getType();
+    }
 
-        AnnotationsSupplier getAnnotationsSupplier();
+    interface Parameter extends HasAnnotationsSupplier, HasType {
+        Optional<String> getName();
 
         default void customize(de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter) {
             // do nothing, customization callback is optional
         }
     }
 
-    interface RequestBody {
-        Optional<Type> getType();
+    interface RequestBody extends HasAnnotationsSupplier, HasType {
 
         Set<String> getConsumesContentTypes();
-
-        AnnotationsSupplier getAnnotationsSupplier();
 
         default void customize(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody requestBody) {
             // do nothing, customization callback is optional
         }
     }
 
-    interface Response {
+    interface Response extends HasType {
         String getResponseCode();
-
-        Optional<Type> getType();
 
         Set<String> getProducesContentTypes();
 

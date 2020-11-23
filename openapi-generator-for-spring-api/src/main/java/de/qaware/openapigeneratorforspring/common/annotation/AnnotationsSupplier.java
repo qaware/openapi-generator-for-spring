@@ -15,6 +15,12 @@ public interface AnnotationsSupplier {
         }
     };
 
+    static <T extends HasAnnotationsSupplier> AnnotationsSupplier merge(Stream<T> stream) {
+        return stream.map(HasAnnotationsSupplier::getAnnotationsSupplier)
+                .reduce(AnnotationsSupplier::andThen)
+                .orElse(AnnotationsSupplier.EMPTY);
+    }
+
     /**
      * Supply annotations for entity under investigation. Annotations
      * with highest precedence should appear first in returned stream.
@@ -51,4 +57,6 @@ public interface AnnotationsSupplier {
             }
         };
     }
+
+
 }

@@ -1,0 +1,88 @@
+package de.qaware.openapigeneratorforspring.common;
+
+import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodContentTypesMapper;
+import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodRequestBodyParameterMapper;
+import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodResponseCodeMapper;
+import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodReturnTypeMapper;
+import de.qaware.openapigeneratorforspring.common.paths.method.merger.MergedSpringWebHandlerMethodMapper;
+import de.qaware.openapigeneratorforspring.common.paths.method.merger.SpringWebHandlerMethodIdentifierMerger;
+import de.qaware.openapigeneratorforspring.common.paths.method.merger.SpringWebHandlerMethodMerger;
+import de.qaware.openapigeneratorforspring.common.paths.method.merger.SpringWebHandlerMethodParameterMerger;
+import de.qaware.openapigeneratorforspring.common.paths.method.merger.SpringWebHandlerMethodRequestBodyMerger;
+import de.qaware.openapigeneratorforspring.common.paths.method.merger.SpringWebHandlerMethodResponseMerger;
+import de.qaware.openapigeneratorforspring.common.paths.method.merger.SpringWebHandlerMethodTypeMerger;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+
+public class OpenApiGeneratorWebMethodMergerAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringWebHandlerMethodMerger defaultSpringWebHandlerMethodMerger(
+            SpringWebHandlerMethodParameterMerger springWebHandlerMethodParameterMerger,
+            SpringWebHandlerMethodIdentifierMerger springWebHandlerMethodIdentifierMerger,
+            SpringWebHandlerMethodRequestBodyMerger springWebHandlerMethodRequestBodyMerger,
+            SpringWebHandlerMethodResponseMerger springWebHandlerMethodResponseMerger
+    ) {
+        return new SpringWebHandlerMethodMerger(springWebHandlerMethodParameterMerger, springWebHandlerMethodIdentifierMerger,
+                springWebHandlerMethodRequestBodyMerger, springWebHandlerMethodResponseMerger);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public MergedSpringWebHandlerMethodMapper.RequestBodyMapper mergedSpringWebHandSpringWebRequestBodyParameterMapper(
+            SpringWebHandlerMethodRequestBodyMerger springWebHandlerMethodRequestBodyMerger
+    ) {
+        return new MergedSpringWebHandlerMethodMapper.RequestBodyMapper(springWebHandlerMethodRequestBodyMerger);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public MergedSpringWebHandlerMethodMapper.ResponseMapper mergedSpringWebHandlerMethodResponseMapper(
+            SpringWebHandlerMethodResponseMerger springWebHandlerMethodResponseMerger
+    ) {
+        return new MergedSpringWebHandlerMethodMapper.ResponseMapper(springWebHandlerMethodResponseMerger);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringWebHandlerMethodIdentifierMerger springWebHandlerMethodIdentifierMerger() {
+        return new SpringWebHandlerMethodIdentifierMerger();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringWebHandlerMethodTypeMerger springWebHandlerMethodTypeMerger() {
+        return new SpringWebHandlerMethodTypeMerger();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringWebHandlerMethodParameterMerger springWebHandlerMethodParameterMerger(SpringWebHandlerMethodTypeMerger springWebHandlerMethodTypeMerger) {
+        return new SpringWebHandlerMethodParameterMerger(springWebHandlerMethodTypeMerger);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringWebHandlerMethodRequestBodyMerger springWebHandlerMethodRequestBodyMerger(
+            SpringWebHandlerMethodTypeMerger springWebHandlerMethodTypeMerger,
+            SpringWebHandlerMethodContentTypesMapper springWebHandlerMethodContentTypesMapper,
+            SpringWebHandlerMethodRequestBodyParameterMapper springWebHandlerMethodRequestBodyParameterMapper
+
+    ) {
+        return new SpringWebHandlerMethodRequestBodyMerger(springWebHandlerMethodTypeMerger, springWebHandlerMethodContentTypesMapper,
+                springWebHandlerMethodRequestBodyParameterMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringWebHandlerMethodResponseMerger springWebHandlerMethodResponseMerger(
+            SpringWebHandlerMethodTypeMerger springWebHandlerMethodTypeMerger,
+            SpringWebHandlerMethodContentTypesMapper springWebHandlerMethodContentTypesMapper,
+            SpringWebHandlerMethodResponseCodeMapper springWebHandlerMethodResponseCodeMapper,
+            SpringWebHandlerMethodReturnTypeMapper springWebHandlerMethodReturnTypeMapper
+    ) {
+        return new SpringWebHandlerMethodResponseMerger(springWebHandlerMethodTypeMerger, springWebHandlerMethodContentTypesMapper,
+                springWebHandlerMethodResponseCodeMapper, springWebHandlerMethodReturnTypeMapper);
+    }
+}
