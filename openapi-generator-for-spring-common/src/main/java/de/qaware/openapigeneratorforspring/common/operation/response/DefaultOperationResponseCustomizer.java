@@ -13,7 +13,6 @@ import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +27,7 @@ public class DefaultOperationResponseCustomizer implements OperationCustomizer {
     private final List<OperationApiResponsesCustomizer> operationApiResponsesCustomizers;
 
     @Override
-    public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext context) {
+    public void customize(Operation operation, OperationBuilderContext context) {
         ApiResponses apiResponses = buildFromMethodAnnotations(operation, context);
         for (OperationApiResponsesCustomizer customizer : operationApiResponsesCustomizers) {
             customizer.customize(apiResponses, context);

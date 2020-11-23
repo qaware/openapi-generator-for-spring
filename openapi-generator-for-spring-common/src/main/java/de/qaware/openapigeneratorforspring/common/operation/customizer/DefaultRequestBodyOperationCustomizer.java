@@ -29,7 +29,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
     private final List<HandlerMethod.RequestBodyMapper> handlerMethodRequestBodyMappers;
 
     @Override
-    public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
+    public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
         setIfNotEmpty(
                 applyFromMethod(operation.getRequestBody(), operationBuilderContext),
                 requestBody -> operationBuilderContext.getMapperContext().getReferencedItemConsumer(ReferencedRequestBodyConsumer.class)

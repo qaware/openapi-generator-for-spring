@@ -9,7 +9,6 @@ import de.qaware.openapigeneratorforspring.model.tag.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,7 +23,7 @@ public class DefaultOperationTagsCustomizer implements OperationCustomizer {
     private final TagAnnotationMapper tagAnnotationMapper;
 
     @Override
-    public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
+    public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
         setTagNamesToOperation(operation, Stream.concat(
                 operation.getTags() == null ? Stream.empty() : operation.getTags().stream(),
                 collectTagsFromMethodAndClass(operationBuilderContext)

@@ -8,7 +8,6 @@ import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
@@ -21,7 +20,7 @@ public class DefaultOperationSecuritySchemesCustomizer implements OperationCusto
     private final SecuritySchemeAnnotationMapper securitySchemeAnnotationMapper;
 
     @Override
-    public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
+    public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
         AnnotationsSupplier annotationsSupplier = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
         Map<String, SecurityScheme> securitySchemes = buildStringMapFromStream(
                 annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.security.SecurityScheme.class),

@@ -44,23 +44,22 @@ public class OperationBuilder {
                 .withSuggestedMediaTypesSupplierFor(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody.class, () ->
                         requestBodies.map(Collection::stream)
                                 .map(p -> p.map(HandlerMethod.RequestBody::getConsumesContentTypes).flatMap(Collection::stream).collect(Collectors.toList()))
-                                .orElseThrow(() -> new IllegalStateException("No request body parameter found on handler method to supply media types"))
+                                .orElseThrow(() -> new IllegalStateException("No request body found on handler method to supply media types"))
                 )
                 .withSuggestedMediaTypesSupplierFor(ApiResponse.class, () ->
                         responses.map(Collection::stream)
                                 .map(p -> p.map(HandlerMethod.Response::getProducesContentTypes).flatMap(Collection::stream).collect(Collectors.toList()))
-                                .orElseThrow(() -> new IllegalStateException("No return type found on handler method to supply media types"))
+                                .orElseThrow(() -> new IllegalStateException("No response found on handler method to supply media types"))
                 );
 
-        io.swagger.v3.oas.annotations.Operation operationAnnotation = handlerMethod.getAnnotationsSupplier()
-                .findFirstAnnotation(io.swagger.v3.oas.annotations.Operation.class);
-
-        Operation operation = Optional.ofNullable(operationAnnotation)
+        Operation operation = handlerMethod.getAnnotationsSupplier()
+                .findAnnotations(io.swagger.v3.oas.annotations.Operation.class)
+                .findFirst()
                 .map(annotation -> operationAnnotationMapper.buildFromAnnotation(annotation, mapperContext))
                 .orElseGet(Operation::new);
 
         OperationBuilderContext operationBuilderContext = OperationBuilderContextImpl.of(operationInfo, mapperContext, referencedItemConsumerSupplier);
-        operationCustomizers.forEach(customizer -> customizer.customize(operation, operationAnnotation, operationBuilderContext));
+        operationCustomizers.forEach(customizer -> customizer.customize(operation, operationBuilderContext));
         return operation;
     }
 }

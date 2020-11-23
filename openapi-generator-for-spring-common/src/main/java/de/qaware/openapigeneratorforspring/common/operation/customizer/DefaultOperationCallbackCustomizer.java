@@ -8,8 +8,6 @@ import de.qaware.openapigeneratorforspring.common.reference.component.callback.R
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import lombok.RequiredArgsConstructor;
 
-import javax.annotation.Nullable;
-
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
@@ -21,7 +19,7 @@ public class DefaultOperationCallbackCustomizer implements OperationCustomizer {
     private final CallbackAnnotationMapper callbackAnnotationMapper;
 
     @Override
-    public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
+    public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
         AnnotationsSupplier annotationsSupplier = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
         MapperContext mapperContext = operationBuilderContext.getMapperContext();
         setMapIfNotEmpty(

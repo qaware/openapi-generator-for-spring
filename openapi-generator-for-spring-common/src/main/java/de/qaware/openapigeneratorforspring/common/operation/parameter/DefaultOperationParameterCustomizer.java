@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter;
 
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterPostFilter;
 import de.qaware.openapigeneratorforspring.common.filter.operation.parameter.OperationParameterPreFilter;
 import de.qaware.openapigeneratorforspring.common.mapper.MapperContext;
@@ -16,14 +17,12 @@ import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
@@ -47,21 +46,22 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
     private final ParameterAnnotationMapper parameterAnnotationMapper;
 
     @Override
-    public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
+    public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
         // this customizer explicitly overrides already present parameters built from the operation annotation,
         // as the order of parameters is important and should not be determined
         // by the order of information to build those parameters!
         // TODO maybe consider making the above choice about parameter ordering better bean-customizable?
-        List<Parameter> parameters = buildParameters(operationBuilderContext, operationAnnotation);
+        List<Parameter> parameters = buildParameters(operationBuilderContext);
         setParametersToOperation(operation, parameters, operationBuilderContext);
     }
 
-    private List<Parameter> buildParameters(OperationBuilderContext operationBuilderContext, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation) {
-        HandlerMethod handlerMethod = operationBuilderContext.getOperationInfo().getHandlerMethod();
-
+    private List<Parameter> buildParameters(OperationBuilderContext operationBuilderContext) {
+        AnnotationsSupplier handlerMethodAnnotationsSupplier = operationBuilderContext.getOperationInfo().getHandlerMethod().getAnnotationsSupplier();
         Map<String, List<io.swagger.v3.oas.annotations.Parameter>> parameterAnnotationsByName = Stream.concat(
-                Optional.ofNullable(operationAnnotation).map(io.swagger.v3.oas.annotations.Operation::parameters).map(Arrays::stream).orElse(Stream.empty()),
-                handlerMethod.getAnnotationsSupplier().findAnnotations(io.swagger.v3.oas.annotations.Parameter.class)
+                // TODO consider .findFirst() in case of merged handler method!
+                handlerMethodAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.Operation.class).findFirst()
+                        .map(io.swagger.v3.oas.annotations.Operation::parameters).map(Arrays::stream).orElse(Stream.empty()),
+                handlerMethodAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.Parameter.class)
         ).collect(groupingBy(ensureKeyIsNotBlank(io.swagger.v3.oas.annotations.Parameter::name), LinkedHashMap::new, toList()));
 
         List<Parameter> parameters = new ArrayList<>();

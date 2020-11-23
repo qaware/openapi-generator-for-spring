@@ -4,15 +4,13 @@ import de.qaware.openapigeneratorforspring.common.operation.OperationBuilderCont
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import lombok.RequiredArgsConstructor;
 
-import javax.annotation.Nullable;
-
 @RequiredArgsConstructor
 public class DefaultDeprecatedOperationCustomizer implements OperationCustomizer {
 
     public static final int ORDER = DEFAULT_ORDER;
 
     @Override
-    public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
+    public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
         if (operation.getDeprecated() != null) {
             return;
         }
