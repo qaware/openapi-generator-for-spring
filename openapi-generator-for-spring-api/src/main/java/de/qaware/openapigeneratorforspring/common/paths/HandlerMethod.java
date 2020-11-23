@@ -1,6 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.paths;
 
 import de.qaware.openapigeneratorforspring.common.annotation.HasAnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import org.springframework.core.annotation.Order;
 
@@ -47,6 +48,12 @@ public interface HandlerMethod extends HasAnnotationsSupplier {
         default void customize(ApiResponse apiResponse) {
             // do nothing, customization callback is optional
         }
+    }
+
+    @FunctionalInterface
+    @Order()
+    interface OperationAnnotationApplier {
+        void applyTo(HandlerMethod handlerMethod, Operation operation);
     }
 
     // TODO use this at least for Spring Web!

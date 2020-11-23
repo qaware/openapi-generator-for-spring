@@ -105,8 +105,9 @@ public class OpenApiGeneratorOperationAutoConfiguration {
     @ConditionalOnMissingBean
     public DefaultRequestBodyOperationCustomizer defaultRequestBodyOperationCustomizer(
             RequestBodyAnnotationMapper requestBodyAnnotationMapper,
-            SchemaResolver schemaResolver
+            SchemaResolver schemaResolver,
+            List<HandlerMethod.RequestBodyMapper> handlerMethodRequestBodyMappers
     ) {
-        return new DefaultRequestBodyOperationCustomizer(requestBodyAnnotationMapper, schemaResolver);
+        return new DefaultRequestBodyOperationCustomizer(requestBodyAnnotationMapper, schemaResolver, handlerMethodRequestBodyMappers);
     }
 }

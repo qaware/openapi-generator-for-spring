@@ -75,7 +75,7 @@ public class OpenApiProxyUtils {
         Object handle(M mappedMethod, Object firstArg) throws InvocationTargetException, IllegalAccessException;
     }
 
-    public static Map<String, Method> buildGettersBySetterName(Class<?> clazz, Set<String> setterNames) {
+    private static Map<String, Method> buildGettersBySetterName(Class<?> clazz, Set<String> setterNames) {
         return Arrays.stream(clazz.getMethods())
                 .filter(method -> method.getName().startsWith("get"))
                 .map(method -> Pair.of(method.getName().replace("get", "set"), method))
@@ -83,7 +83,7 @@ public class OpenApiProxyUtils {
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
-    public static Set<String> findSetterNames(Class<?> clazz) {
+    private static Set<String> findSetterNames(Class<?> clazz) {
         return Arrays.stream(clazz.getMethods())
                 .filter(method -> method.getName().startsWith("set"))
                 .map(Method::getName)

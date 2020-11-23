@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
 
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
 
     private final RequestBodyAnnotationMapper requestBodyAnnotationMapper;
     private final SchemaResolver schemaResolver;
+    private final List<HandlerMethod.RequestBodyMapper> handlerMethodRequestBodyMappers;
 
     @Override
     public void customize(Operation operation, @Nullable io.swagger.v3.oas.annotations.Operation operationAnnotation, OperationBuilderContext operationBuilderContext) {
@@ -36,8 +38,8 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
 
     private de.qaware.openapigeneratorforspring.model.requestbody.RequestBody applyFromMethod(@Nullable de.qaware.openapigeneratorforspring.model.requestbody.RequestBody existingRequestBody, OperationBuilderContext operationBuilderContext) {
         // TODO use the request body parameter as a suggested identifier for possible referencing?
-        return operationBuilderContext.getHandlerMethodRequestBodies()
-                .map(requestBodyParameters -> buildRequestBody(requestBodyParameters, existingRequestBody, operationBuilderContext.getMapperContext()))
+        return firstNonNull(handlerMethodRequestBodyMappers, mapper -> mapper.map(operationBuilderContext.getOperationInfo().getHandlerMethod()))
+                .map(requestBodies -> buildRequestBody(requestBodies, existingRequestBody, operationBuilderContext.getMapperContext()))
                 .orElseGet(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody::new);
     }
 

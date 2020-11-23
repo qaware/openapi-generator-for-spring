@@ -23,7 +23,7 @@ public class DefaultCallbackAnnotationMapper implements CallbackAnnotationMapper
         Map<String, Operation> operations = buildStringMapFromStream(
                 Arrays.stream(callbackAnnotation.operation()),
                 io.swagger.v3.oas.annotations.Operation::method,
-                operationAnnotation -> operationAnnotationMapper.map(operationAnnotation, mapperContext)
+                operationAnnotation -> operationAnnotationMapper.buildFromAnnotation(operationAnnotation, mapperContext)
         );
         if (!operations.isEmpty()) {
             PathItem pathItem = new PathItem();

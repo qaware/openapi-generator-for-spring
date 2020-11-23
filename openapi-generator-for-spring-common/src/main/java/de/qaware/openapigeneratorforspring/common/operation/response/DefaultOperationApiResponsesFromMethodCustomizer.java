@@ -14,8 +14,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.MergedAnnotation;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 
 @RequiredArgsConstructor
 public class DefaultOperationApiResponsesFromMethodCustomizer implements OperationApiResponsesFromMethodCustomizer {
@@ -27,11 +30,12 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
 
     private final ApiResponseDefaultProvider apiResponseDefaultProvider;
     private final SchemaResolver schemaResolver;
+    private final List<HandlerMethod.ResponseMapper> handlerMethodResponseMappers;
 
     @Override
     public void customize(ApiResponses apiResponses, OperationBuilderContext operationBuilderContext) {
         HandlerMethod handlerMethod = operationBuilderContext.getOperationInfo().getHandlerMethod();
-        operationBuilderContext.getHandlerMethodResponses().ifPresent(handlerMethodResponses -> handlerMethodResponses.forEach(handlerMethodResponse -> {
+        firstNonNull(handlerMethodResponseMappers, mapper -> mapper.map(handlerMethod)).ifPresent(handlerMethodResponses -> handlerMethodResponses.forEach(handlerMethodResponse -> {
             ApiResponse defaultApiResponse = getAndReplaceDefaultApiResponse(apiResponses, handlerMethodResponse.getResponseCode());
             Content content = Optional.ofNullable(defaultApiResponse.getContent()).orElseGet(Content::new);
             addMediaTypesToContent(content, handlerMethod, handlerMethodResponse, operationBuilderContext.getMapperContext());

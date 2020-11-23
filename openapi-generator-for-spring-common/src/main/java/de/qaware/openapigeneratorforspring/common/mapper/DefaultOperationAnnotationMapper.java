@@ -37,8 +37,14 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
 
     @Override
-    public Operation map(io.swagger.v3.oas.annotations.Operation operationAnnotation, MapperContext mapperContext) {
+    public Operation buildFromAnnotation(io.swagger.v3.oas.annotations.Operation operationAnnotation, MapperContext mapperContext) {
         Operation operation = new Operation();
+        applyFromAnnotation(operation, operationAnnotation, mapperContext);
+        return operation;
+    }
+
+    @Override
+    public void applyFromAnnotation(Operation operation, io.swagger.v3.oas.annotations.Operation operationAnnotation, MapperContext mapperContext) {
         // operationAnnotation.method() ignored here, as its managed by caller (if at all)
         setTags(operation, operationAnnotation.tags(), mapperContext);
         setStringIfNotBlank(operationAnnotation.summary(), operation::setSummary);
@@ -54,7 +60,6 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
         setMapIfNotEmpty(securityRequirementAnnotationMapper.mapArray(operationAnnotation.security()), operation::setFirstSecurity);
         setCollectionIfNotEmpty(serverAnnotationMapper.mapArray(operationAnnotation.servers()), operation::setServers);
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(operationAnnotation.extensions()), operation::setExtensions);
-        return operation;
     }
 
     private void setParameters(Consumer<List<Parameter>> setter, io.swagger.v3.oas.annotations.Parameter[] parameterAnnotations, MapperContext mapperContext) {

@@ -37,17 +37,17 @@ public class OperationBuilder {
     public Operation buildOperationInternal(OperationInfo operationInfo, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         HandlerMethod handlerMethod = operationInfo.getHandlerMethod();
 
-        Optional<List<HandlerMethod.Response>> returnTypes = firstNonNull(handlerMethodResponseMappers, mapper -> mapper.map(handlerMethod));
-        Optional<List<HandlerMethod.RequestBody>> requestBodyParameters = firstNonNull(handlerMethodRequestBodyMappers, mapper -> mapper.map(handlerMethod));
+        Optional<List<HandlerMethod.Response>> responses = firstNonNull(handlerMethodResponseMappers, mapper -> mapper.map(handlerMethod));
+        Optional<List<HandlerMethod.RequestBody>> requestBodies = firstNonNull(handlerMethodRequestBodyMappers, mapper -> mapper.map(handlerMethod));
 
         MapperContext mapperContext = MapperContextImpl.of(referencedItemConsumerSupplier)
                 .withSuggestedMediaTypesSupplierFor(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody.class, () ->
-                        requestBodyParameters.map(Collection::stream)
+                        requestBodies.map(Collection::stream)
                                 .map(p -> p.map(HandlerMethod.RequestBody::getConsumesContentTypes).flatMap(Collection::stream).collect(Collectors.toList()))
                                 .orElseThrow(() -> new IllegalStateException("No request body parameter found on handler method to supply media types"))
                 )
                 .withSuggestedMediaTypesSupplierFor(ApiResponse.class, () ->
-                        returnTypes.map(Collection::stream)
+                        responses.map(Collection::stream)
                                 .map(p -> p.map(HandlerMethod.Response::getProducesContentTypes).flatMap(Collection::stream).collect(Collectors.toList()))
                                 .orElseThrow(() -> new IllegalStateException("No return type found on handler method to supply media types"))
                 );
@@ -56,10 +56,10 @@ public class OperationBuilder {
                 .findFirstAnnotation(io.swagger.v3.oas.annotations.Operation.class);
 
         Operation operation = Optional.ofNullable(operationAnnotation)
-                .map(annotation -> operationAnnotationMapper.map(annotation, mapperContext))
+                .map(annotation -> operationAnnotationMapper.buildFromAnnotation(annotation, mapperContext))
                 .orElseGet(Operation::new);
 
-        OperationBuilderContext operationBuilderContext = OperationBuilderContextImpl.of(operationInfo, mapperContext, returnTypes, requestBodyParameters);
+        OperationBuilderContext operationBuilderContext = OperationBuilderContextImpl.of(operationInfo, mapperContext);
         operationCustomizers.forEach(customizer -> customizer.customize(operation, operationAnnotation, operationBuilderContext));
         return operation;
     }

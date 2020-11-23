@@ -14,6 +14,7 @@ import de.qaware.openapigeneratorforspring.common.operation.response.DefaultOper
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesDescriptionCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.response.OperationApiResponsesFromMethodCustomizer;
+import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -47,9 +48,10 @@ public class OpenApiGeneratorOperationResponseAutoConfiguration {
     @ConditionalOnMissingBean
     public OperationApiResponsesFromMethodCustomizer defaultOperationApiResponsesFromMethodCustomizer(
             ApiResponseDefaultProvider apiResponseDefaultProvider,
-            SchemaResolver schemaResolver
+            SchemaResolver schemaResolver,
+            List<HandlerMethod.ResponseMapper> handlerMethodResponseMappers
     ) {
-        return new DefaultOperationApiResponsesFromMethodCustomizer(apiResponseDefaultProvider, schemaResolver);
+        return new DefaultOperationApiResponsesFromMethodCustomizer(apiResponseDefaultProvider, schemaResolver, handlerMethodResponseMappers);
     }
 
     @Bean
