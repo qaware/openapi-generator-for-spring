@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 public class SpringWebHandlerMethodRequestBodyParameterMapper {
 
-    public Optional<RequestBodyParameter> findRequestBodyParameter(HandlerMethod handlerMethod) {
+    public Optional<RequestBodyParameter> findRequestBodyParameter(SpringWebHandlerMethod handlerMethod) {
         return handlerMethod.getParameters().stream()
                 .flatMap(parameter -> parameter.getAnnotationsSupplier()
                         .findAnnotations(org.springframework.web.bind.annotation.RequestBody.class)

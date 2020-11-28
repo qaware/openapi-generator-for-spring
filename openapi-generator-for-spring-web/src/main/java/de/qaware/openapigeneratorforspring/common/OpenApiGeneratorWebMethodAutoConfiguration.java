@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.common;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodContentTypesMapper;
+import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodContextModifierFactory;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodMapper;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodRequestBodyParameterMapper;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodResponseCodeMapper;
@@ -15,8 +16,8 @@ public class OpenApiGeneratorWebMethodAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SpringWebHandlerMethodMapper.ContextModifierMapper springWebHandlerMethodContextAwareMapper(SpringWebHandlerMethodContentTypesMapper contentTypesMapper) {
-        return new SpringWebHandlerMethodMapper.ContextModifierMapper(contentTypesMapper);
+    public SpringWebHandlerMethodMapper.ContextModifierMapper springWebHandlerMethodContextAwareMapper(SpringWebHandlerMethodContextModifierFactory springWebHandlerMethodContextModifierFactory) {
+        return new SpringWebHandlerMethodMapper.ContextModifierMapper(springWebHandlerMethodContextModifierFactory);
     }
 
     @Bean
@@ -36,6 +37,12 @@ public class OpenApiGeneratorWebMethodAutoConfiguration {
             SpringWebHandlerMethodReturnTypeMapper springWebHandlerMethodReturnTypeMapper
     ) {
         return new SpringWebHandlerMethodMapper.ResponseMapper(springWebHandlerMethodContentTypesMapper, springWebHandlerMethodResponseCodeMapper, springWebHandlerMethodReturnTypeMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringWebHandlerMethodContextModifierFactory springWebMapperContextModifierFactory(SpringWebHandlerMethodContentTypesMapper springWebHandlerMethodContentTypesMapper) {
+        return new SpringWebHandlerMethodContextModifierFactory(springWebHandlerMethodContentTypesMapper);
     }
 
     @Bean

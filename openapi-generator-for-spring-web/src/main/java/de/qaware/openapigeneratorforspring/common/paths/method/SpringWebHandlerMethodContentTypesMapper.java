@@ -11,28 +11,28 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singleton;
+import static org.springframework.http.MediaType.ALL_VALUE;
 
 public class SpringWebHandlerMethodContentTypesMapper {
-    public Set<String> findConsumesContentTypes(HandlerMethod handlerMethod) {
+    public static final Set<String> SINGLE_ALL_VALUE = singleton(ALL_VALUE);
+
+    public Set<String> findConsumesContentTypes(SpringWebHandlerMethod handlerMethod) {
         return fromRequestMappingAnnotation(handlerMethod, RequestMapping::consumes);
     }
 
-    public Set<String> findProducesContentTypes(HandlerMethod handlerMethod) {
+    public Set<String> findProducesContentTypes(SpringWebHandlerMethod handlerMethod) {
         return fromRequestMappingAnnotation(handlerMethod, RequestMapping::produces);
     }
 
-    public static Set<String> ifEmptyUseSingleAllValue(Set<String> contentTypes) {
-        return contentTypes.isEmpty() ? singleton(org.springframework.http.MediaType.ALL_VALUE) : contentTypes;
-    }
-
-    private static Set<String> fromRequestMappingAnnotation(HandlerMethod handlerMethod, Function<RequestMapping, String[]> mapper) {
+    private static Set<String> fromRequestMappingAnnotation(HandlerMethod handlerMethod, Function<RequestMapping, String[]> annotationMapper) {
         return handlerMethod.findAnnotations(RequestMapping.class)
-                .filter(annotation -> !StringUtils.isAllBlank(mapper.apply(annotation)))
+                .map(annotationMapper)
+                .filter(contentTypes -> !StringUtils.isAllBlank(contentTypes))
                 // Spring doc says the first one should win,
                 // ie. annotation on class level is overridden by method level
                 .findFirst()
-                .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
-                .map(mapper)
+                .map(Stream::of)
+                .orElse(Stream.of(ALL_VALUE))
                 .flatMap(Stream::of)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }

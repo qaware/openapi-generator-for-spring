@@ -53,11 +53,12 @@ public abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
         private final AnnotationsSupplier annotationsSupplier;
         private final Set<String> consumesContentTypes;
         private final Optional<Type> type;
-        private final boolean required;
+        @Nullable
+        private final Boolean required;
 
         @Override
         public void customize(de.qaware.openapigeneratorforspring.model.requestbody.RequestBody requestBody) {
-            if (requestBody.getRequired() == null) {
+            if (requestBody.getRequired() == null && required != null) {
                 requestBody.setRequired(required);
             }
         }

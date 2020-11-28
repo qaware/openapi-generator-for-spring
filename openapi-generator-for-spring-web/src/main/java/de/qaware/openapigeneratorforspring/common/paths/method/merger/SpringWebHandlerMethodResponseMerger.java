@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodContentTypesMapper.ifEmptyUseSingleAllValue;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.groupingByPairKeyAndCollectingValuesTo;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.groupingByPairKeyAndCollectingValuesToList;
 
@@ -39,7 +38,7 @@ public class SpringWebHandlerMethodResponseMerger {
                         mergedResponses.add(
                                 new AbstractSpringWebHandlerMethod.SpringWebResponse(
                                         responseCode,
-                                        ifEmptyUseSingleAllValue(producesContentTypes),
+                                        producesContentTypes,
                                         mergeReturnTypes(methods)
                                 ) {
                                     @Override
