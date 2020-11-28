@@ -4,6 +4,7 @@ import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -13,9 +14,9 @@ public class SpringWebHandlerMethodRequestBodyParameterMapper {
     public Optional<RequestBodyParameter> findRequestBodyParameter(SpringWebHandlerMethod handlerMethod) {
         return handlerMethod.getParameters().stream()
                 .flatMap(parameter -> parameter.getAnnotationsSupplier()
-                        .findAnnotations(org.springframework.web.bind.annotation.RequestBody.class)
+                        .findAnnotations(RequestBody.class)
                         .findFirst()
-                        .map(org.springframework.web.bind.annotation.RequestBody::required)
+                        .map(RequestBody::required)
                         .map(requiredFlag -> RequestBodyParameter.of(parameter, requiredFlag))
                         .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
                 )

@@ -10,10 +10,10 @@ import java.util.stream.Stream;
 
 public class SpringWebHandlerMethodTypeMerger {
 
-    public <T extends HandlerMethod.HasType> Optional<HandlerMethod.Type> mergeTypes(Stream<T> stream) {
-        return stream
-                .map(HandlerMethod.HasType::getType)
-                .map(type -> type.orElseThrow(() -> new IllegalStateException("Spring Web Handler Method Parameter should always have a type present")))
+    public <T extends HandlerMethod.HasType> Optional<HandlerMethod.Type> mergeTypes(Stream<T> hasTypes) {
+        return hasTypes
+                // flatMap might be an alternative to throwing exception
+                .map(hasType -> hasType.getType().orElseThrow(() -> new IllegalStateException("No type present on " + hasType.getClass().getSimpleName())))
                 .reduce(this::mergeType);
     }
 

@@ -1,8 +1,11 @@
 package de.qaware.openapigeneratorforspring.common.paths.method;
 
 import de.qaware.openapigeneratorforspring.common.mapper.MapperContext;
+import de.qaware.openapigeneratorforspring.common.mapper.MediaTypesProvider;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodRequestBodyParameterMapper.RequestBodyParameter;
+import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
+import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +21,22 @@ public class SpringWebHandlerMethodMapper {
     @RequiredArgsConstructor
     public static class ContextModifierMapper implements HandlerMethod.ContextModifierMapper<MapperContext> {
 
-        private final SpringWebHandlerMethodContextModifierFactory contextModifierFactory;
+        private final SpringWebHandlerMethodContentTypesMapper contentTypesMapper;
 
         @Nullable
         @Override
         public HandlerMethod.ContextModifier<MapperContext> map(@Nullable HandlerMethod.Context context) {
             if (context instanceof SpringWebHandlerMethod) {
-                return contextModifierFactory.create((SpringWebHandlerMethod) context);
+                SpringWebHandlerMethod springWebHandlerMethod = (SpringWebHandlerMethod) context;
+                MediaTypesProvider mediaTypesProvider = owningType -> {
+                    if (RequestBody.class.equals(owningType)) {
+                        return contentTypesMapper.findConsumesContentTypes(springWebHandlerMethod);
+                    } else if (ApiResponse.class.equals(owningType)) {
+                        return contentTypesMapper.findProducesContentTypes(springWebHandlerMethod);
+                    }
+                    throw new IllegalStateException("Cannot provide media types for " + owningType.getSimpleName());
+                };
+                return mapperContext -> mapperContext.withMediaTypesProvider(mediaTypesProvider);
             }
             return null; // indicates we can't map this handler method context
         }

@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,6 @@ public class SpringWebHandlerMethodRequestBodyMerger {
                 .map(handlerMethod -> Pair.of(contentTypesMapper.findConsumesContentTypes(handlerMethod), requestBodyParameterMapper.findRequestBodyParameter(handlerMethod)))
                 .collect(groupingByPairKeyAndCollectingValuesToList());
 
-        // ALL_VALUE is collected as an empty list key in the map
         List<Optional<RequestBodyParameter>> allValueRequestBodyParameters = groupedRequestBodyParameters.get(SINGLE_ALL_VALUE);
         if (groupedRequestBodyParameters.size() == 1
                 && allValueRequestBodyParameters != null && allValueRequestBodyParameters.stream().noneMatch(Optional::isPresent)) {
@@ -66,9 +66,16 @@ public class SpringWebHandlerMethodRequestBodyMerger {
                                         consumesContentTypes,
                                         Optional.of(parameterType),
                                         noEmptyEntries ? required : null
-                                );
+                                ) {
+                                    @Nullable
+                                    @Override
+                                    public HandlerMethod.Context getContext() {
+                                        return MergedSpringWebHandlerMethodContext.of(consumesContentTypes);
+                                    }
+                                };
                             })
                             .map(HandlerMethod.RequestBody.class::cast)
+                            // do not omit request body entry just because the handler method doesn't have a parameter here
                             .orElseGet(() -> new EmptyRequestBody(consumesContentTypes));
                 })
                 .collect(Collectors.toList());

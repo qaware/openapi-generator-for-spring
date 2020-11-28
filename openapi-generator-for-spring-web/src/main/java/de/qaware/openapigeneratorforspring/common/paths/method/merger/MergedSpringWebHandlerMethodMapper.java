@@ -1,6 +1,9 @@
 package de.qaware.openapigeneratorforspring.common.paths.method.merger;
 
+import de.qaware.openapigeneratorforspring.common.mapper.MapperContext;
+import de.qaware.openapigeneratorforspring.common.mapper.MediaTypesProvider;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
+import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +13,24 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MergedSpringWebHandlerMethodMapper {
+
+    public static class ContextModifierMapper implements HandlerMethod.ContextModifierMapper<MapperContext> {
+        @Nullable
+        @Override
+        public HandlerMethod.ContextModifier<MapperContext> map(@Nullable HandlerMethod.Context context) {
+            if (context instanceof MergedSpringWebHandlerMethodContext) {
+                MergedSpringWebHandlerMethodContext mergedHandlerMethodContext = (MergedSpringWebHandlerMethodContext) context;
+                MediaTypesProvider mediaTypesProvider = owningType -> {
+                    if (RequestBody.class.equals(owningType)) {
+                        return mergedHandlerMethodContext.getConsumesContentTypes();
+                    }
+                    throw new IllegalStateException("Cannot provide media types for " + owningType.getSimpleName() + " in merged method");
+                };
+                return mapperContext -> mapperContext.withMediaTypesProvider(mediaTypesProvider);
+            }
+            return null; // indicates we can't map this handler method context
+        }
+    }
 
     @RequiredArgsConstructor
     public static class RequestBodyMapper implements HandlerMethod.RequestBodyMapper {

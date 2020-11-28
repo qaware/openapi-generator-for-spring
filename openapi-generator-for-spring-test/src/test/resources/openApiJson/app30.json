@@ -12,12 +12,12 @@
           "200": {
             "description": "Default response",
             "content": {
+              "*/*": {},
               "text/html": {
                 "schema": {
                   "type": "string"
                 }
-              },
-              "*/*": {}
+              }
             }
           }
         }
@@ -37,6 +37,34 @@
         "responses": {
           "200": {
             "description": "Default response"
+          }
+        }
+      }
+    },
+    "/mapping3": {
+      "post": {
+        "operationId": "mapping3_textHtml",
+        "requestBody": {
+          "content": {
+            "text/html": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "*/*": {}
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "some description",
+            "content": {
+              "application/atom+xml": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "*/*": {}
+            }
           }
         }
       }
