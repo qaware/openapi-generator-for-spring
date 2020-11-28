@@ -10,8 +10,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
-
 @RequiredArgsConstructor
 public class ReferencedApiResponsesHandlerImpl implements DependentReferencedComponentHandler, ReferencedApiResponsesConsumer {
     private final ReferencedApiResponseStorage storage;
@@ -29,6 +27,6 @@ public class ReferencedApiResponsesHandlerImpl implements DependentReferencedCom
 
     @Override
     public void applyToComponents(Components components) {
-        setMapIfNotEmpty(storage.buildReferencedItems(), components::setResponses);
+        storage.buildReferencedItems(components::setResponses);
     }
 }

@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
-
 @RequiredArgsConstructor
 public class ReferencedCallbacksHandlerImpl implements DependentReferencedComponentHandler, ReferencedCallbacksConsumer {
 
@@ -31,6 +29,6 @@ public class ReferencedCallbacksHandlerImpl implements DependentReferencedCompon
 
     @Override
     public void applyToComponents(Components components) {
-        setMapIfNotEmpty(storage.buildReferencedItems(), components::setCallbacks);
+        storage.buildReferencedItems(components::setCallbacks);
     }
 }

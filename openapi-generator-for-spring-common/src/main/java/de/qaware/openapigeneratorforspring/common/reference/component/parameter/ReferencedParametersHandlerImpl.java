@@ -12,8 +12,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
-
 @RequiredArgsConstructor
 public class ReferencedParametersHandlerImpl implements DependentReferencedComponentHandler, ReferencedParametersConsumer {
     private final ReferencedParameterStorage storage;
@@ -35,6 +33,6 @@ public class ReferencedParametersHandlerImpl implements DependentReferencedCompo
 
     @Override
     public void applyToComponents(Components components) {
-        setMapIfNotEmpty(storage.buildReferencedItems(), components::setParameters);
+        storage.buildReferencedItems(components::setParameters);
     }
 }

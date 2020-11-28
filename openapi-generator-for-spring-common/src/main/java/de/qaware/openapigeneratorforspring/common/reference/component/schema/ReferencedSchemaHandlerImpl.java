@@ -10,8 +10,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
-
 @RequiredArgsConstructor
 public class ReferencedSchemaHandlerImpl implements DependentReferencedComponentHandler, ReferencedSchemaConsumer {
 
@@ -37,6 +35,6 @@ public class ReferencedSchemaHandlerImpl implements DependentReferencedComponent
 
     @Override
     public void applyToComponents(Components components) {
-        setMapIfNotEmpty(storage.buildReferencedItems(), components::setSchemas);
+        storage.buildReferencedItems(components::setSchemas);
     }
 }

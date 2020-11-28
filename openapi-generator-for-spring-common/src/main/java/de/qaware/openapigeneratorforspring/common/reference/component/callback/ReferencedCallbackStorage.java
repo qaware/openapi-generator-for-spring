@@ -28,7 +28,7 @@ public class ReferencedCallbackStorage extends AbstractReferencedItemStorage<Cal
         // here, we don't need to track the callback name together with the setter,
         // but simpler build a Set of callback names inside the entry
         callbacks.forEach((callbackName, callback) ->
-                addEntry(callback, referenceCallback -> callbacks.put(callbackName, referenceCallback), callbackName)
+                addEntry(callback, referenceCallback -> callbacks.put(callbackName, referenceCallback), AddEntryParameters.builder().suggestedIdentifier(callbackName).build())
         );
     }
 }

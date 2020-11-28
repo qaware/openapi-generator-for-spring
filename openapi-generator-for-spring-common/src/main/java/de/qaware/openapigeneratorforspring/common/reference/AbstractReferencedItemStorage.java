@@ -6,12 +6,14 @@ import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIde
 import de.qaware.openapigeneratorforspring.common.util.OpenApiProxyUtils;
 import de.qaware.openapigeneratorforspring.model.trait.HasReference;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -19,11 +21,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.groupingByPairKeyAndCollectingValuesTo;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.groupingByPairKeyAndCollectingValuesToList;
 
@@ -39,20 +43,54 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
 
     private final List<Entry<T>> entries = new ArrayList<>();
 
+    @Builder
+    @Getter(AccessLevel.PRIVATE)
+    protected static class AddEntryParameters {
+        private final boolean referenceRequired;
+        @Nullable
+        private final String suggestedIdentifier;
+        @Nullable
+        private final Object owner;
+    }
+
     protected void addEntriesFromMap(Map<String, T> itemsMap) {
-        itemsMap.forEach((itemName, item) -> addEntry(item, referenceItem -> itemsMap.put(itemName, referenceItem), itemName, itemsMap));
+        itemsMap.forEach((itemName, item) -> addEntry(
+                item,
+                referenceItem -> itemsMap.put(itemName, referenceItem),
+                AddEntryParameters.builder()
+                        .suggestedIdentifier(itemName)
+                        .owner(itemsMap)
+                        .build()
+        ));
     }
 
-    protected void addEntry(T item, ReferenceSetter<T> referenceSetter) {
-        addEntry(item, referenceSetter, null, null);
+    protected void addEntry(T item, Consumer<T> setter) {
+        addEntry(item, setter, AddEntryParameters.builder().build());
     }
 
-    protected void addEntry(T item, ReferenceSetter<T> referenceSetter, @Nullable String suggestedIdentifier) {
-        addEntry(item, referenceSetter, suggestedIdentifier, null);
+    protected void addEntry(T item, Consumer<T> setter, AddEntryParameters options) {
+        ReferenceSetterWithIdentifier<T> referenceSetterWithIdentifier = ReferenceSetterWithIdentifier.of(
+                ReferenceSetter.of(setter, options.isReferenceRequired()),
+                options.getSuggestedIdentifier()
+        );
+        entries.add(Entry.of(item, referenceSetterWithIdentifier, options.getOwner()));
     }
 
-    protected void addEntry(T item, ReferenceSetter<T> referenceSetter, @Nullable String suggestedIdentifier, @Nullable Object owner) {
-        entries.add(Entry.of(item, ReferenceSetterWithIdentifier.of(referenceSetter, suggestedIdentifier), owner));
+    // TODO make use of this method
+    @Nullable
+    private Object findSetterTarget(Consumer<T> setter) {
+        Field[] declaredFields = setter.getClass().getDeclaredFields();
+        if (declaredFields.length == 1) {
+            Field declaredField = declaredFields[0];
+            declaredField.setAccessible(true);
+            try {
+                return declaredField.get(setter);
+            } catch (IllegalAccessException e) {
+                // this should not happen, as we've made it accessible...
+                return null;
+            }
+        }
+        return null;
     }
 
     protected void removeEntriesOwnedBy(Object owner) {
@@ -63,7 +101,7 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
         return Pair.of(referenceType, buildDependencies);
     }
 
-    public Map<String, T> buildReferencedItems() {
+    public void buildReferencedItems(Consumer<Map<String, T>> referencedItemsConsumer) {
         Map<String, T> referencedItems = new LinkedHashMap<>();
         ReferenceActions referenceActions = new ReferenceActions();
         buildGroupedEntries()
@@ -75,12 +113,12 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
                             (uniqueReferenceIdentifier, itemWithReferenceSetters) -> {
                                 referencedItems.put(uniqueReferenceIdentifier, itemWithReferenceSetters.getKey());
                                 // defer reference action as calling the reference setters will modify items T,
-                                // which spoil the usage of the map itemsGroupedPerIdentifier where T item is the key
+                                // which spoil the usage of the map "itemsGroupedPerIdentifier" where T item is used as the key
                                 referenceActions.add(uniqueReferenceIdentifier, itemWithReferenceSetters.getValue());
                             });
                 });
         referenceActions.run();
-        return referencedItems;
+        setMapIfNotEmpty(referencedItems, referencedItemsConsumer);
     }
 
     private class ReferenceActions extends ArrayList<ReferenceActions.ReferenceAction> {
@@ -241,13 +279,14 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
         private final String suggestedIdentifier;
     }
 
-    @FunctionalInterface
-    public interface ReferenceSetter<T> {
+    @RequiredArgsConstructor(staticName = "of")
+    @Getter
+    private static class ReferenceSetter<T> {
+        private final Consumer<T> setter;
+        private final boolean referenceRequired;
 
-        void consumeReference(T referenceItem);
-
-        default boolean isReferenceRequired() {
-            return false;
+        void consumeReference(T referenceItem) {
+            setter.accept(referenceItem);
         }
     }
 }

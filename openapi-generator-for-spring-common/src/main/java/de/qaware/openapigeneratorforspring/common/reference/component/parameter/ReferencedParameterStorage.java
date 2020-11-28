@@ -30,9 +30,14 @@ public class ReferencedParameterStorage extends AbstractReferencedItemStorage<Pa
         checkOwner(owner);
         removeEntriesOwnedBy(owner);
         // using an IntStream here makes i effectively final and thus can be captured in nested lambda
-        IntStream.range(0, parameters.size()).forEach(i ->
-                addEntry(parameters.get(i), parameter -> parameters.set(i, parameter), parameters.get(i).getName(), owner)
-        );
+        IntStream.range(0, parameters.size()).forEach(i -> addEntry(
+                parameters.get(i),
+                parameter -> parameters.set(i, parameter),
+                AddEntryParameters.builder()
+                        .suggestedIdentifier(parameters.get(i).getName())
+                        .owner(owner)
+                        .build()
+        ));
     }
 
     private void checkOwner(Object owner) {

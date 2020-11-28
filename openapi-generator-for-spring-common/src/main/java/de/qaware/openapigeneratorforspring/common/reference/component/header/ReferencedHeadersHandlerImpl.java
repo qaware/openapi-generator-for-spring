@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
-
 @RequiredArgsConstructor
 public class ReferencedHeadersHandlerImpl implements DependentReferencedComponentHandler, ReferencedHeadersConsumer {
 
@@ -31,6 +29,6 @@ public class ReferencedHeadersHandlerImpl implements DependentReferencedComponen
 
     @Override
     public void applyToComponents(Components components) {
-        setMapIfNotEmpty(storage.buildReferencedItems(), components::setHeaders);
+        storage.buildReferencedItems(components::setHeaders);
     }
 }

@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
-
 @RequiredArgsConstructor
 public class ReferencedExamplesHandlerImpl implements DependentReferencedComponentHandler, ReferencedExamplesConsumer {
 
@@ -31,7 +29,7 @@ public class ReferencedExamplesHandlerImpl implements DependentReferencedCompone
 
     @Override
     public void applyToComponents(Components components) {
-        setMapIfNotEmpty(storage.buildReferencedItems(), components::setExamples);
+        storage.buildReferencedItems(components::setExamples);
     }
 
 }
