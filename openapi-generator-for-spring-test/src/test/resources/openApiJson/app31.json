@@ -1,0 +1,76 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App31",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping3": {
+      "post": {
+        "operationId": "mapping3_catchAlltextHtml",
+        "requestBody": {
+          "description": "request body description",
+          "content": {
+            "text/html": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "*/*": {}
+          }
+        },
+        "responses": {
+          "500": {
+            "description": "Error response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/App31Controller.ErrorDto"
+                }
+              },
+              "application/atom+xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/App31Controller.ErrorDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "some description",
+            "content": {
+              "application/atom+xml": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "*/*": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "string_0": {
+        "type": "string",
+        "description": "Error code, machine-readable"
+      },
+      "string_1": {
+        "type": "string",
+        "description": "Error description, human-readable"
+      },
+      "App31Controller.ErrorDto": {
+        "type": "object",
+        "properties": {
+          "errorCode": {
+            "$ref": "#/components/schemas/string_0"
+          },
+          "errorDescription": {
+            "$ref": "#/components/schemas/string_1"
+          }
+        }
+      }
+    }
+  }
+}
