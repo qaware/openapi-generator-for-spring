@@ -7,20 +7,25 @@ import lombok.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @ApiResponse(responseCode = "500", description = "Error response", content = @Content(schema = @Schema(implementation = App31Controller.ErrorDto.class)))
 public class App31Controller {
 
-    @PostMapping(value = "/mapping3", consumes = MediaType.TEXT_HTML_VALUE)
-    public void mapping3_textHtml(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "request body description") @RequestBody String param1) {
+    @PostMapping(value = "/mapping1", consumes = MediaType.TEXT_HTML_VALUE)
+    public void mapping1_textHtml(
+            @RequestParam String param1,
+            @RequestParam String sharedParam,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "request body description") @RequestBody String requestBody
+    ) {
 
     }
 
-    @PostMapping(value = "/mapping3", produces = MediaType.APPLICATION_ATOM_XML_VALUE)
+    @PostMapping(value = "/mapping1", produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiResponse(description = "some description", content = @Content(schema = @Schema(implementation = String.class)))
-    public void mapping3_catchAll() {
+    public void mapping1_plain(@RequestParam String param2, @RequestParam String sharedParam) {
 
     }
 

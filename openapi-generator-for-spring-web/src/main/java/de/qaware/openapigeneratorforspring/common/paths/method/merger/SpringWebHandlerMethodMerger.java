@@ -5,6 +5,8 @@ import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerM
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,8 +23,8 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
     public HandlerMethod merge(List<HandlerMethod> handlerMethods) {
         return findSpringWebHandlerMethods(handlerMethods)
                 .map(springWebHandlerMethods -> new MergedSpringWebHandlerMethod(
-                        springWebHandlerMethodParameterMerger.mergeParameters(handlerMethods),
-                        springWebHandlerMethodIdentifierMerger.mergeIdentifiers(handlerMethods),
+                        springWebHandlerMethodParameterMerger.mergeParameters(springWebHandlerMethods),
+                        springWebHandlerMethodIdentifierMerger.mergeIdentifiers(springWebHandlerMethods),
                         // until here, merging is independent of springWebHandlerMethods
                         // but eventually providing merged request bodies and merged responses
                         // requires assumptions about how Spring Web handler methods work
@@ -40,6 +42,10 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
                     return null;
                 })
                 .filter(Objects::nonNull)
+                // we need a stable ordering of the discovered handler methods
+                // the order how Spring provides the handler methods appears to be undefined,
+                // and at least for merging, we need it to be ordered
+                .sorted(Comparator.comparing(SpringWebHandlerMethodMerger::getComparingKey))
                 .collect(Collectors.toList());
         if (springWebHandlerMethods.isEmpty()) {
             return Optional.empty();
@@ -48,5 +54,10 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
             throw new IllegalStateException("Cannot map handler methods not purely of type " + SpringWebHandlerMethod.class.getSimpleName());
         }
         return Optional.of(springWebHandlerMethods);
+    }
+
+    private static String getComparingKey(SpringWebHandlerMethod handlerMethod) {
+        Method method = handlerMethod.getMethod();
+        return method.getDeclaringClass().getName() + "#" + method.getName();
     }
 }

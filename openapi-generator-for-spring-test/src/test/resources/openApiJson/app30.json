@@ -6,8 +6,55 @@
   },
   "paths": {
     "/mapping1": {
+      "post": {
+        "operationId": "mapping1_html_plainText",
+        "requestBody": {
+          "content": {
+            "text/html": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "/mapping2": {
       "get": {
-        "operationId": "mapping1_textHtml",
+        "operationId": "mapping2_html_plainText",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mapping3": {
+      "get": {
+        "operationId": "mapping3_get_textHtml",
         "responses": {
           "200": {
             "description": "Default response",
@@ -23,22 +70,29 @@
         }
       },
       "post": {
-        "operationId": "mapping2_textHtml",
+        "operationId": "mapping3_post_textHtml",
         "requestBody": {
           "content": {
+            "*/*": {},
             "text/html": {
               "schema": {
                 "type": "string"
               }
-            },
-            "*/*": {}
+            }
           }
         },
         "responses": {
           "200": {
-            "description": "Default response"
+            "$ref": "#/components/responses/200"
           }
         }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "200": {
+        "description": "Default response"
       }
     }
   }

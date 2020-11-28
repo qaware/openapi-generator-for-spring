@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
@@ -96,7 +97,17 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
             setIfNotEmpty(parameter, parameters::add);
         });
 
-        return parameters;
+        return preferRequiredParameters(parameters);
+    }
+
+    // TODO make this sorting customizable? See also other TODO here
+    private static List<Parameter> preferRequiredParameters(List<Parameter> parameters) {
+        Map<Boolean, List<Parameter>> partitionedParameters = parameters.stream()
+                .collect(Collectors.partitioningBy(p -> Boolean.TRUE.equals(p.getRequired())));
+        return Stream.concat(
+                partitionedParameters.get(true).stream(),
+                partitionedParameters.get(false).stream()
+        ).collect(toList());
     }
 
     @RequiredArgsConstructor

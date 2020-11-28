@@ -5,45 +5,73 @@
     "version": "unknown"
   },
   "paths": {
-    "/mapping3": {
+    "/mapping1": {
       "post": {
-        "operationId": "mapping3_catchAlltextHtml",
+        "operationId": "mapping1_plain_textHtml",
+        "parameters": [
+          {
+            "name": "sharedParam",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "param2",
+            "in": "query",
+            "description": "Only used by mapping1_plain",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "param1",
+            "in": "query",
+            "description": "Only used by mapping1_textHtml",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "request body description",
           "content": {
+            "*/*": {},
             "text/html": {
               "schema": {
                 "type": "string"
               }
-            },
-            "*/*": {}
+            }
           }
         },
         "responses": {
-          "500": {
-            "description": "Error response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/App31Controller.ErrorDto"
-                }
-              },
-              "application/atom+xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/App31Controller.ErrorDto"
-                }
-              }
-            }
-          },
           "200": {
             "description": "some description",
             "content": {
-              "application/atom+xml": {
+              "text/plain": {
                 "schema": {
                   "type": "string"
                 }
               },
               "*/*": {}
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/App31Controller.ErrorDto"
+                }
+              },
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/App31Controller.ErrorDto"
+                }
+              }
             }
           }
         }
