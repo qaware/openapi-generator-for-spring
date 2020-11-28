@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.common.paths;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferencedItemConsumerSupplier;
 import de.qaware.openapigeneratorforspring.common.reference.component.parameter.ReferencedParametersConsumer;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.path.PathItem;
 import org.apache.commons.lang3.tuple.Pair;
@@ -13,7 +14,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
@@ -80,7 +80,7 @@ public class DefaultPathItemSharedItemsCustomizer implements PathItemCustomizer 
                                 .map(Collection::stream).orElseGet(Stream::empty)
                                 .map(item -> Pair.of(item, operation))
                 )
-                .collect(Collectors.groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toList())))
+                .collect(OpenApiStreamUtils.groupingByPairKeyAndCollectingValuesToList())
                 .forEach((item, operations) -> {
                     if (operations.size() > 1) {
                         // sharedItemConsumer may decide if it becomes part of the shared items

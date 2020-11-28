@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
+import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
 import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.prependIfMissing;
@@ -35,12 +35,11 @@ public class DefaultExtensionAnnotationMapper implements ExtensionAnnotationMapp
     }
 
     private Map<String, Object> getPropertiesAsMap(ExtensionProperty[] properties, boolean prependPrefix) {
-        return Stream.of(properties)
-                .filter(this::isNameAndValueNotBlank)
-                .collect(Collectors.toMap(
-                        property -> prependPrefix ? prependPrefix(property.name()) : property.name(),
-                        this::getPossiblyParsedPropertyValue
-                ));
+        return OpenApiMapUtils.buildStringMapFromStream(
+                Stream.of(properties).filter(this::isNameAndValueNotBlank),
+                property -> prependPrefix ? prependPrefix(property.name()) : property.name(),
+                this::getPossiblyParsedPropertyValue
+        );
     }
 
     private String prependPrefix(String name) {
