@@ -22,7 +22,7 @@ public class DefaultSpringWebHandlerMethodBuilder implements SpringWebHandlerMet
                 Stream.of(method.getParameters())
                         .map(this::buildParameter)
                         .collect(Collectors.toList()),
-                method
+                springWebHandlerMethod
         );
     }
 

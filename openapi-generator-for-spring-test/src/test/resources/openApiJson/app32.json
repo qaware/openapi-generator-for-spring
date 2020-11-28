@@ -1,0 +1,73 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App32",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping1": {
+      "get": {
+        "operationId": "mapping1_throwingSomeException",
+        "responses": {
+          "500": {
+            "$ref": "#/components/responses/409_500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "/mapping2": {
+      "get": {
+        "operationId": "mapping2_throwingAnotherException",
+        "responses": {
+          "409": {
+            "$ref": "#/components/responses/409_500"
+          },
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "409_500": {
+        "description": "Default response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/App32Controller.ErrorDto"
+            }
+          }
+        }
+      },
+      "200": {
+        "description": "Default response"
+      }
+    },
+    "schemas": {
+      "string_0": {
+        "type": "string",
+        "description": "Error code, machine-readable"
+      },
+      "string_1": {
+        "type": "string",
+        "description": "Error description, human-readable"
+      },
+      "App32Controller.ErrorDto": {
+        "type": "object",
+        "properties": {
+          "errorCode": {
+            "$ref": "#/components/schemas/string_0"
+          },
+          "errorDescription": {
+            "$ref": "#/components/schemas/string_1"
+          }
+        }
+      }
+    }
+  }
+}

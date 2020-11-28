@@ -12,7 +12,7 @@ public class SpringWebHandlerMethodReturnTypeMapper {
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     public HandlerMethod.Type getReturnType(SpringWebHandlerMethod springWebHandlerMethod) {
-        Method method = springWebHandlerMethod.getMethod();
+        Method method = springWebHandlerMethod.getMethod().getMethod();
         // even for Void method return type, there might still be @Schema annotation which could be useful
         // using method.getReturnType() does not work for generic return types
         return AbstractSpringWebHandlerMethod.SpringWebType.of(method.getGenericReturnType(), annotationsSupplierFactory.createFromAnnotatedElement(method.getReturnType()));

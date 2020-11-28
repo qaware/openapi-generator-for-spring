@@ -24,12 +24,10 @@ public class OpenApiMapUtils {
         }
     }
 
-    public static <M extends Map<K, V>, K, V> boolean setMapIfNotEmpty(M map, Consumer<? super M> setter) {
+    public static <M extends Map<K, V>, K, V> void setMapIfNotEmpty(M map, Consumer<? super M> setter) {
         if (!map.isEmpty()) {
             setter.accept(map);
-            return true;
         }
-        return false;
     }
 
     public static <T, V> Map<String, V> buildStringMapFromStream(

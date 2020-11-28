@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -17,10 +16,10 @@ public class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod imple
 
     @Getter
     @ToString.Include
-    private final Method method;
+    private final org.springframework.web.method.HandlerMethod method;
     private final AnnotationsSupplier annotationsSupplier;
 
-    public SpringWebHandlerMethod(AnnotationsSupplier annotationsSupplier, List<Parameter> parameters, Method method) {
+    public SpringWebHandlerMethod(AnnotationsSupplier annotationsSupplier, List<Parameter> parameters, org.springframework.web.method.HandlerMethod method) {
         super(parameters);
         this.method = method;
         this.annotationsSupplier = annotationsSupplier;
@@ -28,7 +27,7 @@ public class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod imple
 
     @Override
     public String getIdentifier() {
-        return method.getName();
+        return method.getMethod().getName();
     }
 
     @Override

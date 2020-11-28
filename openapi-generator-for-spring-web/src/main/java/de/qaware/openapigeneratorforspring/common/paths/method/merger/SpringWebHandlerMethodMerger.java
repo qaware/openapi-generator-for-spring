@@ -57,7 +57,7 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
     }
 
     private static String getComparingKey(SpringWebHandlerMethod handlerMethod) {
-        Method method = handlerMethod.getMethod();
+        Method method = handlerMethod.getMethod().getMethod();
         return method.getDeclaringClass().getName() + "#" + method.getName();
     }
 }
