@@ -7,7 +7,7 @@
   "paths": {
     "/mapping1": {
       "get": {
-        "operationId": "mapping1_textHtml",
+        "operationId": "mapping1",
         "responses": {
           "200": {
             "description": "Default response",
@@ -15,6 +15,41 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/App33Controller.SomeDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mapping2/{pathParam}": {
+      "get": {
+        "operationId": "mapping2",
+        "parameters": [
+          {
+            "name": "pathParam",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "VALUE_3",
+                "VALUE_4"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "VALUE_1",
+                    "VALUE_2"
+                  ]
                 }
               }
             }

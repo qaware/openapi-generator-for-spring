@@ -20,6 +20,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResol
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForProperties;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForCollectionLikeType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForEnum;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForObject;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForPrimitiveTypes;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForReferenceType;
@@ -94,6 +95,12 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public InitialSchemaBuilderForVoid defaultInitialSchemaBuilderForVoid() {
         return new InitialSchemaBuilderForVoid();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public InitialSchemaBuilderForEnum defaultInitialSchemaBuilderForEnum() {
+        return new InitialSchemaBuilderForEnum();
     }
 
     @Bean
