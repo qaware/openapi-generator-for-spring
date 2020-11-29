@@ -8,6 +8,21 @@
     "/mapping1": {
       "get": {
         "operationId": "mapping1",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of the data",
+            "required": false,
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Default response",

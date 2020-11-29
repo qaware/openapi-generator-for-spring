@@ -34,7 +34,8 @@ public class DefaultOperationParameterNullableCustomizer implements OperationPar
                     .findAnnotations(Nullable.class).findFirst().ifPresent(ignored -> {
                 Boolean required = parameter.getRequired();
                 if (required != null && required) {
-                    LOGGER.warn("Method parameter {} marked as required but annotated as nullable. Ignoring annotation.", parameter);
+                    LOGGER.warn("{} in {} marked as required but annotated as @Nullable. Ignoring annotation.",
+                            parameter, context.getOperationInfo());
                 } else {
                     // TODO is this always right to explicitly set it to false?
                     parameter.setRequired(false);

@@ -31,7 +31,7 @@ import de.qaware.openapigeneratorforspring.common.operation.parameter.DefaultOpe
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterAnnotationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterDeprecatedCustomizer;
-import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterMethodNameCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterNameCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterNullableCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterSchemaCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.OperationParameterCustomizer;
@@ -87,8 +87,8 @@ public class OpenApiGeneratorOperationParameterAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultOperationParameterMethodNameCustomizer defaultOperationParameterMethodNameCustomizer() {
-        return new DefaultOperationParameterMethodNameCustomizer();
+    public DefaultOperationParameterNameCustomizer defaultOperationParameterNameCustomizer() {
+        return new DefaultOperationParameterNameCustomizer();
     }
 
     @Bean

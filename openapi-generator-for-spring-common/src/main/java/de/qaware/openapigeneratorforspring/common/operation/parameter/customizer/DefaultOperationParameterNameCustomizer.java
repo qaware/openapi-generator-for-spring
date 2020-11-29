@@ -23,9 +23,10 @@ package de.qaware.openapigeneratorforspring.common.operation.parameter.customize
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
-public class DefaultOperationParameterMethodNameCustomizer implements OperationParameterCustomizer {
+public class DefaultOperationParameterNameCustomizer implements OperationParameterCustomizer {
     @Override
     public void customize(Parameter parameter, OperationParameterCustomizerContext context) {
         context.getHandlerMethodParameter()
@@ -35,8 +36,12 @@ public class DefaultOperationParameterMethodNameCustomizer implements OperationP
                     if (parameterName == null) {
                         parameter.setName(methodParameterName);
                     } else if (!parameterName.equals(methodParameterName)) {
-                        LOGGER.warn("Parameter name {} different from parameter variable name {}", parameterName, methodParameterName);
+                        LOGGER.warn("Parameter name {} different from parameter variable name {} in {}",
+                                parameterName, methodParameterName, context.getOperationInfo());
                     }
                 });
+        if (StringUtils.isBlank(parameter.getName())) {
+            LOGGER.warn("{} in {} has blank name. This is not allowed by spec.", parameter, context.getOperationInfo());
+        }
     }
 }
