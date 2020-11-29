@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
+import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier.Purpose.SCHEMA_BUILDING;
+
 @RequiredArgsConstructor
 public class InitialSchemaBuilderForSchemaAnnotation implements InitialSchemaBuilder {
 
@@ -25,7 +27,7 @@ public class InitialSchemaBuilderForSchemaAnnotation implements InitialSchemaBui
                 .map(Schema::implementation)
                 .filter(clazz -> !Void.class.equals(clazz))
                 .map(clazz -> resolver.resolveFromType(
-                        openApiObjectMapperSupplier.get().constructType(clazz),
+                        openApiObjectMapperSupplier.get(SCHEMA_BUILDING).constructType(clazz),
                         annotationsSupplierFactory.createFromAnnotatedElement(clazz)
                 ))
                 .orElse(null);

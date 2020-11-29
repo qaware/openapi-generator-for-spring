@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Map;
 
+import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier.Purpose.SCHEMA_BUILDING;
+
 @RequiredArgsConstructor
 public class DefaultSchemaPropertiesResolver implements SchemaPropertiesResolver {
 
@@ -19,7 +21,7 @@ public class DefaultSchemaPropertiesResolver implements SchemaPropertiesResolver
 
     @Override
     public Map<String, AnnotatedMember> findProperties(JavaType javaType) {
-        BeanDescription beanDescriptionForType = objectMapperSupplier.get().getSerializationConfig().introspect(javaType);
+        BeanDescription beanDescriptionForType = objectMapperSupplier.get(SCHEMA_BUILDING).getSerializationConfig().introspect(javaType);
         return OpenApiMapUtils.buildStringMapFromStream(
                 beanDescriptionForType.findProperties().stream().filter(property -> propertyFilters.stream().allMatch(filter -> filter.accept(property, beanDescriptionForType))),
                 BeanPropertyDefinition::getName,

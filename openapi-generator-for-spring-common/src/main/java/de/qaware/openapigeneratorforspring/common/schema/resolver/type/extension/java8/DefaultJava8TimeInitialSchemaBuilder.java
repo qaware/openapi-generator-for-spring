@@ -1,12 +1,12 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolverConfigurationProperties.Format;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaTypeResolver;
-import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +26,8 @@ public class DefaultJava8TimeInitialSchemaBuilder implements Java8TimeInitialSch
     public static final int ORDER = DEFAULT_ORDER;
 
     private final Java8TimeTypeResolverConfigurationProperties properties;
-    private final OpenApiObjectMapperSupplier openApiObjectMapperSupplier;
+    @Nullable
+    private final ObjectMapper objectMapper;
 
     @Nullable
     @Override
@@ -50,7 +51,10 @@ public class DefaultJava8TimeInitialSchemaBuilder implements Java8TimeInitialSch
 
     private Format getFormat(SerializationFeature serializationFeature) {
         if (properties.getFormat() == INFER_FROM_OBJECT_MAPPER) {
-            return openApiObjectMapperSupplier.get().isEnabled(serializationFeature) ? UNIX_EPOCH_SECONDS : ISO8601;
+            if (objectMapper == null) {
+                throw new IllegalStateException("Cannot infer format from object mapper without object mapper being present");
+            }
+            return objectMapper.isEnabled(serializationFeature) ? UNIX_EPOCH_SECONDS : ISO8601;
         }
         return properties.getFormat();
     }

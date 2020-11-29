@@ -2,7 +2,13 @@ package de.qaware.openapigeneratorforspring.common.supplier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.function.Supplier;
+@FunctionalInterface
+public interface OpenApiObjectMapperSupplier {
+    ObjectMapper get(Purpose purpose);
 
-public interface OpenApiObjectMapperSupplier extends Supplier<ObjectMapper> {
+    enum Purpose {
+        OPEN_API_JSON,
+        SCHEMA_BUILDING,
+        PARSABLE_VALUE_MAPPER
+    }
 }

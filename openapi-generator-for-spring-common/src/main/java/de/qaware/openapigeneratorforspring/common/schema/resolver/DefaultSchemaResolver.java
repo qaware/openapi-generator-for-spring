@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier.Purpose.SCHEMA_BUILDING;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiLoggingUtils.logPretty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiLoggingUtils.prettyPrintSchema;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
@@ -57,7 +58,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
     }
 
     private Schema resolveFromTypeWithoutReference(Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer) {
-        ObjectMapper mapper = openApiObjectMapperSupplier.get();
+        ObjectMapper mapper = openApiObjectMapperSupplier.get(SCHEMA_BUILDING);
         Context context = new Context(schemaAnnotationMapperFactory.create(this), referencedSchemaConsumer);
         JavaType javaType = mapper.constructType(type);
         Schema schema = context.buildSchemaFromTypeRecursively(javaType, annotationsSupplier);

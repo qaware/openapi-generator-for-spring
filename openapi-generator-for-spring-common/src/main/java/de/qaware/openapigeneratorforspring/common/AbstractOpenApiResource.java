@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier.Purpose.OPEN_API_JSON;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.CONFIG_PROPERTIES_PREFIX;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.OPEN_API_DOCS_DEFAULT_PATH;
 
@@ -24,6 +25,6 @@ public abstract class AbstractOpenApiResource {
 
     protected String getOpenApiAsJson() throws JsonProcessingException {
         OpenApi openApi = openApiGenerator.generateOpenApi();
-        return objectMapperSupplier.get().writeValueAsString(openApi);
+        return objectMapperSupplier.get(OPEN_API_JSON).writeValueAsString(openApi);
     }
 }

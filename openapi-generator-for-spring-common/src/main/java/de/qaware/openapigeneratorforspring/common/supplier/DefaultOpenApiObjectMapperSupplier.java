@@ -20,7 +20,7 @@ public class DefaultOpenApiObjectMapperSupplier implements OpenApiObjectMapperSu
             .registerModule(new JavaTimeModule());
 
     @Override
-    public ObjectMapper get() {
+    public ObjectMapper get(Purpose purpose) {
         return OBJECT_MAPPER;
     }
 }
