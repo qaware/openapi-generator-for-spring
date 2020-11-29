@@ -8,6 +8,12 @@ import lombok.Singular;
 
 import java.util.Map;
 
+/**
+ * Initial schema container for
+ * {@link de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver schema resolution}.
+ *
+ * @see InitialSchemaBuilder
+ */
 @Builder
 @Getter
 public class InitialSchema {

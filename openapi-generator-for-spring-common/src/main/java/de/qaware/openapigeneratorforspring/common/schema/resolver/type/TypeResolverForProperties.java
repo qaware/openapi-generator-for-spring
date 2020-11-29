@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaBuilderFromType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForObject;
 import de.qaware.openapigeneratorforspring.model.media.Schema;

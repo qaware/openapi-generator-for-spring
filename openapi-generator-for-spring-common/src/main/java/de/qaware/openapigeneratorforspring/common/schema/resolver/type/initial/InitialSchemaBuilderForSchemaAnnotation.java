@@ -23,7 +23,7 @@ public class InitialSchemaBuilderForSchemaAnnotation implements InitialSchemaBui
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
         return annotationsSupplier.findAnnotations(Schema.class)
                 .findFirst()
                 .map(Schema::implementation)

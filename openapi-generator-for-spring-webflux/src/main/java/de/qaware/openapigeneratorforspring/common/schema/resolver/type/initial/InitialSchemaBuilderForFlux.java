@@ -15,7 +15,7 @@ public class InitialSchemaBuilderForFlux implements InitialSchemaBuilder, TypeRe
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
         if (javaType.getRawClass().equals(Flux.class)) {
             return InitialSchema.builder().schema(new FluxSchema()).build();
         }

@@ -11,7 +11,7 @@ public class InitialSchemaBuilderForReferenceType implements InitialSchemaBuilde
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
         if (javaType.isReferenceType()) {
             // TODO append annotationSupplier with contained generic type!
             InitialSchema initialSchema = resolver.resolveFromType(javaType.getContentType(), annotationsSupplier);

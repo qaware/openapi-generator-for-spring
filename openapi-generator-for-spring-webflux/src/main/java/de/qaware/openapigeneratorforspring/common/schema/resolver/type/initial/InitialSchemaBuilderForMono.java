@@ -12,7 +12,7 @@ public class InitialSchemaBuilderForMono implements InitialSchemaBuilder {
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
         if (javaType.getRawClass().equals(Mono.class)) {
             JavaType innerType = javaType.getBindings().getTypeParameters().iterator().next();
             return resolver.resolveFromType(innerType, annotationsSupplier);

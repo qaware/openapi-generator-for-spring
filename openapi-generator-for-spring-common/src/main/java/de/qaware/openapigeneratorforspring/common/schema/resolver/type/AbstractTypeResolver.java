@@ -2,7 +2,6 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaBuilderFromType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

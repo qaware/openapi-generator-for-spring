@@ -6,13 +6,42 @@ import org.springframework.core.Ordered;
 
 import javax.annotation.Nullable;
 
-@SuppressWarnings("squid:S1214") // suppress warning about constant in interface
+/**
+ * Initial schema builder. They are queried in {@link Ordered order} by the {@link
+ * de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver
+ * schema resolver} to start schema resolution.
+ */
 @FunctionalInterface
 public interface InitialSchemaBuilder extends Ordered {
     int DEFAULT_ORDER = 0;
 
+    /**
+     * Build {@link InitialSchema} from given java type.
+     * Can return null if that java type cannot be handled.
+     *
+     * @param javaType            java type
+     * @param annotationsSupplier annotations supplier for type
+     * @param resolver            fallback resolver which recursively resolves a possibly contained type
+     * @return initial schema, or null if java type cannot be handled
+     */
     @Nullable
-    InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver);
+    InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver);
+
+    /**
+     * Fallback resolver support for {@link #buildFromType}.
+     */
+    @FunctionalInterface
+    interface Resolver {
+        /**
+         * Returns an initial schema from the given type.
+         *
+         * @param javaType            java type
+         * @param annotationsSupplier annotations supplier for type
+         * @return initial schema, or null if nothing could be built
+         */
+        @Nullable
+        InitialSchema resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier);
+    }
 
     @Override
     default int getOrder() {

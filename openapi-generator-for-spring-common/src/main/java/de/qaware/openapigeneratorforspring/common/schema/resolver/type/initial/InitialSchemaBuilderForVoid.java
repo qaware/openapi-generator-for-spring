@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 public class InitialSchemaBuilderForVoid implements InitialSchemaBuilder {
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
         if (Void.TYPE.equals(javaType.getRawClass()) || Void.class.equals(javaType.getRawClass())) {
             return InitialSchema.of(new Schema());
         }

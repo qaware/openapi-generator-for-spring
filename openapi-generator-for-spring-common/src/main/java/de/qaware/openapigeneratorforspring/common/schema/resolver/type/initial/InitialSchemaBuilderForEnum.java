@@ -11,7 +11,7 @@ import java.util.List;
 public class InitialSchemaBuilderForEnum implements InitialSchemaBuilder {
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
+    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
         if (javaType.isEnumImplType()) {
             List<Object> enumValues = Arrays.asList(javaType.getRawClass().getEnumConstants());
             return InitialSchema.of(Schema.builder().type("string").enumValues(enumValues).build());
