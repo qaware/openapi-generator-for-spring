@@ -50,7 +50,7 @@ public class PathsBuilder {
                 .collect(Collectors.groupingBy(Pair::getLeft, LinkedHashMap::new, Collectors.mapping(Pair::getRight, Collectors.toList())))
                 .forEach((pathPattern, handlerMethodWithInfos) -> {
 
-                    Map<RequestMethod, HandlerMethod> handlerMethods = handlerMethodWithInfos.stream()
+                    Map<RequestMethod, HandlerMethod> mergedHandlerMethods = handlerMethodWithInfos.stream()
                             .flatMap(handlerMethodWithInfo -> handlerMethodWithInfo.getRequestMethods().stream()
                                     .map(requestMethod -> Pair.of(requestMethod, handlerMethodWithInfo.getHandlerMethod())))
                             .sorted(Map.Entry.comparingByKey()) // natural order of the enum RequestMethod
@@ -68,7 +68,7 @@ public class PathsBuilder {
                             .collect(Collectors.toMap(Pair::getKey, Pair::getValue, (a, b) -> b, LinkedHashMap::new));
 
                     PathItemBuilderFactory.PathItemBuilder pathItemBuilder = pathItemBuilderFactory.create(referencedItemConsumerSupplier);
-                    PathItem pathItem = pathItemBuilder.build(pathPattern, handlerMethods);
+                    PathItem pathItem = pathItemBuilder.build(pathPattern, mergedHandlerMethods);
                     if (isAcceptedByAllPathItemFilters(pathItem, pathPattern)) {
                         operationsById.addAll(pathItemBuilder.getOperationsById());
                         paths.put(pathPattern, pathItem);

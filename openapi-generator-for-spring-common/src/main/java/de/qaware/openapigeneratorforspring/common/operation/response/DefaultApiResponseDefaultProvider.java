@@ -5,7 +5,7 @@ import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 public class DefaultApiResponseDefaultProvider implements ApiResponseDefaultProvider {
 
     @Override
-    public ApiResponse build(String responseCodeFromMethod) {
+    public ApiResponse build(String responseCode) {
         return new ApiResponse();
     }
 }

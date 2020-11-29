@@ -4,9 +4,15 @@ import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.stream.Stream;
 
+/**
+ * Abstraction for obtaining annotations. Is created with {@link AnnotationsSupplierFactory}.
+ */
 @FunctionalInterface
 public interface AnnotationsSupplier {
 
+    /**
+     * Empty supplier, never finding any annotations.
+     */
     AnnotationsSupplier EMPTY = new AnnotationsSupplier() {
         @Override
         public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {

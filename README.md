@@ -2,7 +2,7 @@
 
 This library automagically generates a OpenApi v3 specification at runtime for Spring Boot applications.
 
-It aims at fully supporting the Swagger Annotations to provide a self-descriptive API specification of your application.
+It aims at fully analyzing Spring request mappings augmented by Swagger annotations to provide a self-descriptive API specification of your application.
 
 ## Features
 
