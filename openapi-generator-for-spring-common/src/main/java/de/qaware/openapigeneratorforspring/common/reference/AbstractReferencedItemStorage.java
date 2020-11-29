@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -205,9 +206,9 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
                 .flatMap(i -> {
                     ReferenceSetter<T> referenceSetter = referenceSetters.get(i).getReferenceSetter();
                     String identifier = identifierSetters.get(i).getValue();
-                    if (identifier == null && referenceSetter.isReferenceRequired()) {
+                    if (StringUtils.isBlank(identifier) && referenceSetter.isReferenceRequired()) {
                         throw new IllegalStateException("Cannot skip referencing " + entry.getItem() + " with null identifier as reference is required");
-                    } else if (identifier != null) {
+                    } else if (StringUtils.isNotBlank(identifier)) {
                         return Stream.of(Pair.of(identifier, Pair.of(entry.getItem(), referenceSetter)));
                     }
                     return Stream.empty();

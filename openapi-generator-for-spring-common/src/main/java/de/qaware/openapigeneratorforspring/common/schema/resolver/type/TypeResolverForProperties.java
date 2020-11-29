@@ -18,12 +18,13 @@ import java.util.List;
 import java.util.Map;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils.laterThan;
 
 @Slf4j
 public class TypeResolverForProperties extends AbstractTypeResolver {
 
     // this resolver does not have any condition, so run this always later then the other resolvers as a fallback
-    public static final int ORDER = DEFAULT_ORDER + 100;
+    public static final int ORDER = laterThan(DEFAULT_ORDER);
 
     private final List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;

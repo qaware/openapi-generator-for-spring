@@ -4,8 +4,9 @@ import de.qaware.openapigeneratorforspring.common.reference.component.schema.Ref
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 /**
- * Mapper for Schema annotation. Created by
- * {@link SchemaAnnotationMapperFactory}.
+ * Mapper for {@link io.swagger.v3.oas.annotations.media.Schema Schema annotation}.
+ *
+ * <p>Created by {@link SchemaAnnotationMapperFactory}.
  */
 public interface SchemaAnnotationMapper {
     Schema buildFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer);

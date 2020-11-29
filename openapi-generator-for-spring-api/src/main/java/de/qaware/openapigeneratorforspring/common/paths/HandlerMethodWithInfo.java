@@ -5,6 +5,10 @@ import lombok.Value;
 
 import java.util.Set;
 
+/**
+ * Container for handler method with info.
+ * Used by {@link HandlerMethodsProvider}.
+ */
 @Value
 public class HandlerMethodWithInfo {
     HandlerMethod handlerMethod;

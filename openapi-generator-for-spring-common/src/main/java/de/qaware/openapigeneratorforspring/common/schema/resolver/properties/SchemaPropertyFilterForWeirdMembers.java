@@ -6,9 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
-public class SchemaPropertyFilterForWeirdMembers implements SchemaPropertyFilter {
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils.earlierThan;
 
-    public static final int ORDER = DEFAULT_ORDER - 100; // Run a little bit earlier to get rid of weird properties early
+public class SchemaPropertyFilterForWeirdMembers implements SchemaPropertyFilter {
+    // Run a little bit earlier to get rid of weird properties early
+    public static final int ORDER = earlierThan(DEFAULT_ORDER);
 
     @Override
     public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType) {

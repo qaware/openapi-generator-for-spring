@@ -10,11 +10,13 @@ import lombok.RequiredArgsConstructor;
 import javax.annotation.Nullable;
 
 import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier.Purpose.SCHEMA_BUILDING;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils.earlierThan;
 
 @RequiredArgsConstructor
 public class InitialSchemaBuilderForSchemaAnnotation implements InitialSchemaBuilder {
 
-    public static final int ORDER = DEFAULT_ORDER - 100; // make this higher precedence as the annotation should override everything
+    // make this higher precedence as the implementation from the @Schema annotation should override anything else
+    public static final int ORDER = earlierThan(DEFAULT_ORDER);
 
     private final OpenApiObjectMapperSupplier openApiObjectMapperSupplier;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;

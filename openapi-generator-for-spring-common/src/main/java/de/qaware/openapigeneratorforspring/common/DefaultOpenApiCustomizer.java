@@ -22,10 +22,12 @@ import java.util.stream.Stream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils.earlierThan;
 
 @RequiredArgsConstructor
 public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
-    public static final int ORDER = DEFAULT_ORDER;
+    // run somewhat earlier such that other customizers run after this one usually
+    public static final int ORDER = earlierThan(DEFAULT_ORDER);
 
     private final ServerAnnotationMapper serverAnnotationMapper;
     private final ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper;
