@@ -5,8 +5,13 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
- * Does not extend AnnotationsSupplier to avoid accidental auto-wiring,
+ * Supplier for annotations present on the {@code @SpringBootApplication} class.
+ *
+ * <p>Does not extend AnnotationsSupplier to avoid accidental auto-wiring,
  * as AnnotationsSupplier are created from AnnotationsSupplierFactory.
+ *
+ * @see OpenApiSpringBootApplicationClassSupplier
+ * @see OpenAPIDefinitionAnnotationSupplier
  */
 @FunctionalInterface
 public interface OpenApiSpringBootApplicationAnnotationsSupplier {

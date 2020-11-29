@@ -20,7 +20,7 @@ public class ReferencedTagsHandlerImpl implements ReferencedTagsConsumer, Refere
     private final Map<String, Tag> tagsByName = new LinkedHashMap<>();
 
     public ReferencedTagsHandlerImpl(OpenAPIDefinitionAnnotationSupplier openAPIDefinitionAnnotationSupplier, TagAnnotationMapper tagAnnotationMapper) {
-        openAPIDefinitionAnnotationSupplier.getValues(OpenAPIDefinition::tags)
+        openAPIDefinitionAnnotationSupplier.getAnnotations(OpenAPIDefinition::tags)
                 .map(tagAnnotationMapper::map)
                 .forEach(this::consumeTag);
     }

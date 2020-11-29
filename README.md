@@ -185,10 +185,10 @@ Offers UI Resource transformation for WebMVC and WebFlux and sets up correct red
 **[test](openapi-generator-for-spring-test)** contains all integration tests for WebMVC and WebFlux.
 
 **[shaded](openapi-generator-for-spring-shaded)** contains shaded
-*dependencies to avoid interence with Spring Boot autoconfiguration.
-*This library does not want to trigger Mustache or WebJar exposure
-*for users of this library. Shading is the only mechanism which
-*still allows to use such code but hide it from Spring Boot.
+dependencies to avoid interence with Spring Boot autoconfiguration.
+This library does not want to trigger Mustache or WebJar exposure
+for users of this library. Shading is the only mechanism which
+still allows to use such code but hide it from Spring Boot.
 
 Each module aims to have minimal dependencies. General library dependencies are:
 * Spring Core (Web/WebMVC/WebFlux are optional)

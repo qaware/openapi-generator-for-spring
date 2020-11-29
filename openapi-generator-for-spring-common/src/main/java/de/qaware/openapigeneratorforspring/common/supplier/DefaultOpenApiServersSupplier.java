@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class DefaultOpenApiDefaultServerSupplier implements OpenApiDefaultServersSupplier {
+public class DefaultOpenApiServersSupplier implements OpenApiServersSupplier {
     private final OpenApiBaseUriSupplier openApiBaseUriSupplier;
 
     @Override

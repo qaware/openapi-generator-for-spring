@@ -55,7 +55,7 @@ public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
                         .map(Supplier::get)
                         .flatMap(Collection::stream),
                 Stream.concat(
-                        openAPIDefinitionAnnotationSupplier.getValues(OpenAPIDefinition::servers),
+                        openAPIDefinitionAnnotationSupplier.getAnnotations(OpenAPIDefinition::servers),
                         springBootApplicationAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.servers.Server.class)
                 ).map(serverAnnotationMapper::map)
         ).collect(Collectors.toList());
