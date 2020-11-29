@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.customizer;
 
 import de.qaware.openapigeneratorforspring.common.mapper.ParameterAnnotationMapper;
-import io.swagger.v3.oas.annotations.Parameter;
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -9,12 +9,13 @@ public class DefaultOperationParameterAnnotationCustomizer implements OperationP
     private final ParameterAnnotationMapper parameterAnnotationMapper;
 
     @Override
-    public void customize(de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter, OperationParameterCustomizerContext context) {
-        context.getHandlerMethodParameter().ifPresent(handlerMethodParameter -> {
-            Parameter parameterAnnotation = handlerMethodParameter.getAnnotationsSupplier().findFirstAnnotation(Parameter.class);
-            if (parameterAnnotation != null) {
-                parameterAnnotationMapper.applyFromAnnotation(parameter, parameterAnnotation, context.getMapperContext(handlerMethodParameter.getContext()));
-            }
-        });
+    public void customize(Parameter parameter, OperationParameterCustomizerContext context) {
+        context.getHandlerMethodParameter().ifPresent(
+                handlerMethodParameter -> handlerMethodParameter.getAnnotationsSupplier()
+                        .findAnnotations(io.swagger.v3.oas.annotations.Parameter.class).findFirst()
+                        .ifPresent(parameterAnnotation ->
+                                parameterAnnotationMapper.applyFromAnnotation(parameter, parameterAnnotation, context.getMapperContext(handlerMethodParameter.getContext()))
+                        )
+        );
     }
 }

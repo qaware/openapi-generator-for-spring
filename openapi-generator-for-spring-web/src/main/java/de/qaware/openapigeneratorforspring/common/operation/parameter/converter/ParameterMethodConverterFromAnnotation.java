@@ -16,11 +16,10 @@ public abstract class ParameterMethodConverterFromAnnotation<A extends Annotatio
     @Nullable
     @Override
     public Parameter convert(HandlerMethod.Parameter handlerMethodParameter) {
-        A annotation = handlerMethodParameter.getAnnotationsSupplier().findFirstAnnotation(annotationClass);
-        if (annotation != null) {
-            return buildParameter(annotation);
-        }
-        return null;
+        return handlerMethodParameter.getAnnotationsSupplier()
+                .findAnnotations(annotationClass).findFirst()
+                .map(this::buildParameter)
+                .orElse(null);
     }
 
     @Nullable

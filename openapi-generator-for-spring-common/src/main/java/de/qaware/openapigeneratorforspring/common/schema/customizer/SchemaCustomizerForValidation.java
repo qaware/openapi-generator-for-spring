@@ -9,18 +9,17 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.math.BigDecimal;
-import java.util.Optional;
 
 public class SchemaCustomizerForValidation implements SchemaCustomizer {
     @Override
     public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-        Optional.ofNullable(annotationsSupplier.findFirstAnnotation(Min.class))
+        annotationsSupplier.findAnnotations(Min.class).findFirst()
                 .ifPresent(annotation -> schema.setMinimum(new BigDecimal(annotation.value())));
-        Optional.ofNullable(annotationsSupplier.findFirstAnnotation(Max.class))
+        annotationsSupplier.findAnnotations(Max.class).findFirst()
                 .ifPresent(annotation -> schema.setMaximum(new BigDecimal(annotation.value())));
-        Optional.ofNullable(annotationsSupplier.findFirstAnnotation(DecimalMin.class))
+        annotationsSupplier.findAnnotations(DecimalMin.class).findFirst()
                 .ifPresent(annotation -> schema.setMinimum(new BigDecimal(annotation.value())));
-        Optional.ofNullable(annotationsSupplier.findFirstAnnotation(DecimalMax.class))
+        annotationsSupplier.findAnnotations(DecimalMax.class).findFirst()
                 .ifPresent(annotation -> schema.setMaximum(new BigDecimal(annotation.value())));
 
         // TODO support more annotations from javax.validation.*

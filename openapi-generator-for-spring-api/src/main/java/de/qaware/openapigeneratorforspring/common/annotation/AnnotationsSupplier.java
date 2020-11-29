@@ -1,6 +1,5 @@
 package de.qaware.openapigeneratorforspring.common.annotation;
 
-import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.stream.Stream;
 
@@ -20,12 +19,6 @@ public interface AnnotationsSupplier {
         }
     };
 
-    static <T extends HasAnnotationsSupplier> AnnotationsSupplier merge(Stream<T> stream) {
-        return stream.map(HasAnnotationsSupplier::getAnnotationsSupplier)
-                .reduce(AnnotationsSupplier::andThen)
-                .orElse(AnnotationsSupplier.EMPTY);
-    }
-
     /**
      * Supply annotations for entity under investigation. Annotations
      * with highest precedence should appear first in returned stream.
@@ -36,13 +29,14 @@ public interface AnnotationsSupplier {
      */
     <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType);
 
-    @Nullable
-    default <A extends Annotation> A findFirstAnnotation(Class<A> annotationType) {
-        return findAnnotations(annotationType)
-                .findFirst()
-                .orElse(null);
-    }
-
+    /**
+     * Get new annotation supplier applying another
+     * annotations supplier after this one.
+     *
+     * @param anotherAnnotationsSupplier another annotations supplier
+     * @return combined annotations supplier searching this one first, then given another supplier
+     * @see #merge
+     */
     default AnnotationsSupplier andThen(AnnotationsSupplier anotherAnnotationsSupplier) {
         AnnotationsSupplier annotationsSupplier = this;
         return new AnnotationsSupplier() {
@@ -53,5 +47,17 @@ public interface AnnotationsSupplier {
         };
     }
 
-
+    /**
+     * Merge the {@link HasAnnotationsSupplier items having
+     * annotations suppliers} into one merged annotations supplier.
+     *
+     * @param stream stream of items with annotations suppliers.
+     * @param <T>    type having annotation suppliers.
+     * @return annotation supplier querying the annotation suppliers of the given items
+     */
+    static <T extends HasAnnotationsSupplier> AnnotationsSupplier merge(Stream<T> stream) {
+        return stream.map(HasAnnotationsSupplier::getAnnotationsSupplier)
+                .reduce(AnnotationsSupplier::andThen)
+                .orElse(AnnotationsSupplier.EMPTY);
+    }
 }

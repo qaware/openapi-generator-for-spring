@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Objects;
-import java.util.Optional;
 
 @Configuration
 public class App12Configuration {
@@ -16,7 +15,8 @@ public class App12Configuration {
 
     @Bean
     public OperationParameterPreFilter ignoreSpecificHeaderParameterFilter() {
-        return methodParameter -> Optional.ofNullable(methodParameter.getAnnotationsSupplier().findFirstAnnotation(RequestHeader.class))
+        return methodParameter -> methodParameter.getAnnotationsSupplier().findAnnotations(RequestHeader.class)
+                .findFirst()
                 .map(annotation -> !annotation.value().equals(X_FILTERED_HEADER_NAME))
                 .orElse(true);
     }

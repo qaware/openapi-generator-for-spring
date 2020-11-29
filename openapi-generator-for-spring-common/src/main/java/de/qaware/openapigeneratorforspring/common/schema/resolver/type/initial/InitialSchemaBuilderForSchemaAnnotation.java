@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier.Purpose.SCHEMA_BUILDING;
 
@@ -23,7 +22,8 @@ public class InitialSchemaBuilderForSchemaAnnotation implements InitialSchemaBui
     @Nullable
     @Override
     public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, InitialSchemaTypeResolver resolver) {
-        return Optional.ofNullable(annotationsSupplier.findFirstAnnotation(Schema.class))
+        return annotationsSupplier.findAnnotations(Schema.class)
+                .findFirst()
                 .map(Schema::implementation)
                 .filter(clazz -> !Void.class.equals(clazz))
                 .map(clazz -> resolver.resolveFromType(

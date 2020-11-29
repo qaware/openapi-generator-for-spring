@@ -11,10 +11,11 @@ public class SchemaCustomizerForRequiredProperties implements SchemaPropertiesCu
     public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Map<String, ? extends SchemaProperty> properties) {
         properties.forEach((propertyName, customizer) ->
                 customizer.customize((propertySchema, propertyJavaType, propertyAnnotationsSupplier) -> {
-                    io.swagger.v3.oas.annotations.media.Schema schemaAnnotation = propertyAnnotationsSupplier.findFirstAnnotation(io.swagger.v3.oas.annotations.media.Schema.class);
-                    if (schemaAnnotation != null && schemaAnnotation.required()) {
-                        schema.addRequired(propertyName);
-                    }
+                    propertyAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
+                            .findFirst()
+                            .map(io.swagger.v3.oas.annotations.media.Schema::required)
+                            .filter(flag -> flag)
+                            .ifPresent(ignored -> schema.addRequired(propertyName));
                 })
         );
     }

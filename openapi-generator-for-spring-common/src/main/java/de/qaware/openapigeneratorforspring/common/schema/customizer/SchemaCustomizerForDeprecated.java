@@ -8,8 +8,7 @@ public class SchemaCustomizerForDeprecated implements SchemaCustomizer {
 
     @Override
     public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-        if (annotationsSupplier.findFirstAnnotation(Deprecated.class) != null) {
-            schema.setDeprecated(true);
-        }
+        annotationsSupplier.findAnnotations(Deprecated.class)
+                .findFirst().ifPresent(ignored -> schema.setDeprecated(true));
     }
 }

@@ -10,15 +10,16 @@ public class DefaultOperationParameterNullableCustomizer implements OperationPar
     public void customize(de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter, OperationParameterCustomizerContext context) {
         context.getHandlerMethodParameter().ifPresent(handlerMethodParameter -> {
             // TODO support more @Nullable / @NotNull annotations? combine with other places where @Nullable is checked?
-            if (handlerMethodParameter.getAnnotationsSupplier().findFirstAnnotation(Nullable.class) != null) {
+            handlerMethodParameter.getAnnotationsSupplier()
+                    .findAnnotations(Nullable.class).findFirst().ifPresent(ignored -> {
                 Boolean required = parameter.getRequired();
                 if (required != null && required) {
                     LOGGER.warn("Method parameter {} marked as required but annotated as nullable. Ignoring annotation.", parameter);
                 } else {
-                    // TODO is this always right to set it to false?
+                    // TODO is this always right to explicitly set it to false?
                     parameter.setRequired(false);
                 }
-            }
+            });
         });
     }
 }
