@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Import;
 import java.util.List;
 
 @Import({
-        OpenApiGeneratorSchemaTypeExtensionAutoConfiguration.class
+        OpenApiGeneratorSchemaExtensionAutoConfiguration.class
 })
 public class OpenApiGeneratorSchemaAutoConfiguration {
 

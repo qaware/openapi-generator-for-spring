@@ -1,0 +1,55 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App33",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping1": {
+      "get": {
+        "operationId": "mapping1_textHtml",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/App33Controller.SomeDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "App33Controller.SomeDto": {
+        "type": "object",
+        "properties": {
+          "intValue1WithMin": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "longValue1WithDecimalMin": {
+            "minimum": -1,
+            "type": "integer",
+            "format": "int64"
+          },
+          "intValue1WithMax": {
+            "maximum": 100,
+            "type": "integer",
+            "format": "int32"
+          },
+          "longValue1WithDecimalMax": {
+            "maximum": 10000,
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      }
+    }
+  }
+}
