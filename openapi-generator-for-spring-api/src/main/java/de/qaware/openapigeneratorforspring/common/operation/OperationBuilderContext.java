@@ -25,12 +25,18 @@ import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.reference.HasReferencedItemConsumer;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Context for operation building. Carries operation info, supports referencing
  * items and provides mapper context for additional annotation analysis.
  */
 public interface OperationBuilderContext extends HasReferencedItemConsumer {
+    /**
+     * Get the operation info, containing for example the handler method. See also {@link #getHandlerMethod}.
+     *
+     * @return operation info
+     */
     OperationInfo getOperationInfo();
 
     /**
@@ -41,4 +47,17 @@ public interface OperationBuilderContext extends HasReferencedItemConsumer {
      * @return mapper context to be used for additional annotation mapping
      */
     MapperContext getMapperContext(@Nullable HandlerMethod.Context context);
+
+    /**
+     * Convenience method to obtain a handler method of certain type if possible.
+     *
+     * @param handlerMethodType type of handler method implementation
+     * @param <M>               type of handler method
+     * @return handler method, or empty if not of requested type
+     */
+    default <M extends HandlerMethod> Optional<M> getHandlerMethod(Class<M> handlerMethodType) {
+        return Optional.of(getOperationInfo().getHandlerMethod())
+                .filter(handlerMethodType::isInstance)
+                .map(handlerMethodType::cast);
+    }
 }

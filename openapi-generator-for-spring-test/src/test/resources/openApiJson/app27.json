@@ -4,6 +4,11 @@
     "title": "API for App27",
     "version": "unknown"
   },
+  "tags": [
+    {
+      "name": "some-tag"
+    }
+  ],
   "paths": {
     "/mapping1": {
       "get": {
@@ -17,6 +22,9 @@
     },
     "/mapping2": {
       "get": {
+        "tags": [
+          "some-tag"
+        ],
         "operationId": "lambdaMapping2",
         "responses": {
           "200": {
