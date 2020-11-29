@@ -2,8 +2,22 @@
 
 This library automagically generates a OpenApi v3 specification at runtime for Spring Boot applications.
 
-It aims at fully supporting the Swagger Annotations to provide
-a self-descriptive API specification of your application.
+It aims at fully supporting the Swagger Annotations to provide a self-descriptive API specification of your application.
+
+## Features
+
+* Spring WebMVC support including content negotiation support
+* Spring WebFlux support including [Router Functions](https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-fn)
+* Integrated [Swagger UI](https://github.com/swagger-api/swagger-ui)
+* [Swagger Annotations](https://github.com/swagger-api/swagger-core/tree/master/modules/swagger-annotations) support
+* No dependency on 
+[swagger-core module](https://github.com/swagger-api/swagger-core/tree/master/modules/swagger-core) 
+or 
+[swagger-models module](https://github.com/swagger-api/swagger-core/tree/master/modules/swagger-models)
+* Extended support for `Schema` building, including self-referencing types
+
+Note that some features are not fully implemented yet.
+TODO put link to Github issues here
 
 ## Getting started
 
@@ -17,15 +31,16 @@ Inside your Spring Boot application, add the following (maven) dependency:
 </dependency>
 ```
 
-After starting your application, the [OpenApi
-v3](https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md)
-compliant specification of your application is provided at
-`/v3/api-docs` as JSON. This specification can be viewed by visiting
-`/swagger-ui` inside your browser (relative to context path).
+After starting your application, the 
+[OpenApi v3](https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md)
+compliant specification of your application is provided at `/v3/api-docs` as JSON. 
+This specification can be viewed by visiting `/swagger-ui` inside your browser (relative to context path).
 
-Have a look at the [Demo for
-WebMVC](demo/openapi-generator-for-spring-demo-webmvc) and [Demo for
-WebFlux](demo/openapi-generator-for-spring-demo-webflux) for a first impression.
+Have a look at the 
+[Demo for WebMVC](demo/openapi-generator-for-spring-demo-webmvc) 
+and 
+[Demo for WebFlux](demo/openapi-generator-for-spring-demo-webflux) 
+for a first impression.
 
 ## Configuration Properties
 
@@ -59,53 +74,83 @@ filters after a `PathItem` is fully constructed. All information has been set ex
 
 Insert a bean extending one or more of the above interfaces, which will be picked up by the library.
 
-The later the filter is called, the more work has already been done,
-but also more information is supplied to base the filtering decision
-upon. Note that referenced components must be manually cleared later
-on in an extra customization step if filtering happened too late.
+The later the filter is called the more work has been done, but also more information is supplied to make the filtering decision. 
+Possibly referenced components must be manually cleared later on in an extra customization step if filtering happened too late. 
 It is thus recommended applying filtering as early as possible.
 
 ### How to obtain a grouped OpenAPI specification?
 
-Grouping is realized by applying filters, preferably a `OperationPreFilter`,
-while building the OpenAPI specification. Query and header parameters
-of the HTTP request to `/v3/api-docs` can be obtained within the
-filter by auto-wiring the bean of type `OpenApiRequestParameterProvider`. 
+Grouping is realized by applying filters, preferably a `OperationPreFilter`, while building the OpenAPI specification. 
+Query and header parameters of the HTTP request to `/v3/api-docs` can be obtained within the filter by auto-wiring the bean of type `OpenApiRequestParameterProvider`. 
 
-This way, you can control which operations are considered for the
-specification when `/v3/api-docs?group=MyGroup`. The Swagger UI
-can also be customized to display more than one specification by
-providing a bean of type `OpenApiSwaggerUiApiDocsUrisSupplier`.
+This way, you can control which operations are considered for the specification when `/v3/api-docs?group=MyGroup`. 
+The Swagger UI can also be customized to display more than one specification by providing a bean of type 
+`OpenApiSwaggerUiApiDocsUrisSupplier`.
 
-See this [integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app10/App10Test.java) 
-or this [integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app18/App18Test.java)
+See this 
+[integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app10/App10Test.java) 
+or this 
+[integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app18/App18Test.java)
 for a fully working WebMVC or WebFlux example, respectively.
 
 ### How to customize the specification?
 
-The library offers a large number of customizers, which allow the
-library user to (hopefully) adapt to any use case which comes to mind.
+The library offers various customizers, which allow the library user to (hopefully) adapt to any use case which comes to mind.
 
-The following shows some examples for
-customizers. Feel free to investigate the [API
-sources](openapi-generator-for-spring-api/src/main/java/de/qaware/openapigeneratorforspring/common)
-for more details.
+The following shows some examples for customizers:
 
-TODO add examples
+* [SchemaCustomizer](openapi-generator-for-spring-api/src/main/java/de/qaware/openapigeneratorforspring/common/schema/customizer/SchemaCustomizer.java)
+customizes a constructed 
+[Schema](openapi-generator-for-spring-model/src/main/java/de/qaware/openapigeneratorforspring/model/media/Schema.java).
+An example is the
+[SchemaCustomizerForNullable](openapi-generator-for-spring-common/src/main/java/de/qaware/openapigeneratorforspring/common/schema/customizer/SchemaCustomizerForNullable.java).
+* [OperationCustomizer](openapi-generator-for-spring-api/src/main/java/de/qaware/openapigeneratorforspring/common/operation/customizer/OperationCustomizer.java)
+customizes a constructed
+[Operation](openapi-generator-for-spring-model/src/main/java/de/qaware/openapigeneratorforspring/model/operation/Operation.java).
+An example is the [DefaultOperationIdCustomizer](openapi-generator-for-spring-common/src/main/java/de/qaware/openapigeneratorforspring/common/operation/customizer/DefaultOperationIdCustomizer.java)
+which sets the Operation ID from an 
+[OperationIdProvider]() bean.
+* This 
+[integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app9/App9Configuration.java)
+shows an example how to override the default identifier when referencing request bodies.
+
+Feel free to investigate the 
+[api module](openapi-generator-for-spring-api/src/main/java/de/qaware/openapigeneratorforspring/common)
+for more details. 
+The relevant interfaces all have the suffix `Customizer` and extend the `Ordered` interface. 
 
 ### How to customize the included Swagger UI?
 
-TODO write about it and also include a test for it
+The Swagger UI `index.html` is generated from a 
+[Mustache template](openapi-generator-for-spring-ui/src/main/resources/swagger-ui/index.html.mustache) 
+and uses the 
+[Swagger UI Webjar](https://github.com/webjars/swagger-ui) 
+distribution.
+
+The default implementation of
+[OpenApiSwaggerUiApiDocsUrisSupplier](openapi-generator-for-spring-ui/src/main/java/de/qaware/openapigeneratorforspring/ui/OpenApiSwaggerUiApiDocsUrisSupplier.java)
+uses the given URI to the API Docs endpoint and names the entry `Default`. 
+This name is ignored as there is only one entry in the Swagger UI.
+
+See this 
+[integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app10/App10Configuration.java)
+for an example how to customize the offered API Docs within the Swagger UI.
 
 ## Basic design principles
 
-This library is based on experience while using [Spring
-Fox](https://github.com/springfox/springfox) and [SpringDoc
-OpenApi](https://github.com/springdoc/springdoc-openapi).
-As those libraries have turned out to be not flexible
-enough, this library aims at being fully customizable.
+This section is WIP.
 
-TODO extend this
+This library is based on experience while using 
+[Spring Fox](https://github.com/springfox/springfox) 
+and [SpringDoc OpenApi](https://github.com/springdoc/springdoc-openapi).
+As those libraries have turned out to be not flexible enough, this library aims at being fully customizable.
+
+Composing Spring beans in combination with Spring Boot autoconfiguration enable this flexibility. 
+The library offers opinionated (and hopefully sane) default implementations but marks all of them with `@ConditionalOnMissingBean`. 
+It is encouraged to override those defaults by providing own bean implementations.  
+
+Default implementations in common module will use the api module interfaces as much as possible. 
+This way it is ensured that the provided api module actually offers useful interfaces.
 
 ## Module structure
 
@@ -146,8 +191,8 @@ Offers UI Resource transformation for WebMVC and WebFlux and sets up correct red
 *still allows to use such code but hide it from Spring Boot.
 
 Each module aims to have minimal dependencies. General library dependencies are:
-* Jackson 
 * Spring Core (Web/WebMVC/WebFlux are optional)
+* Jackson 
 * Swagger Annotations
 * WebJar for Swagger UI (shaded)
 * Mustache (shaded)

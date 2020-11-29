@@ -30,8 +30,8 @@ public class OpenApiSwaggerUiAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OpenApiSwaggerUiApiDocsUrisSupplier openApiSwaggerUiApiDocsUrisSupplier(OpenApiConfigurationProperties openApiConfigurationProperties) {
-        return new DefaultOpenApiSwaggerUiApiDocsUrisSupplier(openApiConfigurationProperties);
+    public OpenApiSwaggerUiApiDocsUrisSupplier openApiSwaggerUiApiDocsUrisSupplier() {
+        return new DefaultOpenApiSwaggerUiApiDocsUrisSupplier();
     }
 
     @Bean

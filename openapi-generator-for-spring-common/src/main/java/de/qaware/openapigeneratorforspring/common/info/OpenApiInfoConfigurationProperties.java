@@ -3,6 +3,7 @@ package de.qaware.openapigeneratorforspring.common.info;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -28,8 +29,10 @@ public class OpenApiInfoConfigurationProperties {
     @Nullable
     private String termsOfService;
     @Nullable
+    @NestedConfigurationProperty
     private Contact contact;
     @Nullable
+    @NestedConfigurationProperty
     private License license;
     @Nullable
     private String version;
