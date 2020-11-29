@@ -5,8 +5,8 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
-import org.springframework.core.Ordered;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -24,9 +24,7 @@ import java.util.function.Consumer;
  * {@link InitialSchemaBuilder} as a starting point.
  */
 @FunctionalInterface
-public interface TypeResolver extends Ordered {
-
-    int DEFAULT_ORDER = 0;
+public interface TypeResolver extends OpenApiOrderedUtils.DefaultOrdered {
 
     @Nullable
     RecursionKey resolve(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType);
@@ -54,10 +52,5 @@ public interface TypeResolver extends Ordered {
          * @param schemaConsumer      consumer for schema
          */
         void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer);
-    }
-
-    @Override
-    default int getOrder() {
-        return DEFAULT_ORDER;
     }
 }

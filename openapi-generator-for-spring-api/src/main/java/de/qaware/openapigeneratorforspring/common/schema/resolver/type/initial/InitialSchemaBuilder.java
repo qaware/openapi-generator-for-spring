@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 import org.springframework.core.Ordered;
 
 import javax.annotation.Nullable;
@@ -12,9 +13,7 @@ import javax.annotation.Nullable;
  * schema resolver} to start schema resolution.
  */
 @FunctionalInterface
-public interface InitialSchemaBuilder extends Ordered {
-    int DEFAULT_ORDER = 0;
-
+public interface InitialSchemaBuilder extends OpenApiOrderedUtils.DefaultOrdered {
     /**
      * Build {@link InitialSchema} from given java type.
      * Can return null if that java type cannot be handled.
@@ -41,10 +40,5 @@ public interface InitialSchemaBuilder extends Ordered {
          */
         @Nullable
         InitialSchema resolveFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier);
-    }
-
-    @Override
-    default int getOrder() {
-        return DEFAULT_ORDER;
     }
 }

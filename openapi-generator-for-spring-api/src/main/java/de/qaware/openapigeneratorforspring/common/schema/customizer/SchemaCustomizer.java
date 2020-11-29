@@ -2,8 +2,8 @@ package de.qaware.openapigeneratorforspring.common.schema.customizer;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
-import org.springframework.core.Ordered;
 
 /**
  * Customizer for {@link Schema}. Run AFTER the initial schema is built
@@ -12,9 +12,7 @@ import org.springframework.core.Ordered;
  * @see SchemaPropertiesCustomizer for customizing properties
  */
 @FunctionalInterface
-public interface SchemaCustomizer extends Ordered {
-    int DEFAULT_ORDER = 0;
-
+public interface SchemaCustomizer extends OpenApiOrderedUtils.DefaultOrdered {
     /**
      * Customize the given schema by reference.
      *
@@ -23,9 +21,4 @@ public interface SchemaCustomizer extends Ordered {
      * @param annotationsSupplier annotations supplier used during schema building
      */
     void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier);
-
-    @Override
-    default int getOrder() {
-        return DEFAULT_ORDER;
-    }
 }

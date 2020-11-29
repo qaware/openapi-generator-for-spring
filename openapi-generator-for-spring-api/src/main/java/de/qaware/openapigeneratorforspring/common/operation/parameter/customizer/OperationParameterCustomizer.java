@@ -1,7 +1,7 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.customizer;
 
+import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
-import org.springframework.core.Ordered;
 
 
 /**
@@ -17,13 +17,12 @@ import org.springframework.core.Ordered;
  * not supply a handler method parameter in this case.
  */
 @FunctionalInterface
-public interface OperationParameterCustomizer extends Ordered {
-    int DEFAULT_ORDER = 0;
-
+public interface OperationParameterCustomizer extends OpenApiOrderedUtils.DefaultOrdered {
+    /**
+     * Customize parameter by reference.
+     *
+     * @param parameter parameter
+     * @param context   context for customization
+     */
     void customize(Parameter parameter, OperationParameterCustomizerContext context);
-
-    @Override
-    default int getOrder() {
-        return DEFAULT_ORDER;
-    }
 }

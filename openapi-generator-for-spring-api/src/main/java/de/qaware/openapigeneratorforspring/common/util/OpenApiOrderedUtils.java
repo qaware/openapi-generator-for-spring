@@ -2,6 +2,7 @@ package de.qaware.openapigeneratorforspring.common.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.core.Ordered;
 
 /**
  * Helper util to semantically order beans by priority.
@@ -9,6 +10,16 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OpenApiOrderedUtils {
+
+    public interface DefaultOrdered extends Ordered {
+        int DEFAULT_ORDER = 0;
+
+        @Override
+        default int getOrder() {
+            return DEFAULT_ORDER;
+        }
+    }
+
     // determines how many beans can be squeezed in between
     // should be decently large
     private static final int ORDER_INCREMENT = 100;

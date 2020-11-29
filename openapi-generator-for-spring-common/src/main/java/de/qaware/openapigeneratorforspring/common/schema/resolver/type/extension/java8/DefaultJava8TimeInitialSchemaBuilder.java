@@ -69,6 +69,6 @@ public class DefaultJava8TimeInitialSchemaBuilder implements Java8TimeInitialSch
 
     @Override
     public int getOrder() {
-        return DEFAULT_ORDER;
+        return ORDER;
     }
 }

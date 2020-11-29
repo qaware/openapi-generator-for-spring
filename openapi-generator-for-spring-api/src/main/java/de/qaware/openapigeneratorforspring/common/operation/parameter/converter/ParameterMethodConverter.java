@@ -1,8 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.operation.parameter.converter;
 
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
-import org.springframework.core.Ordered;
 
 import javax.annotation.Nullable;
 
@@ -12,10 +12,7 @@ import javax.annotation.Nullable;
  * method parameter will become part of the operation parameters.
  */
 @FunctionalInterface
-public interface ParameterMethodConverter extends Ordered {
-
-    int DEFAULT_ORDER = 0;
-
+public interface ParameterMethodConverter extends OpenApiOrderedUtils.DefaultOrdered {
     /**
      * Convert the given {@link  HandlerMethod.Parameter handler
      * method parameter} into an {@link Parameter operation parameter}.
@@ -25,9 +22,4 @@ public interface ParameterMethodConverter extends Ordered {
      */
     @Nullable
     Parameter convert(HandlerMethod.Parameter handlerMethodParameter);
-
-    @Override
-    default int getOrder() {
-        return DEFAULT_ORDER;
-    }
 }
