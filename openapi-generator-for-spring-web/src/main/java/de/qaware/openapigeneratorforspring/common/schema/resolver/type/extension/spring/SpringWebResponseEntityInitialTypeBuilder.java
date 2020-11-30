@@ -34,9 +34,9 @@ public class SpringWebResponseEntityInitialTypeBuilder implements InitialTypeBui
 
     @Nullable
     @Override
-    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, FallbackBuilder fallbackBuilder) {
+    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
         if (javaType.getRawClass().equals(ResponseEntity.class)) {
-            return fallbackBuilder.build(javaType.containedType(0), annotationsSupplier);
+            return recursiveBuilder.build(javaType.containedType(0), annotationsSupplier);
         }
         return null;
     }

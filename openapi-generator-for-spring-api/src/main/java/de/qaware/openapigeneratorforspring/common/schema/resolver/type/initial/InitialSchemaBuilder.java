@@ -27,9 +27,13 @@ import de.qaware.openapigeneratorforspring.model.media.Schema;
 import javax.annotation.Nullable;
 
 /**
- * Initial schema builder. They are queried in {@link org.springframework.core.Ordered order} by the {@link
+ * Initial schema builder. Build the schema
+ * determined from {@link InitialTypeBuilder}.
+ *
+ * <p>They are queried in {@link
+ * org.springframework.core.Ordered order} by the {@link
  * de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver
- * schema resolver} to start schema resolution.
+ * schema resolver} to initiate schema resolution.
  */
 @FunctionalInterface
 public interface InitialSchemaBuilder extends OpenApiOrderedUtils.DefaultOrdered {

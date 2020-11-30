@@ -36,10 +36,10 @@ public class InitialTypeBuilderForReferenceType implements InitialTypeBuilder {
 
     @Nullable
     @Override
-    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, FallbackBuilder fallbackBuilder) {
+    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
         if (javaType.isReferenceType()) {
             JavaType contentType = javaType.getContentType();
-            return fallbackBuilder.build(contentType,
+            return recursiveBuilder.build(contentType,
                     annotationsSupplier.andThen(annotationsSupplierFactory.createFromAnnotatedElement(contentType.getRawClass()))
             );
         }

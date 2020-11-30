@@ -32,9 +32,9 @@ public class InitialTypeBuilderForMono implements InitialTypeBuilder {
 
     @Nullable
     @Override
-    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, FallbackBuilder fallbackBuilder) {
+    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
         if (javaType.getRawClass().equals(Mono.class)) {
-            return fallbackBuilder.build(javaType.containedType(0), annotationsSupplier);
+            return recursiveBuilder.build(javaType.containedType(0), annotationsSupplier);
         }
         return null;
     }

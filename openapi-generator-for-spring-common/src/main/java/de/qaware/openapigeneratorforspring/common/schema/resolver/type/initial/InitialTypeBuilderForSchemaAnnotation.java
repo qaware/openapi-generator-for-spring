@@ -43,12 +43,12 @@ public class InitialTypeBuilderForSchemaAnnotation implements InitialTypeBuilder
 
     @Nullable
     @Override
-    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, FallbackBuilder fallbackBuilder) {
+    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
         return annotationsSupplier.findAnnotations(Schema.class)
                 .findFirst()
                 .map(Schema::implementation)
                 .filter(clazz -> !Void.class.equals(clazz))
-                .map(clazz -> fallbackBuilder.build(
+                .map(clazz -> recursiveBuilder.build(
                         openApiObjectMapperSupplier.get(SCHEMA_BUILDING).constructType(clazz),
                         annotationsSupplierFactory.createFromAnnotatedElement(clazz)
                 ))

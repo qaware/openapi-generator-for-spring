@@ -82,7 +82,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
     private Schema resolveFromTypeWithoutReference(Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer) {
         ObjectMapper mapper = openApiObjectMapperSupplier.get(SCHEMA_BUILDING);
-        Context context = new Context(schemaAnnotationMapperFactory.create(this), referencedSchemaConsumer);
+        Context context = new Context(schemaAnnotationMapperFactory.create(this), referencedSchemaConsumer, mapper);
         JavaType javaType = mapper.constructType(type);
         Schema schema = context.buildSchemaFromTypeRecursively(javaType, annotationsSupplier);
         context.resolveReferencedSchemas();
@@ -94,6 +94,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
         private final SchemaAnnotationMapper schemaAnnotationMapper;
         private final ReferencedSchemaConsumer referencedSchemaConsumer;
+        private final ObjectMapper objectMapper;
         private final Map<TypeResolver.RecursionKey, Schema> knownSchemas = new LinkedHashMap<>();
         private final LinkedList<ReferencableSchema> referencableSchemas = new LinkedList<>();
 
@@ -155,8 +156,9 @@ public class DefaultSchemaResolver implements SchemaResolver {
         }
 
         private InitialType buildInitialType(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+            InitialTypeBuilder.RecursiveBuilder recursiveBuilder = new InitialTypeRecursiveBuilder();
             for (InitialTypeBuilder initialTypeBuilder : initialTypeBuilders) {
-                InitialType initialType = initialTypeBuilder.build(javaType, annotationsSupplier, this::buildInitialType);
+                InitialType initialType = initialTypeBuilder.build(javaType, annotationsSupplier, recursiveBuilder);
                 if (initialType != null) {
                     return initialType;
                 }
@@ -200,6 +202,20 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     ReferencableSchema referencableSchema = action.run(Context.this);
                     referencableSchemas.add(referencableSchema);
                 });
+            }
+        }
+
+        private class InitialTypeRecursiveBuilder implements InitialTypeBuilder.RecursiveBuilder {
+            @Nullable
+            @Override
+            public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+                return buildInitialType(javaType, annotationsSupplier);
+            }
+
+            @Nullable
+            @Override
+            public InitialType build(Type type, AnnotationsSupplier annotationsSupplier) {
+                return buildInitialType(objectMapper.constructType(type), annotationsSupplier);
             }
         }
     }
