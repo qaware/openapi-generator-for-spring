@@ -28,19 +28,15 @@ import javax.annotation.Nullable;
 public class DefaultOperationParameterNullableCustomizer implements OperationParameterCustomizer {
     @Override
     public void customize(de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter, OperationParameterCustomizerContext context) {
-        context.getHandlerMethodParameter().ifPresent(handlerMethodParameter -> {
-            // TODO support more @Nullable / @NotNull annotations? combine with other places where @Nullable is checked?
-            handlerMethodParameter.getAnnotationsSupplier()
-                    .findAnnotations(Nullable.class).findFirst().ifPresent(ignored -> {
-                Boolean required = parameter.getRequired();
-                if (required != null && required) {
-                    LOGGER.warn("{} in {} marked as required but annotated as @Nullable. Ignoring annotation.",
-                            parameter, context.getOperationInfo());
-                } else {
-                    // TODO is this always right to explicitly set it to false?
-                    parameter.setRequired(false);
-                }
-            });
+        context.getHandlerMethodParameter().flatMap(handlerMethodParameter -> handlerMethodParameter.getAnnotationsSupplier()
+                .findAnnotations(Nullable.class).findFirst()).ifPresent(ignored -> {
+            if (Boolean.TRUE.equals(parameter.getRequired())) {
+                LOGGER.warn("{} in {} marked as required but annotated as @Nullable. Ignoring annotation.",
+                        parameter, context.getOperationInfo());
+            } else {
+                // TODO is this always right to explicitly set it to false?
+                parameter.setRequired(false);
+            }
         });
     }
 }

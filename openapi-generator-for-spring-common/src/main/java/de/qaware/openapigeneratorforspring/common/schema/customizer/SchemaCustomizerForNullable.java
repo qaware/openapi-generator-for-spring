@@ -29,7 +29,6 @@ import javax.annotation.Nullable;
 public class SchemaCustomizerForNullable implements SchemaCustomizer {
     @Override
     public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-        // TODO support more @Nullable annotations?
         annotationsSupplier.findAnnotations(Nullable.class)
                 .findFirst().ifPresent(ignored -> schema.setNullable(true));
     }
