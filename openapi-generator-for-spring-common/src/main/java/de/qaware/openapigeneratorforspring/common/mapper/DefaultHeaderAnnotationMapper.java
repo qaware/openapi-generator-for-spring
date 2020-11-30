@@ -67,7 +67,6 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
         // content is specified, but @Header annotation is missing support for it
         // example(s) are specified, but @Header annotation is missing support for it
 
-        // TODO use ref for suggestedIdentifier
         return header;
     }
 }

@@ -57,7 +57,6 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
     }
 
     private RequestBody applyFromMethod(@Nullable RequestBody existingRequestBody, OperationBuilderContext operationBuilderContext) {
-        // TODO use the request body parameter as a suggested identifier for possible referencing?
         return firstNonNull(handlerMethodRequestBodyMappers, mapper -> mapper.map(operationBuilderContext.getOperationInfo().getHandlerMethod()))
                 .map(requestBodies -> buildRequestBody(requestBodies, existingRequestBody, operationBuilderContext))
                 .orElseGet(RequestBody::new);

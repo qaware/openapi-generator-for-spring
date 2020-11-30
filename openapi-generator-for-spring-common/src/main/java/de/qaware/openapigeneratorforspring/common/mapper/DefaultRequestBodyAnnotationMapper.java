@@ -46,6 +46,5 @@ public class DefaultRequestBodyAnnotationMapper implements RequestBodyAnnotation
             requestBody.setRequired(true);
         }
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(annotation.extensions()), requestBody::setExtensions);
-        // TODO think about handling explicit ref from annotation, could be used as an suggested identifier?
     }
 }

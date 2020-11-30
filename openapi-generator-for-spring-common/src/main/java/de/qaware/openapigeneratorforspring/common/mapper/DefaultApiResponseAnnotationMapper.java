@@ -58,7 +58,5 @@ public class DefaultApiResponseAnnotationMapper implements ApiResponseAnnotation
         );
         mergeWithExistingMap(apiResponse::getContent, apiResponse::setContent, contentAnnotationMapper.mapArray(annotation.content(), ApiResponse.class, mapperContext));
         mergeWithExistingMap(apiResponse::getExtensions, apiResponse::setExtensions, extensionAnnotationMapper.mapArray(annotation.extensions()));
-
-        // TODO treat ref as suggested identifier here?
     }
 }
