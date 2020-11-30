@@ -1,5 +1,6 @@
 # Release process
 
+1. `mvn clean package`
 1. `export NEW_VERSION="Next version number"`
 1. `mvn versions:set -DgenerateBackupPoms=false -DnewVersion=$NEW_VERSION`
 1. `git commit -am "Release version $NEW_VERSION"`
