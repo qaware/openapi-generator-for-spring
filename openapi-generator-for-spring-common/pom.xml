@@ -32,7 +32,6 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
-        <!-- TODO consider making this dependency optional? -->
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-parameter-names</artifactId>
