@@ -12,7 +12,7 @@
     <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
     <artifactId>openapi-generator-for-spring-parent</artifactId>
     <name>OpenAPI Generator for Spring Boot</name>
-    <version>1.0.0-RC2</version>
+    <version>1.0.0-RC3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>This library automagically generates a OpenApi v3 specification at runtime for Spring Boot
