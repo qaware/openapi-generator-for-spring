@@ -79,7 +79,7 @@ public class SpringWebHandlerMethodRequestBodyMerger {
                             .map(parameterType -> {
                                 boolean required = requestBodyParameters.stream()
                                         .map(RequestBodyParameter::isRequired)
-                                        .reduce((a, b) -> a || b) // TODO think about merging the required flag, maybe make it customizable?
+                                        .reduce((a, b) -> a || b)
                                         .orElse(false);
                                 return new SpringWebRequestBody(
                                         AnnotationsSupplier.merge(requestBodyParameters.stream().map(RequestBodyParameter::getParameter)),

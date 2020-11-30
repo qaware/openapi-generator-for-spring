@@ -34,7 +34,6 @@ public class DefaultOperationParameterNullableCustomizer implements OperationPar
                 LOGGER.warn("{} in {} marked as required but annotated as @Nullable. Ignoring annotation.",
                         parameter, context.getOperationInfo());
             } else {
-                // TODO is this always right to explicitly set it to false?
                 parameter.setRequired(false);
             }
         });

@@ -111,7 +111,6 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
         public Schema customize(Schema propertySchema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
             if (schemaPropertyCustomizer != null) {
                 schemaPropertyCustomizer.customize(propertySchema, javaType, annotationsSupplier);
-                // TODO check if this is still necessary
                 // avoid running customizers multiple again when referenced schemas are consumed
                 schemaPropertyCustomizer = null;
             }
