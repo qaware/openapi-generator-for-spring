@@ -137,6 +137,22 @@ See this
 [integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app10/App10Configuration.java)
 for an example how to customize the offered API Docs within the Swagger UI.
 
+### How to substitute a type for Schema resolution?
+
+Define the following bean of type `InitialTypeBuilder` if you want
+to resolve the type `YourType` always as if it was of type `String`:
+```
+@Bean
+public InitialTypeBuilder openApiSchemaTypeSubstitutionForYourType() {
+    return (javaType, annotationsSupplier, recursiveBuilder) -> {
+        if(javaType.getRawClass().equals(YourType.class)) {
+            return recursiveBuilder.build(String.class, annotationsSupplier);
+        }
+        return null;
+    };
+}
+```
+
 ## Basic design principles
 
 This section is WIP.
