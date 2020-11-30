@@ -44,7 +44,6 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionU
 @RequiredArgsConstructor
 public class DefaultOperationApiResponsesFromMethodCustomizer implements OperationApiResponsesFromMethodCustomizer {
 
-    // TODO turn this into a supplier bean!
     static final String DEFAULT_ANNOTATION_RESPONSE_CODE = MergedAnnotation.of(io.swagger.v3.oas.annotations.responses.ApiResponse.class)
             .getDefaultValue("responseCode", String.class)
             .orElseThrow(() -> new IllegalStateException("Cannot infer default response code from ApiResponse annotation"));
