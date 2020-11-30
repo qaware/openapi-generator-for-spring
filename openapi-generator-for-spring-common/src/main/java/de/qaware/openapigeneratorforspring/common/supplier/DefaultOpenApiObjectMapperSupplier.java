@@ -28,9 +28,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 public class DefaultOpenApiObjectMapperSupplier implements OpenApiObjectMapperSupplier {
-    // TODO consider this choice again:
     // Maybe the "auto-configured" object mapper from spring would works better?
     // Allow customizations?
+    // See GH Issue #7
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
             .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
