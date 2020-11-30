@@ -98,7 +98,6 @@ public class DefaultSchemaResolver implements SchemaResolver {
         public Schema buildSchemaFromTypeRecursively(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
             InitialSchema initialSchema = buildInitialSchema(javaType, annotationsSupplier);
             Schema schema = initialSchema.getSchema();
-            customizeSchema(schema, javaType, annotationsSupplier);
 
             TypeResolverActions actions = new TypeResolverActions();
             for (TypeResolver typeResolver : typeResolvers) {
@@ -145,11 +144,6 @@ public class DefaultSchemaResolver implements SchemaResolver {
         }
 
         private void customizeSchema(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-            schemaCustomizers.forEach(customizer -> customizer.customize(schema, javaType, annotationsSupplier));
-        }
-
-        private InitialSchema buildInitialSchema(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-            InitialSchema initialSchema = getSchemaFromInitialTypeResolvers(javaType, annotationsSupplier);
 
             // applying the schemaAnnotationMapper is treated specially here:
             // 1) It can only be built with an existing SchemaResolver (this class!) due to discriminator mappings
@@ -159,15 +153,19 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     // apply in reverse order
                     .collect(Collectors.toCollection(LinkedList::new))
                     .descendingIterator()
-                    .forEachRemaining(schemaAnnotation -> schemaAnnotationMapper.applyFromAnnotation(initialSchema.getSchema(), schemaAnnotation, referencedSchemaConsumer));
+                    .forEachRemaining(schemaAnnotation -> schemaAnnotationMapper.applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer));
 
-            return initialSchema;
+            // then run the other customizers
+            schemaCustomizers.forEach(customizer -> customizer.customize(schema, javaType, annotationsSupplier));
         }
 
-        private InitialSchema getSchemaFromInitialTypeResolvers(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+        private InitialSchema buildInitialSchema(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
             for (InitialSchemaBuilder initialSchemaBuilder : initialSchemaBuilders) {
-                InitialSchema initialSchema = initialSchemaBuilder.buildFromType(javaType, annotationsSupplier, this::getSchemaFromInitialTypeResolvers);
+                InitialSchema initialSchema = initialSchemaBuilder.buildFromType(javaType, annotationsSupplier, this::buildInitialSchema);
                 if (initialSchema != null) {
+                    // important to customize the schema in this recursive method here,
+                    // this enables InitialSchemaBuilder to amend the annotationsSupplier for customization
+                    customizeSchema(initialSchema.getSchema(), javaType, annotationsSupplier);
                     return initialSchema;
                 }
             }

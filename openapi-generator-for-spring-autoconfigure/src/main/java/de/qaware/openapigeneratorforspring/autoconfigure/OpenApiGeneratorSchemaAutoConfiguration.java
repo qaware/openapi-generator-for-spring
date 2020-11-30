@@ -95,8 +95,10 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public InitialSchemaBuilderForReferenceType defaultInitialSchemaBuilderForReferenceType() {
-        return new InitialSchemaBuilderForReferenceType();
+    public InitialSchemaBuilderForReferenceType defaultInitialSchemaBuilderForReferenceType(
+            AnnotationsSupplierFactory annotationsSupplierFactory
+    ) {
+        return new InitialSchemaBuilderForReferenceType(annotationsSupplierFactory);
     }
 
     @Bean

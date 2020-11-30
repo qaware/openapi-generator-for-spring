@@ -22,19 +22,26 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 
+@RequiredArgsConstructor
 public class InitialSchemaBuilderForReferenceType implements InitialSchemaBuilder {
 
     public static final int ORDER = DEFAULT_ORDER;
+
+    private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Nullable
     @Override
     public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
         if (javaType.isReferenceType()) {
-            // TODO append annotationSupplier with contained generic type!
-            return resolver.resolveFromType(javaType.getContentType(), annotationsSupplier);
+            JavaType contentType = javaType.getContentType();
+            return resolver.resolveFromType(contentType,
+                    annotationsSupplier.andThen(annotationsSupplierFactory.createFromAnnotatedElement(contentType.getRawClass()))
+            );
         }
         return null;
     }

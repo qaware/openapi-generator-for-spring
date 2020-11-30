@@ -49,9 +49,19 @@ public class App5Controller {
         return null;
     }
 
+    @GetMapping("/get8")
+    public Optional<DtoInOptional> getMappingWithOptionalDto() {
+        return Optional.empty();
+    }
+
     @Schema(description = "global description", title = "should never appear")
     private interface BaseForEverything {
 
+    }
+
+    @Schema(description = "Dto in optional")
+    private interface DtoInOptional {
+        String getProperty1();
     }
 
     @Schema(title = "global title")

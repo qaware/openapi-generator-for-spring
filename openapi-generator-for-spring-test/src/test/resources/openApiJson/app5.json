@@ -102,6 +102,23 @@
           }
         }
       }
+    },
+    "/get8": {
+      "get": {
+        "operationId": "getMappingWithOptionalDto",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/App5Controller.DtoInOptional"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -297,6 +314,15 @@
           }
         },
         "description": "nestedOtherDescription"
+      },
+      "App5Controller.DtoInOptional": {
+        "type": "object",
+        "properties": {
+          "property1": {
+            "type": "string"
+          }
+        },
+        "description": "Dto in optional"
       }
     }
   }
