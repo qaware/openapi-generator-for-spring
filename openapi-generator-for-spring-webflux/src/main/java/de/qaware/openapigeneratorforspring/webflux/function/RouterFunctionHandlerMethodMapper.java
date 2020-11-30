@@ -38,7 +38,7 @@ public class RouterFunctionHandlerMethodMapper {
         @Nullable
         @Override
         public List<HandlerMethod.RequestBody> map(HandlerMethod handlerMethod) {
-            // TODO implement when dummy parameter type is seen on non-empty content type header?
+            // see GH Issue #4
             return Collections.emptyList();
         }
     }
@@ -50,7 +50,7 @@ public class RouterFunctionHandlerMethodMapper {
             if (handlerMethod instanceof RouterFunctionHandlerMethod) {
                 RouterFunctionHandlerMethod routerFunctionHandlerMethod = (RouterFunctionHandlerMethod) handlerMethod;
                 RouterFunctionHandlerMethod.Response response = new RouterFunctionHandlerMethod.Response(
-                        // TODO check if response code just from bean factory method is good enough
+                        // see GH Issue #4
                         findResponseCode(handlerMethod),
                         routerFunctionHandlerMethod.getRouterFunctionAnalysisResult().getProducesContentTypesFromHeader(),
                         // Schema building could still use @Schema annotation from bean factory method,

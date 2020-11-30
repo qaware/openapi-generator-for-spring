@@ -58,7 +58,7 @@ class RouterFunctionAnalysis implements RouterFunctions.Visitor, RequestPredicat
 
     @Override
     public void startNested(RequestPredicate predicate) {
-        // TODO handle nesting?
+        // see GH Issue #4
     }
 
     @Override
