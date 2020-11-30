@@ -33,7 +33,6 @@ public class DefaultOperationParameterSchemaCustomizer implements OperationParam
     public void customize(de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter, OperationParameterCustomizerContext context) {
         context.getHandlerMethodParameter().ifPresent(handlerMethodParameter ->
                 handlerMethodParameter.getType().ifPresent(parameterType -> {
-                    // TODO handle explode setting of annotation?
                     ReferencedSchemaConsumer referencedSchemaConsumer = context.getReferencedItemConsumer(ReferencedSchemaConsumer.class);
                     AnnotationsSupplier annotationsSupplier = handlerMethodParameter.getAnnotationsSupplier()
                             .andThen(parameterType.getAnnotationsSupplier());
