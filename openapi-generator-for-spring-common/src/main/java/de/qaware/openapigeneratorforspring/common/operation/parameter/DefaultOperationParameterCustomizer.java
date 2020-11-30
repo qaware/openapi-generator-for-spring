@@ -69,7 +69,7 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
         // this customizer explicitly overrides already present parameters built from the operation annotation,
         // as the order of parameters is important and should not be determined
         // by the order of information to build those parameters!
-        // TODO maybe consider making the above choice about parameter ordering better bean-customizable?
+        // See GH issue #8
         List<Parameter> parameters = buildParameters(operationBuilderContext);
         setParametersToOperation(operation, parameters, operationBuilderContext);
     }
@@ -120,7 +120,6 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
         return preferRequiredParameters(parameters);
     }
 
-    // TODO make this sorting customizable? See also other TODO here
     private static List<Parameter> preferRequiredParameters(List<Parameter> parameters) {
         Map<Boolean, List<Parameter>> partitionedParameters = parameters.stream()
                 .collect(Collectors.partitioningBy(p -> Boolean.TRUE.equals(p.getRequired())));
