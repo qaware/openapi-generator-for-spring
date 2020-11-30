@@ -27,18 +27,13 @@
         </dependency>
     </dependencies>
 
-    <!-- suppress warning about empty jar -->
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <!-- Ignore src/main in JAR packaging -->
+                <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <classesDirectory>src</classesDirectory>
-                    <excludes>
-                        <exclude>main</exclude>
-                    </excludes>
+                    <!-- See https://issues.apache.org/jira/browse/MJAVADOC-274 -->
+                    <failOnError>false</failOnError>
                 </configuration>
             </plugin>
         </plugins>
