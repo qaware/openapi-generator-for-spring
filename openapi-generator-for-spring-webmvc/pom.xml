@@ -7,7 +7,7 @@
     <parent>
         <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
         <artifactId>openapi-generator-for-spring-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0-RC1</version>
     </parent>
 
     <dependencies>
