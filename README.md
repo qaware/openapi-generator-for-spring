@@ -2,7 +2,7 @@
 
 [![Build & test](https://github.com/qaware/openapi-generator-for-spring/workflows/Build%20&%20test/badge.svg?branch=master)](https://github.com/qaware/openapi-generator-for-spring/actions?query=workflow%3A%22Build+%26+test%22)
 
-This library automagically generates a OpenApi v3 specification at runtime for Spring Boot applications.
+This library automagically generates a [OpenApi v3 specification](https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md) at runtime for Spring Boot applications.
 
 It aims at fully analyzing Spring request mappings augmented by Swagger annotations to provide a self-descriptive API specification of your application.
 
