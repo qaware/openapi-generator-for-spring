@@ -37,12 +37,12 @@ public abstract class AbstractTypeResolver implements TypeResolver {
     @Override
     public final RecursionKey resolve(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
         if (typeResolverSupport.supports(initialSchema)) {
-            return resolveInternal(initialSchema, javaType, annotationsSupplier, schemaBuilderFromType);
+            return resolveIfSupported(initialSchema, javaType, annotationsSupplier, schemaBuilderFromType);
         }
         return null;
     }
 
     @Nullable
-    protected abstract RecursionKey resolveInternal(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType);
+    protected abstract RecursionKey resolveIfSupported(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType);
 
 }

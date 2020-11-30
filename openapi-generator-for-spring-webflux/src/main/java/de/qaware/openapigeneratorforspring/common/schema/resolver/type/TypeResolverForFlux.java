@@ -38,7 +38,7 @@ public class TypeResolverForFlux extends AbstractTypeResolver {
 
     @Override
     @Nullable
-    public RecursionKey resolveInternal(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
+    public RecursionKey resolveIfSupported(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
         JavaType innerType = javaType.getBindings().getTypeParameters().iterator().next();
         Schema schema = initialSchema.getSchema();
         schemaBuilderFromType.buildSchemaFromType(innerType, annotationsSupplier, schema::setItems);

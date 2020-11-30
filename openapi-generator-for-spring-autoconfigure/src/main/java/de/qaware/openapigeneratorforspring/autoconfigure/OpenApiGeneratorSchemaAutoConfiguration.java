@@ -76,8 +76,11 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public TypeResolverForCollectionLikeType defaultTypeResolverForCollectionLikeType(InitialSchemaBuilderForCollectionLikeType initialSchemaBuilder) {
-        return new TypeResolverForCollectionLikeType(initialSchemaBuilder);
+    public TypeResolverForCollectionLikeType defaultTypeResolverForCollectionLikeType(
+            InitialSchemaBuilderForCollectionLikeType initialSchemaBuilder,
+            AnnotationsSupplierFactory annotationsSupplierFactory
+    ) {
+        return new TypeResolverForCollectionLikeType(initialSchemaBuilder, annotationsSupplierFactory);
     }
 
     @Bean

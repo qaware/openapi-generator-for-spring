@@ -50,7 +50,7 @@ public class InitialSchemaBuilderForCollectionLikeType implements InitialSchemaB
     }
 
     @EqualsAndHashCode(callSuper = true)
-    static class ArraySchema extends Schema {
+    private static class ArraySchema extends Schema {
         public ArraySchema() {
             setType("array");
         }

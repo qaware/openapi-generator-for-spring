@@ -1,0 +1,86 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App34",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping1": {
+      "get": {
+        "operationId": "mapping1",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/App34Controller.SomeListDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mapping2": {
+      "get": {
+        "operationId": "mapping2",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/App34Controller.SomeDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "string": {
+        "type": "string",
+        "description": "Description for some property"
+      },
+      "deprecated_App34Controller.SomeDto": {
+        "type": "object",
+        "properties": {
+          "someProperty1": {
+            "$ref": "#/components/schemas/string"
+          }
+        },
+        "description": "Description of SomeDto",
+        "deprecated": true
+      },
+      "App34Controller.SomeListDto": {
+        "required": [
+          "entries"
+        ],
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "description": "List of entries",
+            "items": {
+              "$ref": "#/components/schemas/deprecated_App34Controller.SomeDto"
+            }
+          }
+        },
+        "description": "Description of SomeListDto"
+      },
+      "App34Controller.SomeDto": {
+        "type": "object",
+        "properties": {
+          "someProperty1": {
+            "$ref": "#/components/schemas/string"
+          }
+        },
+        "description": "Description of SomeDto"
+      }
+    }
+  }
+}

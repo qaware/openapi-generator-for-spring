@@ -57,7 +57,7 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
 
     @Override
     @Nullable
-    public RecursionKey resolveInternal(
+    public RecursionKey resolveIfSupported(
             InitialSchema initialSchema,
             JavaType javaType,
             AnnotationsSupplier annotationsSupplier,

@@ -22,30 +22,53 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForCollectionLikeType;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
-import lombok.extern.slf4j.Slf4j;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 
 import javax.annotation.Nullable;
+import java.lang.annotation.Annotation;
+import java.util.stream.Stream;
 
-@Slf4j
 public class TypeResolverForCollectionLikeType extends AbstractTypeResolver {
 
     public static final int ORDER = DEFAULT_ORDER;
 
-    public TypeResolverForCollectionLikeType(InitialSchemaBuilderForCollectionLikeType typeResolverSupport) {
+    private final AnnotationsSupplierFactory annotationsSupplierFactory;
+
+    public TypeResolverForCollectionLikeType(InitialSchemaBuilderForCollectionLikeType typeResolverSupport, AnnotationsSupplierFactory annotationsSupplierFactory) {
         super(typeResolverSupport);
+        this.annotationsSupplierFactory = annotationsSupplierFactory;
     }
 
     @Nullable
     @Override
-    protected RecursionKey resolveInternal(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
-        // TODO adapt annotations supplier to nested getContentType, consider @ArraySchema?
-        // TODO append annotationSupplier with contained generic type!
+    protected RecursionKey resolveIfSupported(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
         Schema schema = initialSchema.getSchema();
-        schemaBuilderFromType.buildSchemaFromType(javaType.getContentType(), annotationsSupplier, schema::setItems);
+        JavaType contentType = javaType.getContentType();
+        // do not use the current annotationsSupplier, but only use annotations directly present on contentType
+        // TODO use more properties from @ArraySchema here?
+        ArraySchema arraySchemaAnnotation = annotationsSupplier.findAnnotations(ArraySchema.class).findFirst().orElse(null);
+        schemaBuilderFromType.buildSchemaFromType(contentType, createAnnotationsSupplierFromContentType(arraySchemaAnnotation, contentType), schema::setItems);
         return null; // collections never create cyclic dependencies
+    }
+
+    private AnnotationsSupplier createAnnotationsSupplierFromContentType(@Nullable ArraySchema arraySchemaAnnotation, JavaType contentType) {
+        AnnotationsSupplier annotationsSupplierForRawClass = annotationsSupplierFactory.createFromAnnotatedElement(contentType.getRawClass());
+        if (arraySchemaAnnotation != null) {
+            AnnotationsSupplier annotationsSupplierFromArraySchema = new AnnotationsSupplier() {
+                @Override
+                public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
+                    return Stream.of(arraySchemaAnnotation.schema())
+                            .filter(annotationType::isInstance)
+                            .map(annotationType::cast);
+                }
+            };
+            return annotationsSupplierFromArraySchema.andThen(annotationsSupplierForRawClass);
+        }
+        return annotationsSupplierForRawClass;
     }
 
     @Override
