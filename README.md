@@ -18,8 +18,7 @@ or
 [swagger-models module](https://github.com/swagger-api/swagger-core/tree/master/modules/swagger-models)
 * Extended support for `Schema` building, including self-referencing types
 
-Note that some features are not fully implemented yet.
-TODO put link to Github issues here
+Note that some features are not fully implemented yet, see [Issues](https://github.com/qaware/openapi-generator-for-spring/issues)
 
 ## Getting started
 
