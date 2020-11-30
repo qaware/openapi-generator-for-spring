@@ -8,7 +8,7 @@
 
     <parent>
         <artifactId>openapi-generator-for-spring-parent</artifactId>
-        <groupId>de.qaware.openapi-generator-for-spring</groupId>
+        <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
@@ -20,7 +20,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>de.qaware.openapi-generator-for-spring</groupId>
+            <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
             <artifactId>openapi-generator-for-spring-starter</artifactId>
             <scope>test</scope>
         </dependency>
@@ -78,7 +78,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                                    <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
                                     <artifactId>openapi-generator-for-spring-shaded</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>

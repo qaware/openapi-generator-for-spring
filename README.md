@@ -25,7 +25,7 @@ Note that some features are not fully implemented yet, see [Issues](https://gith
 Inside your Spring Boot application, add the following (maven) dependency:
 ```
 <dependency>
-	<groupId>de.qaware.openapi-generator-for-spring</groupId>
+	<groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
 	<artifactId>openapi-generator-for-spring-starter</artifactId>
 	<!-- TODO use most recent released version -->
 	<version>PUT-VERSION-HERE</version>

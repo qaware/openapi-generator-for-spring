@@ -25,7 +25,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>de.qaware.openapi-generator-for-spring</groupId>
+			<groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
 			<artifactId>openapi-generator-for-spring-starter</artifactId>
 			<!-- TODO use released version -->
 			<version>0.0.1-SNAPSHOT</version>

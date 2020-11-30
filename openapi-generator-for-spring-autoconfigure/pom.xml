@@ -5,7 +5,7 @@
     <name>OpenAPI Generator for Spring Boot :: Autoconfigure</name>
 
     <parent>
-        <groupId>de.qaware.openapi-generator-for-spring</groupId>
+        <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
         <artifactId>openapi-generator-for-spring-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
@@ -17,7 +17,7 @@
         </dependency>
 
         <dependency>
-            <groupId>de.qaware.openapi-generator-for-spring</groupId>
+            <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
             <artifactId>openapi-generator-for-spring-common</artifactId>
         </dependency>
 

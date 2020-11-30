@@ -9,7 +9,7 @@
         <version>2.3.3.RELEASE</version>
     </parent>
 
-    <groupId>de.qaware.openapi-generator-for-spring</groupId>
+    <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
     <artifactId>openapi-generator-for-spring-parent</artifactId>
     <name>OpenAPI Generator for Spring Boot</name>
     <version>0.0.1-SNAPSHOT</version>
@@ -93,61 +93,61 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
                 <artifactId>openapi-generator-for-spring-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
                 <artifactId>openapi-generator-for-spring-model</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
                 <artifactId>openapi-generator-for-spring-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
                 <artifactId>openapi-generator-for-spring-shaded</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
                 <artifactId>openapi-generator-for-spring-web</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
                 <artifactId>openapi-generator-for-spring-autoconfigure</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
                 <artifactId>openapi-generator-for-spring-webmvc</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
                 <artifactId>openapi-generator-for-spring-webflux</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
                 <artifactId>openapi-generator-for-spring-ui</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>de.qaware.openapi-generator-for-spring</groupId>
+                <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
                 <artifactId>openapi-generator-for-spring-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
