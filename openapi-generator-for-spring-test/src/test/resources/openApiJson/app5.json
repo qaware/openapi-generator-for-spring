@@ -54,14 +54,7 @@
         "operationId": "getMappingWithOptionalString",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/nullable_string"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200"
           }
         }
       }
