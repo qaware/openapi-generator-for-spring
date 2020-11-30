@@ -29,8 +29,9 @@ import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustom
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilder;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiLoggingUtils;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
@@ -61,9 +62,11 @@ public class DefaultSchemaResolver implements SchemaResolver {
     private final OpenApiObjectMapperSupplier openApiObjectMapperSupplier;
     private final SchemaAnnotationMapperFactory schemaAnnotationMapperFactory;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
-    private final List<TypeResolver> typeResolvers;
+
+    private final List<InitialTypeBuilder> initialTypeBuilders;
     private final List<InitialSchemaBuilder> initialSchemaBuilders;
     private final List<SchemaCustomizer> schemaCustomizers;
+    private final List<TypeResolver> typeResolvers;
 
     @Override
     public Schema resolveFromClassWithoutReference(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer) {
@@ -96,23 +99,31 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
         @Override
         public Schema buildSchemaFromTypeRecursively(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-            InitialSchema initialSchema = buildInitialSchema(javaType, annotationsSupplier);
-            Schema schema = initialSchema.getSchema();
+            InitialType initialType = buildInitialType(javaType, annotationsSupplier);
+            Schema schema = buildInitialSchema(initialType);
+            customizeSchema(schema, initialType);
+            return runTypeResolvers(schema, initialType);
+        }
 
-            TypeResolverActions actions = new TypeResolverActions();
+        private Schema runTypeResolvers(Schema schema, InitialType initialType) {
             for (TypeResolver typeResolver : typeResolvers) {
-                TypeResolver.RecursionKey recursionKey = typeResolver.resolve(initialSchema, javaType, annotationsSupplier, actions::add);
-                if (!actions.isEmpty()) {
-                    // prevent depth-first recursion if we already know this schema
-                    Schema knownSchema = checkKnownSchema(schema, recursionKey);
-                    if (knownSchema != null) {
-                        return knownSchema;
-                    }
-                    actions.runRecursively();
-                    if (recursionKey != null) {
-                        return new RecursiveSchema(schema, recursionKey);
-                    }
+                TypeResolverActions actions = new TypeResolverActions();
+                TypeResolver.RecursionKey recursionKey = typeResolver.resolve(
+                        schema,
+                        initialType.getType(),
+                        initialType.getAnnotationsSupplier(),
+                        actions::add
+                );
+                if (actions.isEmpty()) {
+                    continue;
                 }
+                // prevent depth-first recursion if we already know this schema
+                Schema knownSchema = checkKnownSchema(schema, recursionKey);
+                if (knownSchema != null) {
+                    return knownSchema;
+                }
+                actions.runRecursively();
+                return recursionKey != null ? new RecursiveSchema(schema, recursionKey) : schema;
             }
             return schema;
         }
@@ -143,35 +154,40 @@ public class DefaultSchemaResolver implements SchemaResolver {
             return null;
         }
 
-        private void customizeSchema(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+        private InitialType buildInitialType(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+            for (InitialTypeBuilder initialTypeBuilder : initialTypeBuilders) {
+                InitialType initialType = initialTypeBuilder.build(javaType, annotationsSupplier, this::buildInitialType);
+                if (initialType != null) {
+                    return initialType;
+                }
+            }
+            return InitialType.of(javaType, annotationsSupplier);
+        }
 
-            // applying the schemaAnnotationMapper is treated specially here:
-            // 1) It can only be built with an existing SchemaResolver (this class!) due to discriminator mappings
+        private Schema buildInitialSchema(InitialType initialType) {
+            for (InitialSchemaBuilder initialSchemaBuilder : initialSchemaBuilders) {
+                Schema initialSchema = initialSchemaBuilder.buildFromType(initialType.getType());
+                if (initialSchema != null) {
+                    return initialSchema;
+                }
+            }
+            throw new IllegalStateException("No initial schema builder found for " + initialType.getType());
+        }
+
+        private void customizeSchema(Schema schema, InitialType initialType) {
+            // applying the schemaAnnotationMapper is treated specially here (and not implemented as SchemaCustomizer bean):
+            // 1) schemaAnnotationMapper can only be built with an existing SchemaResolver (this class!) due to discriminator mappings
             //    so that would end up in a circular loop if it wasn't resolved by using the schemaAnnotationMapperFactory
             // 2) Using it requires a referencedSchemaConsumer, something which is only present during building and not as a singleton bean
-            annotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
+            initialType.getAnnotationsSupplier().findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
                     // apply in reverse order
                     .collect(Collectors.toCollection(LinkedList::new))
                     .descendingIterator()
                     .forEachRemaining(schemaAnnotation -> schemaAnnotationMapper.applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer));
 
             // then run the other customizers
-            schemaCustomizers.forEach(customizer -> customizer.customize(schema, javaType, annotationsSupplier));
+            schemaCustomizers.forEach(customizer -> customizer.customize(schema, initialType.getType(), initialType.getAnnotationsSupplier()));
         }
-
-        private InitialSchema buildInitialSchema(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-            for (InitialSchemaBuilder initialSchemaBuilder : initialSchemaBuilders) {
-                InitialSchema initialSchema = initialSchemaBuilder.buildFromType(javaType, annotationsSupplier, this::buildInitialSchema);
-                if (initialSchema != null) {
-                    // important to customize the schema in this recursive method here,
-                    // this enables InitialSchemaBuilder to amend the annotationsSupplier for customization
-                    customizeSchema(initialSchema.getSchema(), javaType, annotationsSupplier);
-                    return initialSchema;
-                }
-            }
-            throw new IllegalStateException("No initial type resolver found for " + javaType);
-        }
-
 
         private class TypeResolverActions extends LinkedList<TypeResolverAction> {
 

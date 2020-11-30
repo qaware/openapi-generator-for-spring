@@ -54,6 +54,18 @@ public class App5Controller {
         return Optional.empty();
     }
 
+    @GetMapping("/get9")
+    @Schema(implementation = SimpleDto.class)
+    public Object getMappingReturnsObjectButSchemaSaysItsSimpleDto() {
+        return null;
+    }
+
+    @GetMapping("/get10")
+    @Schema(implementation = ComplexDto.class)
+    public Object getMappingReturnsObjectButSchemaSaysItsComplexDto() {
+        return null;
+    }
+
     @Schema(description = "global description", title = "should never appear")
     private interface BaseForEverything {
 

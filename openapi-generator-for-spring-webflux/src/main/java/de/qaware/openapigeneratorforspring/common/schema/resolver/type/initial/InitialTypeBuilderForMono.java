@@ -1,6 +1,6 @@
 /*-
  * #%L
- * OpenAPI Generator for Spring Boot :: Common
+ * OpenAPI Generator for Spring Boot :: WebFlux
  * %%
  * Copyright (C) 2020 QAware GmbH
  * %%
@@ -22,26 +22,19 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
-import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.Nullable;
 
-@RequiredArgsConstructor
-public class InitialSchemaBuilderForReferenceType implements InitialSchemaBuilder {
+public class InitialTypeBuilderForMono implements InitialTypeBuilder {
 
     public static final int ORDER = DEFAULT_ORDER;
 
-    private final AnnotationsSupplierFactory annotationsSupplierFactory;
-
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
-        if (javaType.isReferenceType()) {
-            JavaType contentType = javaType.getContentType();
-            return resolver.resolveFromType(contentType,
-                    annotationsSupplier.andThen(annotationsSupplierFactory.createFromAnnotatedElement(contentType.getRawClass()))
-            );
+    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, FallbackBuilder fallbackBuilder) {
+        if (javaType.getRawClass().equals(Mono.class)) {
+            return fallbackBuilder.build(javaType.containedType(0), annotationsSupplier);
         }
         return null;
     }

@@ -10,7 +10,17 @@
         "operationId": "getMappingWithString",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
+            "$ref": "#/components/responses/200_0"
+          }
+        }
+      }
+    },
+    "/get10": {
+      "get": {
+        "operationId": "getMappingReturnsObjectButSchemaSaysItsComplexDto",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_1"
           }
         }
       }
@@ -20,14 +30,7 @@
         "operationId": "getMappingWithSimpleDto",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/App5Controller.SimpleDto"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200_2"
           }
         }
       }
@@ -37,14 +40,7 @@
         "operationId": "getMappingWithComplexDto",
         "responses": {
           "200": {
-            "description": "Default response",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/App5Controller.ComplexDto_2"
-                }
-              }
-            }
+            "$ref": "#/components/responses/200_1"
           }
         }
       }
@@ -54,7 +50,7 @@
         "operationId": "getMappingWithOptionalString",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
+            "$ref": "#/components/responses/200_0"
           }
         }
       }
@@ -81,7 +77,7 @@
         "operationId": "getMappingReturnsObjectButSchemaSaysItsString",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200"
+            "$ref": "#/components/responses/200_0"
           }
         }
       }
@@ -119,11 +115,21 @@
           }
         }
       }
+    },
+    "/get9": {
+      "get": {
+        "operationId": "getMappingReturnsObjectButSchemaSaysItsSimpleDto",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_2"
+          }
+        }
+      }
     }
   },
   "components": {
     "responses": {
-      "200": {
+      "200_0": {
         "description": "Default response",
         "content": {
           "*/*": {
@@ -132,23 +138,29 @@
             }
           }
         }
+      },
+      "200_1": {
+        "description": "Default response",
+        "content": {
+          "*/*": {
+            "schema": {
+              "$ref": "#/components/schemas/App5Controller.ComplexDto_2"
+            }
+          }
+        }
+      },
+      "200_2": {
+        "description": "Default response",
+        "content": {
+          "*/*": {
+            "schema": {
+              "$ref": "#/components/schemas/App5Controller.SimpleDto"
+            }
+          }
+        }
       }
     },
     "schemas": {
-      "nullable_string": {
-        "type": "string",
-        "nullable": true
-      },
-      "App5Controller.SimpleDto": {
-        "title": "global title",
-        "type": "object",
-        "properties": {
-          "property1": {
-            "$ref": "#/components/schemas/nullable_string"
-          }
-        },
-        "description": "global description"
-      },
       "App5Controller.ComplexDto_0": {
         "title": "global title",
         "required": [
@@ -290,6 +302,20 @@
         "items": {
           "$ref": "#/components/schemas/array_string"
         }
+      },
+      "nullable_string": {
+        "type": "string",
+        "nullable": true
+      },
+      "App5Controller.SimpleDto": {
+        "title": "global title",
+        "type": "object",
+        "properties": {
+          "property1": {
+            "$ref": "#/components/schemas/nullable_string"
+          }
+        },
+        "description": "global description"
       },
       "array_App5Controller.SimpleDto": {
         "type": "array",

@@ -21,25 +21,24 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
-import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 import javax.annotation.Nullable;
 
 /**
- * Initial schema builder. They are queried in {@link org.springframework.core.Ordered order} by the {@link
+ * Initial type builder. They are queried in {@link org.springframework.core.Ordered order} by the {@link
  * de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver
  * schema resolver} to start schema resolution.
  */
 @FunctionalInterface
-public interface InitialSchemaBuilder extends OpenApiOrderedUtils.DefaultOrdered {
-    /**
-     * Build initial {@link Schema} from given java type.
-     * Can return null if that java type cannot be handled.
-     *
-     * @param javaType java type
-     * @return initial schema, or null if java type cannot be handled
-     */
+public interface InitialTypeBuilder extends OpenApiOrderedUtils.DefaultOrdered {
     @Nullable
-    Schema buildFromType(JavaType javaType);
+    InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, FallbackBuilder fallbackBuilder);
+
+    @FunctionalInterface
+    interface FallbackBuilder {
+        @Nullable
+        InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier);
+    }
 }

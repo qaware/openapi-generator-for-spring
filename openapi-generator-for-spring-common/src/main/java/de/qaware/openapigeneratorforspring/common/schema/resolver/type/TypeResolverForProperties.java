@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForObject;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.EqualsAndHashCode;
@@ -45,12 +45,18 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
     // this resolver does not have any condition, so run this always later then the other resolvers as a fallback
     public static final int ORDER = laterThan(DEFAULT_ORDER);
 
+    private final SchemaPropertiesResolver schemaPropertiesResolver;
     private final List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
-    public TypeResolverForProperties(InitialSchemaBuilderForObject initialSchemaBuilderForObject,
-                                     List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers, AnnotationsSupplierFactory annotationsSupplierFactory) {
+    public TypeResolverForProperties(
+            InitialSchemaBuilderForObject initialSchemaBuilderForObject,
+            SchemaPropertiesResolver schemaPropertiesResolver,
+            List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers,
+            AnnotationsSupplierFactory annotationsSupplierFactory
+    ) {
         super(initialSchemaBuilderForObject);
+        this.schemaPropertiesResolver = schemaPropertiesResolver;
         this.schemaPropertiesCustomizers = schemaPropertiesCustomizers;
         this.annotationsSupplierFactory = annotationsSupplierFactory;
     }
@@ -58,14 +64,13 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
     @Override
     @Nullable
     public RecursionKey resolveIfSupported(
-            InitialSchema initialSchema,
+            Schema schema,
             JavaType javaType,
             AnnotationsSupplier annotationsSupplier,
             SchemaBuilderFromType schemaBuilderFromType
     ) {
-        Map<String, AnnotatedMember> properties = initialSchema.getProperties();
-        Map<String, PropertyCustomizer> propertyCustomizers = buildPropertyCustomizers(initialSchema.getSchema(),
-                javaType, annotationsSupplier, properties);
+        Map<String, AnnotatedMember> properties = schemaPropertiesResolver.findProperties(javaType);
+        Map<String, PropertyCustomizer> propertyCustomizers = buildPropertyCustomizers(schema, javaType, annotationsSupplier, properties);
 
         properties.forEach((propertyName, member) -> {
             PropertyCustomizer propertyCustomizer = propertyCustomizers.get(propertyName);
@@ -73,11 +78,11 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
             AnnotationsSupplier propertyAnnotationsSupplier = annotationsSupplierFactory.createFromMember(member)
                     .andThen(annotationsSupplierFactory.createFromAnnotatedElement(propertyType.getRawClass()));
             schemaBuilderFromType.buildSchemaFromType(propertyType, propertyAnnotationsSupplier,
-                    propertySchema -> initialSchema.getSchema().setProperty(propertyName, propertyCustomizer.customize(propertySchema, propertyType, propertyAnnotationsSupplier))
+                    propertySchema -> schema.setProperty(propertyName, propertyCustomizer.customize(propertySchema, propertyType, propertyAnnotationsSupplier))
             );
         });
 
-        return new UniqueSchemaKey(javaType, initialSchema.getSchema().hashCode());
+        return new UniqueSchemaKey(javaType, schema.hashCode());
     }
 
     @RequiredArgsConstructor

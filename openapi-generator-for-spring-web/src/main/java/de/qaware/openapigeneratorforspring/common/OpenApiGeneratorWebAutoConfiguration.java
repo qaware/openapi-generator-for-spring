@@ -28,7 +28,7 @@ import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.
 import de.qaware.openapigeneratorforspring.common.paths.DefaultSpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodEnumMapper;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.spring.SpringWebResponseEntityTypeResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.spring.SpringWebResponseEntityInitialTypeBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -68,8 +68,8 @@ public class OpenApiGeneratorWebAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SpringWebResponseEntityTypeResolver defaultDefaultSpringResponseEntityTypeResolver() {
-        return new SpringWebResponseEntityTypeResolver();
+    public SpringWebResponseEntityInitialTypeBuilder springWebResponseEntityInitialTypeBuilder() {
+        return new SpringWebResponseEntityInitialTypeBuilder();
     }
 
     @Bean

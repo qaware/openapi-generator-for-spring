@@ -20,30 +20,20 @@
 
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
-import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
-import de.qaware.openapigeneratorforspring.model.media.Schema;
-import lombok.Builder;
+import com.fasterxml.jackson.databind.JavaType;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import lombok.Getter;
-import lombok.Singular;
-
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Initial schema container for
+ * Initial type for running
  * {@link de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver schema resolution}.
  *
- * @see InitialSchemaBuilder
+ * @see InitialTypeBuilder
  */
-@Builder
 @Getter
-public class InitialSchema {
-    public static InitialSchema of(Schema schema) {
-        return InitialSchema.builder()
-                .schema(schema)
-                .build();
-    }
-
-    private final Schema schema;
-    @Singular
-    private final Map<String, AnnotatedMember> properties;
+@RequiredArgsConstructor(staticName = "of")
+public class InitialType {
+    private final JavaType type;
+    private final AnnotationsSupplier annotationsSupplier;
 }

@@ -33,7 +33,7 @@ import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectM
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils.earlierThan;
 
 @RequiredArgsConstructor
-public class InitialSchemaBuilderForSchemaAnnotation implements InitialSchemaBuilder {
+public class InitialTypeBuilderForSchemaAnnotation implements InitialTypeBuilder {
 
     // make this higher precedence as the implementation from the @Schema annotation should override anything else
     public static final int ORDER = earlierThan(DEFAULT_ORDER);
@@ -43,12 +43,12 @@ public class InitialSchemaBuilderForSchemaAnnotation implements InitialSchemaBui
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
+    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, FallbackBuilder fallbackBuilder) {
         return annotationsSupplier.findAnnotations(Schema.class)
                 .findFirst()
                 .map(Schema::implementation)
                 .filter(clazz -> !Void.class.equals(clazz))
-                .map(clazz -> resolver.resolveFromType(
+                .map(clazz -> fallbackBuilder.build(
                         openApiObjectMapperSupplier.get(SCHEMA_BUILDING).constructType(clazz),
                         annotationsSupplierFactory.createFromAnnotatedElement(clazz)
                 ))

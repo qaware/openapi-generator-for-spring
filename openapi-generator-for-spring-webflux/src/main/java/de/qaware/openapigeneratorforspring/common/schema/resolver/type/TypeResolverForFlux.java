@@ -22,7 +22,6 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForFlux;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 
@@ -38,9 +37,8 @@ public class TypeResolverForFlux extends AbstractTypeResolver {
 
     @Override
     @Nullable
-    public RecursionKey resolveIfSupported(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
+    public RecursionKey resolveIfSupported(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
         JavaType innerType = javaType.getBindings().getTypeParameters().iterator().next();
-        Schema schema = initialSchema.getSchema();
         schemaBuilderFromType.buildSchemaFromType(innerType, annotationsSupplier, schema::setItems);
         return null; // Flux never creates cyclic schema dependencies
     }

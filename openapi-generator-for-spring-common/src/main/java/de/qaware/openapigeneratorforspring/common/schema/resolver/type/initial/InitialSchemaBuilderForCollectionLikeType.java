@@ -21,7 +21,6 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverSupport;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.EqualsAndHashCode;
@@ -36,17 +35,13 @@ public class InitialSchemaBuilderForCollectionLikeType implements InitialSchemaB
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
-        return javaType.isCollectionLikeType() ? buildArrayInitialSchema() : null;
+    public Schema buildFromType(JavaType javaType) {
+        return javaType.isCollectionLikeType() ? new ArraySchema() : null;
     }
 
     @Override
-    public boolean supports(InitialSchema initialSchema) {
-        return initialSchema.getSchema() instanceof ArraySchema;
-    }
-
-    public InitialSchema buildArrayInitialSchema() {
-        return InitialSchema.builder().schema(new ArraySchema()).build();
+    public boolean supports(Schema schema) {
+        return schema instanceof ArraySchema;
     }
 
     @EqualsAndHashCode(callSuper = true)

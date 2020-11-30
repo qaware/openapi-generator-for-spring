@@ -21,11 +21,10 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameBuilder;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverSupport;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
@@ -39,19 +38,19 @@ public class InitialSchemaBuilderForObject implements InitialSchemaBuilder, Type
     public static final int ORDER = laterThan(DEFAULT_ORDER);
 
     private final SchemaNameBuilder schemaNameBuilder;
-    private final SchemaPropertiesResolver schemaPropertiesResolver;
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
-        return InitialSchema.builder()
-                .schema(Schema.builder()
-                        .type("object")
-                        .name(schemaNameBuilder.buildFromType(javaType))
-                        .build()
-                )
-                .properties(schemaPropertiesResolver.findProperties(javaType))
-                .build();
+    public Schema buildFromType(JavaType javaType) {
+        return new ObjectSchema(schemaNameBuilder.buildFromType(javaType));
+    }
+
+    @EqualsAndHashCode(callSuper = true)
+    private static class ObjectSchema extends Schema {
+        public ObjectSchema(String name) {
+            setType("object");
+            setName(name);
+        }
     }
 
     @Override
@@ -60,7 +59,7 @@ public class InitialSchemaBuilderForObject implements InitialSchemaBuilder, Type
     }
 
     @Override
-    public boolean supports(InitialSchema initialSchema) {
-        return !initialSchema.getProperties().isEmpty();
+    public boolean supports(Schema schema) {
+        return schema instanceof ObjectSchema;
     }
 }

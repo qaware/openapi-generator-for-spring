@@ -23,9 +23,7 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.extensio
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolverConfigurationProperties.Format;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.RequiredArgsConstructor;
 
@@ -50,19 +48,18 @@ public class DefaultJava8TimeInitialSchemaBuilder implements Java8TimeInitialSch
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
+    public Schema buildFromType(JavaType javaType) {
         Class<?> rawClass = javaType.getRawClass();
         if (rawClass.equals(Instant.class)) {
             Format format = getFormat(WRITE_DATES_AS_TIMESTAMPS);
             Schema.SchemaBuilder schemaBuilder = createSchemaBuilderWithType(format);
             if (format == ISO8601) {
-                return InitialSchema.of(schemaBuilder.format("date-time").build());
+                return schemaBuilder.format("date-time").build();
             }
-            return InitialSchema.of(schemaBuilder.build());
+            return schemaBuilder.build();
         } else if (rawClass.equals(Duration.class)) {
             Format format = getFormat(WRITE_DURATIONS_AS_TIMESTAMPS);
-            Schema.SchemaBuilder schemaBuilder = createSchemaBuilderWithType(format);
-            return InitialSchema.of(schemaBuilder.build());
+            return createSchemaBuilderWithType(format).build();
         }
         return null;
     }

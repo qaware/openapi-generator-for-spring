@@ -23,7 +23,6 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForCollectionLikeType;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -45,8 +44,7 @@ public class TypeResolverForCollectionLikeType extends AbstractTypeResolver {
 
     @Nullable
     @Override
-    protected RecursionKey resolveIfSupported(InitialSchema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
-        Schema schema = initialSchema.getSchema();
+    protected RecursionKey resolveIfSupported(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
         JavaType contentType = javaType.getContentType();
         // do not use the current annotationsSupplier, but only use annotations directly present on contentType
         ArraySchema arraySchemaAnnotation = annotationsSupplier.findAnnotations(ArraySchema.class).findFirst().orElse(null);

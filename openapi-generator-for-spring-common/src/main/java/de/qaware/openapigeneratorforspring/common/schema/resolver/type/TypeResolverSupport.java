@@ -20,8 +20,8 @@
 
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
+import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 public interface TypeResolverSupport {
-    boolean supports(InitialSchema initialSchema);
+    boolean supports(Schema schema);
 }

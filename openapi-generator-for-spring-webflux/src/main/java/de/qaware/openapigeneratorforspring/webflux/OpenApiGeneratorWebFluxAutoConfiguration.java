@@ -27,7 +27,7 @@ import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBu
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodEnumMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForFlux;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForFlux;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForMono;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilderForMono;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.webflux.function.OpenApiGeneratorWebFluxRouterFunctionAutoConfiguration;
 import de.qaware.openapigeneratorforspring.webflux.function.RouterFunctionHandlerMethodWithInfoBuilder;
@@ -81,14 +81,14 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public InitialSchemaBuilderForFlux defaultInitialSchemaFactoryForFlux() {
+    public InitialSchemaBuilderForFlux defaultInitialSchemaBuilderForFlux() {
         return new InitialSchemaBuilderForFlux();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public InitialSchemaBuilderForMono defaultInitialSchemaFactoryForMono() {
-        return new InitialSchemaBuilderForMono();
+    public InitialTypeBuilderForMono defaultInitialTypeBuilderForMono() {
+        return new InitialTypeBuilderForMono();
     }
 
     @Bean

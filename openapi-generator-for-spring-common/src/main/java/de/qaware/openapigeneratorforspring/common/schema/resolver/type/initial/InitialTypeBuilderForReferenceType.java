@@ -1,6 +1,6 @@
 /*-
  * #%L
- * OpenAPI Generator for Spring Boot :: WebFlux
+ * OpenAPI Generator for Spring Boot :: Common
  * %%
  * Copyright (C) 2020 QAware GmbH
  * %%
@@ -22,20 +22,26 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import reactor.core.publisher.Mono;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 
-public class InitialSchemaBuilderForMono implements InitialSchemaBuilder {
+@RequiredArgsConstructor
+public class InitialTypeBuilderForReferenceType implements InitialTypeBuilder {
 
     public static final int ORDER = DEFAULT_ORDER;
 
+    private final AnnotationsSupplierFactory annotationsSupplierFactory;
+
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
-        if (javaType.getRawClass().equals(Mono.class)) {
-            JavaType innerType = javaType.getBindings().getTypeParameters().iterator().next();
-            return resolver.resolveFromType(innerType, annotationsSupplier);
+    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, FallbackBuilder fallbackBuilder) {
+        if (javaType.isReferenceType()) {
+            JavaType contentType = javaType.getContentType();
+            return fallbackBuilder.build(contentType,
+                    annotationsSupplier.andThen(annotationsSupplierFactory.createFromAnnotatedElement(contentType.getRawClass()))
+            );
         }
         return null;
     }

@@ -83,7 +83,11 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/array_string_date-time"
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
                   }
                 }
               }
@@ -129,16 +133,6 @@
           }
         },
         "description": "request body DTO"
-      },
-      "string_date-time": {
-        "type": "string",
-        "format": "date-time"
-      },
-      "array_string_date-time": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/string_date-time"
-        }
       }
     }
   }

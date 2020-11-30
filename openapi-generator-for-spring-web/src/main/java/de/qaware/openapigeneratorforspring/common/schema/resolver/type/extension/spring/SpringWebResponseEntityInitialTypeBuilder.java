@@ -22,21 +22,21 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.extensio
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchema;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilder;
 import org.springframework.http.ResponseEntity;
 
 import javax.annotation.Nullable;
 
-public class SpringWebResponseEntityTypeResolver implements InitialSchemaBuilder {
+public class SpringWebResponseEntityInitialTypeBuilder implements InitialTypeBuilder {
 
     public static final int ORDER = DEFAULT_ORDER;
 
     @Nullable
     @Override
-    public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
+    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, FallbackBuilder fallbackBuilder) {
         if (javaType.getRawClass().equals(ResponseEntity.class)) {
-            return resolver.resolveFromType(javaType.containedType(0), annotationsSupplier);
+            return fallbackBuilder.build(javaType.containedType(0), annotationsSupplier);
         }
         return null;
     }
@@ -45,6 +45,4 @@ public class SpringWebResponseEntityTypeResolver implements InitialSchemaBuilder
     public int getOrder() {
         return ORDER;
     }
-
-
 }
