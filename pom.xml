@@ -15,6 +15,52 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <description>This library automagically generates a OpenApi v3 specification at runtime for Spring Boot
+        applications
+    </description>
+    <url>https://github.com/qaware/openapi-generator-for-spring</url>
+
+    <inceptionYear>2020</inceptionYear>
+
+    <organization>
+        <name>QAware GmbH</name>
+        <url>https://www.qaware.de</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Apache License v2</name>
+            <url>https://opensource.org/licenses/Apache-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/qaware/openapi-generator-for-spring/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>neiser</id>
+            <url>https://github.com/neiser</url>
+            <name>Andreas Grub</name>
+            <email>andreas.grub@qaware.de</email>
+            <organization>QAware GmbH</organization>
+            <organizationUrl>https://www.qaware.de</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/qaware/openapi-generator-for-spring.git</connection>
+        <developerConnection>scm:git:https://github.com/qaware/openapi-generator-for-spring.git</developerConnection>
+        <url>https://github.com/qaware/openapi-generator-for-spring</url>
+        <tag>master</tag>
+    </scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -184,7 +230,73 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Disable pushing in the release plugin -->
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <pushChanges>false</pushChanges>
+                    <releaseProfiles>release</releaseProfiles>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Create sources JAR -->
+                    <plugin>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Create JavaDoc JAR -->
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <!-- See https://maven.apache.org/plugins/maven-javadoc-plugin/examples/tag-configuration.html -->
+                            <tags>
+                                <!-- Register @implNote -->
+                                <tag>
+                                    <name>implNote</name>
+                                    <!-- All -->
+                                    <placement>a</placement>
+                                    <head>Implementation note:</head>
+                                </tag>
+                            </tags>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <distributionManagement>
+                <repository>
+                    <id>bintray-qaware-oss</id>
+                    <url>https://api.bintray.com/maven/qaware-oss/maven/openapi-generator-for-spring;publish=1</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 
 </project>
