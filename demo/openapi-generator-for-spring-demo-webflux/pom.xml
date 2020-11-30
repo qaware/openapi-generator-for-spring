@@ -8,7 +8,7 @@
 		<version>2.3.5.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>de.qaware.openapi-generator-for-spring.demo</groupId>
+	<groupId>de.qaware.tools.openapi-generator-for-spring.demo</groupId>
 	<artifactId>openapi-generator-for-spring-demo-webflux</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>openapi-generator-for-spring-demo-webflux</name>
