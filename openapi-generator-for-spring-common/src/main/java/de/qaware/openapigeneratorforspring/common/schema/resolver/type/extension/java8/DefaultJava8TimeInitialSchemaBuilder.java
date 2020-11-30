@@ -52,7 +52,6 @@ public class DefaultJava8TimeInitialSchemaBuilder implements Java8TimeInitialSch
     @Override
     public InitialSchema buildFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Resolver resolver) {
         Class<?> rawClass = javaType.getRawClass();
-        // TODO maybe improve with static map and add more time types?
         if (rawClass.equals(Instant.class)) {
             Format format = getFormat(WRITE_DATES_AS_TIMESTAMPS);
             Schema.SchemaBuilder schemaBuilder = createSchemaBuilderWithType(format);
