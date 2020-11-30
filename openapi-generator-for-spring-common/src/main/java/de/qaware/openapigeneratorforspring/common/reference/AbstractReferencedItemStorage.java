@@ -97,7 +97,7 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
         entries.add(Entry.of(item, referenceSetterWithIdentifier, options.getOwner()));
     }
 
-    // TODO make use of this method
+    // See GH Issue #10
     @Nullable
     private Object findSetterTarget(Consumer<T> setter) {
         Field[] declaredFields = setter.getClass().getDeclaredFields();
