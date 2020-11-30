@@ -28,4 +28,5 @@ jobs:
       - name: Build with Maven
         run: mvn clean package && mvn sonar:sonar -Dsonar.login=${SONARCLOUD}
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONARCLOUD: ${{ secrets.SONARCLOUD }}
