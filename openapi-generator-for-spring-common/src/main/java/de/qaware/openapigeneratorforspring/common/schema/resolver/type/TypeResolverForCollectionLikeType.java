@@ -49,7 +49,6 @@ public class TypeResolverForCollectionLikeType extends AbstractTypeResolver {
         Schema schema = initialSchema.getSchema();
         JavaType contentType = javaType.getContentType();
         // do not use the current annotationsSupplier, but only use annotations directly present on contentType
-        // TODO use more properties from @ArraySchema here?
         ArraySchema arraySchemaAnnotation = annotationsSupplier.findAnnotations(ArraySchema.class).findFirst().orElse(null);
         schemaBuilderFromType.buildSchemaFromType(contentType, createAnnotationsSupplierFromContentType(arraySchemaAnnotation, contentType), schema::setItems);
         return null; // collections never create cyclic dependencies
