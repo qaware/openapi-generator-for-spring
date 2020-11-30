@@ -26,7 +26,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
-        run: mvn clean package sonar:sonar -Dsonar.login=${SONARCLOUD}
+        run: mvn clean verify sonar:sonar -Dsonar.login=${SONARCLOUD}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONARCLOUD: ${{ secrets.SONARCLOUD }}

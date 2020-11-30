@@ -71,6 +71,12 @@
         <sonar.host.url>https://sonarcloud.io/</sonar.host.url>
         <sonar.organization>qaware-github</sonar.organization>
 
+        <jacoco.aggregate.report.dir>target/jacoco-aggregate</jacoco.aggregate.report.dir>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/openapi-generator-for-spring-test-report/${jacoco.aggregate.report.dir}/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+
         <lombok.version>1.18.12</lombok.version>
         <jsr305.version>3.0.2</jsr305.version>
         <swagger-annotations.version>2.1.4</swagger-annotations.version>
@@ -91,6 +97,7 @@
         <module>openapi-generator-for-spring-ui</module>
         <module>openapi-generator-for-spring-starter</module>
         <module>openapi-generator-for-spring-test</module>
+        <module>openapi-generator-for-spring-test-report</module>
     </modules>
 
     <dependencyManagement>
@@ -156,6 +163,14 @@
             </dependency>
 
             <dependency>
+                <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
+                <artifactId>openapi-generator-for-spring-test</artifactId>
+                <scope>test</scope>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
                 <version>${swagger-annotations.version}</version>
@@ -207,7 +222,18 @@
         </dependency>
     </dependencies>
 
+
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.6</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -230,6 +256,19 @@
                             <goal>update-file-header</goal>
                         </goals>
                         <phase>process-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
