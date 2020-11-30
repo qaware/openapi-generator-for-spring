@@ -76,7 +76,6 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
         setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(annotation.schema(), referencedSchemaConsumer),
                 schema -> referencedSchemaConsumer.maybeAsReference(schema, parameter::setSchema)
         );
-        // TODO handle @ArraySchema as well?
         setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), Parameter.class, mapperContext), parameter::setContent);
         ReferencedExamplesConsumer referencedExamplesConsumer = mapperContext.getReferencedItemConsumer(ReferencedExamplesConsumer.class);
         setMapIfNotEmpty(exampleObjectAnnotationMapper.mapArray(annotation.examples()),
