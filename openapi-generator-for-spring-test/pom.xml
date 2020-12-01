@@ -90,8 +90,9 @@
             </plugin>
 
             <!--
-            Manually generate a merged JaCoCo report once the int tests have run and duplicate it into the projects
-            Otherwise, Sonar won't pick it up correctly if that report is just within this project (which doesn't have the source files)
+            Manually generate a merged JaCoCo report once the int tests have run
+            The goal "report-aggregate" from the JaCoCo plugin needs explicit references in this project
+            to any module generating test coverage (so just using -starter would not be enough)
             -->
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -128,209 +129,17 @@
                 </executions>
             </plugin>
 
+            <!-- Disable some more unnecessary plugin executions by binding them to phase "none",
+                 as we're just focusing on tests here -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
-                    <!-- Disable this execution -->
                     <execution>
                         <id>default-resources</id>
                         <phase>none</phase>
                     </execution>
-
-                    <!-- Copy the generated merged XML report to the other modules again,
-                         otherwise Sonar doesn't pick it up correctly -->
-                    <execution>
-                        <id>copy-jacoco-xml-to-api</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.basedir}/../openapi-generator-for-spring-api/target/site/jacoco
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/target/site/jacoco</directory>
-                                    <filtering>false</filtering>
-                                    <includes>
-                                        <include>jacoco.xml</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-jacoco-xml-to-autoconfigure</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.basedir}/../openapi-generator-for-spring-autoconfigure/target/site/jacoco
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/target/site/jacoco</directory>
-                                    <filtering>false</filtering>
-                                    <includes>
-                                        <include>jacoco.xml</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-jacoco-xml-to-common</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.basedir}/../openapi-generator-for-spring-common/target/site/jacoco
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/target/site/jacoco</directory>
-                                    <filtering>false</filtering>
-                                    <includes>
-                                        <include>jacoco.xml</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-jacoco-xml-to-model</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.basedir}/../openapi-generator-for-spring-model/target/site/jacoco
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/target/site/jacoco</directory>
-                                    <filtering>false</filtering>
-                                    <includes>
-                                        <include>jacoco.xml</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-jacoco-xml-to-shaded</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.basedir}/../openapi-generator-for-spring-shaded/target/site/jacoco
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/target/site/jacoco</directory>
-                                    <filtering>false</filtering>
-                                    <includes>
-                                        <include>jacoco.xml</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-jacoco-xml-to-ui</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.basedir}/../openapi-generator-for-spring-ui/target/site/jacoco
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/target/site/jacoco</directory>
-                                    <filtering>false</filtering>
-                                    <includes>
-                                        <include>jacoco.xml</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-jacoco-xml-to-web</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.basedir}/../openapi-generator-for-spring-web/target/site/jacoco
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/target/site/jacoco</directory>
-                                    <filtering>false</filtering>
-                                    <includes>
-                                        <include>jacoco.xml</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-jacoco-xml-to-webflux</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.basedir}/../openapi-generator-for-spring-webflux/target/site/jacoco
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/target/site/jacoco</directory>
-                                    <filtering>false</filtering>
-                                    <includes>
-                                        <include>jacoco.xml</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-jacoco-xml-to-webmvc</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.basedir}/../openapi-generator-for-spring-webmvc/target/site/jacoco
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/target/site/jacoco</directory>
-                                    <filtering>false</filtering>
-                                    <includes>
-                                        <include>jacoco.xml</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-
-
                 </executions>
             </plugin>
-
-            <!-- Disable some more unnecessary plugin executions, as we're just focusing on tests here -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>

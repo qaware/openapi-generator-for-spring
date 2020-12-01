@@ -74,6 +74,10 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <!-- Point the Sonar Qube Plugin always to the same aggregated JaCoCo report -->
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../openapi-generator-for-spring-test/target/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
 
         <lombok.version>1.18.12</lombok.version>
         <jsr305.version>3.0.2</jsr305.version>
