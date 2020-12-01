@@ -75,7 +75,7 @@
                             <goal>report-aggregate</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.basedir}/../${jacoco.aggregate.report.dir}</outputDirectory>
+                            <outputDirectory>${project.basedir}/${jacoco.aggregate.report.dir}</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
