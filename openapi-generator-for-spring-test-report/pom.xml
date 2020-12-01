@@ -14,10 +14,6 @@
     </parent>
 
     <properties>
-        <jacoco.aggregate.report.dir>target/jacoco-aggregate</jacoco.aggregate.report.dir>
-        <sonar.coverage.jacoco.xmlReportPaths>${jacoco.aggregate.report.dir}/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <!-- This module only has the test report to generate, so we don't need to release it -->
         <maven.install.skip>true</maven.install.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
@@ -79,7 +75,7 @@
                             <goal>report-aggregate</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.basedir}/${jacoco.aggregate.report.dir}</outputDirectory>
+                            <outputDirectory>${project.basedir}/../${jacoco.aggregate.report.dir}</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

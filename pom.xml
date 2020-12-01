@@ -15,8 +15,9 @@
     <version>1.0.0-RC4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <description>This library automagically generates a OpenApi v3 specification at runtime for Spring Boot
-        applications
+    <description>
+        This library automagically generates a OpenApi v3 specification at runtime
+        for Spring Boot applications
     </description>
     <url>https://github.com/qaware/openapi-generator-for-spring</url>
 
@@ -72,6 +73,13 @@
         <sonar.organization>qaware-github</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
+
+        <jacoco.aggregate.report.dir>target/jacoco-aggregate</jacoco.aggregate.report.dir>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${jacoco.aggregate.report.dir}/jacoco.xml,
+            target/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 
         <lombok.version>1.18.12</lombok.version>
         <jsr305.version>3.0.2</jsr305.version>
@@ -268,6 +276,13 @@
                         <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
