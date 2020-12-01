@@ -108,6 +108,9 @@
                         </goals>
                         <configuration>
                             <dataFile>target/site/jacoco/aggregate.exec</dataFile>
+                            <outputDirectory>
+                                ${project.basedir}/../openapi-generator-for-spring-common/target/site/jacoco
+                            </outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
