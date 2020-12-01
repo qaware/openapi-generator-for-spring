@@ -14,12 +14,19 @@
     </parent>
 
     <properties>
+        <jacoco.aggregate.report.dir>target/jacoco-aggregate</jacoco.aggregate.report.dir>
+        <sonar.coverage.jacoco.xmlReportPaths>${jacoco.aggregate.report.dir}/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <!-- This module only has the test report to generate, so we don't need to release it -->
         <maven.install.skip>true</maven.install.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
     <dependencies>
+        <!-- Need to explicitly list all dependent modules where tests can be run,
+             as no transitive dependencies are considered.
+             Otherwise JaCoCo report aggregation does not work properly -->
         <dependency>
             <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
             <artifactId>openapi-generator-for-spring-api</artifactId>

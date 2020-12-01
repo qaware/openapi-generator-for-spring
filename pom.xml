@@ -73,12 +73,6 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
 
-        <jacoco.aggregate.report.dir>target/jacoco-aggregate</jacoco.aggregate.report.dir>
-        <sonar.coverage.jacoco.xmlReportPaths>
-            ${project.basedir}/openapi-generator-for-spring-test-report/${jacoco.aggregate.report.dir}/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-
         <lombok.version>1.18.12</lombok.version>
         <jsr305.version>3.0.2</jsr305.version>
         <swagger-annotations.version>2.1.4</swagger-annotations.version>
