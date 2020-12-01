@@ -140,7 +140,49 @@
                     <!-- Copy the generated merged XML report to the other modules again,
                          otherwise Sonar doesn't pick it up correctly -->
                     <execution>
-                        <id>copy-resources-common</id>
+                        <id>copy-jacoco-xml-to-api</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.basedir}/../openapi-generator-for-spring-api/target/site/jacoco
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/target/site/jacoco</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>jacoco.xml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-jacoco-xml-to-autoconfigure</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.basedir}/../openapi-generator-for-spring-autoconfigure/target/site/jacoco
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/target/site/jacoco</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>jacoco.xml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-jacoco-xml-to-common</id>
                         <phase>verify</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -161,7 +203,48 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-resources-ui</id>
+                        <id>copy-jacoco-xml-to-model</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.basedir}/../openapi-generator-for-spring-model/target/site/jacoco
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/target/site/jacoco</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>jacoco.xml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-jacoco-xml-to-shaded</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.basedir}/../openapi-generator-for-spring-shaded/target/site/jacoco
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/target/site/jacoco</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>jacoco.xml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-jacoco-xml-to-ui</id>
                         <phase>verify</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -181,7 +264,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-resources-web</id>
+                        <id>copy-jacoco-xml-to-web</id>
                         <phase>verify</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -201,7 +284,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-resources-webflux</id>
+                        <id>copy-jacoco-xml-to-webflux</id>
                         <phase>verify</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -222,7 +305,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-resources-webmvc</id>
+                        <id>copy-jacoco-xml-to-webmvc</id>
                         <phase>verify</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -242,6 +325,7 @@
                             </resources>
                         </configuration>
                     </execution>
+
 
                 </executions>
             </plugin>
