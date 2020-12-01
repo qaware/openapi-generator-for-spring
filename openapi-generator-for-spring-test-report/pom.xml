@@ -55,27 +55,59 @@
             <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
             <artifactId>openapi-generator-for-spring-webflux</artifactId>
         </dependency>
-        <dependency>
-            <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
-            <artifactId>openapi-generator-for-spring-test</artifactId>
-            <type>test-jar</type>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                            <includes>de/qaware/openapigeneratorforspring/**</includes>
+                            <excludeTransitive>true</excludeTransitive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>report-aggregate</id>
+                        <id>merge-results</id>
                         <phase>verify</phase>
                         <goals>
-                            <goal>report-aggregate</goal>
+                            <goal>merge</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.basedir}/${jacoco.aggregate.report.dir}</outputDirectory>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.basedir}/..</directory>
+                                    <includes>
+                                        <include>**/target/jacoco.exec</include>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                            <destFile>target/site/jacoco/aggregate.exec</destFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>report-merge</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>target/site/jacoco/aggregate.exec</dataFile>
                         </configuration>
                     </execution>
                 </executions>

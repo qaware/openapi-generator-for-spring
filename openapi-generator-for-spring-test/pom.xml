@@ -99,12 +99,6 @@
                         <id>default-jar</id>
                         <phase/>
                     </execution>
-                    <execution>
-                        <goals>
-                            <!-- required for test-report module -->
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
                 </executions>
             </plugin>
 
