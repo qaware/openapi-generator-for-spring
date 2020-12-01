@@ -43,7 +43,7 @@ public class OpenApiLoggingUtils {
         PRETTY_PRINTERS.put(clazz, object -> prettyPrinter.apply((T) object));
     }
 
-    public static Object logLazily(Supplier<String> stringSupplier) {
+    private static Object logLazily(Supplier<String> stringSupplier) {
         return new Object() {
             @Override
             public String toString() {
