@@ -34,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -95,23 +94,6 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
                 options.getSuggestedIdentifier()
         );
         entries.add(Entry.of(item, referenceSetterWithIdentifier, options.getOwner()));
-    }
-
-    // See GH Issue #10
-    @Nullable
-    private Object findSetterTarget(Consumer<T> setter) {
-        Field[] declaredFields = setter.getClass().getDeclaredFields();
-        if (declaredFields.length == 1) {
-            Field declaredField = declaredFields[0];
-            declaredField.setAccessible(true);
-            try {
-                return declaredField.get(setter);
-            } catch (IllegalAccessException e) {
-                // this should not happen, as we've made it accessible...
-                return null;
-            }
-        }
-        return null;
     }
 
     protected void removeEntriesOwnedBy(Object owner) {

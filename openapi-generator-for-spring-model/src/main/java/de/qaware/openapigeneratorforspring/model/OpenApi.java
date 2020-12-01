@@ -37,6 +37,7 @@ import java.util.Map;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md"
  */
 @Data
+@SuppressWarnings("java:S1700")
 public class OpenApi implements HasExtensions {
     private String openapi = "3.0.1";
     private Info info;

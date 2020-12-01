@@ -110,6 +110,7 @@ public class OpenApiProxyUtils {
                 .collect(Collectors.toSet());
     }
 
+    @SuppressWarnings("java:S1452")
     public static Map<?, ?> addNonExistingKeys(Map<Object, Object> currentMapValue, Map<?, ?> newMapValue) {
         newMapValue.entrySet().stream()
                 .filter(newEntry -> !currentMapValue.containsKey(newEntry.getKey()))

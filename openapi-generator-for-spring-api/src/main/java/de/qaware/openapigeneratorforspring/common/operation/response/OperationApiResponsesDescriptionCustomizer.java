@@ -30,7 +30,7 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtil
  */
 public interface OperationApiResponsesDescriptionCustomizer extends OperationApiResponsesCustomizer {
     // make sure we run pretty late, as we don't want to interfere with other customizer possibly providing a better description
-    int ORDER = muchLaterThan(OperationApiResponsesCustomizer.DEFAULT_ORDER);
+    int ORDER = muchLaterThan(DEFAULT_ORDER);
 
     @Override
     default int getOrder() {

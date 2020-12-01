@@ -38,8 +38,6 @@ import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class SchemaCustomizerForValidation implements SchemaCustomizer {
