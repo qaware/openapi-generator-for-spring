@@ -1,6 +1,8 @@
 # OpenAPI v3 generator for Spring Boot
 
 [![Build & test](https://github.com/qaware/openapi-generator-for-spring/workflows/Build%20&%20test/badge.svg?branch=master)](https://github.com/qaware/openapi-generator-for-spring/actions?query=workflow%3A%22Build+%26+test%22)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=qaware_openapi-generator-for-spring&metric=alert_status)](https://sonarcloud.io/dashboard?id=qaware_openapi-generator-for-spring)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=qaware_openapi-generator-for-spring&metric=coverage)](https://sonarcloud.io/dashboard?id=qaware_openapi-generator-for-spring)
 
 This library automagically generates a [OpenApi v3 specification](https://github.com/OAI/OpenAPI-Specification) at runtime for Spring Boot applications.
 
