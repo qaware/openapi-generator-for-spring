@@ -233,6 +233,21 @@
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>0.8.6</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>2.0.0</version>
+                    <configuration>
+                        <licenseName>apache_v2</licenseName>
+                        <organizationName>QAware GmbH</organizationName>
+                        <inceptionYear>2020</inceptionYear>
+                        <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+                        <emptyLineAfterHeader>true</emptyLineAfterHeader>
+                        <roots>
+                            <root>src/main/java</root>
+                        </roots>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -240,20 +255,9 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>2.0.0</version>
-                <configuration>
-                    <licenseName>apache_v2</licenseName>
-                    <organizationName>QAware GmbH</organizationName>
-                    <inceptionYear>2020</inceptionYear>
-                    <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
-                    <emptyLineAfterHeader>true</emptyLineAfterHeader>
-                    <roots>
-                        <root>src/main/java</root>
-                    </roots>
-                </configuration>
                 <executions>
                     <execution>
-                        <id>first</id>
+                        <id>update-license-header</id>
                         <goals>
                             <goal>update-file-header</goal>
                         </goals>

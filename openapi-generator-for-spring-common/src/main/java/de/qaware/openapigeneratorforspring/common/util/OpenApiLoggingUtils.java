@@ -61,11 +61,11 @@ public class OpenApiLoggingUtils {
             if (object instanceof HasToPrettyString) {
                 return ((HasToPrettyString) object).toPrettyString();
             }
-            Function<Object, String> prettyPrinter = PRETTY_PRINTERS.get(object.getClass());
-            if (prettyPrinter != null) {
-                return prettyPrinter.apply(object);
-            }
-            return object.toString();
+            return PRETTY_PRINTERS.entrySet().stream()
+                    .filter(entry -> entry.getKey().isAssignableFrom(object.getClass()))
+                    .findAny()
+                    .map(entry -> entry.getValue().apply(object))
+                    .orElseGet(object::toString);
         });
     }
 

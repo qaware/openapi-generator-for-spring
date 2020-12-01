@@ -96,14 +96,16 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>default-jar</id>
+                        <phase/>
+                    </execution>
+                    <execution>
                         <goals>
+                            <!-- required for test-report module -->
                             <goal>test-jar</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <skipIfEmpty>true</skipIfEmpty>
-                </configuration>
             </plugin>
 
             <!-- Disable some unnecessary plugin executions, as we're just focusing on tests here -->
@@ -128,11 +130,11 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>default-jar</id>
+                        <id>update-license-header</id>
                         <phase/>
                     </execution>
                 </executions>
