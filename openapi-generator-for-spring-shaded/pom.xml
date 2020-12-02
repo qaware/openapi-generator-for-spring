@@ -13,6 +13,7 @@
     </parent>
 
     <properties>
+        <sonar.skip>true</sonar.skip>
         <shaded.package.name>de.qaware.openapigeneratorforspring.shaded</shaded.package.name>
     </properties>
 
