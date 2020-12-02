@@ -29,10 +29,11 @@ public class DefaultOperationParameterNullableCustomizer implements OperationPar
     @Override
     public void customize(de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter, OperationParameterCustomizerContext context) {
         context.getHandlerMethodParameter().flatMap(handlerMethodParameter -> handlerMethodParameter.getAnnotationsSupplier()
-                .findAnnotations(Nullable.class).findFirst()).ifPresent(ignored -> {
-            // always set the parameter as "not required", as Spring is smart enough that if the parameter is marked as @Nullable,
-            // the parameter can be omitted
-            parameter.setRequired(false);
-        });
+                .findAnnotations(Nullable.class).findFirst()).ifPresent(ignored ->
+                // always set the parameter as "not required",
+                // as Spring is smart enough that if the parameter is marked as @Nullable,
+                // the parameter can be omitted
+                parameter.setRequired(false)
+        );
     }
 }
