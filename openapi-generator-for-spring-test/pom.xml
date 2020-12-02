@@ -19,10 +19,39 @@
     </properties>
 
     <dependencies>
+        <!-- Explicitly include all dependencies again, as otherwise the aggregated JaCoCo report
+             is not correctly built considering all classes -->
         <dependency>
             <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
-            <artifactId>openapi-generator-for-spring-starter</artifactId>
-            <scope>test</scope>
+            <artifactId>openapi-generator-for-spring-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
+            <artifactId>openapi-generator-for-spring-autoconfigure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
+            <artifactId>openapi-generator-for-spring-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
+            <artifactId>openapi-generator-for-spring-model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
+            <artifactId>openapi-generator-for-spring-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
+            <artifactId>openapi-generator-for-spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
+            <artifactId>openapi-generator-for-spring-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
+            <artifactId>openapi-generator-for-spring-webflux</artifactId>
         </dependency>
         <!--
         Explicitly include both WebFlux AND WebMVC, as test cases cover both variants.
@@ -64,67 +93,44 @@
     <build>
         <plugins>
 
+            <!-- Make shaded classes/resources available also for IntelliJ in target/ folder by unpacking the shaded jar
+                `mvn package -DskipTests` must be run at least once to get it working in IntelliJ -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
-                    <!--
-                    This unpacking jars here serves two purposes:
-                    1) Make shaded classes/resources available also for IntelliJ in target/ folder by unpacking the shaded jar
-                       `mvn package -DskipTests` must be run at least once to get it working in IntelliJ
-                    2) Make all project classes available for JaCoCo report goal. Otherwise, JaCoCo complains about missing classes
-                       and won't generate a correct report
-                    -->
                     <execution>
-                        <id>unpack-deps</id>
+                        <id>unpack</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>unpack-dependencies</goal>
+                            <goal>unpack</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
-                            <includeGroupIds>${project.groupId}</includeGroupIds>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
+                                    <artifactId>openapi-generator-for-spring-shaded</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                    <includes>**/**</includes>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-            <!--
-            Manually generate a merged JaCoCo report once the int tests have run
-            The goal "report-aggregate" from the JaCoCo plugin needs explicit references in this project
-            to any module generating test coverage (so just using -starter would not be enough)
-            -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>merge-results</id>
+                        <id>report-aggregate</id>
                         <phase>verify</phase>
                         <goals>
-                            <goal>merge</goal>
+                            <goal>report-aggregate</goal>
                         </goals>
-                        <configuration>
-                            <fileSets>
-                                <fileSet>
-                                    <directory>${project.basedir}/..</directory>
-                                    <includes>
-                                        <include>**/target/jacoco.exec</include>
-                                    </includes>
-                                </fileSet>
-                            </fileSets>
-                            <destFile>target/site/jacoco/aggregate.exec</destFile>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>report-merge</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <dataFile>target/site/jacoco/aggregate.exec</dataFile>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

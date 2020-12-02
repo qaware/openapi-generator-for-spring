@@ -76,9 +76,9 @@
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <!-- Point the Sonar Qube Plugin always to the same aggregated JaCoCo report -->
         <sonar.coverage.jacoco.xmlReportPaths>
-            ${project.basedir}/../openapi-generator-for-spring-test/target/site/jacoco/jacoco.xml,
+            ${project.basedir}/../openapi-generator-for-spring-test/target/site/jacoco-aggregate/jacoco.xml,
             <!-- the next extra directory is not strictly necessary, but suppresses a warning when running on the reactor pom -->
-            ${project.basedir}/openapi-generator-for-spring-test/target/site/jacoco/jacoco.xml
+            ${project.basedir}/openapi-generator-for-spring-test/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
 
         <lombok.version>1.18.12</lombok.version>
