@@ -17,7 +17,7 @@ import javax.validation.constraints.Min;
 public class App33Controller {
 
     @GetMapping(value = "/mapping1")
-    public SomeDto mapping1(@Parameter(description = "Size of the data") @RequestParam(required = false) @Min(1) @Max(100) @Nullable Integer size) {
+    public SomeDto mapping1(@Parameter(description = "Size of the data") @RequestParam @Min(1) @Max(100) @Nullable Integer size) {
         return null;
     }
 

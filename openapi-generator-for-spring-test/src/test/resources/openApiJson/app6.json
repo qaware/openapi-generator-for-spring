@@ -10,20 +10,20 @@
         "operationId": "getMappingRequestParam1",
         "parameters": [
           {
-            "name": "someQueryStringParameterWithoutExplicitName",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "nullable": true
-            }
-          },
-          {
             "name": "pathVariableName",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "someQueryStringParameterWithoutExplicitName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true
             }
           },
           {
