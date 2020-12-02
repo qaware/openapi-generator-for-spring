@@ -21,19 +21,28 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameBuilder;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
+import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class InitialSchemaBuilderForEnum implements InitialSchemaBuilder {
+    private final SchemaNameBuilder schemaNameBuilder;
+
     @Nullable
     @Override
     public Schema buildFromType(JavaType javaType) {
         if (javaType.isEnumImplType()) {
             List<Object> enumValues = Arrays.asList(javaType.getRawClass().getEnumConstants());
-            return Schema.builder().type("string").enumValues(enumValues).build();
+            return Schema.builder()
+                    .name(schemaNameBuilder.buildFromType(javaType))
+                    .type("string")
+                    .enumValues(enumValues)
+                    .build();
         }
         return null;
     }

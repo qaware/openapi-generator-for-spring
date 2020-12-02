@@ -127,8 +127,8 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public InitialSchemaBuilderForEnum defaultInitialSchemaBuilderForEnum() {
-        return new InitialSchemaBuilderForEnum();
+    public InitialSchemaBuilderForEnum defaultInitialSchemaBuilderForEnum(SchemaNameBuilder schemaNameBuilder) {
+        return new InitialSchemaBuilderForEnum(schemaNameBuilder);
     }
 
     @Bean
