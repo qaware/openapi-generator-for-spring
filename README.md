@@ -36,15 +36,13 @@ Inside your Spring Boot application, add the following (maven) dependency:
 </dependency>
 ```
 
-After starting your application, the 
-[OpenApi v3](https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md)
-compliant specification of your application is provided at `/v3/api-docs` as JSON. 
+After starting your application, the OpenApi v3 specification of your application is provided at `/v3/api-docs` as JSON.
 This specification can be viewed by visiting `/swagger-ui` inside your browser (relative to context path).
 
-Have a look at the 
-[Demo for WebMVC](demo/openapi-generator-for-spring-demo-webmvc) 
-and 
-[Demo for WebFlux](demo/openapi-generator-for-spring-demo-webflux) 
+Have a look at the
+[Demo for WebMVC](demo/openapi-generator-for-spring-demo-webmvc)
+and
+[Demo for WebFlux](demo/openapi-generator-for-spring-demo-webflux)
 for a first impression.
 
 ## Configuration Properties
@@ -157,21 +155,19 @@ public InitialTypeBuilder openApiSchemaTypeSubstitutionForYourType() {
 }
 ```
 
-## Basic design principles
+## Why not another library?
 
-This section is WIP.
+This library is based on experience while using [Spring Fox](https://github.com/springfox/springfox)
+and [SpringDoc OpenApi](https://github.com/springdoc/springdoc-openapi). As those libraries have turned out to be not
+flexible enough for our internal projects, this library aims at being fully customizable.
 
-This library is based on experience while using 
-[Spring Fox](https://github.com/springfox/springfox) 
-and [SpringDoc OpenApi](https://github.com/springdoc/springdoc-openapi).
-As those libraries have turned out to be not flexible enough, this library aims at being fully customizable.
+Composing Spring beans in combination with Spring Boot autoconfiguration enable this flexibility. The library offers
+opinionated (and hopefully sane) default implementations but marks all of them with `@ConditionalOnMissingBean`. It is
+encouraged to override those defaults by providing own bean implementations.
 
-Composing Spring beans in combination with Spring Boot autoconfiguration enable this flexibility. 
-The library offers opinionated (and hopefully sane) default implementations but marks all of them with `@ConditionalOnMissingBean`. 
-It is encouraged to override those defaults by providing own bean implementations.  
-
-Default implementations in common module will use the api module interfaces as much as possible. 
-This way it is ensured that the provided api module actually offers useful interfaces.
+Default implementations in `common` module will use the `api`
+module interfaces as much as possible. This way it is ensured that the provided api module actually offers useful
+interfaces.
 
 ## Module structure
 
@@ -208,13 +204,21 @@ Offers UI Resource transformation for WebMVC and WebFlux and sets up correct red
 **[shaded](openapi-generator-for-spring-shaded)** contains shaded
 dependencies to avoid interence with Spring Boot autoconfiguration.
 This library does not want to trigger Mustache or WebJar exposure
-for users of this library. Shading is the only mechanism which
-still allows to use such code but hide it from Spring Boot.
+for users of this library. Shading is the only mechanism which still allows to use such code but hide it from Spring
+Boot.
 
 Each module aims to have minimal dependencies. General library dependencies are:
+
 * Spring Core (Web/WebMVC/WebFlux are optional)
-* Jackson 
+* Jackson
 * Swagger Annotations
 * WebJar for Swagger UI (shaded)
 * Mustache (shaded)
 * Apache Commons
+
+## Development & Contributing
+
+Please open an issue before posting a pull request unless you have a very obvious fix or improvement to contribute.
+
+When developing with IntelliJ, run `mvn clean package -DskipTests` first in order to get the integration tests also
+running from within the IDE.
