@@ -1,10 +1,13 @@
 # OpenAPI v3 generator for Spring Boot
 
-[![Build & test](https://github.com/qaware/openapi-generator-for-spring/workflows/Build%20&%20test/badge.svg?branch=master)](https://github.com/qaware/openapi-generator-for-spring/actions?query=workflow%3A%22Build+%26+test%22)
+[![Build Status](https://github.com/qaware/openapi-generator-for-spring/workflows/build/badge.svg?branch=master)](https://github.com/qaware/openapi-generator-for-spring/actions?query=workflow%3A%22build%22)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=qaware_openapi-generator-for-spring&metric=alert_status)](https://sonarcloud.io/dashboard?id=qaware_openapi-generator-for-spring)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=qaware_openapi-generator-for-spring&metric=coverage)](https://sonarcloud.io/dashboard?id=qaware_openapi-generator-for-spring)
+[![Code Coverage](https://sonarcloud.io/api/project_badges/measure?project=qaware_openapi-generator-for-spring&metric=coverage)](https://sonarcloud.io/dashboard?id=qaware_openapi-generator-for-spring)
+[![Bintray Download](https://api.bintray.com/packages/qaware-oss/maven/openapi-generator-for-spring/images/download.svg) ](https://bintray.com/qaware-oss/maven/openapi-generator-for-spring/_latestVersion)
+[![Maven Central](https://img.shields.io/maven-central/v/de.qaware.tools.openapi-generator-for-spring/openapi-generator-for-spring-starter)](https://mvnrepository.com/artifact/de.qaware.tools.openapi-generator-for-spring/openapi-generator-for-spring-starter)
 
-This library automagically generates a [OpenApi v3 specification](https://github.com/OAI/OpenAPI-Specification) at runtime for Spring Boot applications.
+This library automagically generates a [OpenApi v3 specification](https://github.com/OAI/OpenAPI-Specification) at
+runtime for Spring Boot applications.
 
 It aims at fully analyzing Spring request mappings augmented by Swagger annotations to provide a self-descriptive API specification of your application.
 
@@ -29,8 +32,7 @@ Inside your Spring Boot application, add the following (maven) dependency:
 <dependency>
 	<groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
 	<artifactId>openapi-generator-for-spring-starter</artifactId>
-	<!-- TODO use most recent released version -->
-	<version>PUT-VERSION-HERE</version>
+	<version>1.0.0</version>
 </dependency>
 ```
 

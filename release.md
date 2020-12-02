@@ -10,3 +10,4 @@
 1. `git commit -am "Start development on next version"`
 1. `git push && git push --tags`
 1. Ping the maintainer of the `qaware-oss` to hit the publish button!
+1. Adjust the README and the demo projects to use the released version
