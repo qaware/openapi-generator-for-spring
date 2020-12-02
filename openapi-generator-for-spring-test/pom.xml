@@ -13,6 +13,8 @@
     </parent>
 
     <properties>
+        <!-- This tells sonar analysis to skip it, this module is still important for JaCoCo coverage though -->
+        <sonar.skip>true</sonar.skip>
         <!-- This module only has tests to execute, so we don't need to release it -->
         <maven.install.skip>true</maven.install.skip>
         <maven.deploy.skip>true</maven.deploy.skip>

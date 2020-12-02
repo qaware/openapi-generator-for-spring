@@ -12,6 +12,10 @@
         <version>1.0.1-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <sonar.skip>true</sonar.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
