@@ -30,9 +30,9 @@ Note that some features are not fully implemented yet, see [Issues](https://gith
 Inside your Spring Boot application, add the following (maven) dependency:
 ```
 <dependency>
-	<groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
-	<artifactId>openapi-generator-for-spring-starter</artifactId>
-	<version>1.0.0</version>
+    <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
+    <artifactId>openapi-generator-for-spring-starter</artifactId>
+    <version>1.0.0</version>
 </dependency>
 ```
 
