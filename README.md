@@ -224,8 +224,8 @@ configuration.
 **[ui](openapi-generator-for-spring-ui)** Provides Swagger UI below `/swagger-ui`. Offers UI Resource transformation for
 WebMVC and WebFlux and sets up correct redirect routes.
 
-**[starter](openapi-generator-for-spring-starter)** Opinionated choice of
-*dependencies. Enables Swagger UI and support for WebMVC and WebFlux if present.
+**[starter](openapi-generator-for-spring-starter)** Opinionated choice of dependencies. Enables Swagger UI and support
+for WebMVC and WebFlux if present.
 
 **[test](openapi-generator-for-spring-test)** contains all integration tests for WebMVC and WebFlux.
 
