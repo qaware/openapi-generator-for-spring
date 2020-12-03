@@ -174,15 +174,15 @@ additional `ApiResponse`s to the `Operation` for each exception.
 One can even figure out the `@ExceptionHandler` method, as Spring would do, to automatically determine the `Schema` of
 the error response and also scan for `@ReponseStatus` to determine the error code.
 
-It is also possible to throw an error when there is an exception declared but not appropiate `@ExceptionHandler` method
+It is also possible to throw an error when there is an exception declared but no appropriate `@ExceptionHandler` method
 is found.
 
 See [this configuration of the integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app32/App32Configuration.java)
-a fully worked out example.
+for a fully worked out example.
 
 Unfortunately, an unchecked cast is required because of an insufficient API in Spring's
 `org.springframework.web.method.annotation.ExceptionHandlerMethodResolver.resolveMethodByExceptionType`
-method.
+method, until [this PR](https://github.com/spring-projects/spring-framework/pull/26206) fixes it.
 
 ## Why not another library?
 
@@ -211,15 +211,15 @@ library.
 **[common](openapi-generator-for-spring-common)** contains the main algorithm parsing the swagger-annotated handler
 methods. It provides default implementations for most of the interfaces in `openapi-generator-for-spring-api` module.
 
-**[autoconfigure](openapi-generator-for-spring-autoconfigure)** contains the Spring Boot auto configuration of common
+**[autoconfigure](openapi-generator-for-spring-autoconfigure)** contains the Spring Boot auto-configuration of common
 beans.
 
-**[web](openapi-generator-for-spring-web)** shared support code for Spring WebMVC and WebFlux including shared auto
-configuration.
+**[web](openapi-generator-for-spring-web)** shared support code for Spring WebMVC and WebFlux including shared
+auto-configuration.
 
-**[webmvc](openapi-generator-for-spring-webmvc)** supports Spring WebMVC via Spring Boot auto configuration.
+**[webmvc](openapi-generator-for-spring-webmvc)** supports Spring WebMVC via Spring Boot auto-configuration.
 
-**[webflux](openapi-generator-for-spring-webflux)** supports Spring WebFlux via Spring Boot auto configuration.
+**[webflux](openapi-generator-for-spring-webflux)** supports Spring WebFlux via Spring Boot auto-configuration.
 
 **[ui](openapi-generator-for-spring-ui)** Provides Swagger UI below `/swagger-ui`. Offers UI Resource transformation for
 WebMVC and WebFlux and sets up correct redirect routes.
@@ -229,7 +229,7 @@ for WebMVC and WebFlux if present.
 
 **[test](openapi-generator-for-spring-test)** contains all integration tests for WebMVC and WebFlux.
 
-**[shaded](openapi-generator-for-spring-shaded)** contains shaded dependencies to avoid interence with Spring Boot
+**[shaded](openapi-generator-for-spring-shaded)** contains shaded dependencies to avoid interference with Spring Boot
 autoconfiguration. This library does not want to trigger Mustache or WebJar exposure for users of this library. Shading
 is the only mechanism which still allows to use such code but hide it from Spring Boot.
 
