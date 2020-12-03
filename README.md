@@ -155,6 +155,26 @@ public InitialTypeBuilder openApiSchemaTypeSubstitutionForYourType() {
 }
 ```
 
+### How to handle error responses elegantly?
+
+Spring (Boot) offers to handle exceptions from handler methods via
+`@ExceptionHandler` annotated methods. This mechanism can be plugged into the specification by using
+an `OperationCustomizer`, which scans a `SpringWebHandlerMethod` for its exception signature and adds
+additional `ApiResponse`s to the `Operation` for each exception.
+
+One can even figure out the `@ExceptionHandler` method, as Spring would do, to automatically determine the `Schema` of
+the error response and also scan for `@ReponseStatus` to determine the error code.
+
+It is also possible to throw an error when there is an exception declared but not appropiate `@ExceptionHandler` method
+is found.
+
+See [this configuration of the integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app32/App32Configuration.java)
+a fully worked out example.
+
+Unfortunately, an unchecked cast is required because of an insufficient API in Spring's
+`org.springframework.web.method.annotation.ExceptionHandlerMethodResolver.resolveMethodByExceptionType`
+method.
+
 ## Why not another library?
 
 This library is based on experience while using [Spring Fox](https://github.com/springfox/springfox)
