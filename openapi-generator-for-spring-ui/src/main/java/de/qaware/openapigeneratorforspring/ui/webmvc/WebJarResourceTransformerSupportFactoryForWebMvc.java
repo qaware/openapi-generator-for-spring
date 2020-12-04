@@ -38,7 +38,7 @@ public class WebJarResourceTransformerSupportFactoryForWebMvc {
     private final OpenApiBaseUriSupplier openApiBaseUriSupplier;
     private final WebJarTransformedResourceBuilder transformedResourceBuilder;
 
-    WebJarResourceTransformerSupport create() {
+    public WebJarResourceTransformerSupport create() {
         URI baseUri = openApiBaseUriSupplier.getBaseUri();
         List<WebJarResourceTransformer> transformers = resourceTransformerFactories.stream()
                 .map(factory -> factory.create(baseUri))

@@ -38,7 +38,7 @@ public class WebJarResourceTransformerSupportFactoryForWebFlux {
     private final List<WebJarResourceTransformerFactory> resourceTransformerFactories;
     private final WebJarTransformedResourceBuilder transformedResourceBuilder;
 
-    WebJarResourceTransformerSupport create(ServerWebExchange exchange) {
+    public WebJarResourceTransformerSupport create(ServerWebExchange exchange) {
         URI baseUri = OpenApiBaseUriSupplierForWebFlux.getBaseUri(exchange);
         List<WebJarResourceTransformer> transformers = resourceTransformerFactories.stream()
                 .map(factory -> factory.create(baseUri))

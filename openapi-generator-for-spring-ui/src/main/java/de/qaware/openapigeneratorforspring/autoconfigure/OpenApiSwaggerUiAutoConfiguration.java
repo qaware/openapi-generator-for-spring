@@ -18,9 +18,12 @@
  * #L%
  */
 
-package de.qaware.openapigeneratorforspring.ui;
+package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
+import de.qaware.openapigeneratorforspring.ui.DefaultOpenApiSwaggerUiApiDocsUrisSupplier;
+import de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiApiDocsUrisSupplier;
+import de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiIndexHtmlWebJarResourceTransformerFactory;
 import de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiSupport;
 import de.qaware.openapigeneratorforspring.ui.webjar.DefaultWebJarTransformedResourceBuilder;

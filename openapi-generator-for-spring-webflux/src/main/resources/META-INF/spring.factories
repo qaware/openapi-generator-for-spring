@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-de.qaware.openapigeneratorforspring.webflux.OpenApiGeneratorWebFluxAutoConfiguration
+de.qaware.openapigeneratorforspring.autoconfigure.OpenApiGeneratorWebFluxAutoConfiguration

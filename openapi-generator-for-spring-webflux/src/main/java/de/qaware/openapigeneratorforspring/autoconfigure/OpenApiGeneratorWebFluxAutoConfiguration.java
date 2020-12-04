@@ -18,7 +18,7 @@
  * #L%
  */
 
-package de.qaware.openapigeneratorforspring.webflux;
+package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
@@ -29,7 +29,10 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResol
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForFlux;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilderForMono;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
-import de.qaware.openapigeneratorforspring.webflux.function.OpenApiGeneratorWebFluxRouterFunctionAutoConfiguration;
+import de.qaware.openapigeneratorforspring.webflux.HandlerMethodsProviderForWebFlux;
+import de.qaware.openapigeneratorforspring.webflux.OpenApiBaseUriSupplierForWebFlux;
+import de.qaware.openapigeneratorforspring.webflux.OpenApiRequestAwareProviderForWebFlux;
+import de.qaware.openapigeneratorforspring.webflux.OpenApiResourceForWebFlux;
 import de.qaware.openapigeneratorforspring.webflux.function.RouterFunctionHandlerMethodWithInfoBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;

@@ -18,7 +18,7 @@
  * #L%
  */
 
-package de.qaware.openapigeneratorforspring.common;
+package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodContentTypesMapper;

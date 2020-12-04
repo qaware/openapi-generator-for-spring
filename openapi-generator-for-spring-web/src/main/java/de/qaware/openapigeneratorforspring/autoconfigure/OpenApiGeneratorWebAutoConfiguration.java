@@ -18,7 +18,7 @@
  * #L%
  */
 
-package de.qaware.openapigeneratorforspring.common;
+package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromPathVariableAnnotation;
@@ -33,7 +33,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-@Import({OpenApiGeneratorWebMethodMergerAutoConfiguration.class, OpenApiGeneratorWebMethodAutoConfiguration.class})
+@Import({
+        OpenApiGeneratorWebMethodMergerAutoConfiguration.class,
+        OpenApiGeneratorWebMethodAutoConfiguration.class
+})
 public class OpenApiGeneratorWebAutoConfiguration {
 
     @Bean

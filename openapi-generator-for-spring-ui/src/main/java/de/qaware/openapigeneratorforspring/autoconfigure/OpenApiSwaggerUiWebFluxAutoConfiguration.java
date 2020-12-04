@@ -18,10 +18,11 @@
  * #L%
  */
 
-package de.qaware.openapigeneratorforspring.ui.webflux;
+package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiSupport;
+import de.qaware.openapigeneratorforspring.ui.webflux.WebJarResourceTransformerSupportFactoryForWebFlux;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerFactory;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarTransformedResourceBuilder;
 import io.swagger.v3.oas.annotations.Hidden;

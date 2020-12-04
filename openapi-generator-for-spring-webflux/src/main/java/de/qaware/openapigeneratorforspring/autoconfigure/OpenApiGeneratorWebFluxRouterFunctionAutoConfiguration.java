@@ -18,9 +18,12 @@
  * #L%
  */
 
-package de.qaware.openapigeneratorforspring.webflux.function;
+package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.webflux.function.RouterFunctionHandlerMethodMapper;
+import de.qaware.openapigeneratorforspring.webflux.function.RouterFunctionHandlerMethodWithInfoBuilder;
+import de.qaware.openapigeneratorforspring.webflux.function.RouterFunctionParameterMethodConverter;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

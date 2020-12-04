@@ -18,13 +18,14 @@
  * #L%
  */
 
-package de.qaware.openapigeneratorforspring.ui.webmvc;
+package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplier;
 import de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiSupport;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerFactory;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarTransformedResourceBuilder;
+import de.qaware.openapigeneratorforspring.ui.webmvc.WebJarResourceTransformerSupportFactoryForWebMvc;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
