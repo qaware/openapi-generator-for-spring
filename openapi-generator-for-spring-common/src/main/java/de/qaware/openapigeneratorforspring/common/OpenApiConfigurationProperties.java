@@ -26,7 +26,6 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.CONFIG_PROPERTIES_PREFIX;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiConstants.OPEN_API_DOCS_DEFAULT_PATH;
 
 @ConfigurationProperties(prefix = CONFIG_PROPERTIES_PREFIX)
 @Getter
@@ -37,9 +36,10 @@ public class OpenApiConfigurationProperties {
      */
     private boolean enabled = true;
     /**
-     * Path to OpenAPI spec. Default is <code>/v3/api-docs</code>.
+     * Path to OpenAPI spec.
      */
-    private String apiDocsPath = OPEN_API_DOCS_DEFAULT_PATH;
+    @SuppressWarnings("java:S1075") // suppress hard coded URL warning
+    private String apiDocsPath = "/v3/api-docs";
 
     public static class EnabledCondition extends ConfigurationPropertyCondition<OpenApiConfigurationProperties> {
         public EnabledCondition() {

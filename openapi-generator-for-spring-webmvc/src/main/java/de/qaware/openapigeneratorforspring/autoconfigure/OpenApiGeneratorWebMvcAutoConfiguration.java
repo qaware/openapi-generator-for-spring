@@ -21,31 +21,39 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
-import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodEnumMapper;
-import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
+import de.qaware.openapigeneratorforspring.common.web.OpenApiResource;
 import de.qaware.openapigeneratorforspring.webmvc.HandlerMethodsProviderForWebMvc;
 import de.qaware.openapigeneratorforspring.webmvc.OpenApiRequestAwareSupplierForWebMvc;
-import de.qaware.openapigeneratorforspring.webmvc.OpenApiResourceForWebMvc;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class OpenApiGeneratorWebMvcAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean
     @Conditional(OpenApiConfigurationProperties.EnabledCondition.class)
-    public OpenApiResourceForWebMvc openApiResource(OpenApiGenerator openApiGenerator, OpenApiObjectMapperSupplier openApiObjectMapperSupplier) {
-        return new OpenApiResourceForWebMvc(openApiGenerator, openApiObjectMapperSupplier);
+    public InitializingBean openApiResourceRegistration(
+            OpenApiResource openApiResource,
+            RequestMappingHandlerMapping requestMappingHandlerMapping
+    ) {
+        return () -> openApiResource.registerMapping(
+                (path, produces) -> RequestMappingInfo.paths(path).methods(GET).produces(produces).build(),
+                requestMappingHandlerMapping::registerMapping,
+                openApiResource
+        );
     }
 
     @Bean

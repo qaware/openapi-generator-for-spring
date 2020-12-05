@@ -1,6 +1,6 @@
 /*-
  * #%L
- * OpenAPI Generator for Spring Boot :: Common
+ * OpenAPI Generator for Spring Boot :: API
  * %%
  * Copyright (C) 2020 QAware GmbH
  * %%
@@ -18,12 +18,12 @@
  * #L%
  */
 
-package de.qaware.openapigeneratorforspring.common.util;
+package de.qaware.openapigeneratorforspring.common.supplier;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import de.qaware.openapigeneratorforspring.model.OpenApi;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class OpenApiConstants {
-    public static final String CONFIG_PROPERTIES_PREFIX = "openapi-generator-for-spring";
+
+@FunctionalInterface
+public interface OpenApiYamlMapper {
+    String map(OpenApi openApi);
 }

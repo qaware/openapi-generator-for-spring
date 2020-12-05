@@ -21,16 +21,16 @@
 package de.qaware.openapigeneratorforspring.webflux;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import de.qaware.openapigeneratorforspring.common.AbstractOpenApiResource;
-import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
-import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
-import org.springframework.http.MediaType;
+import de.qaware.openapigeneratorforspring.common.web.OpenApiResource;
+import io.swagger.v3.oas.annotations.Hidden;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-@RestController
-public class OpenApiResourceForWebFlux extends AbstractOpenApiResource {
+@RequiredArgsConstructor
+@Hidden       // exclude from OpenApi spec
+@ResponseBody // all handler methods return response bodies, not view names
+public class OpenApiResourceForWebFlux {
 
     /**
      * Using this thread local only works if the OpenApi model is built within
@@ -42,13 +42,22 @@ public class OpenApiResourceForWebFlux extends AbstractOpenApiResource {
      */
     static final ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_THREAD_LOCAL = new ThreadLocal<>();
 
-    public OpenApiResourceForWebFlux(OpenApiGenerator openApiGenerator, OpenApiObjectMapperSupplier objectMapperSupplier) {
-        super(openApiGenerator, objectMapperSupplier);
+    private final OpenApiResource openApiResource;
+
+    public <T> void registerMapping(OpenApiResource.RequestMappingInfoBuilder<T> requestMappingInfoBuilder,
+                                    OpenApiResource.RequestMappingRegistrar<T> requestMappingRegistrar) {
+        openApiResource.registerMapping(requestMappingInfoBuilder, requestMappingRegistrar, this);
     }
 
-    @GetMapping(value = API_DOCS_PATH_SPEL, produces = MediaType.APPLICATION_JSON_VALUE)
+    @SuppressWarnings("unused") // is used via reflection in registerMapping
     public String getOpenApiAsJson(ServerHttpRequest serverHttpRequest) throws JsonProcessingException {
         SERVER_HTTP_REQUEST_THREAD_LOCAL.set(serverHttpRequest);
-        return super.getOpenApiAsJson();
+        return openApiResource.getOpenApiAsJson();
+    }
+
+    @SuppressWarnings("unused") // is used via reflection in registerMapping
+    public String getOpenApiAsYaml(ServerHttpRequest serverHttpRequest) throws OpenApiResource.OpenApiYamlNotSupportedException {
+        SERVER_HTTP_REQUEST_THREAD_LOCAL.set(serverHttpRequest);
+        return openApiResource.getOpenApiAsYaml();
     }
 }

@@ -20,6 +20,8 @@
 
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
+import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
+import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromPathVariableAnnotation;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromRequestHeaderAnnotation;
@@ -29,15 +31,31 @@ import de.qaware.openapigeneratorforspring.common.paths.DefaultSpringWebHandlerM
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodEnumMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.spring.SpringWebResponseEntityInitialTypeBuilder;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiYamlMapper;
+import de.qaware.openapigeneratorforspring.common.web.OpenApiResource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+
+import java.util.Optional;
 
 @Import({
         OpenApiGeneratorWebMethodMergerAutoConfiguration.class,
         OpenApiGeneratorWebMethodAutoConfiguration.class
 })
 public class OpenApiGeneratorWebAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OpenApiResource openApiResource(
+            OpenApiGenerator openApiGenerator,
+            OpenApiConfigurationProperties openApiConfigurationProperties,
+            OpenApiObjectMapperSupplier openApiObjectMapperSupplier,
+            Optional<OpenApiYamlMapper> openApiYamlMapper
+    ) {
+        return new OpenApiResource(openApiGenerator, openApiConfigurationProperties, openApiObjectMapperSupplier, openApiYamlMapper.orElse(null));
+    }
 
     @Bean
     @ConditionalOnMissingBean
