@@ -58,7 +58,10 @@ public class ShadedWebJarAssetLocator {
         return paths.stream()
                 .filter(path -> path.endsWith(pathSuffix))
                 .reduce((a, b) -> {
-                    throw new IllegalStateException("Two conflicting paths found for suffix " + pathSuffix + ": " + a + " vs. " + b);
+                    if (!a.equals(b)) {
+                        throw new IllegalStateException("Two conflicting paths found for suffix " + pathSuffix + ": " + a + " vs. " + b);
+                    }
+                    return a;
                 })
                 .orElseThrow(() -> new IllegalStateException("No path found for suffix " + pathSuffix));
     }
