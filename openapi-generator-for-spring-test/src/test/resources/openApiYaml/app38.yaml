@@ -1,0 +1,27 @@
+openapi: 3.0.1
+info:
+  title: API for App38
+  version: unknown
+paths:
+  /mapping1:
+    get:
+      operationId: mapping1
+      parameters:
+        - name: param1
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: Default response
+          content:
+            '*/*':
+              schema:
+                type: string

@@ -8,11 +8,7 @@ import org.springframework.test.context.TestPropertySource;
 public class App23Test extends AbstractOpenApiGeneratorWebFluxBaseIntTest {
 
     @Test
-    public void testOpenApiIsNotFoundWhenDisabled() throws Exception {
-        webTestClient.get().uri(uriBuilder -> uriBuilder
-                .path("/v3/api-docs")
-                .build())
-                .exchange()
-                .expectStatus().isNotFound();
+    public void testOpenApiIsNotFoundWhenDisabled() {
+        performApiDocsRequest(x -> x, x -> x).expectStatus().isNotFound();
     }
 }

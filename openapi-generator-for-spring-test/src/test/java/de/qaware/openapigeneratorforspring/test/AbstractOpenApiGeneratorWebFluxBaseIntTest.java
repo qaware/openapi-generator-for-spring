@@ -7,6 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.RequestHeadersSpec;
+import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
+import org.springframework.web.util.UriBuilder;
+
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,13 +24,27 @@ public abstract class AbstractOpenApiGeneratorWebFluxBaseIntTest {
     @Autowired
     protected WebTestClient webTestClient;
 
-    protected static void assertResponseBodyMatchesOpenApiJson(String expectedJsonFile, WebTestClient.RequestHeadersSpec<?> performResult) throws Exception {
+    protected static void assertResponseBodyMatchesOpenApiJson(String expectedJsonFile, ResponseSpec performResult) throws Exception {
         OpenApiJsonIntegrationTestUtils.assertMatchesOpenApiJson(expectedJsonFile, () -> getResponseBodyAsString(performResult));
     }
 
-    protected static String getResponseBodyAsString(WebTestClient.RequestHeadersSpec<?> performResult) {
+    protected static void assertResponseBodyMatchesOpenApiYaml(String expectedYamlFile, ResponseSpec performResult) throws Exception {
+        OpenApiJsonIntegrationTestUtils.assertMatchesOpenApiYaml(expectedYamlFile, () -> getResponseBodyAsString(performResult));
+    }
+
+    protected ResponseSpec performApiDocsRequest(
+            Function<UriBuilder, UriBuilder> uriModifier,
+            Function<RequestHeadersSpec<?>, RequestHeadersSpec<?>> requestModifier
+    ) {
+        return requestModifier.apply(
+                webTestClient.get().uri(
+                        uriBuilder -> uriModifier.apply(uriBuilder.path("/v3/api-docs")).build()
+                )
+        ).exchange();
+    }
+
+    protected static String getResponseBodyAsString(ResponseSpec performResult) {
         byte[] responseBody = performResult
-                .exchange()
                 .expectStatus().isOk()
                 .expectBody().returnResult()
                 .getResponseBody();

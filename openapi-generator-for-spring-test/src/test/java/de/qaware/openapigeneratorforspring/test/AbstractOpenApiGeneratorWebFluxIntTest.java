@@ -12,6 +12,6 @@ public abstract class AbstractOpenApiGeneratorWebFluxIntTest extends AbstractOpe
 
     @Test
     public void getOpenApiAsJson() throws Exception {
-        assertResponseBodyMatchesOpenApiJson(expectedJsonFile, webTestClient.get().uri("/v3/api-docs"));
+        assertResponseBodyMatchesOpenApiJson(expectedJsonFile, performApiDocsRequest(x -> x, x -> x));
     }
 }

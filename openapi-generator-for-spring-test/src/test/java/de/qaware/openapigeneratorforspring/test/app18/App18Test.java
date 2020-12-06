@@ -8,21 +8,14 @@ public class App18Test extends AbstractOpenApiGeneratorWebFluxBaseIntTest {
     @Test
     public void testWithQueryParam() throws Exception {
         assertResponseBodyMatchesOpenApiJson("app18_admin.json",
-                webTestClient.get().uri(uriBuilder -> uriBuilder
-                        .path("/v3/api-docs")
-                        .queryParam("pathPrefix", "/admin")
-                        .build()
-                )
+                performApiDocsRequest(x -> x.queryParam("pathPrefix", "/admin"), x -> x)
         );
     }
 
     @Test
     public void testWithHeaderParam() throws Exception {
         assertResponseBodyMatchesOpenApiJson("app18_user.json",
-                webTestClient.get().uri(uriBuilder -> uriBuilder
-                        .path("/v3/api-docs")
-                        .build()
-                ).header("X-Path-Prefix", "/user")
+                performApiDocsRequest(x -> x, x -> x.header("X-Path-Prefix", "/user"))
         );
     }
 }
