@@ -22,13 +22,27 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<!-- Also Spring Boot doesn't need YAML -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.yaml</groupId>
+					<artifactId>snakeyaml</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
-            <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
-            <artifactId>openapi-generator-for-spring-starter</artifactId>
-            <version>1.0.0</version>
-        </dependency>
+			<groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
+			<artifactId>openapi-generator-for-spring-starter</artifactId>
+			<version>1.0.1</version>
+			<!-- The library works without YAML -->
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.dataformat</groupId>
+					<artifactId>jackson-dataformat-yaml</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
 	</dependencies>
 
