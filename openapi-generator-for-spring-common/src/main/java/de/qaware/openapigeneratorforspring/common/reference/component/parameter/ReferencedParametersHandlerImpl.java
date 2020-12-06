@@ -21,7 +21,7 @@
 package de.qaware.openapigeneratorforspring.common.reference.component.parameter;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
-import de.qaware.openapigeneratorforspring.common.reference.handler.DependentReferencedComponentHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.AbstractDependentReferencedComponentHandler;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
-public class ReferencedParametersHandlerImpl implements DependentReferencedComponentHandler, ReferencedParametersConsumer {
+public class ReferencedParametersHandlerImpl extends AbstractDependentReferencedComponentHandler implements ReferencedParametersConsumer {
     private final ReferencedParameterStorage storage;
 
     @With

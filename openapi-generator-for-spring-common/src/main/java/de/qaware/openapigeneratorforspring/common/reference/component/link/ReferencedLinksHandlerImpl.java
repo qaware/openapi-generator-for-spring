@@ -21,7 +21,7 @@
 package de.qaware.openapigeneratorforspring.common.reference.component.link;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
-import de.qaware.openapigeneratorforspring.common.reference.handler.DependentReferencedComponentHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.AbstractDependentReferencedComponentHandler;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.link.Link;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
-public class ReferencedLinksHandlerImpl implements DependentReferencedComponentHandler, ReferencedLinksConsumer {
+public class ReferencedLinksHandlerImpl extends AbstractDependentReferencedComponentHandler implements ReferencedLinksConsumer {
 
     private final ReferencedLinkStorage storage;
 

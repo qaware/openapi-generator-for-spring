@@ -21,7 +21,7 @@
 package de.qaware.openapigeneratorforspring.common.reference.component.schema;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
-import de.qaware.openapigeneratorforspring.common.reference.handler.DependentReferencedComponentHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.AbstractDependentReferencedComponentHandler;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
-public class ReferencedSchemaHandlerImpl implements DependentReferencedComponentHandler, ReferencedSchemaConsumer {
+public class ReferencedSchemaHandlerImpl extends AbstractDependentReferencedComponentHandler implements ReferencedSchemaConsumer {
 
     private final ReferencedSchemaStorage storage;
 

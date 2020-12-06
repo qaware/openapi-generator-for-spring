@@ -21,7 +21,7 @@
 package de.qaware.openapigeneratorforspring.common.reference.component.requestbody;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
-import de.qaware.openapigeneratorforspring.common.reference.handler.DependentReferencedComponentHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.AbstractDependentReferencedComponentHandler;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
-public class ReferencedRequestBodyHandlerImpl implements DependentReferencedComponentHandler, ReferencedRequestBodyConsumer {
+public class ReferencedRequestBodyHandlerImpl extends AbstractDependentReferencedComponentHandler implements ReferencedRequestBodyConsumer {
 
     private final ReferencedRequestBodyStorage storage;
 

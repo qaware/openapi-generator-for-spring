@@ -21,7 +21,7 @@
 package de.qaware.openapigeneratorforspring.common.reference.component.securityscheme;
 
 import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedComponentHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.AbstractReferencedComponentHandler;
 import de.qaware.openapigeneratorforspring.common.security.OpenApiSecuritySchemesSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationAnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.model.Components;
@@ -42,7 +42,7 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.en
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 
 @Slf4j
-public class ReferencedSecuritySchemesHandlerImpl implements ReferencedComponentHandler, ReferencedSecuritySchemesConsumer {
+public class ReferencedSecuritySchemesHandlerImpl extends AbstractReferencedComponentHandler implements ReferencedSecuritySchemesConsumer {
 
     private final Map<String, SecurityScheme> securitySchemes;
 

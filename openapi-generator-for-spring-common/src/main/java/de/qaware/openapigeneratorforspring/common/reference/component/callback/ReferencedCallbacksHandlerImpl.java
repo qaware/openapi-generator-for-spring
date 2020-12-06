@@ -21,7 +21,7 @@
 package de.qaware.openapigeneratorforspring.common.reference.component.callback;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
-import de.qaware.openapigeneratorforspring.common.reference.handler.DependentReferencedComponentHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.AbstractDependentReferencedComponentHandler;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.operation.Callback;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
-public class ReferencedCallbacksHandlerImpl implements DependentReferencedComponentHandler, ReferencedCallbacksConsumer {
+public class ReferencedCallbacksHandlerImpl extends AbstractDependentReferencedComponentHandler implements ReferencedCallbacksConsumer {
 
     private final ReferencedCallbackStorage storage;
 

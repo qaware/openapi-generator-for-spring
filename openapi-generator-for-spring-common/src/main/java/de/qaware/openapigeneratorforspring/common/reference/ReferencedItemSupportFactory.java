@@ -20,7 +20,7 @@
 
 package de.qaware.openapigeneratorforspring.common.reference;
 
-import de.qaware.openapigeneratorforspring.common.reference.handler.DependentReferencedComponentHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.AbstractDependentReferencedComponentHandler;
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandlerFactory;
 import de.qaware.openapigeneratorforspring.model.Components;
@@ -63,10 +63,10 @@ public class ReferencedItemSupportFactory {
                 if (openApi.getComponents() == null) {
                     openApi.setComponents(new Components());
                 }
-                List<DependentReferencedComponentHandler> referencedComponentHandlers = itemHandlers.stream()
+                List<AbstractDependentReferencedComponentHandler> referencedComponentHandlers = itemHandlers.stream()
                         .map(itemHandler -> {
-                            if (itemHandler instanceof DependentReferencedComponentHandler) {
-                                return (DependentReferencedComponentHandler) itemHandler;
+                            if (itemHandler instanceof AbstractDependentReferencedComponentHandler) {
+                                return (AbstractDependentReferencedComponentHandler) itemHandler;
                             }
                             // non-dependent handler can already be handled here
                             itemHandler.applyToOpenApi(openApi);
@@ -75,7 +75,7 @@ public class ReferencedItemSupportFactory {
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
 
-                new DependentReferencedComponentHandlersSupport(openApi.getComponents(), referencedComponentHandlers)
+                new DependentReferencedComponentHandlersSupport(openApi, referencedComponentHandlers)
                         .handle();
 
                 if (openApi.getComponents().isEmpty()) {
@@ -88,11 +88,11 @@ public class ReferencedItemSupportFactory {
     }
 
     private static class DependentReferencedComponentHandlersSupport {
-        private final Components components;
+        private final OpenApi openApi;
         private final Map<ReferenceType, HandlerWithDependencies> handlersMap;
 
-        public DependentReferencedComponentHandlersSupport(Components components, List<DependentReferencedComponentHandler> handlers) {
-            this.components = components;
+        public DependentReferencedComponentHandlersSupport(OpenApi openApi, List<AbstractDependentReferencedComponentHandler> handlers) {
+            this.openApi = openApi;
             this.handlersMap = handlers.stream()
                     .map(HandlerWithDependencies::of)
                     .collect(Collectors.toMap(HandlerWithDependencies::getType, x -> x, (a, b) -> {
@@ -107,7 +107,7 @@ public class ReferencedItemSupportFactory {
                     .sorted(buildDependencyComparator(transitiveDependencies)) // makes less-dependent handlers go first!
                     .forEach(handler -> {
                         LOGGER.debug("Building components for {}", handler.getType());
-                        handler.getHandler().applyToComponents(components);
+                        handler.getHandler().applyToOpenApi(openApi);
                     });
         }
 
@@ -138,11 +138,11 @@ public class ReferencedItemSupportFactory {
         @RequiredArgsConstructor
         @Getter
         private static class HandlerWithDependencies {
-            private final DependentReferencedComponentHandler handler;
+            private final AbstractDependentReferencedComponentHandler handler;
             private final ReferenceType type;
             private final List<ReferenceType> directDependencies;
 
-            public static HandlerWithDependencies of(DependentReferencedComponentHandler handler) {
+            public static HandlerWithDependencies of(AbstractDependentReferencedComponentHandler handler) {
                 Pair<ReferenceType, List<ReferenceType>> buildDependencies = handler.getBuildDependencies();
                 return new HandlerWithDependencies(handler, buildDependencies.getKey(), buildDependencies.getValue());
             }
