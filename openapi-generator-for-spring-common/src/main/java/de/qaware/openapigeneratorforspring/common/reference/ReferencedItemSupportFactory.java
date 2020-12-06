@@ -21,6 +21,7 @@
 package de.qaware.openapigeneratorforspring.common.reference;
 
 import de.qaware.openapigeneratorforspring.common.reference.handler.AbstractDependentReferencedComponentHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemBuildContext;
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandlerFactory;
 import de.qaware.openapigeneratorforspring.model.Components;
@@ -69,7 +70,7 @@ public class ReferencedItemSupportFactory {
                                 return (AbstractDependentReferencedComponentHandler) itemHandler;
                             }
                             // non-dependent handler can already be handled here
-                            itemHandler.applyToOpenApi(openApi);
+                            itemHandler.applyToOpenApi(openApi, null);
                             return null;
                         })
                         .filter(Objects::nonNull)
@@ -103,11 +104,13 @@ public class ReferencedItemSupportFactory {
         public void handle() {
             Map<ReferenceType, Set<ReferenceType>> transitiveDependencies = handlersMap.keySet().stream()
                     .collect(Collectors.toMap(r -> r, r -> buildTransitiveDependencies(r).collect(Collectors.toSet())));
+
+            ReferencedItemBuildContext buildContext = AbstractReferencedItemStorage.createContext();
             handlersMap.values().stream()
                     .sorted(buildDependencyComparator(transitiveDependencies)) // makes less-dependent handlers go first!
                     .forEach(handler -> {
                         LOGGER.debug("Building components for {}", handler.getType());
-                        handler.getHandler().applyToOpenApi(openApi);
+                        handler.getHandler().applyToOpenApi(openApi, buildContext);
                     });
         }
 

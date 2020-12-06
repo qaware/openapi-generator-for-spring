@@ -25,6 +25,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
+// TODO do not derive from AbstractReferencedComponentHandler
 public abstract class AbstractDependentReferencedComponentHandler extends AbstractReferencedComponentHandler {
+
     public abstract Pair<ReferenceType, List<ReferenceType>> getBuildDependencies();
 }

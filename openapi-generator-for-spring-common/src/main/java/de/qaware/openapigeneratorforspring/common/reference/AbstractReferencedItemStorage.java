@@ -23,10 +23,12 @@ package de.qaware.openapigeneratorforspring.common.reference;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceDeciderForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierBuilderForType;
 import de.qaware.openapigeneratorforspring.common.reference.fortype.ReferenceIdentifierConflictResolverForType;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemBuildContext;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiProxyUtils;
 import de.qaware.openapigeneratorforspring.model.trait.HasReference;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -34,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -62,6 +65,10 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
     private final List<ReferenceType> buildDependencies;
 
     private final List<Entry<T>> entries = new ArrayList<>();
+
+    public static ReferencedItemBuildContext createContext() {
+        return null;
+    }
 
     @Builder
     @Getter(AccessLevel.PRIVATE)
@@ -93,7 +100,23 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
                 ReferenceSetter.of(setter, options.isReferenceRequired()),
                 options.getSuggestedIdentifier()
         );
-        entries.add(Entry.of(item, referenceSetterWithIdentifier, options.getOwner()));
+        entries.add(Entry.of(item, referenceSetterWithIdentifier, options.getOwner(), findSetterTarget(setter)));
+    }
+
+    @Nullable
+    private Object findSetterTarget(Consumer<T> setter) {
+        Field[] declaredFields = setter.getClass().getDeclaredFields();
+        if (declaredFields.length == 1) {
+            Field declaredField = declaredFields[0];
+            declaredField.setAccessible(true);
+            try {
+                return declaredField.get(setter);
+            } catch (IllegalAccessException e) {
+                // this should not happen, as we've made it accessible...
+                return null;
+            }
+        }
+        return null;
     }
 
     protected void removeEntriesOwnedBy(Object owner) {
@@ -104,7 +127,7 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
         return Pair.of(referenceType, buildDependencies);
     }
 
-    public void buildReferencedItems(Consumer<Map<String, T>> referencedItemsConsumer) {
+    public void buildReferencedItems(Consumer<Map<String, T>> referencedItemsConsumer, @Nullable ReferencedItemBuildContext context) {
         Map<String, T> referencedItems = new LinkedHashMap<>();
         ReferenceActions referenceActions = new ReferenceActions();
         buildGroupedEntries()
@@ -257,21 +280,15 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
 
     @RequiredArgsConstructor(staticName = "of")
     @Getter
+    @EqualsAndHashCode(onlyExplicitlyIncluded = true)
     private static class Entry<T> {
+        @EqualsAndHashCode.Include
         private final T item;
         private final ReferenceSetterWithIdentifier<T> referenceSetterWithIdentifier;
         @Nullable
         private final Object owner;
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof Entry<?> && item.equals(((Entry<?>) obj).item);
-        }
-
-        @Override
-        public int hashCode() {
-            return item.hashCode();
-        }
+        @Nullable
+        private final Object setterTarget;
     }
 
     @RequiredArgsConstructor(staticName = "of")

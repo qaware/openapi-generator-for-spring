@@ -21,6 +21,7 @@
 package de.qaware.openapigeneratorforspring.common.reference.tag;
 
 import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemBuildContext;
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandler;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenAPIDefinitionAnnotationSupplier;
 import de.qaware.openapigeneratorforspring.model.OpenApi;
@@ -28,6 +29,7 @@ import de.qaware.openapigeneratorforspring.model.tag.Tag;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,7 +54,7 @@ public class ReferencedTagsHandlerImpl implements ReferencedTagsConsumer, Refere
 
 
     @Override
-    public void applyToOpenApi(OpenApi openApi) {
+    public void applyToOpenApi(OpenApi openApi, @Nullable ReferencedItemBuildContext context) {
         setCollectionIfNotEmpty(new ArrayList<>(tagsByName.values()), openApi::setTags);
     }
 

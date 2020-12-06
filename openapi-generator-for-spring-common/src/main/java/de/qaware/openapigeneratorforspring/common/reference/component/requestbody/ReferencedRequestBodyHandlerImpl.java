@@ -22,11 +22,13 @@ package de.qaware.openapigeneratorforspring.common.reference.component.requestbo
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
 import de.qaware.openapigeneratorforspring.common.reference.handler.AbstractDependentReferencedComponentHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemBuildContext;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -47,7 +49,7 @@ public class ReferencedRequestBodyHandlerImpl extends AbstractDependentReference
     }
 
     @Override
-    public void applyToComponents(Components components) {
-        storage.buildReferencedItems(components::setRequestBodies);
+    public void applyToComponents(Components components, @Nullable ReferencedItemBuildContext context) {
+        storage.buildReferencedItems(components::setRequestBodies, context);
     }
 }
