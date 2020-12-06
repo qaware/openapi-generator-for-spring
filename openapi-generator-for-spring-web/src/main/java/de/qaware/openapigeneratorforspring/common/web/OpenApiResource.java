@@ -87,7 +87,7 @@ public class OpenApiResource {
         return objectMapperSupplier.get(OPEN_API_JSON).writeValueAsString(openApi);
     }
 
-    public String getOpenApiAsYaml() throws OpenApiYamlNotSupportedException {
+    public String getOpenApiAsYaml() throws OpenApiYamlNotSupportedException, JsonProcessingException {
         if (openApiYamlMapper == null) {
             throw new OpenApiYamlNotSupportedException();
         }

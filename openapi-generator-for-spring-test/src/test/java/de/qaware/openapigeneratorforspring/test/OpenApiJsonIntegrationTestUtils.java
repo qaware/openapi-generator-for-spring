@@ -4,28 +4,41 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.concurrent.Callable;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OpenApiJsonIntegrationTestUtils {
-    private static final String RESOURCE_PATH_PREFIX = "/openApiJson/";
+    private static final String JSON_PATH_PREFIX = "/openApiJson/";
+    private static final String YAML_PATH_PREFIX = "/openApiYaml/";
 
     public static void assertMatchesOpenApiJson(String expectedJsonFile, Callable<String> jsonSupplier) throws Exception {
-        String expectedJson = readOpenApiJsonFile(expectedJsonFile);
+        String expectedJson = readFileAsString(JSON_PATH_PREFIX + expectedJsonFile);
         String actualJson = jsonSupplier.call();
         try {
             JSONAssert.assertEquals(expectedJson, actualJson, true);
         } catch (AssertionError e) {
-            throw new AssertionError(e.getMessage() + "\n\n Actual JSON: " + actualJson, e);
+            throw new AssertionError(e.getMessage() + "\n\n Actual JSON:\n" + actualJson, e);
         }
     }
 
-    public static String readOpenApiJsonFile(String jsonFile) throws IOException {
-        return readFileAsString(RESOURCE_PATH_PREFIX + jsonFile);
+    public static void assertMatchesOpenApiYaml(String expectedJsonFile, Callable<String> yamlSupplier) throws Exception {
+        Yaml yaml = new Yaml();
+        Map<String, Object> expectedYaml = yaml.load(readFileAsString(YAML_PATH_PREFIX + expectedJsonFile));
+        String actualYamlString = yamlSupplier.call();
+        Map<String, Object> actualYaml = yaml.load(actualYamlString);
+        try {
+            assertThat(actualYaml).isEqualTo(expectedYaml);
+        } catch (AssertionError e) {
+            throw new AssertionError(e.getMessage() + "\n\n Actual YAML:\n" + actualYamlString, e);
+        }
     }
 
     private static String readFileAsString(String path) throws IOException {

@@ -20,10 +20,11 @@
 
 package de.qaware.openapigeneratorforspring.common.supplier;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import de.qaware.openapigeneratorforspring.model.OpenApi;
 
 
 @FunctionalInterface
 public interface OpenApiYamlMapper {
-    String map(OpenApi openApi);
+    String map(OpenApi openApi) throws JsonProcessingException;
 }

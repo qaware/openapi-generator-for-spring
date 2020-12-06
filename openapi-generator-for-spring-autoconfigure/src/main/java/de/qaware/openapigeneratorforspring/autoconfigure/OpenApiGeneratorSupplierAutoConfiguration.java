@@ -20,18 +20,22 @@
 
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.supplier.DefaultOpenAPIDefinitionAnnotationSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.DefaultOpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.DefaultOpenApiServersSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.DefaultOpenApiSpringBootApplicationAnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.DefaultOpenApiSpringBootApplicationClassSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.DefaultOpenApiYamlMapper;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenAPIDefinitionAnnotationSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiServersSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationAnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationClassSupplier;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiYamlMapper;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
@@ -71,5 +75,11 @@ public class OpenApiGeneratorSupplierAutoConfiguration {
             OpenApiBaseUriSupplier openApiBaseUriSupplier // provided by WebMVC or WebFlux
     ) {
         return new DefaultOpenApiServersSupplier(openApiBaseUriSupplier);
+    }
+
+    @ConditionalOnClass(YAMLFactory.class)
+    @Bean
+    public OpenApiYamlMapper defaultOpenApiYamlMapper() {
+        return new DefaultOpenApiYamlMapper();
     }
 }

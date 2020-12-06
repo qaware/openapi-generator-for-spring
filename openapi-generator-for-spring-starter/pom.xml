@@ -29,6 +29,11 @@
             <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
             <artifactId>openapi-generator-for-spring-ui</artifactId>
         </dependency>
+        <!-- By default, offer YAML support. Library users can exclude this dependency if desired -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

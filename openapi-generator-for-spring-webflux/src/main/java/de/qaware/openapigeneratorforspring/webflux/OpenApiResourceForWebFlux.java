@@ -56,7 +56,7 @@ public class OpenApiResourceForWebFlux {
     }
 
     @SuppressWarnings("unused") // is used via reflection in registerMapping
-    public String getOpenApiAsYaml(ServerHttpRequest serverHttpRequest) throws OpenApiResource.OpenApiYamlNotSupportedException {
+    public String getOpenApiAsYaml(ServerHttpRequest serverHttpRequest) throws OpenApiResource.OpenApiYamlNotSupportedException, JsonProcessingException {
         SERVER_HTTP_REQUEST_THREAD_LOCAL.set(serverHttpRequest);
         return openApiResource.getOpenApiAsYaml();
     }
