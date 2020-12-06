@@ -25,6 +25,7 @@ import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedIt
 import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemHandlerFactory;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.OpenApi;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -89,32 +89,30 @@ public class ReferencedItemSupportFactory {
 
     private static class DependentReferencedComponentHandlersSupport {
         private final Components components;
-        private final Map<ReferenceType, Pair<DependentReferencedComponentHandler, List<ReferenceType>>> handlersMap;
+        private final Map<ReferenceType, HandlerWithDependencies> handlersMap;
 
         public DependentReferencedComponentHandlersSupport(Components components, List<DependentReferencedComponentHandler> handlers) {
             this.components = components;
-            this.handlersMap = handlers.stream().map(handler -> {
-                Pair<ReferenceType, List<ReferenceType>> buildDependencies = handler.getBuildDependencies();
-                return Pair.of(buildDependencies.getKey(), Pair.of(handler, buildDependencies.getValue()));
-            }).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+            this.handlersMap = handlers.stream()
+                    .map(HandlerWithDependencies::of)
+                    .collect(Collectors.toMap(HandlerWithDependencies::getType, x -> x, (a, b) -> {
+                        throw new IllegalStateException("Found more than one handler for handler for type " + a + " vs. " + b);
+                    }));
         }
 
         public void handle() {
             Map<ReferenceType, Set<ReferenceType>> transitiveDependencies = handlersMap.keySet().stream()
                     .collect(Collectors.toMap(r -> r, r -> buildTransitiveDependencies(r).collect(Collectors.toSet())));
-
-            handlersMap.entrySet().stream()
-                    .map(entry -> Pair.of(entry.getKey(), entry.getValue().getLeft()))
+            handlersMap.values().stream()
                     .sorted(buildDependencyComparator(transitiveDependencies)) // makes less-dependent handlers go first!
-                    .collect(Collectors.toMap(Pair::getKey, Pair::getValue, (a, b) -> a, LinkedHashMap::new))
-                    .forEach((referenceType, handler) -> {
-                        LOGGER.debug("Building components for {}", referenceType);
-                        handler.applyToComponents(components);
+                    .forEach(handler -> {
+                        LOGGER.debug("Building components for {}", handler.getType());
+                        handler.getHandler().applyToComponents(components);
                     });
         }
 
         private Stream<ReferenceType> buildTransitiveDependencies(ReferenceType referenceType) {
-            List<ReferenceType> dependencies = handlersMap.get(referenceType).getValue();
+            List<ReferenceType> dependencies = handlersMap.get(referenceType).getDirectDependencies();
             return Stream.of(
                     dependencies.stream(), // direct dependencies
                     dependencies.stream()  // together with recursively defined transitive ones
@@ -123,18 +121,31 @@ public class ReferencedItemSupportFactory {
             ).flatMap(x -> x);
         }
 
-        private static Comparator<Pair<ReferenceType, DependentReferencedComponentHandler>> buildDependencyComparator(Map<ReferenceType, Set<ReferenceType>> transitiveDependencies) {
+        private static Comparator<HandlerWithDependencies> buildDependencyComparator(Map<ReferenceType, Set<ReferenceType>> transitiveDependencies) {
             return (o1, o2) -> {
                 // o1 depends on o2
-                if (transitiveDependencies.get(o1.getKey()).contains(o2.getKey())) {
+                if (transitiveDependencies.get(o1.getType()).contains(o2.getType())) {
                     return 1;
                 }
                 // o2 depends on o1
-                if (transitiveDependencies.get(o2.getKey()).contains(o1.getKey())) {
+                if (transitiveDependencies.get(o2.getType()).contains(o1.getType())) {
                     return -1;
                 }
-                return 0;
+                return Comparator.<ReferenceType>naturalOrder().compare(o1.getType(), o2.getType());
             };
+        }
+
+        @RequiredArgsConstructor
+        @Getter
+        private static class HandlerWithDependencies {
+            private final DependentReferencedComponentHandler handler;
+            private final ReferenceType type;
+            private final List<ReferenceType> directDependencies;
+
+            public static HandlerWithDependencies of(DependentReferencedComponentHandler handler) {
+                Pair<ReferenceType, List<ReferenceType>> buildDependencies = handler.getBuildDependencies();
+                return new HandlerWithDependencies(handler, buildDependencies.getKey(), buildDependencies.getValue());
+            }
         }
     }
 
