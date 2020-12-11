@@ -96,11 +96,12 @@ This way, you can control which operations are considered for the specification 
 Swagger UI can also be customized to display more than one specification by providing a bean of type
 `OpenApiSwaggerUiApiDocsUrisSupplier`.
 
-See this
-[integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app10/App10Test.java)
+See the `*Configuration` class of this
+[integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app10)
 or this
-[integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app18/App18Test.java)
-for a fully working WebMVC or WebFlux example, respectively.
+[integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app18)
+for a fully working WebMVC or WebFlux example, respectively. Note that the test cases invoke the endpoint with different
+header or query parameters.
 
 ### How to customize the specification?
 
