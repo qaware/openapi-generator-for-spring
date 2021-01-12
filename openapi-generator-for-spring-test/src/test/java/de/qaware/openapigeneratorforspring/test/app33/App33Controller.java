@@ -26,6 +26,16 @@ public class App33Controller {
         return null;
     }
 
+    @GetMapping(value = "/mapping3/{otherParam}")
+    public void mapping3(@PathVariable ResourceId otherParam) {
+
+    }
+
+    @Value
+    static class ResourceId {
+        Long id;
+    }
+
     @Value
     static class SomeDto {
         @Min(0)

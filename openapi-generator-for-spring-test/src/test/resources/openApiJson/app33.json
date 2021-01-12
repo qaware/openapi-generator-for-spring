@@ -63,6 +63,27 @@
           }
         }
       }
+    },
+    "/mapping3/{otherParam}": {
+      "get": {
+        "operationId": "mapping3",
+        "parameters": [
+          {
+            "name": "otherParam",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default response"
+          }
+        }
+      }
     }
   },
   "components": {
