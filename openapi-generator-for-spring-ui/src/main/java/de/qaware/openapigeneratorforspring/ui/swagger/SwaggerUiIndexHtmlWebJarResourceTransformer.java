@@ -32,6 +32,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Nullable;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +45,8 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformer implements WebJarResour
     private static final MustacheTemplate INDEX_HTML_MUSTACHE_TEMPLATE = new MustacheTemplate("/swagger-ui/index.html.mustache");
 
     private final URI baseUri;
+    @Nullable
+    private final OpenApiSwaggerUiCsrfSupport csrfSupport;
     private final OpenApiConfigurationProperties properties;
     private final OpenApiSwaggerUiApiDocsUrisSupplier swaggerUiApiDocsUrisSupplier;
 
@@ -65,7 +68,9 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformer implements WebJarResour
         List<OpenApiSwaggerUiApiDocsUrisSupplier.ApiDocsUriWithName> apiDocsUris = swaggerUiApiDocsUrisSupplier.getApiDocsUris(apiDocsUri);
         TemplateContext context = TemplateContext.of(
                 apiDocsUris.size() == 1 ? apiDocsUris.iterator().next().getApiDocsUri() : null,
-                mapApiDocsUris(apiDocsUris)
+                mapApiDocsUris(apiDocsUris),
+                csrfSupport == null ? null
+                        : TemplateContext.Csrf.of(csrfSupport.getHeaderName(), csrfSupport.getToken())
         );
         return INDEX_HTML_MUSTACHE_TEMPLATE.execute(context);
     }
@@ -85,6 +90,15 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformer implements WebJarResour
         @Nullable
         private final URI url;
         private final List<UrlItem> urls;
+        private final Csrf csrf;
+
+        @RequiredArgsConstructor(staticName = "of")
+        @Getter
+        private static class Csrf {
+            private final List<String> allowedMethods = Arrays.asList("GET", "HEAD", "TRACE", "OPTIONS");
+            private final String headerName;
+            private final String token;
+        }
 
         @RequiredArgsConstructor(staticName = "of")
         @Getter

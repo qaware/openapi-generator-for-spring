@@ -21,12 +21,14 @@
 package de.qaware.openapigeneratorforspring.ui.webmvc;
 
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplier;
+import de.qaware.openapigeneratorforspring.ui.swagger.OpenApiSwaggerUiCsrfSupport;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformer;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerFactory;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerSupport;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarTransformedResourceBuilder;
 import lombok.RequiredArgsConstructor;
 
+import javax.annotation.Nullable;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,12 +39,23 @@ public class WebJarResourceTransformerSupportFactoryForWebMvc {
     private final List<WebJarResourceTransformerFactory> resourceTransformerFactories;
     private final OpenApiBaseUriSupplier openApiBaseUriSupplier;
     private final WebJarTransformedResourceBuilder transformedResourceBuilder;
+    @Nullable
+    private final OpenApiSwaggerUiCsrfSupportProviderForWebMvc openApiSwaggerUiCsrfSupportProviderForWebMvc;
 
     public WebJarResourceTransformerSupport create() {
         URI baseUri = openApiBaseUriSupplier.getBaseUri();
+        OpenApiSwaggerUiCsrfSupport csrfSupport = getCsrfSupport();
         List<WebJarResourceTransformer> transformers = resourceTransformerFactories.stream()
-                .map(factory -> factory.create(baseUri))
+                .map(factory -> factory.create(baseUri, csrfSupport))
                 .collect(Collectors.toList());
         return new WebJarResourceTransformerSupport(transformers, transformedResourceBuilder);
+    }
+
+    @Nullable
+    private OpenApiSwaggerUiCsrfSupport getCsrfSupport() {
+        if (openApiSwaggerUiCsrfSupportProviderForWebMvc == null) {
+            return null;
+        }
+        return openApiSwaggerUiCsrfSupportProviderForWebMvc.getCsrfSupport();
     }
 }

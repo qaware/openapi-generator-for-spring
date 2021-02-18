@@ -2,7 +2,7 @@
  * #%L
  * OpenAPI Generator for Spring Boot :: UI
  * %%
- * Copyright (C) 2020 QAware GmbH
+ * Copyright (C) 2020 - 2021 QAware GmbH
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,14 @@
  * #L%
  */
 
-package de.qaware.openapigeneratorforspring.ui.webjar;
+package de.qaware.openapigeneratorforspring.ui.swagger;
 
-import de.qaware.openapigeneratorforspring.ui.swagger.OpenApiSwaggerUiCsrfSupport;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import javax.annotation.Nullable;
-import java.net.URI;
-
-public interface WebJarResourceTransformerFactory {
-    WebJarResourceTransformer create(URI baseUri, @Nullable OpenApiSwaggerUiCsrfSupport csrfSupport);
+@RequiredArgsConstructor(staticName = "of")
+@Getter
+public final class OpenApiSwaggerUiCsrfSupport {
+    private final String headerName;
+    private final String token;
 }

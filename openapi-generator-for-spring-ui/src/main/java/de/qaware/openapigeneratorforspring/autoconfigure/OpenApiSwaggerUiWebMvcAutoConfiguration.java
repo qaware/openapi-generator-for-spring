@@ -22,38 +22,63 @@ package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplier;
 import de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiConfigurationProperties;
+import de.qaware.openapigeneratorforspring.ui.swagger.OpenApiSwaggerUiCsrfSupport;
 import de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiSupport;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerFactory;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarTransformedResourceBuilder;
+import de.qaware.openapigeneratorforspring.ui.webmvc.OpenApiSwaggerUiCsrfSupportProviderForWebMvc;
 import de.qaware.openapigeneratorforspring.ui.webmvc.WebJarResourceTransformerSupportFactoryForWebMvc;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.servlet.ServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.util.AntPathMatcher.DEFAULT_PATH_SEPARATOR;
 
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @Conditional(OpenApiSwaggerUiConfigurationProperties.EnabledCondition.class)
+@Import(OpenApiSwaggerUiWebMvcAutoConfiguration.CsrfConfiguration.class)
 public class OpenApiSwaggerUiWebMvcAutoConfiguration {
 
     @Bean
     public WebJarResourceTransformerSupportFactoryForWebMvc webJarResourceTransformersFactoryForWebMvc(
             List<WebJarResourceTransformerFactory> webJarResourceTransformerFactories,
             OpenApiBaseUriSupplier openApiBaseUriSupplier,
-            WebJarTransformedResourceBuilder transformedResourceBuilder
+            WebJarTransformedResourceBuilder transformedResourceBuilder,
+            Optional<OpenApiSwaggerUiCsrfSupportProviderForWebMvc> openApiCsrfSupportProviderForWebMvc
     ) {
-        return new WebJarResourceTransformerSupportFactoryForWebMvc(webJarResourceTransformerFactories, openApiBaseUriSupplier, transformedResourceBuilder);
+        return new WebJarResourceTransformerSupportFactoryForWebMvc(webJarResourceTransformerFactories, openApiBaseUriSupplier,
+                transformedResourceBuilder, openApiCsrfSupportProviderForWebMvc.orElse(null));
+    }
+
+    @ConditionalOnClass(CsrfToken.class)
+    static class CsrfConfiguration {
+        @Bean
+        public OpenApiSwaggerUiCsrfSupportProviderForWebMvc openApiCsrfSupportProviderForWebFlux(ServletRequest servletRequest) {
+            return () -> {
+                Object csrfTokenAttribute = servletRequest.getAttribute(CsrfToken.class.getName());
+                if (csrfTokenAttribute instanceof CsrfToken) {
+                    CsrfToken csrfToken = (CsrfToken) csrfTokenAttribute;
+                    return OpenApiSwaggerUiCsrfSupport.of(csrfToken.getHeaderName(), csrfToken.getToken());
+                }
+                return null;
+            };
+        }
     }
 
     @Bean

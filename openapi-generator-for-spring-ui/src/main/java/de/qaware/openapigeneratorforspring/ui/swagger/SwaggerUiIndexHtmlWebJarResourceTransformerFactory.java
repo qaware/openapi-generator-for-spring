@@ -26,6 +26,7 @@ import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformer;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerFactory;
 import lombok.RequiredArgsConstructor;
 
+import javax.annotation.Nullable;
 import java.net.URI;
 
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformerFactory implements WebJa
     private final OpenApiSwaggerUiApiDocsUrisSupplier swaggerUiApiDocsUrisSupplier;
 
     @Override
-    public WebJarResourceTransformer create(URI baseUri) {
-        return new SwaggerUiIndexHtmlWebJarResourceTransformer(baseUri, properties, swaggerUiApiDocsUrisSupplier);
+    public WebJarResourceTransformer create(URI baseUri, @Nullable OpenApiSwaggerUiCsrfSupport csrfSupport) {
+        return new SwaggerUiIndexHtmlWebJarResourceTransformer(baseUri, csrfSupport, properties, swaggerUiApiDocsUrisSupplier);
     }
 }

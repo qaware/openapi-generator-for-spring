@@ -3,7 +3,6 @@ package de.qaware.openapigeneratorforspring.test.app29;
 import de.qaware.openapigeneratorforspring.test.AbstractOpenApiGeneratorWebIntTest;
 import de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiIndexHtmlWebJarResourceTransformerFactory;
 import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.TestPropertySource;
 
@@ -24,8 +23,8 @@ public class App29Test extends AbstractOpenApiGeneratorWebIntTest {
     @Test
     public void testSwaggerUiIndexHtmlResourceIsCached() throws Exception {
         assertThat(getResponseBody("/swagger-ui/index.html")).isNotBlank();
-        assertThat(getResponseBody("/swagger-ui/index.html")).isNotBlank();
+        assertThat(getResponseBody("/swagger-ui/index.html")).contains(CSRF_TOKEN_HEADER_NAME);
         // with caching, resource is only transformed once
-        verify(transformerFactory, times(1)).create(any());
+        verify(transformerFactory, times(1)).create(any(), any());
     }
 }

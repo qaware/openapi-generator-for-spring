@@ -34,7 +34,10 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformerTest {
     @Before
     public void setUp() throws Exception {
         when(properties.getApiDocsPath()).thenReturn(API_DOCS_PATH);
-        sut = new SwaggerUiIndexHtmlWebJarResourceTransformer(URI.create(BASE_URI), properties, swaggerUiApiDocsUrisSupplier);
+        sut = new SwaggerUiIndexHtmlWebJarResourceTransformer(URI.create(BASE_URI),
+                OpenApiSwaggerUiCsrfSupport.of("X-CSRF-TOKEN", "SOME-CSRF-TOKEN"),
+                properties, swaggerUiApiDocsUrisSupplier
+        );
     }
 
     @Test

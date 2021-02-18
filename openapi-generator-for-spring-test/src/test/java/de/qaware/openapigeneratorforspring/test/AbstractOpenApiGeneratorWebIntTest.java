@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,7 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import({
+        OpenApiDisabledSpringSecurityTestConfiguration.class
+})
 public abstract class AbstractOpenApiGeneratorWebIntTest {
+
+    protected static final String CSRF_TOKEN_HEADER_NAME = "X-CSRF-TOKEN";
 
     @Autowired
     private ServerProperties serverProperties;

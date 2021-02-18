@@ -38,7 +38,7 @@ public abstract class AbstractOpenApiGeneratorWebCustomPathIntTest extends Abstr
         assertThat(getResponseBody(PATH_TO_INDEX_HTML)).contains(buildHost() + PATH_TO_API_DOCS);
         assertThat(getResponseBody(PATH_TO_INDEX_HTML)).isNotBlank();
         // no ui resource caching means it's called 2 times
-        verify(transformerFactory, times(2)).create(any());
+        verify(transformerFactory, times(2)).create(any(), any());
     }
 
     @Test

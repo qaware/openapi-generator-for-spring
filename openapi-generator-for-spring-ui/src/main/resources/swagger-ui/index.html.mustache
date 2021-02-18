@@ -44,6 +44,14 @@
             {{/url}}
             dom_id: '#swagger-ui',
             deepLinking: true,
+            {{#csrf}}
+                requestInterceptor: (request) => {
+                    if ([{{#csrf.allowedMethods}}{{^-first}},{{/-first}}'{{this}}'{{/csrf.allowedMethods}}].indexOf(request.method) == -1) {
+                        request.headers['{{csrf.headerName}}'] = '{{csrf.token}}';
+                    }
+                    return request;
+                },
+            {{/csrf}}
             presets: [
                 SwaggerUIBundle.presets.apis
                 {{^url}}, SwaggerUIStandalonePreset{{/url}}

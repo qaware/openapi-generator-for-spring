@@ -20,6 +20,7 @@
 
 package de.qaware.openapigeneratorforspring.ui.webflux;
 
+import de.qaware.openapigeneratorforspring.ui.swagger.OpenApiSwaggerUiCsrfSupport;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformer;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerFactory;
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerSupport;
@@ -27,7 +28,9 @@ import de.qaware.openapigeneratorforspring.ui.webjar.WebJarTransformedResourceBu
 import de.qaware.openapigeneratorforspring.webflux.OpenApiBaseUriSupplierForWebFlux;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
+import javax.annotation.Nullable;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,12 +40,26 @@ public class WebJarResourceTransformerSupportFactoryForWebFlux {
 
     private final List<WebJarResourceTransformerFactory> resourceTransformerFactories;
     private final WebJarTransformedResourceBuilder transformedResourceBuilder;
+    @Nullable
+    private final OpenApiSwaggerUiCsrfSupportProviderForWebFlux openApiSwaggerUiCsrfSupportProviderForWebFlux;
 
-    public WebJarResourceTransformerSupport create(ServerWebExchange exchange) {
+    public Mono<WebJarResourceTransformerSupport> create(ServerWebExchange exchange) {
         URI baseUri = OpenApiBaseUriSupplierForWebFlux.getBaseUri(exchange);
-        List<WebJarResourceTransformer> transformers = resourceTransformerFactories.stream()
-                .map(factory -> factory.create(baseUri))
+        return getCsrfSupport(exchange)
+                .map(csrfSupport -> new WebJarResourceTransformerSupport(createTransformers(baseUri, csrfSupport), transformedResourceBuilder))
+                .switchIfEmpty(Mono.fromSupplier(() -> new WebJarResourceTransformerSupport(createTransformers(baseUri, null), transformedResourceBuilder)));
+    }
+
+    private List<WebJarResourceTransformer> createTransformers(URI baseUri, OpenApiSwaggerUiCsrfSupport csrfSupport) {
+        return resourceTransformerFactories.stream()
+                .map(factory -> factory.create(baseUri, csrfSupport))
                 .collect(Collectors.toList());
-        return new WebJarResourceTransformerSupport(transformers, transformedResourceBuilder);
+    }
+
+    private Mono<OpenApiSwaggerUiCsrfSupport> getCsrfSupport(ServerWebExchange exchange) {
+        if (openApiSwaggerUiCsrfSupportProviderForWebFlux == null) {
+            return Mono.empty();
+        }
+        return openApiSwaggerUiCsrfSupportProviderForWebFlux.getCsrfSupport(exchange);
     }
 }

@@ -24,6 +24,10 @@ import org.springframework.core.io.Resource;
 
 import java.util.function.Function;
 
+/**
+ * Transformer extends {@link Function} to make
+ * use of {@link Function#andThen} chaining.
+ */
 public interface WebJarResourceTransformer extends Function<String, String> {
     boolean matches(Resource resource);
 }
