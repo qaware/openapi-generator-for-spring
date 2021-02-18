@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = "openapi-generator-for-spring.ui.cache-ui-resources=true")
 public class App28Test extends AbstractOpenApiGeneratorWebIntTest {
 
