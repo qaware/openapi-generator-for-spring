@@ -31,10 +31,16 @@
 			</exclusions>
 		</dependency>
 
+		<!-- Show CSRF support in Swagger UI -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
 			<artifactId>openapi-generator-for-spring-starter</artifactId>
-			<version>1.0.1</version>
+			<version>1.1.0</version>
 			<!-- The library works without YAML -->
 			<exclusions>
 				<exclusion>
