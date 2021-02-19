@@ -91,6 +91,7 @@ public class App32Configuration {
 
             @SuppressWarnings("unchecked")
             private Class<? extends Throwable> uncheckedCast(Class<?> type) {
+                // there's no way around it, see https://github.com/spring-projects/spring-framework/pull/26206
                 return (Class<? extends Throwable>) type;
             }
         };

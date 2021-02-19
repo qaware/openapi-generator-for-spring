@@ -181,10 +181,6 @@ is found.
 See [this configuration of the integration test](openapi-generator-for-spring-test/src/test/java/de/qaware/openapigeneratorforspring/test/app32/App32Configuration.java)
 for a fully worked out example.
 
-Unfortunately, an unchecked cast is required because of an insufficient API in Spring's
-`org.springframework.web.method.annotation.ExceptionHandlerMethodResolver.resolveMethodByExceptionType`
-method, until [this PR](https://github.com/spring-projects/spring-framework/pull/26206) fixes it.
-
 ## Why not another library?
 
 This library is based on experience while using [Spring Fox](https://github.com/springfox/springfox)
