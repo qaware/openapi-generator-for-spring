@@ -241,6 +241,11 @@
                         </roots>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.6</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -318,6 +323,7 @@
                                     <head>Implementation note:</head>
                                 </tag>
                             </tags>
+                            <quiet>true</quiet>
                         </configuration>
                         <executions>
                             <execution>
@@ -333,7 +339,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
