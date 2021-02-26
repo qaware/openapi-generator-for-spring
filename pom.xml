@@ -246,6 +246,11 @@
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>1.6</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.7</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -282,7 +287,7 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
                     <pushChanges>false</pushChanges>
-                    <releaseProfiles>release</releaseProfiles>
+                    <releaseProfiles>deploy</releaseProfiles>
                 </configuration>
             </plugin>
         </plugins>
@@ -296,6 +301,19 @@
             </activation>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <!-- The Base URL of Nexus instance where we want to stage -->
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <!-- The server "id" element from settings to use authentication from,
+                                 see build.yml -> "server-id" from actions/setup-java@v1 -->
+                            <serverId>ossrh</serverId>
+                        </configuration>
+                    </plugin>
+
                     <!-- Create sources JAR -->
                     <plugin>
                         <artifactId>maven-source-plugin</artifactId>
@@ -362,17 +380,6 @@
                     </plugin>
                 </plugins>
             </build>
-
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-                <repository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-                </repository>
-            </distributionManagement>
         </profile>
     </profiles>
 
