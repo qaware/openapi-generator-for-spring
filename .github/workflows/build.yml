@@ -22,6 +22,11 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+          server-id: ossrh
+          server-username: SONATYPE_USER
+          server-password: SONATYPE_PASSWORD
+          gpg-private-key: ${{ secrets.ARTIFACT_SIGNING_GPG_PRIVATE_KEY }}
+          gpg-passphrase: ARTIFACT_SIGNING_GPG_PRIVATE_KEY_PASSPHRASE
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
         with:
@@ -34,7 +39,7 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build with Maven
+      - name: Build & Analyze
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
         env:
           MAVEN_OPTS: >- # strip any newlines
@@ -42,3 +47,13 @@ jobs:
             -Dorg.slf4j.simpleLogger.log.org.codehaus.mojo.license.model.LicenseRepository=warn
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Deploy snapshot
+        if: github.ref == 'refs/heads/master'
+        run: mvn -B deploy -Pdeploy -DskipTests
+        env:
+          MAVEN_OPTS: >- # strip any newlines
+            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+            -Dorg.slf4j.simpleLogger.log.org.codehaus.mojo.license.model.LicenseRepository=warn
+          SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          ARTIFACT_SIGNING_GPG_PRIVATE_KEY_PASSPHRASE: ${{ secrets.ARTIFACT_SIGNING_GPG_PRIVATE_KEY_PASSPHRASE }}
