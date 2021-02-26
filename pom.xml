@@ -100,7 +100,6 @@
         <module>openapi-generator-for-spring-api</module>
         <module>openapi-generator-for-spring-ui</module>
         <module>openapi-generator-for-spring-starter</module>
-        <module>openapi-generator-for-spring-test</module>
     </modules>
 
     <dependencyManagement>
@@ -294,6 +293,24 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>no-deploy</id>
+            <!--
+            According to https://github.com/sonatype/nexus-maven-plugins/tree/master/staging/maven-plugin
+            skipNexusStagingDeployMojo may not be set to true in the last reactor module. Because we don't
+            want to deploy our last module, nor a dummy module, we simply omit the relevant modules when
+            a deploy is in progress.
+            -->
+            <activation>
+                <property>
+                    <name>!deploy</name>
+                </property>
+            </activation>
+            <modules>
+                <module>openapi-generator-for-spring-test</module>
+            </modules>
+        </profile>
+
         <profile>
             <id>deploy</id>
             <activation>
