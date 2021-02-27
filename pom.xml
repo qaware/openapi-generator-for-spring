@@ -314,7 +314,9 @@
         <profile>
             <id>deploy</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>deploy</name>
+                </property>
             </activation>
             <build>
                 <plugins>
