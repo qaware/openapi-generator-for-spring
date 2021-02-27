@@ -330,6 +330,8 @@
                             <!-- The server "id" element from settings to use authentication from,
                                  see build.yml -> "server-id" from actions/setup-java@v1 -->
                             <serverId>ossrh</serverId>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <autoDropAfterRelease>true</autoDropAfterRelease>
                         </configuration>
                     </plugin>
 
