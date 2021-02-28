@@ -1,5 +1,5 @@
 # This workflow will build a Java project with Maven including tests
-# Also runs SonarQube analysis
+# Also runs SonarQube analysis and deploys artifacts
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
 name: build
@@ -14,6 +14,10 @@ on:
 jobs:
   build-on-linux:
     runs-on: ubuntu-latest
+    env:
+      MAVEN_OPTS: >- # strip any newlines
+        -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        -Dorg.slf4j.simpleLogger.log.org.codehaus.mojo.license.model.LicenseRepository=warn
     steps:
       - uses: actions/checkout@v2
         with:
@@ -42,18 +46,12 @@ jobs:
       - name: Build & Analyze
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
         env:
-          MAVEN_OPTS: >- # strip any newlines
-            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-            -Dorg.slf4j.simpleLogger.log.org.codehaus.mojo.license.model.LicenseRepository=warn
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: Deploy snapshot
+      - name: Deploy
         if: github.ref == 'refs/heads/master'
         run: mvn -B deploy -Ddeploy -DskipTests
         env:
-          MAVEN_OPTS: >- # strip any newlines
-            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-            -Dorg.slf4j.simpleLogger.log.org.codehaus.mojo.license.model.LicenseRepository=warn
           SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           ARTIFACT_SIGNING_GPG_PRIVATE_KEY_PASSPHRASE: ${{ secrets.ARTIFACT_SIGNING_GPG_PRIVATE_KEY_PASSPHRASE }}
