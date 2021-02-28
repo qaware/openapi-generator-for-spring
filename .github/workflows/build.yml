@@ -31,6 +31,10 @@ jobs:
           server-password: SONATYPE_PASSWORD
           gpg-private-key: ${{ secrets.ARTIFACT_SIGNING_GPG_PRIVATE_KEY }}
           gpg-passphrase: ARTIFACT_SIGNING_GPG_PRIVATE_KEY_PASSPHRASE
+      - name: Wait for previous workflows to complete
+        uses: softprops/turnstyle@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
         with:
