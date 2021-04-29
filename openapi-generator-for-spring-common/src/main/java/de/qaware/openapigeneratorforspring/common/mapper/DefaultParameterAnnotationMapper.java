@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 
+import static de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver.Mode.FOR_DESERIALIZATION;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIf;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
@@ -73,10 +74,10 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
             parameter.setAllowReserved(true);
         }
         ReferencedSchemaConsumer referencedSchemaConsumer = mapperContext.getReferencedItemConsumer(ReferencedSchemaConsumer.class);
-        setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(annotation.schema(), referencedSchemaConsumer),
+        setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(FOR_DESERIALIZATION, annotation.schema(), referencedSchemaConsumer),
                 schema -> referencedSchemaConsumer.maybeAsReference(schema, parameter::setSchema)
         );
-        setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), Parameter.class, mapperContext), parameter::setContent);
+        setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), Parameter.class, FOR_DESERIALIZATION, mapperContext), parameter::setContent);
         ReferencedExamplesConsumer referencedExamplesConsumer = mapperContext.getReferencedItemConsumer(ReferencedExamplesConsumer.class);
         setMapIfNotEmpty(exampleObjectAnnotationMapper.mapArray(annotation.examples()),
                 examples -> referencedExamplesConsumer.maybeAsReference(examples, parameter::setExamples)

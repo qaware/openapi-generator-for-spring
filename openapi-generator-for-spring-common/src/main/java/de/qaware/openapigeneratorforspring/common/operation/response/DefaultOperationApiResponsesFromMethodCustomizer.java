@@ -39,6 +39,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
+import static de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver.Mode.FOR_SERIALIZATION;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 
 @RequiredArgsConstructor
@@ -58,7 +59,7 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
         firstNonNull(handlerMethodResponseMappers, mapper -> mapper.map(handlerMethod)).ifPresent(handlerMethodResponses -> handlerMethodResponses.forEach(handlerMethodResponse -> {
             ApiResponse defaultApiResponse = getAndReplaceDefaultApiResponse(apiResponses, handlerMethodResponse.getResponseCode());
             Content content = Optional.ofNullable(defaultApiResponse.getContent()).orElseGet(Content::new);
-            addMediaTypesToContent(content, handlerMethod, handlerMethodResponse, operationBuilderContext.getReferencedItemConsumer(ReferencedSchemaConsumer.class));
+            addMediaTypesToApiResponseContent(content, handlerMethod, handlerMethodResponse, operationBuilderContext.getReferencedItemConsumer(ReferencedSchemaConsumer.class));
             if (!content.isEmpty()) {
                 defaultApiResponse.setContent(content);
             }
@@ -66,7 +67,7 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
         }));
     }
 
-    private void addMediaTypesToContent(Content content, HandlerMethod handlerMethod, HandlerMethod.Response handlerMethodResponse, ReferencedSchemaConsumer referencedSchemaConsumer) {
+    private void addMediaTypesToApiResponseContent(Content content, HandlerMethod handlerMethod, HandlerMethod.Response handlerMethodResponse, ReferencedSchemaConsumer referencedSchemaConsumer) {
         handlerMethodResponse.getProducesContentTypes().forEach(contentType -> {
             MediaType mediaType = content.getOrDefault(contentType, new MediaType());
             // we might have already set some media type, only amend this if the schema is not present
@@ -86,7 +87,7 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
                                     return Stream.empty();
                                 }
                             });
-                    schemaResolver.resolveFromType(responseType.getType(), annotationsSupplier,
+                    schemaResolver.resolveFromType(FOR_SERIALIZATION, responseType.getType(), annotationsSupplier,
                             referencedSchemaConsumer,
                             mediaType::setSchema
                     );

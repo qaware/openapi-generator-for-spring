@@ -54,14 +54,14 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
     private final SchemaResolver schemaResolver;
 
     @Override
-    public Schema buildFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
-        Schema schema = schemaResolver.resolveFromClassWithoutReference(schemaAnnotation.implementation(), referencedSchemaConsumer);
-        applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer);
+    public Schema buildFromAnnotation(SchemaResolver.Mode mode, io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
+        Schema schema = schemaResolver.resolveFromClassWithoutReference(mode, schemaAnnotation.implementation(), referencedSchemaConsumer);
+        applyFromAnnotation(mode, schema, schemaAnnotation, referencedSchemaConsumer);
         return schema;
     }
 
     @Override
-    public void applyFromAnnotation(Schema schema, io.swagger.v3.oas.annotations.media.Schema annotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
+    public void applyFromAnnotation(SchemaResolver.Mode mode, Schema schema, io.swagger.v3.oas.annotations.media.Schema annotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
 
         setStringIfNotBlank(annotation.name(), schema::setName);
         setStringIfNotBlank(annotation.title(), schema::setTitle);
@@ -88,12 +88,12 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
 
         setStringIfNotBlank(annotation.defaultValue(), value -> schema.setDefaultValue(parsableValueMapper.parse(value)));
 
-        setDiscriminator(schema, annotation, referencedSchemaConsumer);
+        setDiscriminator(mode, schema, annotation, referencedSchemaConsumer);
 
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(annotation.extensions()), schema::setExtensions);
     }
 
-    private void setDiscriminator(Schema schema, io.swagger.v3.oas.annotations.media.Schema annotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
+    private void setDiscriminator(SchemaResolver.Mode mode, Schema schema, io.swagger.v3.oas.annotations.media.Schema annotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
         String propertyName = annotation.discriminatorProperty();
         DiscriminatorMapping[] mappings = annotation.discriminatorMapping();
         if (StringUtils.isBlank(propertyName) || ArrayUtils.isEmpty(mappings)) {
@@ -109,7 +109,7 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         );
 
         for (DiscriminatorMapping mapping : mappings) {
-            Schema mappingSchema = schemaResolver.resolveFromClassWithoutReference(mapping.schema(), referencedSchemaConsumer);
+            Schema mappingSchema = schemaResolver.resolveFromClassWithoutReference(mode, mapping.schema(), referencedSchemaConsumer);
             referencedSchemaConsumer.alwaysAsReference(mappingSchema, schemaReference -> schemaReferenceMapping.put(mapping.value(), schemaReference.getRef()));
         }
     }

@@ -69,20 +69,20 @@ public class DefaultSchemaResolver implements SchemaResolver {
     private final List<TypeResolver> typeResolvers;
 
     @Override
-    public Schema resolveFromClassWithoutReference(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer) {
-        return resolveFromTypeWithoutReference(clazz, annotationsSupplierFactory.createFromAnnotatedElement(clazz), referencedSchemaConsumer);
+    public Schema resolveFromClassWithoutReference(Mode mode, Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer) {
+        return resolveFromTypeWithoutReference(mode, clazz, annotationsSupplierFactory.createFromAnnotatedElement(clazz), referencedSchemaConsumer);
     }
 
     @Override
-    public void resolveFromType(Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer, Consumer<Schema> schemaSetter) {
-        setIfNotEmpty(resolveFromTypeWithoutReference(type, annotationsSupplier, referencedSchemaConsumer),
+    public void resolveFromType(Mode mode, Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer, Consumer<Schema> schemaSetter) {
+        setIfNotEmpty(resolveFromTypeWithoutReference(mode, type, annotationsSupplier, referencedSchemaConsumer),
                 schema -> referencedSchemaConsumer.maybeAsReference(schema, schemaSetter)
         );
     }
 
-    private Schema resolveFromTypeWithoutReference(Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer) {
+    private Schema resolveFromTypeWithoutReference(Mode mode, Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer) {
         ObjectMapper mapper = openApiObjectMapperSupplier.get(SCHEMA_BUILDING);
-        Context context = new Context(schemaAnnotationMapperFactory.create(this), referencedSchemaConsumer, mapper);
+        Context context = new Context(mode, schemaAnnotationMapperFactory.create(this), referencedSchemaConsumer, mapper);
         JavaType javaType = mapper.constructType(type);
         Schema schema = context.buildSchemaFromTypeRecursively(javaType, annotationsSupplier);
         context.resolveReferencedSchemas();
@@ -92,6 +92,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
     @RequiredArgsConstructor
     private class Context implements RecursiveSchemaBuilder {
 
+        private final Mode mode;
         private final SchemaAnnotationMapper schemaAnnotationMapper;
         private final ReferencedSchemaConsumer referencedSchemaConsumer;
         private final ObjectMapper objectMapper;
@@ -185,7 +186,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     // apply in reverse order
                     .collect(Collectors.toCollection(LinkedList::new))
                     .descendingIterator()
-                    .forEachRemaining(schemaAnnotation -> schemaAnnotationMapper.applyFromAnnotation(schema, schemaAnnotation, referencedSchemaConsumer));
+                    .forEachRemaining(schemaAnnotation -> schemaAnnotationMapper.applyFromAnnotation(mode, schema, schemaAnnotation, referencedSchemaConsumer));
 
             // then run the other customizers
             schemaCustomizers.forEach(customizer -> customizer.customize(schema, initialType.getType(), initialType.getAnnotationsSupplier()));

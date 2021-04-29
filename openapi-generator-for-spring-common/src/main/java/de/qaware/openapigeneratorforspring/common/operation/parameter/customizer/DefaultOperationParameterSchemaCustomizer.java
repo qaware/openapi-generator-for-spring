@@ -25,6 +25,8 @@ import de.qaware.openapigeneratorforspring.common.reference.component.schema.Ref
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import lombok.RequiredArgsConstructor;
 
+import static de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver.Mode.FOR_DESERIALIZATION;
+
 @RequiredArgsConstructor
 public class DefaultOperationParameterSchemaCustomizer implements OperationParameterCustomizer {
     private final SchemaResolver schemaResolver;
@@ -36,7 +38,7 @@ public class DefaultOperationParameterSchemaCustomizer implements OperationParam
                     ReferencedSchemaConsumer referencedSchemaConsumer = context.getReferencedItemConsumer(ReferencedSchemaConsumer.class);
                     AnnotationsSupplier annotationsSupplier = handlerMethodParameter.getAnnotationsSupplier()
                             .andThen(parameterType.getAnnotationsSupplier());
-                    schemaResolver.resolveFromType(parameterType.getType(), annotationsSupplier, referencedSchemaConsumer, parameter::setSchema);
+                    schemaResolver.resolveFromType(FOR_DESERIALIZATION, parameterType.getType(), annotationsSupplier, referencedSchemaConsumer, parameter::setSchema);
                 })
         );
     }

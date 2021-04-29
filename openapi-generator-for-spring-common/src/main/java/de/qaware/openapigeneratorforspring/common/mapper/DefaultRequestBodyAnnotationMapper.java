@@ -23,6 +23,7 @@ package de.qaware.openapigeneratorforspring.common.mapper;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import lombok.RequiredArgsConstructor;
 
+import static de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver.Mode.FOR_DESERIALIZATION;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
@@ -41,7 +42,7 @@ public class DefaultRequestBodyAnnotationMapper implements RequestBodyAnnotation
     @Override
     public void applyFromAnnotation(RequestBody requestBody, io.swagger.v3.oas.annotations.parameters.RequestBody annotation, MapperContext mapperContext) {
         setStringIfNotBlank(annotation.description(), requestBody::setDescription);
-        setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), RequestBody.class, mapperContext), requestBody::setContent);
+        setMapIfNotEmpty(contentAnnotationMapper.mapArray(annotation.content(), RequestBody.class, FOR_DESERIALIZATION, mapperContext), requestBody::setContent);
         if (annotation.required()) {
             requestBody.setRequired(true);
         }
