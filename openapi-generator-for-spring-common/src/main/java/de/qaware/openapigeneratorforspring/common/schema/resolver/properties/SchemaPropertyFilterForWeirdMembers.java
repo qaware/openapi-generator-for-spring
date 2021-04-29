@@ -24,8 +24,6 @@ import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Objects;
-
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils.earlierThan;
 
 public class SchemaPropertyFilterForWeirdMembers implements SchemaPropertyFilter {
@@ -34,8 +32,8 @@ public class SchemaPropertyFilterForWeirdMembers implements SchemaPropertyFilter
 
     @Override
     public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType) {
-        // safe-guard weird properties
-        return Objects.nonNull(property.getAccessor()) && StringUtils.isNotBlank(property.getName());
+        // properties must have a name, otherwise: ignore them
+        return StringUtils.isNotBlank(property.getName());
     }
 
     @Override

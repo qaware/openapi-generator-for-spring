@@ -35,6 +35,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.Def
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilter;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilterForIgnoredMembers;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilterForWeirdMembers;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForProperties;
@@ -181,5 +182,11 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public SchemaPropertyFilterForIgnoredMembers defaultSchemaPropertyFilterForIgnoredMembers() {
         return new SchemaPropertyFilterForIgnoredMembers();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SchemaPropertyFilterForWeirdMembers defaultSchemaPropertyFilterForWeirdMembers() {
+        return new SchemaPropertyFilterForWeirdMembers();
     }
 }
