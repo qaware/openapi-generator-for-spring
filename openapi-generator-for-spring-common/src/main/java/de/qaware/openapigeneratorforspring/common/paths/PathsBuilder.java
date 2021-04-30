@@ -31,6 +31,7 @@ import de.qaware.openapigeneratorforspring.model.path.PathItem;
 import de.qaware.openapigeneratorforspring.model.path.Paths;
 import de.qaware.openapigeneratorforspring.model.path.RequestMethod;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -61,6 +62,7 @@ public class PathsBuilder {
         handlerMethodsProvider.getHandlerMethods().stream()
                 .flatMap(handlerMethodWithInfo ->
                         handlerMethodWithInfo.getPathPatterns().stream()
+                                .map(pathPattern -> StringUtils.isBlank(pathPattern) ? "/" : pathPattern)
                                 .map(pathPattern -> Pair.of(pathPattern, handlerMethodWithInfo))
                 )
                 .filter(item -> isAcceptedByAllHandlerMethodFilters(item.getRight()))
