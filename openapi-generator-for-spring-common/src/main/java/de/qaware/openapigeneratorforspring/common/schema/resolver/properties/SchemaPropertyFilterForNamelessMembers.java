@@ -21,17 +21,18 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.properties;
 
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import org.apache.commons.lang3.StringUtils;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils.earlierThan;
 
-public class SchemaPropertyFilterForWeirdMembers implements SchemaPropertyFilter {
+public class SchemaPropertyFilterForNamelessMembers implements SchemaPropertyFilter {
     // Run a little bit earlier to get rid of weird properties early
     public static final int ORDER = earlierThan(DEFAULT_ORDER);
 
     @Override
-    public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType) {
+    public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType, MapperConfig<?> mapperConfig) {
         // properties must have a name, otherwise: ignore them
         return StringUtils.isNotBlank(property.getName());
     }

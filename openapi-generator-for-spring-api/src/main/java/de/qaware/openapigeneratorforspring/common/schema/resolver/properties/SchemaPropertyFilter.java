@@ -21,6 +21,7 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.properties;
 
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 
@@ -35,7 +36,8 @@ public interface SchemaPropertyFilter extends OpenApiOrderedUtils.DefaultOrdered
      *
      * @param property               property definition
      * @param beanDescriptionForType bean description from Jackson
+     * @param mapperConfig           object mapper config from Jackson
      * @return true if property shall be used, false otherwise
      */
-    boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType);
+    boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType, MapperConfig<?> mapperConfig);
 }

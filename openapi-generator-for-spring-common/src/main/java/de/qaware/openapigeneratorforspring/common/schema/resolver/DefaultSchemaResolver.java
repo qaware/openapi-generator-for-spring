@@ -111,6 +111,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
             for (TypeResolver typeResolver : typeResolvers) {
                 TypeResolverActions actions = new TypeResolverActions();
                 TypeResolver.RecursionKey recursionKey = typeResolver.resolve(
+                        mode,
                         schema,
                         initialType.getType(),
                         initialType.getAnnotationsSupplier(),

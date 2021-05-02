@@ -21,15 +21,21 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.properties;
 
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import lombok.RequiredArgsConstructor;
 
+import java.util.Set;
+
+@RequiredArgsConstructor
 public class SchemaPropertyFilterForIgnoredMembers implements SchemaPropertyFilter {
 
     public static final int ORDER = DEFAULT_ORDER;
 
     @Override
-    public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType) {
-        return !beanDescriptionForType.getIgnoredPropertyNames().contains(property.getName());
+    public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType, MapperConfig<?> mapperConfig) {
+        Set<String> ignored = mapperConfig.getAnnotationIntrospector().findPropertyIgnorals(beanDescriptionForType.getClassInfo()).getIgnored();
+        return !ignored.contains(property.getName());
     }
 
     @Override

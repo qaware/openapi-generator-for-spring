@@ -21,10 +21,9 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForObject;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
@@ -35,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils.laterThan;
@@ -47,38 +47,35 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
 
     private final SchemaPropertiesResolver schemaPropertiesResolver;
     private final List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers;
-    private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     public TypeResolverForProperties(
             InitialSchemaBuilderForObject initialSchemaBuilderForObject,
             SchemaPropertiesResolver schemaPropertiesResolver,
-            List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers,
-            AnnotationsSupplierFactory annotationsSupplierFactory
+            List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers
     ) {
         super(initialSchemaBuilderForObject);
         this.schemaPropertiesResolver = schemaPropertiesResolver;
         this.schemaPropertiesCustomizers = schemaPropertiesCustomizers;
-        this.annotationsSupplierFactory = annotationsSupplierFactory;
     }
 
     @Override
     @Nullable
     public RecursionKey resolveIfSupported(
+            SchemaResolver.Mode mode,
             Schema schema,
             JavaType javaType,
             AnnotationsSupplier annotationsSupplier,
             SchemaBuilderFromType schemaBuilderFromType
     ) {
-        Map<String, AnnotatedMember> properties = schemaPropertiesResolver.findProperties(javaType);
-        Map<String, PropertyCustomizer> propertyCustomizers = buildPropertyCustomizers(schema, javaType, annotationsSupplier, properties);
+        Map<String, SchemaPropertiesResolver.SchemaProperty> properties = schemaPropertiesResolver.findProperties(javaType, mode);
+        Map<String, PropertyCustomizer> propertyCustomizers = buildPropertyCustomizers(schema, javaType, annotationsSupplier, properties.keySet());
 
-        properties.forEach((propertyName, member) -> {
+        properties.forEach((propertyName, property) -> {
             PropertyCustomizer propertyCustomizer = propertyCustomizers.get(propertyName);
-            JavaType propertyType = member.getType();
-            AnnotationsSupplier propertyAnnotationsSupplier = annotationsSupplierFactory.createFromMember(member)
-                    .andThen(annotationsSupplierFactory.createFromAnnotatedElement(propertyType.getRawClass()));
-            schemaBuilderFromType.buildSchemaFromType(propertyType, propertyAnnotationsSupplier,
-                    propertySchema -> schema.setProperty(propertyName, propertyCustomizer.customize(propertySchema, propertyType, propertyAnnotationsSupplier))
+            schemaBuilderFromType.buildSchemaFromType(property.getType(), property.getAnnotationsSupplier(),
+                    propertySchema -> schema.setProperty(propertyName,
+                            propertyCustomizer.customize(propertySchema, property.getType(), property.getAnnotationsSupplier())
+                    )
             );
         });
 
@@ -92,11 +89,11 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
         private final int schemaHash;
     }
 
-    private Map<String, PropertyCustomizer> buildPropertyCustomizers(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Map<String, AnnotatedMember> properties) {
+    private Map<String, PropertyCustomizer> buildPropertyCustomizers(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Set<String> propertyNames) {
         Map<String, PropertyCustomizer> customizerProperties = buildStringMapFromStream(
-                properties.entrySet().stream(),
-                Map.Entry::getKey,
-                entry -> new PropertyCustomizer()
+                propertyNames.stream(),
+                x -> x,
+                ignored -> new PropertyCustomizer()
         );
         schemaPropertiesCustomizers.forEach(customizer -> customizer.customize(schema, javaType, annotationsSupplier, customizerProperties));
         return customizerProperties;

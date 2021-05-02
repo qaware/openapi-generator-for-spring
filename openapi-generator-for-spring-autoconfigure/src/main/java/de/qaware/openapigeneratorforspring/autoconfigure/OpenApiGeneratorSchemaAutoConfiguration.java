@@ -35,7 +35,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.Def
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilter;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilterForIgnoredMembers;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilterForWeirdMembers;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilterForNamelessMembers;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForProperties;
@@ -91,10 +91,9 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     public TypeResolverForProperties defaultTypeResolverForProperties(
             InitialSchemaBuilderForObject initialSchemaBuilder,
             SchemaPropertiesResolver schemaPropertiesResolver,
-            List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers,
-            AnnotationsSupplierFactory annotationsSupplierFactory
+            List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers
     ) {
-        return new TypeResolverForProperties(initialSchemaBuilder, schemaPropertiesResolver, schemaPropertiesCustomizers, annotationsSupplierFactory);
+        return new TypeResolverForProperties(initialSchemaBuilder, schemaPropertiesResolver, schemaPropertiesCustomizers);
     }
 
     @Bean
@@ -173,9 +172,10 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public SchemaPropertiesResolver defaultSchemaPropertiesResolver(
             OpenApiObjectMapperSupplier objectMapperSupplier,
-            List<SchemaPropertyFilter> schemaPropertyFilters
+            List<SchemaPropertyFilter> schemaPropertyFilters,
+            AnnotationsSupplierFactory annotationsSupplierFactory
     ) {
-        return new DefaultSchemaPropertiesResolver(objectMapperSupplier, schemaPropertyFilters);
+        return new DefaultSchemaPropertiesResolver(objectMapperSupplier, schemaPropertyFilters, annotationsSupplierFactory);
     }
 
     @Bean
@@ -186,7 +186,7 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SchemaPropertyFilterForWeirdMembers defaultSchemaPropertyFilterForWeirdMembers() {
-        return new SchemaPropertyFilterForWeirdMembers();
+    public SchemaPropertyFilterForNamelessMembers defaultSchemaPropertyFilterForNamelessMembers() {
+        return new SchemaPropertyFilterForNamelessMembers();
     }
 }
