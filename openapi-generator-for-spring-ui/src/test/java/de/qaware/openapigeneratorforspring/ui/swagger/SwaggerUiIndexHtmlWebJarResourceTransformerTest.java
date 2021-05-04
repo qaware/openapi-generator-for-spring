@@ -4,11 +4,11 @@ import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties
 import de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiApiDocsUrisSupplier;
 import de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiApiDocsUrisSupplier.ApiDocsUriWithName;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -16,8 +16,8 @@ import java.util.Collections;
 
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SwaggerUiIndexHtmlWebJarResourceTransformerTest {
+@ExtendWith(MockitoExtension.class)
+class SwaggerUiIndexHtmlWebJarResourceTransformerTest {
 
     private static final String IGNORED_CONTENT = "ignored";
     private static final String BASE_URI = "http://base-uri";
@@ -31,8 +31,8 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformerTest {
     @Mock
     private OpenApiSwaggerUiApiDocsUrisSupplier swaggerUiApiDocsUrisSupplier;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         when(properties.getApiDocsPath()).thenReturn(API_DOCS_PATH);
         sut = new SwaggerUiIndexHtmlWebJarResourceTransformer(URI.create(BASE_URI),
                 OpenApiSwaggerUiCsrfSupport.of("X-CSRF-TOKEN", "SOME-CSRF-TOKEN"),
@@ -41,13 +41,13 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformerTest {
     }
 
     @Test
-    public void apply_noUrl() throws Exception {
+    void apply_noUrl() throws Exception {
         String actual = sut.apply(IGNORED_CONTENT);
         Assertions.assertThat(actual).isNotBlank();
     }
 
     @Test
-    public void apply_oneUrl() throws Exception {
+    void apply_oneUrl() throws Exception {
         URI apiDocsUriWithQuery = URI.create(API_DOCS_URI + "?some=query");
         when(swaggerUiApiDocsUrisSupplier.getApiDocsUris(URI.create(API_DOCS_URI)))
                 .thenReturn(Collections.singletonList(ApiDocsUriWithName.of("name1", apiDocsUriWithQuery)));
@@ -58,7 +58,7 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformerTest {
     }
 
     @Test
-    public void apply_twoUrls() throws Exception {
+    void apply_twoUrls() throws Exception {
         URI apiDocsUri = URI.create(API_DOCS_URI);
         URI apiDocsUri1 = URI.create(API_DOCS_URI + "?query1");
         URI apiDocsUri2 = URI.create(API_DOCS_URI + "?query2");

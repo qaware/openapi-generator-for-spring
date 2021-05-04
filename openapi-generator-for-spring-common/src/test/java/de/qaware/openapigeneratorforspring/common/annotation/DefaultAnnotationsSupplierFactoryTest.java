@@ -1,7 +1,8 @@
 package de.qaware.openapigeneratorforspring.common.annotation;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;
@@ -18,23 +19,23 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DefaultAnnotationsSupplierFactoryTest {
+class DefaultAnnotationsSupplierFactoryTest {
 
     private DefaultAnnotationsSupplierFactory sut;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         sut = new DefaultAnnotationsSupplierFactory();
     }
 
     @Test
-    public void plainAndCustomAnnotationWithInheritance() {
+    void plainAndCustomAnnotationWithInheritance() {
         assertThat(sut.createFromAnnotatedElement(TestClassWithPlainAnnotation.class).findAnnotations(Deprecated.class)).hasSize(1);
         assertThat(sut.createFromAnnotatedElement(InheritedTestClass.class).findAnnotations(TestAnnotation.class)).hasSize(1);
     }
 
     @Test
-    public void repeatableAnnotations() {
+    void repeatableAnnotations() {
         assertThat(sut.createFromAnnotatedElement(TestClassWithOneRepeatable.class).findAnnotations(RepeatableTestAnnotation.class)).hasSize(1);
         assertThat(sut.createFromAnnotatedElement(TestClassWithOneRepeatable.class).findAnnotations(RepeatableTestAnnotations.class)).isEmpty();
 

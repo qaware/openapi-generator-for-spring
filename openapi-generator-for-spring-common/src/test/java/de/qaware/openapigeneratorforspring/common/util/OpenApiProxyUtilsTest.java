@@ -5,7 +5,7 @@ import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponses;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,10 +13,10 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OpenApiProxyUtilsTest {
+class OpenApiProxyUtilsTest {
 
     @Test
-    public void immutableProxy() throws Exception {
+    void immutableProxy() throws Exception {
         Schema schema = new Schema();
         schema.setRef("ref");
 
@@ -31,7 +31,7 @@ public class OpenApiProxyUtilsTest {
     }
 
     @Test
-    public void smartImmutableProxy_simpleValues() {
+    void smartImmutableProxy_simpleValues() {
         Parameter parameter = new Parameter();
         parameter.setIn("initial");
 
@@ -45,7 +45,7 @@ public class OpenApiProxyUtilsTest {
     }
 
     @Test
-    public void smartImmutableProxy_simpleMap() {
+    void smartImmutableProxy_simpleMap() {
         Parameter parameter = new Parameter();
         Map<String, Object> extensions = new HashMap<>();
         extensions.put("key1", "value1");
@@ -60,7 +60,7 @@ public class OpenApiProxyUtilsTest {
     }
 
     @Test
-    public void smartImmutableProxy_derivedMap() {
+    void smartImmutableProxy_derivedMap() {
         Operation operation = new Operation();
         ApiResponses responses = new ApiResponses();
         ApiResponse value1 = new ApiResponse();

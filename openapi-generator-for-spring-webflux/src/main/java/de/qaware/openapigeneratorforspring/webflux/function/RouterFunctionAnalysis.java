@@ -39,6 +39,7 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -73,6 +74,11 @@ class RouterFunctionAnalysis implements RouterFunctions.Visitor, RequestPredicat
 
     @Override
     public void resources(Function<ServerRequest, Mono<Resource>> lookupFunction) {
+        // ignored
+    }
+
+    @Override
+    public void attributes(Map<String, Object> attributes) {
         // ignored
     }
 
