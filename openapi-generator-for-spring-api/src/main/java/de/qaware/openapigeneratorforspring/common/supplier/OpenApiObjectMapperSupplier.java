@@ -23,13 +23,34 @@ package de.qaware.openapigeneratorforspring.common.supplier;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
+/**
+ * Supplier for Jackson's object mapper.
+ */
 @FunctionalInterface
 public interface OpenApiObjectMapperSupplier {
+    /**
+     * Get the object mapper. During OpenApi building, this might be called many times!
+     *
+     * @param purpose for which the Object Mapper is going to be used
+     * @return object mapper
+     */
     ObjectMapper get(Purpose purpose);
 
+    /**
+     * Purpose.
+     */
     enum Purpose {
+        /**
+         * For serializing the Open Api model into JSON.
+         */
         OPEN_API_JSON,
+        /**
+         * For analyzing types during Schema building.
+         */
         SCHEMA_BUILDING,
+        /**
+         * For parsing values from annotation strings.
+         */
         PARSABLE_VALUE_MAPPER
     }
 }

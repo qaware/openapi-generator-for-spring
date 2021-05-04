@@ -20,9 +20,7 @@
 
 package de.qaware.openapigeneratorforspring.common.paths;
 
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.HasAnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import org.springframework.core.annotation.Order;
 
@@ -33,7 +31,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -272,8 +269,7 @@ public interface HandlerMethod {
      *
      * <p>Note that this interface provides exactly
      * the information needed by the  {@link
-     * de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver#resolveFromType(java.lang.reflect.Type,
-     * AnnotationsSupplier, ReferencedSchemaConsumer, Consumer) schema resolver}
+     * de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver#resolveFromType schema resolver}
      */
     interface Type extends HasAnnotationsSupplier {
         java.lang.reflect.Type getType();

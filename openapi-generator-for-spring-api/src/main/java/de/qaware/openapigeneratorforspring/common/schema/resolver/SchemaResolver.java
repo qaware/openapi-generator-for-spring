@@ -37,6 +37,7 @@ public interface SchemaResolver {
      * annotations supplier. The finally built top-level
      * schema will also be "maybe referenced" if not empty.
      *
+     * @param mode                     resolver mode (serialization or deserialization)
      * @param type                     java type (Jackson type will be constructed from it)
      * @param annotationsSupplier      annotations supplier
      * @param referencedSchemaConsumer referenced schema consumer for nested schemas
@@ -49,6 +50,7 @@ public interface SchemaResolver {
      * the top-level schema, which is returned.
      * Annotations will be used from the given class.
      *
+     * @param mode                     resolver mode (serialization or deserialization)
      * @param clazz                    java clazz (Jackson type will be constructed from it)
      * @param referencedSchemaConsumer referenced schema consumer for nested schemas
      * @return resolved schema, might be empty if input is Void.class
