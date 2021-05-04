@@ -33,8 +33,7 @@ public class SchemaCustomizerForRequiredProperties implements SchemaPropertiesCu
                 customizer.customize((propertySchema, propertyJavaType, propertyAnnotationsSupplier) ->
                         propertyAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
                                 .findFirst()
-                                .map(io.swagger.v3.oas.annotations.media.Schema::required)
-                                .filter(flag -> flag)
+                                .filter(io.swagger.v3.oas.annotations.media.Schema::required)
                                 .ifPresent(ignored -> schema.addRequired(propertyName)))
         );
     }

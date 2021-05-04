@@ -25,6 +25,7 @@ import de.qaware.openapigeneratorforspring.common.reference.component.link.Refer
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
+import static de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver.Mode.FOR_SERIALIZATION;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.mergeWithExistingMap;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
@@ -56,7 +57,7 @@ public class DefaultApiResponseAnnotationMapper implements ApiResponseAnnotation
                         linksMap -> mergeWithExistingMap(apiResponse::getLinks, apiResponse::setLinks, links)
                 )
         );
-        mergeWithExistingMap(apiResponse::getContent, apiResponse::setContent, contentAnnotationMapper.mapArray(annotation.content(), ApiResponse.class, mapperContext));
+        mergeWithExistingMap(apiResponse::getContent, apiResponse::setContent, contentAnnotationMapper.mapArray(annotation.content(), ApiResponse.class, FOR_SERIALIZATION, mapperContext));
         mergeWithExistingMap(apiResponse::getExtensions, apiResponse::setExtensions, extensionAnnotationMapper.mapArray(annotation.extensions()));
     }
 }

@@ -21,6 +21,7 @@
 package de.qaware.openapigeneratorforspring.common.schema.mapper;
 
 import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 /**
@@ -29,7 +30,7 @@ import de.qaware.openapigeneratorforspring.model.media.Schema;
  * <p>Created by {@link SchemaAnnotationMapperFactory}.
  */
 public interface SchemaAnnotationMapper {
-    Schema buildFromAnnotation(io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer);
+    Schema buildFromAnnotation(SchemaResolver.Mode mode, io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer);
 
-    void applyFromAnnotation(Schema schema, io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer);
+    void applyFromAnnotation(SchemaResolver.Mode mode, Schema schema, io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer);
 }

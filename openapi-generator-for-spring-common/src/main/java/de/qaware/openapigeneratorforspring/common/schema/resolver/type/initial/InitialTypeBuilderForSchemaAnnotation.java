@@ -45,9 +45,9 @@ public class InitialTypeBuilderForSchemaAnnotation implements InitialTypeBuilder
     @Override
     public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
         return annotationsSupplier.findAnnotations(Schema.class)
-                .findFirst()
                 .map(Schema::implementation)
                 .filter(clazz -> !Void.class.equals(clazz))
+                .findFirst()
                 .map(clazz -> recursiveBuilder.build(
                         openApiObjectMapperSupplier.get(SCHEMA_BUILDING).constructType(clazz),
                         annotationsSupplierFactory.createFromAnnotatedElement(clazz)

@@ -21,7 +21,8 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.properties;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 
 import java.util.Map;
 
@@ -35,7 +36,14 @@ public interface SchemaPropertiesResolver {
      * Find properties for given java type.
      *
      * @param javaType Jackson java type
+     * @param mode     schema resolver mode
      * @return map of properties (key is property name)
      */
-    Map<String, AnnotatedMember> findProperties(JavaType javaType);
+    Map<String, SchemaProperty> findProperties(JavaType javaType, SchemaResolver.Mode mode);
+
+    interface SchemaProperty {
+        JavaType getType();
+
+        AnnotationsSupplier getAnnotationsSupplier();
+    }
 }

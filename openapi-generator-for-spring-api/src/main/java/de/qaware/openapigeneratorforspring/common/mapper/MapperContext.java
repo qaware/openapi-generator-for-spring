@@ -49,7 +49,7 @@ public interface MapperContext extends HasReferencedItemConsumer {
      * Find the media types for the given owning type having {@link
      * de.qaware.openapigeneratorforspring.model.media.Content content}.
      *
-     * @param owningType owning type, must extend {@link de.qaware.openapigeneratorforspring.common.paths.HandlerMethod.HasContext HasContent}
+     * @param owningType owning type, must extend {@link HasContent HasContent}
      * @return media types, or empty optional if nothing can be provided for this owning type
      */
     Optional<Set<String>> findMediaTypes(Class<? extends HasContent> owningType);

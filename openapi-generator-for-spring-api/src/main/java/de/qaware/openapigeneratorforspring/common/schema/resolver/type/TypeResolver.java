@@ -46,7 +46,7 @@ import java.util.function.Consumer;
 public interface TypeResolver extends OpenApiOrderedUtils.DefaultOrdered {
 
     @Nullable
-    RecursionKey resolve(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType);
+    RecursionKey resolve(SchemaResolver.Mode mode, Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType);
 
     /**
      * Helper interface for {@link #resolve}. Represents a

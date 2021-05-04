@@ -42,7 +42,7 @@ public interface SchemaResolver {
      * @param referencedSchemaConsumer referenced schema consumer for nested schemas
      * @param schemaSetter             schema setter (consumes the result if resolved schema is not empty)
      */
-    void resolveFromType(Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer, Consumer<Schema> schemaSetter);
+    void resolveFromType(Mode mode, Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer, Consumer<Schema> schemaSetter);
 
     /**
      * Resolve from given java class without referencing
@@ -53,5 +53,23 @@ public interface SchemaResolver {
      * @param referencedSchemaConsumer referenced schema consumer for nested schemas
      * @return resolved schema, might be empty if input is Void.class
      */
-    Schema resolveFromClassWithoutReference(Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer);
+    Schema resolveFromClassWithoutReference(Mode mode, Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer);
+
+    /**
+     * Schema Resolver Mode. Schemas might resolve differently
+     * if they about to be serialized (= returned to client)
+     * or are deserialized (= consumed from client).
+     */
+    enum Mode {
+        /**
+         * Schema is used to describe something
+         * which is consumed from the client.
+         */
+        FOR_DESERIALIZATION,
+        /**
+         * Schema is used to describe something
+         * which is returned to client.
+         */
+        FOR_SERIALIZATION
+    }
 }

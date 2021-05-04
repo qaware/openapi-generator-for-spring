@@ -1,0 +1,89 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App41",
+    "version": "unknown"
+  },
+  "paths": {
+    "/": {
+      "post": {
+        "operationId": "mapping1",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/App41Controller.SomeType1_1"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/App41Controller.SomeType1_0"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "mapping2",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/App41Controller.SomeType2"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Default response"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "integer_int32": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "App41Controller.SomeType1_0": {
+        "type": "object",
+        "properties": {
+          "read_only_property": {
+            "$ref": "#/components/schemas/integer_int32"
+          }
+        }
+      },
+      "App41Controller.SomeType1_1": {
+        "type": "object",
+        "properties": {
+          "write_only_property": {
+            "$ref": "#/components/schemas/integer_int32"
+          },
+          "write_only_property_field": {
+            "$ref": "#/components/schemas/integer_int32"
+          }
+        }
+      },
+      "App41Controller.SomeType2": {
+        "type": "object",
+        "properties": {
+          "final_property": {
+            "$ref": "#/components/schemas/integer_int32"
+          }
+        }
+      }
+    }
+  }
+}

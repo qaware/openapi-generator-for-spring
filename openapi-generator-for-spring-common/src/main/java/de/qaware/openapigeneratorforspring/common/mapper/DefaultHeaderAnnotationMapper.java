@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.Map;
 
+import static de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver.Mode.FOR_DESERIALIZATION;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
 
 @RequiredArgsConstructor
@@ -57,7 +58,7 @@ public class DefaultHeaderAnnotationMapper implements HeaderAnnotationMapper {
             header.setRequired(true);
         }
         ReferencedSchemaConsumer referencedSchemaConsumer = referencedItemConsumerSupplier.getReferencedItemConsumer(ReferencedSchemaConsumer.class);
-        setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(headerAnnotation.schema(), referencedSchemaConsumer), schema -> {
+        setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(FOR_DESERIALIZATION, headerAnnotation.schema(), referencedSchemaConsumer), schema -> {
             // when schema is not empty, we specify simple style according to spec,
             // the alternative would be to set the content property, which is not supported by @Header annotation
             header.setStyle(ParameterStyle.SIMPLE.toString());

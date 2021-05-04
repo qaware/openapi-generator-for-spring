@@ -70,6 +70,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
                 MediaType mediaType = addMediaTypeIfNotPresent(contentType, requestBody);
                 if (mediaType.getSchema() == null) {
                     handlerMethodRequestBodyParameter.getType().ifPresent(parameterType -> schemaResolver.resolveFromType(
+                            SchemaResolver.Mode.FOR_DESERIALIZATION,
                             parameterType.getType(),
                             handlerMethodRequestBodyParameter.getAnnotationsSupplier().andThen(parameterType.getAnnotationsSupplier()),
                             operationBuilderContext.getReferencedItemConsumer(ReferencedSchemaConsumer.class),
