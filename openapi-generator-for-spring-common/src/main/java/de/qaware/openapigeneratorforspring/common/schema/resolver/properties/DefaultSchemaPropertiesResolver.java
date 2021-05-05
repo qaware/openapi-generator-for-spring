@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
@@ -75,9 +74,6 @@ public class DefaultSchemaPropertiesResolver implements SchemaPropertiesResolver
         return buildAnnotationsSupplierFromAnnotatedMembers(property, mode)
                 .map(annotationsSupplier -> {
                     JavaType propertyType = property.getPrimaryType();
-                    if (propertyType.equals(TypeFactory.unknownType())) {
-                        LOGGER.warn("Unknown primary type found for {}", property);
-                    }
                     // include more annotations from the actual type of the property
                     AnnotationsSupplier propertyAnnotationsSupplier = annotationsSupplier
                             .andThen(annotationsSupplierFactory.createFromAnnotatedElement(propertyType.getRawClass()));
