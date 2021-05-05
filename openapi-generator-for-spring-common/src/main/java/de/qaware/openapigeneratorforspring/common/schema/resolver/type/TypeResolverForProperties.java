@@ -23,6 +23,7 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer;
+import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer.SchemaPropertyCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForObject;
@@ -32,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -95,6 +97,7 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
                 x -> x,
                 ignored -> new PropertyCustomizer()
         );
+        // capture the customization callbacks already here
         schemaPropertiesCustomizers.forEach(customizer -> customizer.customize(schema, javaType, annotationsSupplier, customizerProperties));
         return customizerProperties;
     }
@@ -102,20 +105,17 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
     @RequiredArgsConstructor
     private static class PropertyCustomizer implements SchemaPropertiesCustomizer.SchemaProperty {
 
-        @Nullable
-        private SchemaPropertiesCustomizer.SchemaPropertyCustomizer schemaPropertyCustomizer;
+        private final List<SchemaPropertyCustomizer> schemaPropertyCustomizers = new ArrayList<>();
 
         @Override
-        public void customize(SchemaPropertiesCustomizer.SchemaPropertyCustomizer propertySchemaCustomizer) {
-            this.schemaPropertyCustomizer = propertySchemaCustomizer;
+        public void customize(SchemaPropertyCustomizer propertySchemaCustomizer) {
+            this.schemaPropertyCustomizers.add(propertySchemaCustomizer);
         }
 
         public Schema customize(Schema propertySchema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-            if (schemaPropertyCustomizer != null) {
-                schemaPropertyCustomizer.customize(propertySchema, javaType, annotationsSupplier);
-                // avoid running customizers multiple again when referenced schemas are consumed
-                schemaPropertyCustomizer = null;
-            }
+            schemaPropertyCustomizers.forEach(customizer -> customizer.customize(propertySchema, javaType, annotationsSupplier));
+            // avoid running customizers multiple again when referenced schemas are consumed
+            schemaPropertyCustomizers.clear();
             return propertySchema;
         }
     }

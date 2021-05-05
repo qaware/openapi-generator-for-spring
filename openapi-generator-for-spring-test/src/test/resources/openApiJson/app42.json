@@ -1,0 +1,41 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App42",
+    "version": "unknown"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "mapping1",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/App42Controller.SomeType1"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "App42Controller.SomeType1": {
+        "required": [
+          "notNullProperty"
+        ],
+        "type": "object",
+        "properties": {
+          "notNullProperty": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
