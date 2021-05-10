@@ -190,7 +190,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     .forEachRemaining(schemaAnnotation -> schemaAnnotationMapper.applyFromAnnotation(mode, schema, schemaAnnotation, referencedSchemaConsumer));
 
             // then run the other customizers
-            schemaCustomizers.forEach(customizer -> customizer.customize(schema, initialType.getType(), initialType.getAnnotationsSupplier()));
+            schemaCustomizers.forEach(customizer -> customizer.customize(schema, initialType.getType(), initialType.getAnnotationsSupplier(), DefaultSchemaResolver.this, mode, referencedSchemaConsumer));
         }
 
         private class TypeResolverActions extends LinkedList<TypeResolverAction> {

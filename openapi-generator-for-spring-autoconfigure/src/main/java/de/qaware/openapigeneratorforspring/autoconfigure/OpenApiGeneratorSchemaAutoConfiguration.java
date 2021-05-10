@@ -23,6 +23,7 @@ package de.qaware.openapigeneratorforspring.autoconfigure;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForDeprecated;
+import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForJacksonPolymorphism;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForNullable;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForRequiredProperties;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer;
@@ -153,6 +154,12 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public SchemaCustomizerForDeprecated defaultSchemaCustomizerForDeprecated() {
         return new SchemaCustomizerForDeprecated();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SchemaCustomizerForJacksonPolymorphism defaultSchemaCustomizerForJacksonPolymorphism() {
+        return new SchemaCustomizerForJacksonPolymorphism();
     }
 
     @Bean

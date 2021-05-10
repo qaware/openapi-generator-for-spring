@@ -1,0 +1,63 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App43",
+    "version": "unknown"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "mapping1",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/App43Controller.Shape"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "App43Controller.Shape": {
+        "type": "object",
+        "discriminator": {
+          "propertyName": "_type",
+          "mapping": {
+            "RECTANGLE": "#/components/schemas/App43Controller.Rectangle",
+            "CIRCLE": "#/components/schemas/App43Controller.Circle"
+          }
+        }
+      },
+      "App43Controller.Rectangle": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "radius": {
+            "type": "integer"
+          }
+        }
+      },
+      "App43Controller.Circle": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "area": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}
+

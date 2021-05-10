@@ -22,6 +22,8 @@ package de.qaware.openapigeneratorforspring.common.schema.customizer;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 
@@ -36,9 +38,12 @@ public interface SchemaCustomizer extends OpenApiOrderedUtils.DefaultOrdered {
     /**
      * Customize the given schema by reference.
      *
-     * @param schema              schema
-     * @param javaType            java type this schema was built from (might be Void)
-     * @param annotationsSupplier annotations supplier used during schema building
+     * @param schema                   schema
+     * @param javaType                 java type this schema was built from (might be Void)
+     * @param annotationsSupplier      annotations supplier used during schema building
+     * @param schemaResolver           schema resolver to create a new schema
+     * @param mode                     the mode of the schema creation
+     * @param referencedSchemaConsumer referenced schema consumer for nested schemas
      */
-    void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier);
+    void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaResolver schemaResolver, SchemaResolver.Mode mode, ReferencedSchemaConsumer referencedSchemaConsumer);
 }

@@ -22,6 +22,8 @@ package de.qaware.openapigeneratorforspring.common.schema.customizer;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 import javax.validation.constraints.DecimalMax;
@@ -43,7 +45,7 @@ import java.util.function.Consumer;
 public class SchemaCustomizerForValidation implements SchemaCustomizer {
 
     @Override
-    public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+    public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaResolver schemaResolver, SchemaResolver.Mode mode, ReferencedSchemaConsumer referencedSchemaConsumer) {
         apply(annotationsSupplier, Min.class, a -> schema.setMinimum(new BigDecimal(a.value())));
         apply(annotationsSupplier, Max.class, a -> schema.setMaximum(new BigDecimal(a.value())));
         apply(annotationsSupplier, DecimalMin.class, a -> schema.setMinimum(new BigDecimal(a.value())));
