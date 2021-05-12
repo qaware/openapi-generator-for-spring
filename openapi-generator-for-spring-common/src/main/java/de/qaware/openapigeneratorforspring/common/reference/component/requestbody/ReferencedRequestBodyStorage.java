@@ -43,6 +43,6 @@ public class ReferencedRequestBodyStorage extends AbstractReferencedItemStorage<
     }
 
     void storeMaybeReference(RequestBody requestBody, Consumer<RequestBody> setter) {
-        addEntry(requestBody, setter::accept);
+        addEntry(requestBody, setter);
     }
 }

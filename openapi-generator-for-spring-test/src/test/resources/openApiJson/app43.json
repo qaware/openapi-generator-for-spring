@@ -20,20 +20,55 @@
             }
           }
         }
+      },
+      "post": {
+        "operationId": "mapping2",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/App43Controller.ExtendableBody_1"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "put": {
+        "operationId": "mapping3",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/App43Controller.AbstractBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
       }
     }
   },
   "components": {
+    "responses": {
+      "200": {
+        "description": "Default response"
+      }
+    },
     "schemas": {
-      "App43Controller.Shape": {
-        "type": "object",
-        "discriminator": {
-          "propertyName": "_type",
-          "mapping": {
-            "RECTANGLE": "#/components/schemas/App43Controller.Rectangle",
-            "CIRCLE": "#/components/schemas/App43Controller.Circle"
-          }
-        }
+      "integer_int32": {
+        "type": "integer",
+        "format": "int32"
       },
       "App43Controller.Rectangle": {
         "type": "object",
@@ -41,10 +76,11 @@
           "name": {
             "type": "string"
           },
-          "radius": {
-            "type": "integer"
+          "area": {
+            "$ref": "#/components/schemas/integer_int32"
           }
-        }
+        },
+        "description": "Not quite a square"
       },
       "App43Controller.Circle": {
         "type": "object",
@@ -52,12 +88,94 @@
           "name": {
             "type": "string"
           },
-          "area": {
-            "type": "integer"
+          "radius": {
+            "$ref": "#/components/schemas/integer_int32"
+          }
+        },
+        "description": "So round"
+      },
+      "App43Controller.Shape": {
+        "type": "object",
+        "discriminator": {
+          "propertyName": "_type",
+          "mapping": {
+            "RECTANGLE": "#/components/schemas/App43Controller.Rectangle",
+            "RATING": "#/components/schemas/App43Controller.Circle"
+          }
+        }
+      },
+      "App43Controller.ExtendableBody_0": {
+        "type": "object",
+        "properties": {
+          "property1": {
+            "type": "string"
+          }
+        }
+      },
+      "App43Controller.ExtendableBody_1": {
+        "type": "object",
+        "properties": {
+          "property1": {
+            "type": "string"
+          }
+        },
+        "discriminator": {
+          "propertyName": "@c",
+          "mapping": {
+            ".App43Controller$ExtendableBody": "#/components/schemas/App43Controller.ExtendableBody_0",
+            ".App43Controller$ExtendedBody": "#/components/schemas/App43Controller.ExtendedBody"
+          }
+        }
+      },
+      "App43Controller.ExtendedBody": {
+        "type": "object",
+        "properties": {
+          "property1": {
+            "type": "string"
+          },
+          "property2": {
+            "type": "string"
+          }
+        }
+      },
+      "App43Controller.AnotherBody": {
+        "title": "The Title!",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "property3": {
+            "type": "string"
+          }
+        },
+        "description": "Another body with property3"
+      },
+      "App43Controller.ConcreteBody": {
+        "title": "The Title!",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "App43Controller.AbstractBody": {
+        "title": "The Title!",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "discriminator": {
+          "propertyName": "@class",
+          "mapping": {
+            "de.qaware.openapigeneratorforspring.test.app43.App43Controller$AnotherBody": "#/components/schemas/App43Controller.AnotherBody",
+            "de.qaware.openapigeneratorforspring.test.app43.App43Controller$ConcreteBody": "#/components/schemas/App43Controller.ConcreteBody"
           }
         }
       }
     }
   }
 }
-

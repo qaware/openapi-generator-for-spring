@@ -101,11 +101,10 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
         }
 
         Map<String, String> schemaReferenceMapping = new LinkedHashMap<>();
-        schema.setDiscriminator(
-                Discriminator.builder()
-                        .propertyName(propertyName)
-                        .mapping(schemaReferenceMapping)
-                        .build()
+        schema.setDiscriminator(Discriminator.builder()
+                .propertyName(propertyName)
+                .mapping(schemaReferenceMapping)
+                .build()
         );
 
         for (DiscriminatorMapping mapping : mappings) {
