@@ -105,8 +105,8 @@ public class OpenApiProxyUtils {
 
     private static Set<String> findSetterNames(Class<?> clazz) {
         return Arrays.stream(clazz.getMethods())
-                .filter(method -> method.getName().startsWith("set"))
                 .map(Method::getName)
+                .filter(name -> name.startsWith("set"))
                 .collect(Collectors.toSet());
     }
 
