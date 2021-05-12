@@ -193,11 +193,9 @@ public class DefaultSchemaResolver implements SchemaResolver {
             schemaCustomizers.forEach(customizer -> customizer.customize(schema,
                     initialType.getType(),
                     initialType.getAnnotationsSupplier(),
-                    (clazz, annotationsSupplier, schemaReferenceSetter) -> setIfNotEmpty(
+                    (clazz, annotationsSupplier, setter) -> setIfNotEmpty(
                             DefaultSchemaResolver.this.resolveFromTypeWithoutReference(mode, clazz, annotationsSupplier, referencedSchemaConsumer),
-                            innerSchema -> referencedSchemaConsumer.alwaysAsReference(innerSchema,
-                                    schemaReference -> schemaReferenceSetter.accept(schemaReference.getRef())
-                            )
+                            innerSchema -> referencedSchemaConsumer.alwaysAsReference(innerSchema, setter)
                     )
             ));
         }

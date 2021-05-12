@@ -36,8 +36,10 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.MINIMAL_CLASS;
@@ -73,15 +75,26 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer 
         ), jsonSubTypes -> {
 
             Map<String, String> schemaReferenceMapping = new LinkedHashMap<>();
+            List<Schema> oneOfSchemas = jsonSubTypes.keySet().stream()
+                    .map(ignored -> new Schema())
+                    .collect(Collectors.toList());
+            Map<String, Integer> oneOfSchemasIndexMap = zip(
+                    jsonSubTypes.keySet().stream(), IntStream.range(0, jsonSubTypes.size()).boxed()
+            ).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+
 
             // TODO inferring the minimal class type name is not correct here
             // it should take into account the base class where @JsonTypeInfo is located
             // see com.fasterxml.jackson.databind.jsontype.impl.MinimalClassNameIdResolver
             int stripIndex = jsonTypeInfo.use() == MINIMAL_CLASS ? findCommonBaseNameStripIndex(jsonSubTypes.keySet()) : 0;
             jsonSubTypes.forEach((typeName, type) -> recursiveResolver.alwaysAsReference(type, createAnnotationsSupplier(type),
-                    schemaReference -> schemaReferenceMapping.put(typeName.substring(stripIndex), schemaReference)
+                    schemaReference -> {
+                        schemaReferenceMapping.put(typeName.substring(stripIndex), schemaReference.getRef());
+                        oneOfSchemas.set(oneOfSchemasIndexMap.get(typeName), schemaReference);
+                    }
             ));
 
+            schema.setOneOf(oneOfSchemas);
             schema.setDiscriminator(Discriminator.builder()
                     .propertyName(findPropertyName(jsonTypeInfo))
                     .mapping(schemaReferenceMapping)
@@ -94,7 +107,7 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer 
         return typeNames.stream()
                 .map(typeName -> Arrays.stream(typeName.split("(?<=\\.)")))
                 .reduce((a, b) ->
-                        takeWhile(zip(a, b, Pair::of), p -> p.getRight().equals(p.getLeft()))
+                        takeWhile(zip(a, b), p -> p.getRight().equals(p.getLeft()))
                                 .map(Pair::getRight))
                 .map(s -> s.collect(Collectors.toList()))
                 .filter(list -> !list.isEmpty())

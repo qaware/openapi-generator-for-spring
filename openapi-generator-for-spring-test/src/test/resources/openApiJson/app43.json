@@ -102,7 +102,15 @@
             "RECTANGLE": "#/components/schemas/App43Controller.Rectangle",
             "RATING": "#/components/schemas/App43Controller.Circle"
           }
-        }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/App43Controller.Rectangle"
+          },
+          {
+            "$ref": "#/components/schemas/App43Controller.Circle"
+          }
+        ]
       },
       "App43Controller.ExtendableBody_0": {
         "type": "object",
@@ -125,7 +133,15 @@
             ".App43Controller$ExtendableBody": "#/components/schemas/App43Controller.ExtendableBody_0",
             ".App43Controller$ExtendedBody": "#/components/schemas/App43Controller.ExtendedBody"
           }
-        }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/App43Controller.ExtendableBody_0"
+          },
+          {
+            "$ref": "#/components/schemas/App43Controller.ExtendedBody"
+          }
+        ]
       },
       "App43Controller.ExtendedBody": {
         "type": "object",
@@ -174,7 +190,15 @@
             "de.qaware.openapigeneratorforspring.test.app43.App43Controller$AnotherBody": "#/components/schemas/App43Controller.AnotherBody",
             "de.qaware.openapigeneratorforspring.test.app43.App43Controller$ConcreteBody": "#/components/schemas/App43Controller.ConcreteBody"
           }
-        }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/App43Controller.AnotherBody"
+          },
+          {
+            "$ref": "#/components/schemas/App43Controller.ConcreteBody"
+          }
+        ]
       }
     }
   }

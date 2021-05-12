@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -64,13 +63,13 @@ public class OpenApiStreamUtils {
         return groupingBy(classifier, LinkedHashMap::new, mapping(downstreamMapper, downstream));
     }
 
-    public static <L, R, T> Stream<T> zip(Stream<L> leftStream, Stream<R> rightStream, BiFunction<L, R, T> combiner) {
+    public static <L, R> Stream<Pair<L, R>> zip(Stream<L> leftStream, Stream<R> rightStream) {
         Spliterator<L> lefts = leftStream.spliterator();
         Spliterator<R> rights = rightStream.spliterator();
-        return StreamSupport.stream(new Spliterators.AbstractSpliterator<T>(Long.min(lefts.estimateSize(), rights.estimateSize()), lefts.characteristics() & rights.characteristics()) {
+        return StreamSupport.stream(new Spliterators.AbstractSpliterator<Pair<L, R>>(Long.min(lefts.estimateSize(), rights.estimateSize()), lefts.characteristics() & rights.characteristics()) {
             @Override
-            public boolean tryAdvance(Consumer<? super T> action) {
-                return lefts.tryAdvance(left -> rights.tryAdvance(right -> action.accept(combiner.apply(left, right))));
+            public boolean tryAdvance(Consumer<? super Pair<L, R>> action) {
+                return lefts.tryAdvance(left -> rights.tryAdvance(right -> action.accept(Pair.of(left, right))));
             }
         }, false);
     }
