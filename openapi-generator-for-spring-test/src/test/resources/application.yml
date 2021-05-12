@@ -1,1 +1,2 @@
 spring.main.banner-mode: "off"
+spring.security.user.password: "password"
