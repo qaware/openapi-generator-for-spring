@@ -46,14 +46,14 @@ public interface SchemaPropertiesCustomizer extends OpenApiOrderedUtils.DefaultO
      * @param properties          map of property name to property customizer callback
      */
     void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier,
-                   Map<String, ? extends SchemaProperty> properties);
+                   Map<String, ? extends SchemaPropertyCallback> properties);
 
     /**
      * Customizer callback for property. Helper interface to provide
      * properties map to {@link SchemaPropertiesCustomizer#customize}.
      */
     @FunctionalInterface
-    interface SchemaProperty {
+    interface SchemaPropertyCallback {
         /**
          * Customizer callback which is called once the property schema is eventually built.
          *

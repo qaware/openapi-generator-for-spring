@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,12 +22,12 @@ public class App43Controller {
         return new Rectangle("squary", 42);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public void mapping2(@RequestBody ExtendableBody body) {
 
     }
 
-    @PutMapping
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public void mapping3(@RequestBody AbstractBody body) {
 
     }
@@ -74,6 +75,7 @@ public class App43Controller {
     })
     @Schema(title = "The Title!")
     private interface BodyInterface {
+        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         String getId();
     }
 
@@ -83,7 +85,7 @@ public class App43Controller {
             @JsonSubTypes.Type(value = AnotherBody.class),
     })
     private static abstract class AbstractBody implements BodyInterface {
-        String id;
+        final String id = "";
     }
 
     @Getter

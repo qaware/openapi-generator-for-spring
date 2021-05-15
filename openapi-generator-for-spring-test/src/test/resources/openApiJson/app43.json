@@ -66,6 +66,27 @@
       }
     },
     "schemas": {
+      "string_0": {
+        "type": "string",
+        "enum": [
+          "RECTANGLE",
+          "RATING"
+        ]
+      },
+      "string_1": {
+        "type": "string",
+        "enum": [
+          ".App43Controller$ExtendableBody",
+          ".App43Controller$ExtendedBody"
+        ]
+      },
+      "string_2": {
+        "type": "string",
+        "enum": [
+          "de.qaware.openapigeneratorforspring.test.app43.App43Controller$AnotherBody",
+          "de.qaware.openapigeneratorforspring.test.app43.App43Controller$ConcreteBody"
+        ]
+      },
       "integer_int32": {
         "type": "integer",
         "format": "int32"
@@ -74,7 +95,7 @@
         "type": "object",
         "properties": {
           "_type": {
-            "type": "string"
+            "$ref": "#/components/schemas/string_0"
           },
           "name": {
             "type": "string"
@@ -89,7 +110,7 @@
         "type": "object",
         "properties": {
           "_type": {
-            "type": "string"
+            "$ref": "#/components/schemas/string_0"
           },
           "name": {
             "type": "string"
@@ -121,7 +142,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "type": "string"
+            "$ref": "#/components/schemas/string_1"
           },
           "property1": {
             "type": "string"
@@ -149,7 +170,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "type": "string"
+            "$ref": "#/components/schemas/string_1"
           },
           "property1": {
             "type": "string"
@@ -164,7 +185,7 @@
         "type": "object",
         "properties": {
           "@class": {
-            "type": "string"
+            "$ref": "#/components/schemas/string_2"
           },
           "id": {
             "type": "string"
@@ -180,7 +201,7 @@
         "type": "object",
         "properties": {
           "@class": {
-            "type": "string"
+            "$ref": "#/components/schemas/string_2"
           },
           "id": {
             "type": "string"

@@ -112,7 +112,7 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
     }
 
     @RequiredArgsConstructor
-    private static class PropertyCustomizer implements SchemaPropertiesCustomizer.SchemaProperty {
+    private static class PropertyCustomizer implements SchemaPropertiesCustomizer.SchemaPropertyCallback {
 
         private final List<SchemaPropertyCustomizer> schemaPropertyCustomizers = new ArrayList<>();
 
