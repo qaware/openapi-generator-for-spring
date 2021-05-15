@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.DefaultSchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
@@ -71,6 +72,9 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
 
     public static final int ORDER = OpenApiOrderedUtils.earlierThan(DefaultSchemaPropertiesResolver.ORDER);
 
+    private static final String PROPERTY_SCHEMA_TYPE_NAME_SUFFIX = "Type";
+
+    private final SchemaNameBuilder schemaNameBuilder;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
     private final OpenApiObjectMapperSupplier objectMapperSupplier;
 
@@ -88,9 +92,11 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
         }
 
         String propertyName = findPropertyName(jsonTypeInfo);
+        Class<?> classOwningJsonTypeInfo = findClassOwningJsonTypeInfo(javaType.getRawClass())
+                .orElseThrow(() -> new IllegalStateException("Cannot find class/interface annotated with @JsonTypeInfo"));
 
         Function<JsonSubTypes.Type, String> typeNameMapper = jsonTypeInfo.use() == MINIMAL_CLASS ?
-                type -> findMinimalClassTypeName(type, findClassOwningJsonTypeInfo(javaType.getRawClass())) :
+                type -> findMinimalClassTypeName(type, classOwningJsonTypeInfo) :
                 this::findTypeName;
 
         setMapIfNotEmpty(buildStringMapFromStream(
@@ -109,7 +115,7 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
             ).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
             jsonSubTypes.forEach((typeName, type) -> recursiveResolver.alwaysAsReference(type,
-                    createAnnotationsSupplier(type, propertyName, jsonSubTypes.keySet()),
+                    createAnnotationsSupplier(type, propertyName, jsonSubTypes.keySet(), classOwningJsonTypeInfo),
                     schemaReference -> {
                         schemaReferenceMapping.put(typeName, schemaReference.getRef());
                         oneOfSchemas.set(oneOfSchemasIndexMap.get(typeName), schemaReference);
@@ -126,16 +132,20 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
         });
     }
 
-    private Class<?> findClassOwningJsonTypeInfo(Class<?> clazz) {
+    private Optional<Class<?>> findClassOwningJsonTypeInfo(Class<?> clazz) {
         if (clazz.isAnnotationPresent(JsonTypeInfo.class)) {
-            return clazz;
+            return Optional.of(clazz);
         }
-        Class<?> superclass = clazz.getSuperclass();
-        if (superclass != null) {
-            return findClassOwningJsonTypeInfo(superclass);
-        }
-        throw new IllegalStateException("Cannot find JsonTypeInfo");
+        return Stream.concat(
+                Optional.ofNullable(clazz.getSuperclass())
+                        .flatMap(this::findClassOwningJsonTypeInfo)
+                        .map(Stream::of).orElseGet(Stream::empty), // Optional.toStream()
+                Arrays.stream(clazz.getInterfaces())
+                        .map(this::findClassOwningJsonTypeInfo)
+                        .flatMap(o -> o.map(Stream::<Class<?>>of).orElseGet(Stream::empty)) // Optional::toStream
+        ).findFirst();
     }
+
 
     @Override
     public Map<String, SchemaProperty> findProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaResolver.Mode mode) {
@@ -176,17 +186,25 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
         Optional<List<Object>> propertyEnumValues = annotationsSupplier.findAnnotations(PropertyEnumValuesAnnotation.class)
                 .findFirst()
                 .map(PropertyEnumValuesAnnotation::value)
-                .map(Arrays::<Object>asList);
+                .map(Arrays::asList);
         if (!propertyEnumValues.isPresent()) {
             return;
         }
-
+        Optional<String> propertySchemaName = annotationsSupplier.findAnnotations(PropertySchemaNameAnnotation.class)
+                .findFirst()
+                .map(PropertySchemaNameAnnotation::value);
+        if (!propertySchemaName.isPresent()) {
+            return;
+        }
         properties.get(propertyName.get()).customize(
-                (propertySchema, propertyJavaType, propertyAnnotationsSupplier) -> propertySchema.setEnumValues(propertyEnumValues.get())
+                (propertySchema, propertyJavaType, propertyAnnotationsSupplier) -> {
+                    propertySchema.setName(propertySchemaName.get());
+                    propertySchema.setEnumValues(propertyEnumValues.get());
+                }
         );
     }
 
-    private AnnotationsSupplier createAnnotationsSupplier(Class<?> type, String propertyName, Collection<String> propertyEnumValues) {
+    private AnnotationsSupplier createAnnotationsSupplier(Class<?> type, String propertyName, Collection<String> propertyEnumValues, Class<?> classOwningJsonTypeInfo) {
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(type);
         return new AnnotationsSupplier() {
             @Override
@@ -199,10 +217,17 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
                     return Stream.of(createAnnotationProxy(propertyName, annotationType));
                 } else if (PropertyEnumValuesAnnotation.class.equals(annotationType)) {
                     return Stream.of(createAnnotationProxy(propertyEnumValues.toArray(new String[]{}), annotationType));
+                } else if (PropertySchemaNameAnnotation.class.equals(annotationType)) {
+                    return Stream.of(createAnnotationProxy(getPropertySchemaName(classOwningJsonTypeInfo), annotationType));
                 }
                 return annotationsSupplier.findAnnotations(annotationType);
             }
         };
+    }
+
+    private String getPropertySchemaName(Class<?> classOwningJsonTypeInfo) {
+        JavaType javaTypeOwningJsonTypeInfo = objectMapperSupplier.get(SCHEMA_BUILDING).constructType(classOwningJsonTypeInfo);
+        return schemaNameBuilder.buildFromType(javaTypeOwningJsonTypeInfo) + PROPERTY_SCHEMA_TYPE_NAME_SUFFIX;
     }
 
     private String findTypeName(JsonSubTypes.Type type) {
@@ -243,6 +268,10 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
 
     private @interface PropertyEnumValuesAnnotation {
         String[] value();
+    }
+
+    private @interface PropertySchemaNameAnnotation {
+        String value();
     }
 
     private static <A extends Annotation> A createAnnotationProxy(Object value, Class<A> clazz) {
