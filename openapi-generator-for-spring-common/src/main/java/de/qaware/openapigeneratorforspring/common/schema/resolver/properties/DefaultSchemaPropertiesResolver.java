@@ -55,7 +55,7 @@ public class DefaultSchemaPropertiesResolver implements SchemaPropertiesResolver
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
-    public Map<String, SchemaProperty> findProperties(JavaType javaType, SchemaResolver.Mode mode) {
+    public Map<String, SchemaProperty> findProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaResolver.Mode mode) {
         ObjectMapper objectMapper = objectMapperSupplier.get(SCHEMA_BUILDING);
         BeanDescription beanDescriptionForType = introspectJavaType(objectMapper, mode, javaType);
         MapperConfig<?> mapperConfig = getMapperConfig(objectMapper, mode);
@@ -89,7 +89,7 @@ public class DefaultSchemaPropertiesResolver implements SchemaPropertiesResolver
 
     @RequiredArgsConstructor(staticName = "of")
     @Getter
-    private static class SchemaPropertyImpl implements SchemaPropertiesResolver.SchemaProperty {
+    private static class SchemaPropertyImpl implements SchemaProperty {
         private final JavaType type;
         private final AnnotationsSupplier annotationsSupplier;
     }

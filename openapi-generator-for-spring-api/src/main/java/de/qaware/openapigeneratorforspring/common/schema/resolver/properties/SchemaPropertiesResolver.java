@@ -23,6 +23,7 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.properties;
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 
 import java.util.Map;
 
@@ -31,19 +32,14 @@ import java.util.Map;
  *
  * <p>Prefer using {@link SchemaPropertyFilter} whenever possible.
  */
-public interface SchemaPropertiesResolver {
+public interface SchemaPropertiesResolver extends OpenApiOrderedUtils.DefaultOrdered {
     /**
      * Find properties for given java type.
      *
-     * @param javaType Jackson java type
-     * @param mode     schema resolver mode
+     * @param javaType            Jackson java type
+     * @param annotationsSupplier annotations supplier for given java type
+     * @param mode                schema resolver mode
      * @return map of properties (key is property name)
      */
-    Map<String, SchemaProperty> findProperties(JavaType javaType, SchemaResolver.Mode mode);
-
-    interface SchemaProperty {
-        JavaType getType();
-
-        AnnotationsSupplier getAnnotationsSupplier();
-    }
+    Map<String, SchemaProperty> findProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaResolver.Mode mode);
 }

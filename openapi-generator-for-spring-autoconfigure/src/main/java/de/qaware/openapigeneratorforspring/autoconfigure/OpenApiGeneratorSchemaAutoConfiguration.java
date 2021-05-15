@@ -91,10 +91,10 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public TypeResolverForProperties defaultTypeResolverForProperties(
             InitialSchemaBuilderForObject initialSchemaBuilder,
-            SchemaPropertiesResolver schemaPropertiesResolver,
+            List<SchemaPropertiesResolver> schemaPropertiesResolvers,
             List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers
     ) {
-        return new TypeResolverForProperties(initialSchemaBuilder, schemaPropertiesResolver, schemaPropertiesCustomizers);
+        return new TypeResolverForProperties(initialSchemaBuilder, schemaPropertiesResolvers, schemaPropertiesCustomizers);
     }
 
     @Bean
@@ -177,7 +177,7 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SchemaPropertiesResolver defaultSchemaPropertiesResolver(
+    public DefaultSchemaPropertiesResolver defaultSchemaPropertiesResolver(
             OpenApiObjectMapperSupplier objectMapperSupplier,
             List<SchemaPropertyFilter> schemaPropertyFilters,
             AnnotationsSupplierFactory annotationsSupplierFactory

@@ -26,7 +26,9 @@ import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaProper
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer.SchemaPropertyCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaProperty;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForObject;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -47,16 +49,16 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
     // this resolver does not have any condition, so run this always later then the other resolvers as a fallback
     public static final int ORDER = laterThan(DEFAULT_ORDER);
 
-    private final SchemaPropertiesResolver schemaPropertiesResolver;
+    private final List<SchemaPropertiesResolver> schemaPropertiesResolvers;
     private final List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers;
 
     public TypeResolverForProperties(
             InitialSchemaBuilderForObject initialSchemaBuilderForObject,
-            SchemaPropertiesResolver schemaPropertiesResolver,
+            List<SchemaPropertiesResolver> schemaPropertiesResolvers,
             List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers
     ) {
         super(initialSchemaBuilderForObject);
-        this.schemaPropertiesResolver = schemaPropertiesResolver;
+        this.schemaPropertiesResolvers = schemaPropertiesResolvers;
         this.schemaPropertiesCustomizers = schemaPropertiesCustomizers;
     }
 
@@ -69,7 +71,14 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
             AnnotationsSupplier annotationsSupplier,
             SchemaBuilderFromType schemaBuilderFromType
     ) {
-        Map<String, SchemaPropertiesResolver.SchemaProperty> properties = schemaPropertiesResolver.findProperties(javaType, mode);
+
+        Map<String, SchemaProperty> properties = OpenApiMapUtils.buildStringMapFromStream(
+                schemaPropertiesResolvers.stream()
+                        .flatMap(resolver -> resolver.findProperties(javaType, annotationsSupplier, mode).entrySet().stream()),
+                Map.Entry::getKey,
+                Map.Entry::getValue
+        );
+
         Map<String, PropertyCustomizer> propertyCustomizers = buildPropertyCustomizers(schema, javaType, annotationsSupplier, properties.keySet());
 
         properties.forEach((propertyName, property) -> {
