@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils;
 import de.qaware.openapigeneratorforspring.model.media.Discriminator;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.RequiredArgsConstructor;
@@ -108,10 +109,10 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer 
                 .map(typeName -> Arrays.stream(typeName.split("(?<=\\.)")))
                 .reduce((a, b) ->
                         takeWhile(zip(a, b), p -> p.getRight().equals(p.getLeft()))
-                                .map(Pair::getRight))
-                .map(s -> s.collect(Collectors.toList()))
-                .filter(list -> !list.isEmpty())
-                .map(s -> s.stream().mapToInt(String::length).sum() - 1)
+                                .map(Pair::getRight)
+                )
+                .flatMap(OpenApiStreamUtils::nonEmptyStream)
+                .map(s -> s.mapToInt(String::length).sum() - 1)
                 .orElse(0);
     }
 

@@ -27,8 +27,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -63,10 +65,22 @@ public class OpenApiStreamUtils {
         return groupingBy(classifier, LinkedHashMap::new, mapping(downstreamMapper, downstream));
     }
 
+    public static <T> Optional<Stream<T>> nonEmptyStream(Stream<T> stream) {
+        Spliterator<T> it = stream.spliterator();
+        AtomicReference<T> firstItem = new AtomicReference<>();
+        if (it.tryAdvance(firstItem::set)) {
+            return Optional.of(Stream.concat(Stream.of(firstItem.get()), StreamSupport.stream(it, stream.isParallel())));
+        } else {
+            return Optional.empty();
+        }
+    }
+
     public static <L, R> Stream<Pair<L, R>> zip(Stream<L> leftStream, Stream<R> rightStream) {
         Spliterator<L> lefts = leftStream.spliterator();
         Spliterator<R> rights = rightStream.spliterator();
-        return StreamSupport.stream(new Spliterators.AbstractSpliterator<Pair<L, R>>(Long.min(lefts.estimateSize(), rights.estimateSize()), lefts.characteristics() & rights.characteristics()) {
+        return StreamSupport.stream(new Spliterators.AbstractSpliterator<Pair<L, R>>(
+                Long.min(lefts.estimateSize(), rights.estimateSize()),
+                lefts.characteristics() & rights.characteristics()) {
             @Override
             public boolean tryAdvance(Consumer<? super Pair<L, R>> action) {
                 return lefts.tryAdvance(left -> rights.tryAdvance(right -> action.accept(Pair.of(left, right))));
