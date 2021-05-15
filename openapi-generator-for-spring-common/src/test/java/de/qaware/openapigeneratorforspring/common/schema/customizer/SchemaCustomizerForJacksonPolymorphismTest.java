@@ -17,6 +17,7 @@ class SchemaCustomizerForJacksonPolymorphismTest {
         assertThat(findCommonBaseNameStripIndex(Collections.emptyList())).isZero();
         assertThat(findCommonBaseNameStripIndex(Arrays.asList("A", "B"))).isZero();
         assertThat(findCommonBaseNameStripIndex(Arrays.asList("A.C", "B.C"))).isZero();
+        assertThat(findCommonBaseNameStripIndex(Arrays.asList("A.C", "A.C"))).isEqualTo(1);
         assertThat(findCommonBaseNameStripIndex(Arrays.asList("A.C", "A.C", "A.B", "A.D"))).isEqualTo(1);
         assertThat(findCommonBaseNameStripIndex(Arrays.asList("A.B.C.D", "A.B.C.E"))).isEqualTo(5);
 

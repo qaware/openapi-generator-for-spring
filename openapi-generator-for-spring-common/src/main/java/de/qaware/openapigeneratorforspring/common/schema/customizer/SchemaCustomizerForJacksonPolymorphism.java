@@ -51,6 +51,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -86,10 +87,14 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
 
         String propertyName = findPropertyName(jsonTypeInfo);
 
+        Function<JsonSubTypes.Type, String> typeNameMapper = jsonTypeInfo.use() == MINIMAL_CLASS ?
+                type -> findMinimalClassTypeName(type, findClassOwningJsonTypeInfo(javaType.getRawClass())) :
+                this::findTypeName;
+
         setMapIfNotEmpty(buildStringMapFromStream(
                 annotationsSupplier.findAnnotations(JsonSubTypes.class)
                         .flatMap(jsonSubTypes -> Arrays.stream(jsonSubTypes.value())),
-                this::findTypeName,
+                typeNameMapper,
                 JsonSubTypes.Type::value
         ), jsonSubTypes -> {
 
@@ -101,20 +106,15 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
                     jsonSubTypes.keySet().stream(), IntStream.range(0, jsonSubTypes.size()).boxed()
             ).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
-
-            // TODO inferring the minimal class type name is not correct here
-            // it should take into account the base class where @JsonTypeInfo is located
-            // see com.fasterxml.jackson.databind.jsontype.impl.MinimalClassNameIdResolver
-            int stripIndex = jsonTypeInfo.use() == MINIMAL_CLASS ? findCommonBaseNameStripIndex(jsonSubTypes.keySet()) : 0;
             jsonSubTypes.forEach((typeName, type) -> recursiveResolver.alwaysAsReference(type,
                     createAnnotationsSupplier(type, propertyName),
                     schemaReference -> {
-                        schemaReferenceMapping.put(typeName.substring(stripIndex), schemaReference.getRef());
+                        schemaReferenceMapping.put(typeName, schemaReference.getRef());
                         oneOfSchemas.set(oneOfSchemasIndexMap.get(typeName), schemaReference);
                     }
             ));
 
-            schema.setType(null);
+            schema.setType(null); // remove type object from this abstract schema
             schema.setOneOf(oneOfSchemas);
             schema.setDiscriminator(Discriminator.builder()
                     .propertyName(propertyName)
@@ -122,6 +122,17 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
                     .build()
             );
         });
+    }
+
+    private Class<?> findClassOwningJsonTypeInfo(Class<?> clazz) {
+        if (clazz.isAnnotationPresent(JsonTypeInfo.class)) {
+            return clazz;
+        }
+        Class<?> superclass = clazz.getSuperclass();
+        if (superclass != null) {
+            return findClassOwningJsonTypeInfo(superclass);
+        }
+        throw new IllegalStateException("Cannot find JsonTypeInfo");
     }
 
     @Override
@@ -149,18 +160,6 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
         return !annotationsSupplierForType.findAnnotations(JsonTypeInfo.class).findAny().isPresent();
     }
 
-    static int findCommonBaseNameStripIndex(Collection<String> typeNames) {
-        return typeNames.stream()
-                .map(typeName -> Arrays.stream(typeName.split("(?<=\\.)")))
-                .reduce((a, b) ->
-                        takeWhile(zip(a, b), p -> p.getRight().equals(p.getLeft()))
-                                .map(Pair::getRight)
-                )
-                .flatMap(OpenApiStreamUtils::nonEmptyStream)
-                .map(s -> s.mapToInt(String::length).sum() - 1)
-                .orElse(0);
-    }
-
     private AnnotationsSupplier createAnnotationsSupplier(Class<?> type, String propertyName) {
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(type);
         return new AnnotationsSupplier() {
@@ -179,14 +178,35 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
     }
 
     private String findTypeName(JsonSubTypes.Type type) {
-        // TODO Jackson handles inner non-static classes containing $ actually somewhat different,
+        // Note: Jackson handles inner non-static classes containing $ actually somewhat different,
         // see com.fasterxml.jackson.databind.jsontype.impl.ClassNameIdResolver._idFrom
         return StringUtils.isNotBlank(type.name()) ? type.name() : type.value().getName();
+    }
+
+    private String findMinimalClassTypeName(JsonSubTypes.Type type, Class<?> classOwningJsonTypeInfo) {
+        String typeName = type.value().getName();
+        String owningJsonTypeInfoName = classOwningJsonTypeInfo.getName();
+        int stripIndex = findCommonBaseNameStripIndex(Arrays.asList(owningJsonTypeInfoName, typeName));
+        return typeName.substring(stripIndex);
     }
 
     private String findPropertyName(JsonTypeInfo jsonTypeInfo) {
         String property = jsonTypeInfo.property();
         return StringUtils.isNotBlank(property) ? property : jsonTypeInfo.use().getDefaultPropertyName();
+    }
+
+    static int findCommonBaseNameStripIndex(Collection<String> typeNames) {
+        return typeNames.stream()
+                .map(typeName -> Arrays.stream(typeName.split("(?<=\\.)"))
+                        .filter(s -> s.endsWith("."))
+                )
+                .reduce((a, b) ->
+                        takeWhile(zip(a, b), p -> p.getRight().equals(p.getLeft()))
+                                .map(Pair::getRight)
+                )
+                .flatMap(OpenApiStreamUtils::nonEmptyStream)
+                .map(s -> s.mapToInt(String::length).sum() - 1)
+                .orElse(0);
     }
 
     private @interface PropertyNameAnnotation {
