@@ -50,6 +50,8 @@ import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectM
 @Slf4j
 public class DefaultSchemaPropertiesResolver implements SchemaPropertiesResolver {
 
+    public static final int ORDER = DEFAULT_ORDER;
+
     private final OpenApiObjectMapperSupplier objectMapperSupplier;
     private final List<SchemaPropertyFilter> propertyFilters;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
@@ -61,7 +63,7 @@ public class DefaultSchemaPropertiesResolver implements SchemaPropertiesResolver
         MapperConfig<?> mapperConfig = getMapperConfig(objectMapper, mode);
         return OpenApiMapUtils.buildStringMapFromStream(
                 beanDescriptionForType.findProperties().stream()
-                        .filter(property -> isAcceptedByAllPropertyFilters(property, beanDescriptionForType, mapperConfig))
+                        .filter(property -> isAcceptedByAllPropertyFilters(property, beanDescriptionForType, annotationsSupplier, mapperConfig))
                         .map(property -> buildSchemaPropertyPair(property, mode))
                         .filter(Objects::nonNull),
                 Pair::getKey,
@@ -144,7 +146,13 @@ public class DefaultSchemaPropertiesResolver implements SchemaPropertiesResolver
         }
     }
 
-    private boolean isAcceptedByAllPropertyFilters(BeanPropertyDefinition property, BeanDescription beanDescriptionForType, MapperConfig<?> mapperConfig) {
-        return propertyFilters.stream().allMatch(filter -> filter.accept(property, beanDescriptionForType, mapperConfig));
+    private boolean isAcceptedByAllPropertyFilters(BeanPropertyDefinition property, BeanDescription beanDescriptionForType,
+                                                   AnnotationsSupplier annotationsSupplierForType, MapperConfig<?> mapperConfig) {
+        return propertyFilters.stream().allMatch(filter -> filter.accept(property, beanDescriptionForType, annotationsSupplierForType, mapperConfig));
+    }
+
+    @Override
+    public int getOrder() {
+        return ORDER;
     }
 }

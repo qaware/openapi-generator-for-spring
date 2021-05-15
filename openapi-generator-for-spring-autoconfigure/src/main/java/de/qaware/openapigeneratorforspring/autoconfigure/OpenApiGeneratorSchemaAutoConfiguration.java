@@ -158,8 +158,11 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SchemaCustomizerForJacksonPolymorphism defaultSchemaCustomizerForJacksonPolymorphism(AnnotationsSupplierFactory annotationsSupplierFactory) {
-        return new SchemaCustomizerForJacksonPolymorphism(annotationsSupplierFactory);
+    public SchemaCustomizerForJacksonPolymorphism defaultSchemaCustomizerForJacksonPolymorphism(
+            AnnotationsSupplierFactory annotationsSupplierFactory,
+            OpenApiObjectMapperSupplier openApiObjectMapperSupplier
+    ) {
+        return new SchemaCustomizerForJacksonPolymorphism(annotationsSupplierFactory, openApiObjectMapperSupplier);
     }
 
     @Bean

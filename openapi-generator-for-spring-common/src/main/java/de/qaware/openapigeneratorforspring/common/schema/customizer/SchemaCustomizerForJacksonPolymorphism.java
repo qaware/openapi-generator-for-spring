@@ -22,9 +22,19 @@ package de.qaware.openapigeneratorforspring.common.schema.customizer;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.DefaultSchemaPropertiesResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaProperty;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilter;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
+import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils;
 import de.qaware.openapigeneratorforspring.model.media.Discriminator;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
@@ -34,8 +44,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +56,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.MINIMAL_CLASS;
+import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier.Purpose.SCHEMA_BUILDING;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.takeWhile;
@@ -51,9 +64,12 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils
 
 @RequiredArgsConstructor
 @Slf4j
-public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer {
+public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer, SchemaPropertiesResolver, SchemaPropertyFilter {
+
+    public static final int ORDER = OpenApiOrderedUtils.earlierThan(DefaultSchemaPropertiesResolver.ORDER);
 
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
+    private final OpenApiObjectMapperSupplier objectMapperSupplier;
 
     @Override
     public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveResolver recursiveResolver) {
@@ -67,6 +83,8 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer 
         if (jsonTypeInfo == null || StringUtils.isBlank(jsonTypeInfo.use().getDefaultPropertyName())) {
             return;
         }
+
+        String propertyName = findPropertyName(jsonTypeInfo);
 
         setMapIfNotEmpty(buildStringMapFromStream(
                 annotationsSupplier.findAnnotations(JsonSubTypes.class)
@@ -88,20 +106,47 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer 
             // it should take into account the base class where @JsonTypeInfo is located
             // see com.fasterxml.jackson.databind.jsontype.impl.MinimalClassNameIdResolver
             int stripIndex = jsonTypeInfo.use() == MINIMAL_CLASS ? findCommonBaseNameStripIndex(jsonSubTypes.keySet()) : 0;
-            jsonSubTypes.forEach((typeName, type) -> recursiveResolver.alwaysAsReference(type, createAnnotationsSupplier(type),
+            jsonSubTypes.forEach((typeName, type) -> recursiveResolver.alwaysAsReference(type,
+                    createAnnotationsSupplier(type, propertyName),
                     schemaReference -> {
                         schemaReferenceMapping.put(typeName.substring(stripIndex), schemaReference.getRef());
                         oneOfSchemas.set(oneOfSchemasIndexMap.get(typeName), schemaReference);
                     }
             ));
 
+            schema.setType(null);
             schema.setOneOf(oneOfSchemas);
             schema.setDiscriminator(Discriminator.builder()
-                    .propertyName(findPropertyName(jsonTypeInfo))
+                    .propertyName(propertyName)
                     .mapping(schemaReferenceMapping)
                     .build()
             );
         });
+    }
+
+    @Override
+    public Map<String, SchemaProperty> findProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaResolver.Mode mode) {
+        return annotationsSupplier.findAnnotations(PropertyNameAnnotation.class)
+                .findFirst()
+                .map(propertyNameAnnotation -> Collections.<String, SchemaProperty>singletonMap(
+                        propertyNameAnnotation.value(), new SchemaProperty() {
+                            @Override
+                            public JavaType getType() {
+                                return objectMapperSupplier.get(SCHEMA_BUILDING).constructType(String.class);
+                            }
+
+                            @Override
+                            public AnnotationsSupplier getAnnotationsSupplier() {
+                                return AnnotationsSupplier.EMPTY;
+                            }
+                        }
+                ))
+                .orElseGet(Collections::emptyMap);
+    }
+
+    @Override
+    public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType, AnnotationsSupplier annotationsSupplierForType, MapperConfig<?> mapperConfig) {
+        return !annotationsSupplierForType.findAnnotations(JsonTypeInfo.class).findAny().isPresent();
     }
 
     static int findCommonBaseNameStripIndex(Collection<String> typeNames) {
@@ -116,7 +161,7 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer 
                 .orElse(0);
     }
 
-    private AnnotationsSupplier createAnnotationsSupplier(Class<?> type) {
+    private AnnotationsSupplier createAnnotationsSupplier(Class<?> type, String propertyName) {
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(type);
         return new AnnotationsSupplier() {
             @Override
@@ -125,6 +170,8 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer 
                 // avoids ending up in an infinite recursion by running this customizer again and again!
                 if (JsonTypeInfo.class.equals(annotationType)) {
                     return Stream.empty();
+                } else if (PropertyNameAnnotation.class.equals(annotationType)) {
+                    return Stream.of(annotationType.cast(createPropertyNameAnnotation(propertyName)));
                 }
                 return annotationsSupplier.findAnnotations(annotationType);
             }
@@ -140,5 +187,27 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer 
     private String findPropertyName(JsonTypeInfo jsonTypeInfo) {
         String property = jsonTypeInfo.property();
         return StringUtils.isNotBlank(property) ? property : jsonTypeInfo.use().getDefaultPropertyName();
+    }
+
+    private @interface PropertyNameAnnotation {
+        String value();
+    }
+
+    private static PropertyNameAnnotation createPropertyNameAnnotation(String propertyName) {
+        return (PropertyNameAnnotation) Proxy.newProxyInstance(
+                PropertyNameAnnotation.class.getClassLoader(),
+                new Class<?>[]{PropertyNameAnnotation.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("value")) {
+                        return propertyName;
+                    }
+                    return method.invoke(proxy, args);
+                }
+        );
+    }
+
+    @Override
+    public int getOrder() {
+        return ORDER;
     }
 }

@@ -23,6 +23,7 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.properties;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Set;
@@ -33,7 +34,7 @@ public class SchemaPropertyFilterForIgnoredMembers implements SchemaPropertyFilt
     public static final int ORDER = DEFAULT_ORDER;
 
     @Override
-    public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType, MapperConfig<?> mapperConfig) {
+    public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType, AnnotationsSupplier annotationsSupplierForType, MapperConfig<?> mapperConfig) {
         Set<String> ignored = mapperConfig.getAnnotationIntrospector().findPropertyIgnorals(beanDescriptionForType.getClassInfo()).getIgnored();
         return !ignored.contains(property.getName());
     }
