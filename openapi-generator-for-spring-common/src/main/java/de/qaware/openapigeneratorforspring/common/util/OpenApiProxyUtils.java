@@ -25,10 +25,13 @@ import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 
 import javax.annotation.Nullable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -36,6 +39,26 @@ import java.util.stream.Collectors;
 
 public class OpenApiProxyUtils {
     private static final Object DO_NOT_INVOKE = new Object();
+    private static final String VALUE_FIELD_NAME = "value";
+
+    public static <T, A extends Annotation> Function<T, A> createAnnotationProxyWithValueFactory(Class<A> clazz, Class<T> valueClazz) {
+        Optional<Method> valueMethod = Arrays.stream(clazz.getDeclaredMethods())
+                .filter(m -> VALUE_FIELD_NAME.equals(m.getName()))
+                .findAny();
+        if (!valueMethod.isPresent() || !valueClazz.equals(valueMethod.get().getReturnType())) {
+            throw new IllegalStateException("The annotation " + clazz + " should have a " + VALUE_FIELD_NAME + " method with return type " + valueClazz.getName());
+        }
+        return value -> clazz.cast(Proxy.newProxyInstance(
+                clazz.getClassLoader(),
+                new Class<?>[]{clazz},
+                (proxy, method, args) -> {
+                    if (method.getName().equals(VALUE_FIELD_NAME)) {
+                        return value;
+                    }
+                    return method.invoke(proxy, args);
+                }
+        ));
+    }
 
     public static <T> T immutableProxy(T delegate) {
         Set<String> setterNames = findSetterNames(delegate.getClass());

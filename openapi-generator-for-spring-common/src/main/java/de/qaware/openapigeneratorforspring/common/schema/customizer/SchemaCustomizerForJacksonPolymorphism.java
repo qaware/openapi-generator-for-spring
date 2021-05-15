@@ -45,7 +45,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -62,6 +61,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.MINIMAL_CLASS;
 import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier.Purpose.SCHEMA_BUILDING;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiProxyUtils.createAnnotationProxyWithValueFactory;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.takeWhile;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.zip;
 
@@ -214,11 +214,11 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
                 if (JsonTypeInfo.class.equals(annotationType)) {
                     return Stream.empty();
                 } else if (PropertyNameAnnotation.class.equals(annotationType)) {
-                    return Stream.of(createAnnotationProxy(propertyName, annotationType));
+                    return Stream.of(annotationType.cast(PropertyNameAnnotation.FACTORY.apply(propertyName)));
                 } else if (PropertyEnumValuesAnnotation.class.equals(annotationType)) {
-                    return Stream.of(createAnnotationProxy(propertyEnumValues.toArray(new String[]{}), annotationType));
+                    return Stream.of(annotationType.cast(PropertyEnumValuesAnnotation.FACTORY.apply(propertyEnumValues.toArray(new String[0]))));
                 } else if (PropertySchemaNameAnnotation.class.equals(annotationType)) {
-                    return Stream.of(createAnnotationProxy(getPropertySchemaName(classOwningJsonTypeInfo), annotationType));
+                    return Stream.of(annotationType.cast(PropertySchemaNameAnnotation.FACTORY.apply(getPropertySchemaName(classOwningJsonTypeInfo))));
                 }
                 return annotationsSupplier.findAnnotations(annotationType);
             }
@@ -263,30 +263,19 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
     }
 
     private @interface PropertyNameAnnotation {
+        Function<String, PropertyNameAnnotation> FACTORY = createAnnotationProxyWithValueFactory(PropertyNameAnnotation.class, String.class);
         String value();
     }
 
     private @interface PropertyEnumValuesAnnotation {
+        Function<String[], PropertyEnumValuesAnnotation> FACTORY = createAnnotationProxyWithValueFactory(PropertyEnumValuesAnnotation.class, String[].class);
         String[] value();
     }
 
     private @interface PropertySchemaNameAnnotation {
+        Function<String, PropertySchemaNameAnnotation> FACTORY = createAnnotationProxyWithValueFactory(PropertySchemaNameAnnotation.class, String.class);
         String value();
     }
-
-    private static <A extends Annotation> A createAnnotationProxy(Object value, Class<A> clazz) {
-        return clazz.cast(Proxy.newProxyInstance(
-                clazz.getClassLoader(),
-                new Class<?>[]{clazz},
-                (proxy, method, args) -> {
-                    if (method.getName().equals("value")) {
-                        return value;
-                    }
-                    return method.invoke(proxy, args);
-                }
-        ));
-    }
-
 
     @Override
     public int getOrder() {
