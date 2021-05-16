@@ -23,7 +23,6 @@ package de.qaware.openapigeneratorforspring.autoconfigure;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForDeprecated;
-import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForJacksonPolymorphism;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForNullable;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForRequiredProperties;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer;
@@ -39,6 +38,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.Sch
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilterForNamelessMembers;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForJacksonPolymorphism;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForProperties;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForCollectionLikeType;
@@ -101,6 +101,16 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public TypeResolverForJacksonPolymorphism defaultTypeResolverForJacksonPolymorphism(
+            SchemaNameBuilder schemaNameBuilder,
+            AnnotationsSupplierFactory annotationsSupplierFactory,
+            OpenApiObjectMapperSupplier openApiObjectMapperSupplier
+    ) {
+        return new TypeResolverForJacksonPolymorphism(schemaNameBuilder, annotationsSupplierFactory, openApiObjectMapperSupplier);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public InitialTypeBuilderForReferenceType defaultInitialTypeBuilderForReferenceType(
             AnnotationsSupplierFactory annotationsSupplierFactory
     ) {
@@ -156,16 +166,6 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public SchemaCustomizerForDeprecated defaultSchemaCustomizerForDeprecated() {
         return new SchemaCustomizerForDeprecated();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public SchemaCustomizerForJacksonPolymorphism defaultSchemaCustomizerForJacksonPolymorphism(
-            SchemaNameBuilder schemaNameBuilder,
-            AnnotationsSupplierFactory annotationsSupplierFactory,
-            OpenApiObjectMapperSupplier openApiObjectMapperSupplier
-    ) {
-        return new SchemaCustomizerForJacksonPolymorphism(schemaNameBuilder, annotationsSupplierFactory, openApiObjectMapperSupplier);
     }
 
     @Bean

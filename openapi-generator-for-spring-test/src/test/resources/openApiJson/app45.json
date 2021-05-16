@@ -1,0 +1,103 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App45",
+    "version": "unknown"
+  },
+  "paths": {
+    "/": {
+      "post": {
+        "operationId": "mapping1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/App45Controller.NestedBodyClass_0"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/App45Controller.Base1"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "App45Controller.Base1Type": {
+        "type": "string",
+        "enum": [
+          "nested",
+          "nestedBody"
+        ]
+      },
+      "App45Controller.Base1": {
+        "discriminator": {
+          "propertyName": "_type",
+          "mapping": {
+            "nested": "#/components/schemas/App45Controller.NestedClass",
+            "nestedBody": "#/components/schemas/App45Controller.NestedBodyClass_1"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/App45Controller.NestedClass"
+          },
+          {
+            "$ref": "#/components/schemas/App45Controller.NestedBodyClass_1"
+          }
+        ]
+      },
+      "App45Controller.NestedBodyClass_0": {
+        "discriminator": {
+          "propertyName": "_type",
+          "mapping": {
+            "nested": "#/components/schemas/App45Controller.NestedClass",
+            "nestedBody": "#/components/schemas/App45Controller.NestedBodyClass_1"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/App45Controller.NestedClass"
+          },
+          {
+            "$ref": "#/components/schemas/App45Controller.NestedBodyClass_1"
+          }
+        ]
+      },
+      "App45Controller.NestedBodyClass_1": {
+        "type": "object",
+        "properties": {
+          "_type": {
+            "$ref": "#/components/schemas/App45Controller.Base1Type"
+          },
+          "nestedProperty": {
+            "$ref": "#/components/schemas/App45Controller.Base1"
+          }
+        }
+      },
+      "App45Controller.NestedClass": {
+        "type": "object",
+        "properties": {
+          "_type": {
+            "$ref": "#/components/schemas/App45Controller.Base1Type"
+          },
+          "nestedProperty": {
+            "$ref": "#/components/schemas/App45Controller.Base1"
+          }
+        }
+      }
+    }
+  }
+}

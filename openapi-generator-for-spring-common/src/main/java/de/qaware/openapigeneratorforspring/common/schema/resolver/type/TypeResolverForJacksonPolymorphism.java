@@ -2,7 +2,7 @@
  * #%L
  * OpenAPI Generator for Spring Boot :: Common
  * %%
- * Copyright (C) 2020 - 2021 QAware GmbH
+ * Copyright (C) 2020 QAware GmbH
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,31 +18,33 @@
  * #L%
  */
 
-package de.qaware.openapigeneratorforspring.common.schema.customizer;
+package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.cfg.MapperConfig;
-import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.DefaultSchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaProperty;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilter;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 import de.qaware.openapigeneratorforspring.model.media.Discriminator;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
@@ -65,37 +67,61 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils
 
 @RequiredArgsConstructor
 @Slf4j
-public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer, SchemaPropertiesResolver,
-        SchemaPropertyFilter, SchemaPropertiesCustomizer {
+public class TypeResolverForJacksonPolymorphism implements TypeResolver, InitialSchemaBuilder,
+        SchemaPropertiesResolver, SchemaPropertiesCustomizer {
 
-    public static final int ORDER = OpenApiOrderedUtils.earlierThan(DefaultSchemaPropertiesResolver.ORDER);
-
+    public static final int ORDER = DEFAULT_ORDER;
     private static final String PROPERTY_SCHEMA_TYPE_NAME_SUFFIX = "Type";
 
     private final SchemaNameBuilder schemaNameBuilder;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
     private final OpenApiObjectMapperSupplier objectMapperSupplier;
 
+    @Nullable
     @Override
-    public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveResolver recursiveResolver) {
-        JsonTypeInfo jsonTypeInfo = annotationsSupplier.findAnnotations(JsonTypeInfo.class)
+    public Schema buildFromType(InitialType initialType) {
+        return initialType.getAnnotationsSupplier().findAnnotations(JsonTypeInfo.class)
                 .reduce((a, b) -> {
-                    LOGGER.warn("Found more than one @JsonTypeInfo on {}, will prefer {} over {}", javaType, a, b);
+                    LOGGER.warn("Found more than one @JsonTypeInfo on {}, will prefer {} over {}", initialType.getType(), a, b);
                     return a;
                 })
+                .filter(jsonTypeInfo -> {
+                    if (StringUtils.isBlank(jsonTypeInfo.use().getDefaultPropertyName())) {
+                        LOGGER.debug("Ignoring {} with blank default property name", jsonTypeInfo);
+                        return false;
+                    }
+                    return true;
+                })
+                .map(jsonTypeInfo -> {
+                    String schemaName = schemaNameBuilder.buildFromType(initialType.getType());
+                    return new JacksonPolymorphismSchema(schemaName, jsonTypeInfo);
+                })
                 .orElse(null);
+    }
 
-        if (jsonTypeInfo == null || StringUtils.isBlank(jsonTypeInfo.use().getDefaultPropertyName())) {
-            return;
+    @Override
+    @Nullable
+    public RecursionKey resolve(
+            SchemaResolver.Mode mode,
+            Schema schema,
+            JavaType javaType,
+            AnnotationsSupplier annotationsSupplier,
+            SchemaBuilderFromType schemaBuilderFromType
+    ) {
+        JsonTypeInfo jsonTypeInfo = getJsonTypeInfo(schema);
+        if (jsonTypeInfo == null) {
+            return null;
         }
 
         String propertyName = findPropertyName(jsonTypeInfo);
         Class<?> classOwningJsonTypeInfo = findClassOwningJsonTypeInfo(javaType.getRawClass())
-                .orElseThrow(() -> new IllegalStateException("Cannot find class/interface annotated with @JsonTypeInfo"));
+                .orElseThrow(() -> new IllegalStateException("Cannot find class/interface annotated with @JsonTypeInfo although the given annotationSupplier detected one"));
 
         Function<JsonSubTypes.Type, String> typeNameMapper = jsonTypeInfo.use() == MINIMAL_CLASS ?
                 type -> findMinimalClassTypeName(type, classOwningJsonTypeInfo) :
                 this::findTypeName;
+
+        ObjectMapper objectMapper = objectMapperSupplier.get(SCHEMA_BUILDING);
 
         setMapIfNotEmpty(buildStringMapFromStream(
                 annotationsSupplier.findAnnotations(JsonSubTypes.class)
@@ -112,15 +138,16 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
                     jsonSubTypes.keySet().stream(), IntStream.range(0, jsonSubTypes.size()).boxed()
             ).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
-            jsonSubTypes.forEach((typeName, type) -> recursiveResolver.alwaysAsReference(type,
+            jsonSubTypes.forEach((typeName, type) -> schemaBuilderFromType.buildSchemaFromType(
+                    objectMapper.constructType(type),
                     createAnnotationsSupplier(type, propertyName, jsonSubTypes.keySet(), classOwningJsonTypeInfo),
+                    true,
                     schemaReference -> {
                         schemaReferenceMapping.put(typeName, schemaReference.getRef());
                         oneOfSchemas.set(oneOfSchemasIndexMap.get(typeName), schemaReference);
                     }
             ));
 
-            schema.setType(null); // remove type object from this abstract schema
             schema.setOneOf(oneOfSchemas);
             schema.setDiscriminator(Discriminator.builder()
                     .propertyName(propertyName)
@@ -128,22 +155,9 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
                     .build()
             );
         });
-    }
 
-    private Optional<Class<?>> findClassOwningJsonTypeInfo(Class<?> clazz) {
-        if (clazz.isAnnotationPresent(JsonTypeInfo.class)) {
-            return Optional.of(clazz);
-        }
-        return Stream.concat(
-                Optional.ofNullable(clazz.getSuperclass())
-                        .flatMap(this::findClassOwningJsonTypeInfo)
-                        .map(Stream::of).orElseGet(Stream::empty), // Optional.toStream()
-                Arrays.stream(clazz.getInterfaces())
-                        .map(this::findClassOwningJsonTypeInfo)
-                        .flatMap(o -> o.map(Stream::<Class<?>>of).orElseGet(Stream::empty)) // Optional::toStream
-        ).findFirst();
+        return new UniqueKey(classOwningJsonTypeInfo);
     }
-
 
     @Override
     public Map<String, SchemaProperty> findProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaResolver.Mode mode) {
@@ -163,14 +177,6 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
                         }
                 ))
                 .orElseGet(Collections::emptyMap);
-    }
-
-    @Override
-    public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType, AnnotationsSupplier annotationsSupplierForType, MapperConfig<?> mapperConfig) {
-        // this removes any properties found for the "base schema", only keeps the explicitly set fields such as oneOf and discriminator
-        return !annotationsSupplierForType.findAnnotations(JsonTypeInfo.class)
-                .findFirst()
-                .isPresent();
     }
 
     @Override
@@ -202,13 +208,21 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
         );
     }
 
+    @Nullable
+    private JsonTypeInfo getJsonTypeInfo(Schema schema) {
+        if (schema instanceof JacksonPolymorphismSchema) {
+            return ((JacksonPolymorphismSchema) schema).getJsonTypeInfo();
+        }
+        return null;
+    }
+
     private AnnotationsSupplier createAnnotationsSupplier(Class<?> type, String propertyName, Collection<String> propertyEnumValues, Class<?> classOwningJsonTypeInfo) {
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(type);
         return new AnnotationsSupplier() {
             @Override
             public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
                 // skipping the JsonTypeInfo when resolving the derived classes
-                // avoids ending up in an infinite recursion by running this customizer again and again!
+                // avoids ending up in an infinite recursion by running this resolver again and again!
                 if (JsonTypeInfo.class.equals(annotationType)) {
                     return Stream.empty();
                 } else if (PropertyNameAnnotation.class.equals(annotationType)) {
@@ -248,18 +262,54 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
         return StringUtils.isNotBlank(property) ? property : jsonTypeInfo.use().getDefaultPropertyName();
     }
 
+    private static Optional<Class<?>> findClassOwningJsonTypeInfo(Class<?> clazz) {
+        if (clazz.isAnnotationPresent(JsonTypeInfo.class)) {
+            return Optional.of(clazz);
+        }
+        return Stream.concat(
+                Optional.ofNullable(clazz.getSuperclass())
+                        .flatMap(TypeResolverForJacksonPolymorphism::findClassOwningJsonTypeInfo)
+                        .map(Stream::of).orElseGet(Stream::empty), // Optional.toStream()
+                Arrays.stream(clazz.getInterfaces())
+                        .map(TypeResolverForJacksonPolymorphism::findClassOwningJsonTypeInfo)
+                        .flatMap(o -> o.map(Stream::<Class<?>>of).orElseGet(Stream::empty)) // Optional::toStream
+        ).findFirst();
+    }
+
+    @RequiredArgsConstructor
+    @EqualsAndHashCode // important!
+    private static class UniqueKey implements RecursionKey {
+        private final Class<?> classOwningJsonTypeInfo;
+    }
+
+    @EqualsAndHashCode(callSuper = true)
+    private static class JacksonPolymorphismSchema extends Schema {
+        @Getter
+        @EqualsAndHashCode.Exclude
+        @JsonIgnore
+        private final JsonTypeInfo jsonTypeInfo;
+
+        public JacksonPolymorphismSchema(String name, JsonTypeInfo jsonTypeInfo) {
+            this.jsonTypeInfo = jsonTypeInfo;
+            setName(name);
+        }
+    }
+
     private @interface PropertyNameAnnotation {
         Function<String, PropertyNameAnnotation> FACTORY = createAnnotationProxyWithValueFactory(PropertyNameAnnotation.class, String.class);
+
         String value();
     }
 
     private @interface PropertyEnumValuesAnnotation {
         Function<String[], PropertyEnumValuesAnnotation> FACTORY = createAnnotationProxyWithValueFactory(PropertyEnumValuesAnnotation.class, String[].class);
+
         String[] value();
     }
 
     private @interface PropertySchemaNameAnnotation {
         Function<String, PropertySchemaNameAnnotation> FACTORY = createAnnotationProxyWithValueFactory(PropertySchemaNameAnnotation.class, String.class);
+
         String value();
     }
 

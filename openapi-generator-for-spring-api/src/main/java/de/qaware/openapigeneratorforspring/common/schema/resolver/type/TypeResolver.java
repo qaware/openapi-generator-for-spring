@@ -68,8 +68,10 @@ public interface TypeResolver extends OpenApiOrderedUtils.DefaultOrdered {
          * @param annotationsSupplier annotations supplier for type
          * @param schemaConsumer      consumer for schema
          */
-        void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer);
+        default void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer) {
+            buildSchemaFromType(javaType, annotationsSupplier, false, schemaConsumer);
+        }
 
-        void buildSchemaReferenceFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<String> schemaReferenceConsumer);
+        void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, boolean mustBeReferenced, Consumer<Schema> schemaConsumer);
     }
 }
