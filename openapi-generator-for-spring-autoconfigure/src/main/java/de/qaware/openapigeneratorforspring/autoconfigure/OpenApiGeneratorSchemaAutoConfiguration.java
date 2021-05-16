@@ -92,9 +92,11 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     public TypeResolverForProperties defaultTypeResolverForProperties(
             InitialSchemaBuilderForObject initialSchemaBuilder,
             List<SchemaPropertiesResolver> schemaPropertiesResolvers,
-            List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers
+            List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers,
+            OpenApiObjectMapperSupplier openApiObjectMapperSupplier
     ) {
-        return new TypeResolverForProperties(initialSchemaBuilder, schemaPropertiesResolvers, schemaPropertiesCustomizers);
+        return new TypeResolverForProperties(initialSchemaBuilder, schemaPropertiesResolvers,
+                schemaPropertiesCustomizers, openApiObjectMapperSupplier);
     }
 
     @Bean

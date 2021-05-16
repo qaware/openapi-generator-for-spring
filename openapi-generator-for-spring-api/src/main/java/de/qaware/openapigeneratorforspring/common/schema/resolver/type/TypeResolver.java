@@ -54,9 +54,7 @@ public interface TypeResolver extends OpenApiOrderedUtils.DefaultOrdered {
      * the obligation to completely construct the final schema.
      */
     interface RecursionKey {
-        boolean equals(Object other);
 
-        int hashCode();
     }
 
     /**
