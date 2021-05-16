@@ -1,0 +1,191 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App44",
+    "version": "unknown"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "mapping1",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Base1"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Base1Type": {
+        "type": "string",
+        "enum": [
+          ".SomeClass1",
+          ".SomeClass2",
+          ".sub.SomeClassInSubPackage1",
+          ".sub.SomeClassInSubPackage2",
+          "de.qaware.openapigeneratorforspring.test.app44.SomeClassInUpperPackage1",
+          "de.qaware.openapigeneratorforspring.test.app44.SomeClassInUpperPackage2",
+          "de.qaware.openapigeneratorforspring.test.app44.package2.SomeClass1",
+          "de.qaware.openapigeneratorforspring.test.app44.package2.SomeClass2",
+          "de.qaware.openapigeneratorforspring.test.app44.App44Controller$InnerClass1"
+        ]
+      },
+      "SomeClass1_0": {
+        "type": "object",
+        "properties": {
+          "@c": {
+            "$ref": "#/components/schemas/Base1Type"
+          },
+          "property1": {
+            "type": "string"
+          }
+        }
+      },
+      "SomeClass1_1": {
+        "type": "object",
+        "properties": {
+          "@c": {
+            "$ref": "#/components/schemas/Base1Type"
+          },
+          "property2": {
+            "type": "string"
+          }
+        }
+      },
+      "SomeClass2_0": {
+        "type": "object",
+        "properties": {
+          "@c": {
+            "$ref": "#/components/schemas/Base1Type"
+          },
+          "property7": {
+            "type": "string"
+          }
+        }
+      },
+      "SomeClass2_1": {
+        "type": "object",
+        "properties": {
+          "@c": {
+            "$ref": "#/components/schemas/Base1Type"
+          },
+          "property6": {
+            "type": "string"
+          }
+        }
+      },
+      "SomeClassInSubPackage1": {
+        "type": "object",
+        "properties": {
+          "@c": {
+            "$ref": "#/components/schemas/Base1Type"
+          },
+          "property4": {
+            "type": "string"
+          }
+        }
+      },
+      "SomeClassInSubPackage2": {
+        "type": "object",
+        "properties": {
+          "@c": {
+            "$ref": "#/components/schemas/Base1Type"
+          },
+          "property5": {
+            "type": "string"
+          }
+        }
+      },
+      "SomeClassInUpperPackage1": {
+        "type": "object",
+        "properties": {
+          "@c": {
+            "$ref": "#/components/schemas/Base1Type"
+          },
+          "property3": {
+            "type": "string"
+          }
+        }
+      },
+      "SomeClassInUpperPackage2": {
+        "type": "object",
+        "properties": {
+          "@c": {
+            "$ref": "#/components/schemas/Base1Type"
+          },
+          "property8": {
+            "type": "string"
+          }
+        }
+      },
+      "App44Controller.InnerClass1": {
+        "type": "object",
+        "properties": {
+          "@c": {
+            "$ref": "#/components/schemas/Base1Type"
+          },
+          "property9": {
+            "type": "string"
+          }
+        }
+      },
+      "Base1": {
+        "discriminator": {
+          "propertyName": "@c",
+          "mapping": {
+            ".SomeClass1": "#/components/schemas/SomeClass1_0",
+            "de.qaware.openapigeneratorforspring.test.app44.package2.SomeClass1": "#/components/schemas/SomeClass1_1",
+            ".SomeClass2": "#/components/schemas/SomeClass2_0",
+            "de.qaware.openapigeneratorforspring.test.app44.package2.SomeClass2": "#/components/schemas/SomeClass2_1",
+            ".sub.SomeClassInSubPackage1": "#/components/schemas/SomeClassInSubPackage1",
+            ".sub.SomeClassInSubPackage2": "#/components/schemas/SomeClassInSubPackage2",
+            "de.qaware.openapigeneratorforspring.test.app44.SomeClassInUpperPackage1": "#/components/schemas/SomeClassInUpperPackage1",
+            "de.qaware.openapigeneratorforspring.test.app44.SomeClassInUpperPackage2": "#/components/schemas/SomeClassInUpperPackage2",
+            "de.qaware.openapigeneratorforspring.test.app44.App44Controller$InnerClass1": "#/components/schemas/App44Controller.InnerClass1"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/SomeClass1_0"
+          },
+          {
+            "$ref": "#/components/schemas/SomeClass2_0"
+          },
+          {
+            "$ref": "#/components/schemas/SomeClassInSubPackage1"
+          },
+          {
+            "$ref": "#/components/schemas/SomeClassInSubPackage2"
+          },
+          {
+            "$ref": "#/components/schemas/SomeClassInUpperPackage1"
+          },
+          {
+            "$ref": "#/components/schemas/SomeClassInUpperPackage2"
+          },
+          {
+            "$ref": "#/components/schemas/SomeClass1_1"
+          },
+          {
+            "$ref": "#/components/schemas/SomeClass2_1"
+          },
+          {
+            "$ref": "#/components/schemas/App44Controller.InnerClass1"
+          }
+        ]
+      }
+    }
+  }
+}

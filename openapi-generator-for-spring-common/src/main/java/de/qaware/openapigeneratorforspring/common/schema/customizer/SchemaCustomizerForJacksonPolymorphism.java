@@ -36,7 +36,6 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.Sch
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilter;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
-import de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils;
 import de.qaware.openapigeneratorforspring.model.media.Discriminator;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +61,6 @@ import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectM
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiProxyUtils.createAnnotationProxyWithValueFactory;
-import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.takeWhile;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.zip;
 
 @RequiredArgsConstructor
@@ -237,29 +235,17 @@ public class SchemaCustomizerForJacksonPolymorphism implements SchemaCustomizer,
     }
 
     private String findMinimalClassTypeName(JsonSubTypes.Type type, Class<?> classOwningJsonTypeInfo) {
+        String basePackageName = classOwningJsonTypeInfo.getPackage().getName();
         String typeName = type.value().getName();
-        String owningJsonTypeInfoName = classOwningJsonTypeInfo.getName();
-        int stripIndex = findCommonBaseNameStripIndex(Arrays.asList(owningJsonTypeInfoName, typeName));
-        return typeName.substring(stripIndex);
+        if (typeName.startsWith(basePackageName)) {
+            return typeName.substring(basePackageName.length());
+        }
+        return typeName;
     }
 
     private String findPropertyName(JsonTypeInfo jsonTypeInfo) {
         String property = jsonTypeInfo.property();
         return StringUtils.isNotBlank(property) ? property : jsonTypeInfo.use().getDefaultPropertyName();
-    }
-
-    static int findCommonBaseNameStripIndex(Collection<String> typeNames) {
-        return typeNames.stream()
-                .map(typeName -> Arrays.stream(typeName.split("(?<=\\.)"))
-                        .filter(s -> s.endsWith("."))
-                )
-                .reduce((a, b) ->
-                        takeWhile(zip(a, b), p -> p.getRight().equals(p.getLeft()))
-                                .map(Pair::getRight)
-                )
-                .flatMap(OpenApiStreamUtils::nonEmptyStream)
-                .map(s -> s.mapToInt(String::length).sum() - 1)
-                .orElse(0);
     }
 
     private @interface PropertyNameAnnotation {
