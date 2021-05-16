@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @OpenAPIDefinition(
         info = @Info(title = "My own title")
 )
-public class App1 {
+class App1 {
     public static void main(String[] args) {
         SpringApplication.run(App1.class, args);
     }

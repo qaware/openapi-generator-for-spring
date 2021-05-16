@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         title = "Callback example",
         version = "1.0.0"
 ))
-public class App14 {
+class App14 {
     public static void main(String[] args) {
         SpringApplication.run(App14.class, args);
     }

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class App36Controller {
+class App36Controller {
     @GetMapping("mapping1")
     public String mapping1(@RequestBody String request, @RequestParam String param1) {
         return null;

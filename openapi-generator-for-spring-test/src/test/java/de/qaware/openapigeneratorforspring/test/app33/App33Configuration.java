@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 
 @Configuration
-public class App33Configuration {
+class App33Configuration {
     @Bean
     public InitialTypeBuilder openApiSchemaTypeSubstitutionForYourType() {
         return (javaType, annotationsSupplier, recursiveBuilder) -> {

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class App15Controller {
+class App15Controller {
 
     @GetMapping("/mapping1")
     @ApiResponse(description = "Description from method")

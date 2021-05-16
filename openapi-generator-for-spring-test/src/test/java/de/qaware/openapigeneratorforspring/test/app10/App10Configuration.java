@@ -11,7 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Arrays;
 
 @Configuration
-public class App10Configuration {
+class App10Configuration {
 
     @Bean
     public OperationPreFilter operationPreFilterForGroupsQueryParam(OpenApiRequestParameterProvider parameterProvider) {

@@ -15,7 +15,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
-public class App27RouterFunctions {
+class App27RouterFunctions {
     @Bean
     RouterFunction<ServerResponse> lambdaMapping1() {
         return route(GET("/mapping1"),

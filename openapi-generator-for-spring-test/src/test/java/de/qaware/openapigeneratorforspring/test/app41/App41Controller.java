@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class App41Controller {
+class App41Controller {
 
     @PostMapping
     public SomeType1 mapping1(@RequestBody SomeType1 requestBody) {

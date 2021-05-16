@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class App43Controller {
+class App43Controller {
 
     @GetMapping
     public Shape mapping1() {

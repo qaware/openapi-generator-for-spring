@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "tag-3")
 @Tag(name = "tag-8")
 @Tag(name = "tag-5", description = "some description 5")
-public class App13Controller {
+class App13Controller {
 
     @GetMapping("mapping-1")
     @Tag(name = "tag-4")

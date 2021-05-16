@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-public class App5Controller {
+class App5Controller {
 
     @GetMapping("/get1")
     public String getMappingWithString() {

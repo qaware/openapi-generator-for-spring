@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "basePath/to", consumes = MediaType.APPLICATION_JSON_VALUE)
 @SecurityScheme(type = SecuritySchemeType.OAUTH2, name = "scheme4")
 @SecurityScheme(type = SecuritySchemeType.APIKEY, name = "scheme3")
-public class App16Controller {
+class App16Controller {
 
     @GetMapping("/mapping1")
     @Operation(servers = @Server(url = "http://url1", description = "Server 1"))

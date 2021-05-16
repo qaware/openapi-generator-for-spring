@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 
 @RestController
 @RequestMapping(path = "simple")
-public class App6SimpleController {
+class App6SimpleController {
 
     @GetMapping("get-mapping-1/{pathVariableName}")
     public void getMappingRequestParam1(

@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class App14Configuration {
+class App14Configuration {
     @Bean
     public ReferenceDeciderForSchema referenceDeciderForSchema() {
         return (schema, referenceIdentifier, numberOfUsages) -> false;

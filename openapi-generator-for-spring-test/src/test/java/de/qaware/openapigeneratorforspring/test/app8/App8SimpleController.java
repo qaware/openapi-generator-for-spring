@@ -11,7 +11,7 @@ import java.time.Instant;
 
 @RestController
 @RequestMapping(path = "simple")
-public class App8SimpleController {
+class App8SimpleController {
 
     @GetMapping("get-instant")
     public Instant getMappingReturnInstant() {

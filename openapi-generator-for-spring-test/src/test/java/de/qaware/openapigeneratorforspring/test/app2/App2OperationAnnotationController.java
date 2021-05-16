@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "operation-annotation")
-public class App2OperationAnnotationController {
+class App2OperationAnnotationController {
 
     @GetMapping("get1")
     @Operation(

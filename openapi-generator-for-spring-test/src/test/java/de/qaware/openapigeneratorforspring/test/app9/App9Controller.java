@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(consumes = "text/plain", produces = "text/html")
-public class App9Controller {
+class App9Controller {
     @GetMapping("mapping-1")
     public void mapping1(@RequestParam String param1, @RequestParam String param2, @RequestBody SomeDeprecatedDto someDeprecatedDto) {
 

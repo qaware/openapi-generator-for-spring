@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-public class App20Controller {
+class App20Controller {
     @GetMapping(value = "/mapping-1", produces = "text/plain")
     public Mono<String> mapping1() {
         return null;

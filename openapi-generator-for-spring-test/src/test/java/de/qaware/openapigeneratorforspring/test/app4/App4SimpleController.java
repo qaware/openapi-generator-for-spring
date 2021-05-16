@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-public class App4SimpleController {
+class App4SimpleController {
     @PostMapping(value = "/post1", produces = "text/plain")
     @ApiResponse(description = "Default response for post mapping")
     @Schema(implementation = String.class)

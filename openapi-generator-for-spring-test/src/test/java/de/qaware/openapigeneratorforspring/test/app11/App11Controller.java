@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class App11Controller {
+class App11Controller {
 
     @GetMapping("mapping-1")
     public void mapping1(

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "v3")
-public class App3ConflictingController3 {
+class App3ConflictingController3 {
 
     @GetMapping("post-mapping")
     @Operation(operationId = "postMapping")

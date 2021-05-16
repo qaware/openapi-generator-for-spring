@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class App3Configuration {
+class App3Configuration {
 
     @Bean
     public OperationApiResponsesFromMethodCustomizer simpleOperationApiResponsesFromMethodCustomizer(ApiResponseDefaultProvider apiResponseDefaultProvider) {
