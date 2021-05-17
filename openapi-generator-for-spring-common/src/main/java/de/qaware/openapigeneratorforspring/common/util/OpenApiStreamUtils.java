@@ -31,7 +31,6 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -72,27 +71,6 @@ public class OpenApiStreamUtils {
             @Override
             public boolean tryAdvance(Consumer<? super Pair<L, R>> action) {
                 return lefts.tryAdvance(left -> rights.tryAdvance(right -> action.accept(Pair.of(left, right))));
-            }
-        }, false);
-    }
-
-    public static <T> Stream<T> takeWhile(Stream<T> stream, Predicate<? super T> predicate) {
-        Spliterator<T> spliterator = stream.spliterator();
-        return StreamSupport.stream(new Spliterators.AbstractSpliterator<T>(spliterator.estimateSize(), spliterator.characteristics()) {
-            boolean stillGoing = true;
-
-            @Override
-            public boolean tryAdvance(Consumer<? super T> consumer) {
-                if (stillGoing) {
-                    return spliterator.tryAdvance(elem -> {
-                        if (predicate.test(elem)) {
-                            consumer.accept(elem);
-                        } else {
-                            stillGoing = false;
-                        }
-                    });
-                }
-                return false;
             }
         }, false);
     }
