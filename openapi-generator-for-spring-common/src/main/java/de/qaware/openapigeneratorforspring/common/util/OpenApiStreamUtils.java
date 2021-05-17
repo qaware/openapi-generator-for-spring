@@ -27,10 +27,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -63,16 +61,6 @@ public class OpenApiStreamUtils {
             Collector<? super U, A, D> downstream
     ) {
         return groupingBy(classifier, LinkedHashMap::new, mapping(downstreamMapper, downstream));
-    }
-
-    public static <T> Optional<Stream<T>> nonEmptyStream(Stream<T> stream) {
-        Spliterator<T> it = stream.spliterator();
-        AtomicReference<T> firstItem = new AtomicReference<>();
-        if (it.tryAdvance(firstItem::set)) {
-            return Optional.of(Stream.concat(Stream.of(firstItem.get()), StreamSupport.stream(it, stream.isParallel())));
-        } else {
-            return Optional.empty();
-        }
     }
 
     public static <L, R> Stream<Pair<L, R>> zip(Stream<L> leftStream, Stream<R> rightStream) {
