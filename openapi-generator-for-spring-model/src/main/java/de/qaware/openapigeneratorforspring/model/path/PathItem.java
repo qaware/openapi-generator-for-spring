@@ -54,13 +54,15 @@ public class PathItem implements HasExtensions {
     private List<Parameter> parameters;
 
     @JsonIgnore // merged into extensions
+    @Builder.Default
     private Map<String, Operation> operations = new LinkedHashMap<>();
-    private Map<String, Object> extensions = Collections.emptyMap();
+    private Map<String, Object> extensions;
 
     // jackson supports only one @JsonAnyGetter, so we merge operations and extensions here
     @Override
     public Map<String, Object> getExtensions() {
-        return Stream.concat(operations.entrySet().stream(), extensions.entrySet().stream())
+        Map<String, Object> nonNullExtensions = this.extensions == null ? Collections.emptyMap() : this.extensions;
+        return Stream.concat(operations.entrySet().stream(), nonNullExtensions.entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> {
                     throw new IllegalStateException("Conflicting key for PathItem property: " + a + "vs. " + b);
                 }, LinkedHashMap::new));
