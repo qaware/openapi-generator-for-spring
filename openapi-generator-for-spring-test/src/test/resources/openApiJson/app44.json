@@ -28,7 +28,7 @@
   },
   "components": {
     "schemas": {
-      "Base1Type": {
+      "Base1@c": {
         "type": "string",
         "enum": [
           ".SomeClass1",
@@ -46,7 +46,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1Type"
+            "$ref": "#/components/schemas/Base1@c"
           },
           "property1": {
             "type": "string"
@@ -57,7 +57,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1Type"
+            "$ref": "#/components/schemas/Base1@c"
           },
           "property2": {
             "type": "string"
@@ -68,7 +68,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1Type"
+            "$ref": "#/components/schemas/Base1@c"
           },
           "property7": {
             "type": "string"
@@ -79,7 +79,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1Type"
+            "$ref": "#/components/schemas/Base1@c"
           },
           "property6": {
             "type": "string"
@@ -90,7 +90,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1Type"
+            "$ref": "#/components/schemas/Base1@c"
           },
           "property4": {
             "type": "string"
@@ -101,7 +101,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1Type"
+            "$ref": "#/components/schemas/Base1@c"
           },
           "property5": {
             "type": "string"
@@ -112,7 +112,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1Type"
+            "$ref": "#/components/schemas/Base1@c"
           },
           "property3": {
             "type": "string"
@@ -123,7 +123,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1Type"
+            "$ref": "#/components/schemas/Base1@c"
           },
           "property8": {
             "type": "string"
@@ -134,7 +134,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1Type"
+            "$ref": "#/components/schemas/Base1@c"
           },
           "property9": {
             "type": "string"
@@ -146,13 +146,13 @@
           "propertyName": "@c",
           "mapping": {
             ".SomeClass1": "#/components/schemas/SomeClass1_0",
-            "de.qaware.openapigeneratorforspring.test.app44.package2.SomeClass1": "#/components/schemas/SomeClass1_1",
             ".SomeClass2": "#/components/schemas/SomeClass2_0",
-            "de.qaware.openapigeneratorforspring.test.app44.package2.SomeClass2": "#/components/schemas/SomeClass2_1",
             ".sub.SomeClassInSubPackage1": "#/components/schemas/SomeClassInSubPackage1",
             ".sub.SomeClassInSubPackage2": "#/components/schemas/SomeClassInSubPackage2",
             "de.qaware.openapigeneratorforspring.test.app44.SomeClassInUpperPackage1": "#/components/schemas/SomeClassInUpperPackage1",
             "de.qaware.openapigeneratorforspring.test.app44.SomeClassInUpperPackage2": "#/components/schemas/SomeClassInUpperPackage2",
+            "de.qaware.openapigeneratorforspring.test.app44.package2.SomeClass1": "#/components/schemas/SomeClass1_1",
+            "de.qaware.openapigeneratorforspring.test.app44.package2.SomeClass2": "#/components/schemas/SomeClass2_1",
             "de.qaware.openapigeneratorforspring.test.app44.App44Controller$InnerClass1": "#/components/schemas/App44Controller.InnerClass1"
           }
         },

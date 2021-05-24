@@ -66,7 +66,7 @@
       }
     },
     "schemas": {
-      "App43Controller.ShapeType": {
+      "App43Controller.Shape_type": {
         "type": "string",
         "enum": [
           "RECTANGLE",
@@ -81,7 +81,7 @@
         "type": "object",
         "properties": {
           "_type": {
-            "$ref": "#/components/schemas/App43Controller.ShapeType"
+            "$ref": "#/components/schemas/App43Controller.Shape_type"
           },
           "name": {
             "type": "string"
@@ -96,7 +96,7 @@
         "type": "object",
         "properties": {
           "_type": {
-            "$ref": "#/components/schemas/App43Controller.ShapeType"
+            "$ref": "#/components/schemas/App43Controller.Shape_type"
           },
           "name": {
             "type": "string"
@@ -124,7 +124,7 @@
           }
         ]
       },
-      "App43Controller.ExtendableBodyType": {
+      "App43Controller.ExtendableBody@c": {
         "type": "string",
         "enum": [
           ".App43Controller$ExtendableBody",
@@ -135,7 +135,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/App43Controller.ExtendableBodyType"
+            "$ref": "#/components/schemas/App43Controller.ExtendableBody@c"
           },
           "property1": {
             "type": "string"
@@ -163,7 +163,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/App43Controller.ExtendableBodyType"
+            "$ref": "#/components/schemas/App43Controller.ExtendableBody@c"
           },
           "property1": {
             "type": "string"
@@ -173,7 +173,7 @@
           }
         }
       },
-      "App43Controller.BodyInterfaceType": {
+      "App43Controller.BodyInterface@class": {
         "type": "string",
         "enum": [
           "de.qaware.openapigeneratorforspring.test.app43.App43Controller$AnotherBody",
@@ -185,7 +185,7 @@
         "type": "object",
         "properties": {
           "@class": {
-            "$ref": "#/components/schemas/App43Controller.BodyInterfaceType"
+            "$ref": "#/components/schemas/App43Controller.BodyInterface@class"
           },
           "property3": {
             "type": "string"
@@ -198,7 +198,7 @@
         "type": "object",
         "properties": {
           "@class": {
-            "$ref": "#/components/schemas/App43Controller.BodyInterfaceType"
+            "$ref": "#/components/schemas/App43Controller.BodyInterface@class"
           }
         }
       },

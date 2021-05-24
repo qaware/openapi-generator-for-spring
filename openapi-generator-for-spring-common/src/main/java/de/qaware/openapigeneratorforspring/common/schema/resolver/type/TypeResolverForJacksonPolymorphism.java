@@ -71,7 +71,6 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
         SchemaPropertiesResolver, SchemaPropertiesCustomizer {
 
     public static final int ORDER = DEFAULT_ORDER;
-    private static final String PROPERTY_SCHEMA_TYPE_NAME_SUFFIX = "Type";
 
     private final SchemaNameBuilder schemaNameBuilder;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
@@ -122,6 +121,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
                 this::findTypeName;
 
         ObjectMapper objectMapper = objectMapperSupplier.get(SCHEMA_BUILDING);
+        String propertySchemaName = getPropertySchemaName(classOwningJsonTypeInfo, objectMapper, findPropertySchemaNameSuffix(propertyName));
 
         setMapIfNotEmpty(buildStringMapFromStream(
                 annotationsSupplier.findAnnotations(JsonSubTypes.class)
@@ -140,7 +140,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
 
             jsonSubTypes.forEach((typeName, type) -> schemaBuilderFromType.buildSchemaFromType(
                     objectMapper.constructType(type),
-                    createAnnotationsSupplier(type, propertyName, jsonSubTypes.keySet(), classOwningJsonTypeInfo),
+                    createAnnotationsSupplier(type, propertyName, jsonSubTypes.keySet(), propertySchemaName),
                     true,
                     schemaReference -> {
                         schemaReferenceMapping.put(typeName, schemaReference.getRef());
@@ -216,7 +216,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
         return null;
     }
 
-    private AnnotationsSupplier createAnnotationsSupplier(Class<?> type, String propertyName, Collection<String> propertyEnumValues, Class<?> classOwningJsonTypeInfo) {
+    private AnnotationsSupplier createAnnotationsSupplier(Class<?> type, String propertyName, Collection<String> propertyEnumValues, String propertySchemaName) {
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(type);
         return new AnnotationsSupplier() {
             @Override
@@ -230,16 +230,21 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
                 } else if (PropertyEnumValuesAnnotation.class.equals(annotationType)) {
                     return Stream.of(annotationType.cast(PropertyEnumValuesAnnotation.FACTORY.apply(propertyEnumValues.toArray(new String[0]))));
                 } else if (PropertySchemaNameAnnotation.class.equals(annotationType)) {
-                    return Stream.of(annotationType.cast(PropertySchemaNameAnnotation.FACTORY.apply(getPropertySchemaName(classOwningJsonTypeInfo))));
+                    return Stream.of(annotationType.cast(PropertySchemaNameAnnotation.FACTORY.apply(propertySchemaName)));
                 }
                 return annotationsSupplier.findAnnotations(annotationType);
             }
         };
     }
 
-    private String getPropertySchemaName(Class<?> classOwningJsonTypeInfo) {
-        JavaType javaTypeOwningJsonTypeInfo = objectMapperSupplier.get(SCHEMA_BUILDING).constructType(classOwningJsonTypeInfo);
-        return schemaNameBuilder.buildFromType(javaTypeOwningJsonTypeInfo) + PROPERTY_SCHEMA_TYPE_NAME_SUFFIX;
+    private String getPropertySchemaName(Class<?> classOwningJsonTypeInfo, ObjectMapper objectMapper, String schemaNameSuffix) {
+        JavaType javaTypeOwningJsonTypeInfo = objectMapper.constructType(classOwningJsonTypeInfo);
+        return schemaNameBuilder.buildFromType(javaTypeOwningJsonTypeInfo) + schemaNameSuffix;
+    }
+
+    private String findPropertySchemaNameSuffix(String propertyName) {
+        // Maybe make this more customizable?
+        return propertyName;
     }
 
     private String findTypeName(JsonSubTypes.Type type) {

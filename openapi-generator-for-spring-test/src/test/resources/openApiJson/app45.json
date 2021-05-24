@@ -35,7 +35,7 @@
   },
   "components": {
     "schemas": {
-      "App45Controller.Base1Type": {
+      "App45Controller.Base1_type": {
         "type": "string",
         "enum": [
           "nested",
@@ -80,7 +80,7 @@
         "type": "object",
         "properties": {
           "_type": {
-            "$ref": "#/components/schemas/App45Controller.Base1Type"
+            "$ref": "#/components/schemas/App45Controller.Base1_type"
           },
           "nestedProperty": {
             "$ref": "#/components/schemas/App45Controller.Base1"
@@ -91,7 +91,7 @@
         "type": "object",
         "properties": {
           "_type": {
-            "$ref": "#/components/schemas/App45Controller.Base1Type"
+            "$ref": "#/components/schemas/App45Controller.Base1_type"
           },
           "nestedProperty": {
             "$ref": "#/components/schemas/App45Controller.Base1"
