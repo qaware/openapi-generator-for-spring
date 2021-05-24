@@ -20,10 +20,10 @@
 
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolverConfigurationProperties.Format;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.RequiredArgsConstructor;
 
@@ -48,8 +48,8 @@ public class DefaultJava8TimeInitialSchemaBuilder implements Java8TimeInitialSch
 
     @Nullable
     @Override
-    public Schema buildFromType(JavaType javaType) {
-        Class<?> rawClass = javaType.getRawClass();
+    public Schema buildFromType(InitialType initialType) {
+        Class<?> rawClass = initialType.getType().getRawClass();
         if (rawClass.equals(Instant.class)) {
             Format format = getFormat(WRITE_DATES_AS_TIMESTAMPS);
             Schema.SchemaBuilder schemaBuilder = createSchemaBuilderWithType(format);

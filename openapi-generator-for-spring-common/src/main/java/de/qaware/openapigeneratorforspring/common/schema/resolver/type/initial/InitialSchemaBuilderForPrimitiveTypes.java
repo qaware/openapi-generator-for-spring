@@ -20,7 +20,6 @@
 
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
-import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 import javax.annotation.Nullable;
@@ -85,8 +84,8 @@ public class InitialSchemaBuilderForPrimitiveTypes implements InitialSchemaBuild
 
     @Nullable
     @Override
-    public Schema buildFromType(JavaType javaType) {
-        return Optional.ofNullable(PRIMITIVE_TYPE_CLASS_TO_SCHEMA.get(javaType.getRawClass()))
+    public Schema buildFromType(InitialType initialType) {
+        return Optional.ofNullable(PRIMITIVE_TYPE_CLASS_TO_SCHEMA.get(initialType.getType().getRawClass()))
                 .map(Supplier::get)
                 .orElse(null);
     }

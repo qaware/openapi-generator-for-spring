@@ -20,7 +20,6 @@
 
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
-import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 
@@ -41,9 +40,9 @@ public interface InitialSchemaBuilder extends OpenApiOrderedUtils.DefaultOrdered
      * Build initial {@link Schema} from given java type.
      * Can return null if that java type cannot be handled.
      *
-     * @param javaType java type
+     * @param initialType initial java type
      * @return initial schema, or null if java type cannot be handled
      */
     @Nullable
-    Schema buildFromType(JavaType javaType);
+    Schema buildFromType(InitialType initialType);
 }
