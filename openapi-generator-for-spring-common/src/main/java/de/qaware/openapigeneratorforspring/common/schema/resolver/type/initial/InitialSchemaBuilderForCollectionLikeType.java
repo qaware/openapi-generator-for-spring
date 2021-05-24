@@ -20,7 +20,6 @@
 
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
-import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverSupport;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.EqualsAndHashCode;
@@ -35,8 +34,8 @@ public class InitialSchemaBuilderForCollectionLikeType implements InitialSchemaB
 
     @Nullable
     @Override
-    public Schema buildFromType(JavaType javaType) {
-        return javaType.isCollectionLikeType() ? new ArraySchema() : null;
+    public Schema buildFromType(InitialType initialType) {
+        return initialType.getType().isCollectionLikeType() ? new ArraySchema() : null;
     }
 
     @Override

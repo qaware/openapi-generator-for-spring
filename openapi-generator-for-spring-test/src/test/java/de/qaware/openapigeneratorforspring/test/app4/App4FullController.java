@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class App4FullController {
+class App4FullController {
 
     @GetMapping("/get3")
     @ApiResponse(

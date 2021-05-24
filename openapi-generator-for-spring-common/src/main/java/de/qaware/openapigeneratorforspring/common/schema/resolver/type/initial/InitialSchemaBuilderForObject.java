@@ -20,7 +20,6 @@
 
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
-import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverSupport;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
@@ -41,8 +40,8 @@ public class InitialSchemaBuilderForObject implements InitialSchemaBuilder, Type
 
     @Nullable
     @Override
-    public Schema buildFromType(JavaType javaType) {
-        return new ObjectSchema(schemaNameBuilder.buildFromType(javaType));
+    public Schema buildFromType(InitialType initialType) {
+        return new ObjectSchema(schemaNameBuilder.buildFromType(initialType.getType()));
     }
 
     @EqualsAndHashCode(callSuper = true)

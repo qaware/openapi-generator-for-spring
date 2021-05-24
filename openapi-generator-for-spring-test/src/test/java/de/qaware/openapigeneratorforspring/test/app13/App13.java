@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @OpenAPIDefinition(
         tags = @Tag(name = "tag-10")
 )
-public class App13 {
+class App13 {
     public static void main(String[] args) {
         SpringApplication.run(App13.class, args);
     }

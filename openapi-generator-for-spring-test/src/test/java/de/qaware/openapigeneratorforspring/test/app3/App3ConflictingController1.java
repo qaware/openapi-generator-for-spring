@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "v1")
-public class App3ConflictingController1 {
+class App3ConflictingController1 {
 
     @GetMapping("get-mapping")
     public String getMappingReturnString() {

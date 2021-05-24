@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Configuration
-public class App32Configuration {
+class App32Configuration {
 
     @Bean
     public OperationCustomizer operationCustomizerForExceptions(SchemaResolver schemaResolver, AnnotationsSupplierFactory annotationsSupplierFactory, ApplicationContext applicationContext) {

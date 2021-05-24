@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 
 @RestController
-public class App14Controller {
+class App14Controller {
 
     // basically follows https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/examples/v3.0/callback-example.yaml
     @PostMapping(value = "/streams", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,0 +1,225 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App43",
+    "version": "unknown"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "mapping1",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/App43Controller.Shape"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "mapping2",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/App43Controller.ExtendableBody_1"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      },
+      "put": {
+        "operationId": "mapping3",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/App43Controller.AbstractBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "200": {
+        "description": "Default response"
+      }
+    },
+    "schemas": {
+      "App43Controller.Shape_type": {
+        "type": "string",
+        "enum": [
+          "RECTANGLE",
+          "RATING"
+        ]
+      },
+      "integer_int32": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "App43Controller.Rectangle": {
+        "type": "object",
+        "properties": {
+          "_type": {
+            "$ref": "#/components/schemas/App43Controller.Shape_type"
+          },
+          "name": {
+            "type": "string"
+          },
+          "area": {
+            "$ref": "#/components/schemas/integer_int32"
+          }
+        },
+        "description": "Not quite a square"
+      },
+      "App43Controller.Circle": {
+        "type": "object",
+        "properties": {
+          "_type": {
+            "$ref": "#/components/schemas/App43Controller.Shape_type"
+          },
+          "name": {
+            "type": "string"
+          },
+          "radius": {
+            "$ref": "#/components/schemas/integer_int32"
+          }
+        },
+        "description": "So round"
+      },
+      "App43Controller.Shape": {
+        "discriminator": {
+          "propertyName": "_type",
+          "mapping": {
+            "RECTANGLE": "#/components/schemas/App43Controller.Rectangle",
+            "RATING": "#/components/schemas/App43Controller.Circle"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/App43Controller.Rectangle"
+          },
+          {
+            "$ref": "#/components/schemas/App43Controller.Circle"
+          }
+        ]
+      },
+      "App43Controller.ExtendableBody@c": {
+        "type": "string",
+        "enum": [
+          ".App43Controller$ExtendableBody",
+          ".App43Controller$ExtendedBody"
+        ]
+      },
+      "App43Controller.ExtendableBody_0": {
+        "type": "object",
+        "properties": {
+          "@c": {
+            "$ref": "#/components/schemas/App43Controller.ExtendableBody@c"
+          },
+          "property1": {
+            "type": "string"
+          }
+        }
+      },
+      "App43Controller.ExtendableBody_1": {
+        "discriminator": {
+          "propertyName": "@c",
+          "mapping": {
+            ".App43Controller$ExtendableBody": "#/components/schemas/App43Controller.ExtendableBody_0",
+            ".App43Controller$ExtendedBody": "#/components/schemas/App43Controller.ExtendedBody"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/App43Controller.ExtendableBody_0"
+          },
+          {
+            "$ref": "#/components/schemas/App43Controller.ExtendedBody"
+          }
+        ]
+      },
+      "App43Controller.ExtendedBody": {
+        "type": "object",
+        "properties": {
+          "@c": {
+            "$ref": "#/components/schemas/App43Controller.ExtendableBody@c"
+          },
+          "property1": {
+            "type": "string"
+          },
+          "property2": {
+            "type": "string"
+          }
+        }
+      },
+      "App43Controller.BodyInterface@class": {
+        "type": "string",
+        "enum": [
+          "de.qaware.openapigeneratorforspring.test.app43.App43Controller$AnotherBody",
+          "de.qaware.openapigeneratorforspring.test.app43.App43Controller$ConcreteBody"
+        ]
+      },
+      "App43Controller.AnotherBody": {
+        "title": "The Title!",
+        "type": "object",
+        "properties": {
+          "@class": {
+            "$ref": "#/components/schemas/App43Controller.BodyInterface@class"
+          },
+          "property3": {
+            "type": "string"
+          }
+        },
+        "description": "Another body with property3"
+      },
+      "App43Controller.ConcreteBody": {
+        "title": "The Title!",
+        "type": "object",
+        "properties": {
+          "@class": {
+            "$ref": "#/components/schemas/App43Controller.BodyInterface@class"
+          }
+        }
+      },
+      "App43Controller.AbstractBody": {
+        "title": "The Title!",
+        "discriminator": {
+          "propertyName": "@class",
+          "mapping": {
+            "de.qaware.openapigeneratorforspring.test.app43.App43Controller$AnotherBody": "#/components/schemas/App43Controller.AnotherBody",
+            "de.qaware.openapigeneratorforspring.test.app43.App43Controller$ConcreteBody": "#/components/schemas/App43Controller.ConcreteBody"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/App43Controller.AnotherBody"
+          },
+          {
+            "$ref": "#/components/schemas/App43Controller.ConcreteBody"
+          }
+        ]
+      }
+    }
+  }
+}

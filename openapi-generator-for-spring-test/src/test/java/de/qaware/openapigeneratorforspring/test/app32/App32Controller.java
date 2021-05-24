@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class App32Controller {
+class App32Controller {
 
     @GetMapping(value = "/mapping1")
     public void mapping1_throwingSomeException() throws SomeException {

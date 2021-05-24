@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @ResponseStatus(HttpStatus.CREATED)
-public class App4Controller extends App4BaseController {
+class App4Controller extends App4BaseController {
 
     @GetMapping("/get1")
     @ApiResponse(responseCode = "200", description = "All ok")

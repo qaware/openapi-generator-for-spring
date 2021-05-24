@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @ApiResponse(responseCode = "500", description = "Error response", content = @Content(schema = @Schema(implementation = App31Controller.ErrorDto.class)))
-public class App31Controller {
+class App31Controller {
 
     @PostMapping(value = "/mapping1", consumes = MediaType.TEXT_HTML_VALUE)
     public void mapping1_textHtml(

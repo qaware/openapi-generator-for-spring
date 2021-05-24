@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-public class App17Controller {
+class App17Controller {
 
     @GetMapping("/mapping1")
     public List<SomeDto> mapping1(@RequestBody @Nullable SomeDto someDto) {

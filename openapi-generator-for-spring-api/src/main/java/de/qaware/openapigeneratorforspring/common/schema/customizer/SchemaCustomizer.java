@@ -22,8 +22,11 @@ package de.qaware.openapigeneratorforspring.common.schema.customizer;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
+
+import java.util.function.Consumer;
 
 /**
  * Customizer for {@link Schema}. Run AFTER the initial schema is built
@@ -39,6 +42,27 @@ public interface SchemaCustomizer extends OpenApiOrderedUtils.DefaultOrdered {
      * @param schema              schema
      * @param javaType            java type this schema was built from (might be Void)
      * @param annotationsSupplier annotations supplier used during schema building
+     * @param recursiveResolver   recursive resolver
      */
-    void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier);
+    void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveResolver recursiveResolver);
+
+    /**
+     * Recursive resolver for {@link #customize} call. Similar
+     * to {@link SchemaResolver} but with less flexibility: only
+     * class types can be analyzed, they are always referenced
+     * and the {@link SchemaResolver.Mode mode} is fixed.
+     *
+     * <p> When used inside a customizer, be careful to prevent
+     * endless recursion by only applying the customization
+     * on a condition, such as a annotation being present.
+     *
+     * @see SchemaResolver#resolveFromClassWithoutReference
+     */
+    interface RecursiveResolver {
+        /**
+         * @param clazz  class type to be resolved
+         * @param setter setter to apply the schema reference
+         */
+        void alwaysAsReference(Class<?> clazz, Consumer<Schema> setter);
+    }
 }

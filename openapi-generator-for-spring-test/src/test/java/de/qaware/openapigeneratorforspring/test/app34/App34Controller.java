@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-public class App34Controller {
+class App34Controller {
 
     @GetMapping(value = "/mapping1")
     public SomeListDto mapping1() {

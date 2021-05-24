@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 
 public class SchemaCustomizerForNullable implements SchemaCustomizer {
     @Override
-    public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+    public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveResolver recursiveResolver) {
         annotationsSupplier.findAnnotations(Nullable.class)
                 .findFirst().ifPresent(ignored -> schema.setNullable(true));
     }

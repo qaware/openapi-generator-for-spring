@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Collections;
 
 @Configuration
-public class App16Configuration {
+class App16Configuration {
 
     @Bean
     public OpenApiServersSupplier openApiServersSupplier() {

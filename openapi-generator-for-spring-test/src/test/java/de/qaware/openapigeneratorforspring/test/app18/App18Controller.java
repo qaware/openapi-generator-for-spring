@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class App18Controller {
+class App18Controller {
     @GetMapping("admin/mapping-1")
     public void adminMapping1() {
 

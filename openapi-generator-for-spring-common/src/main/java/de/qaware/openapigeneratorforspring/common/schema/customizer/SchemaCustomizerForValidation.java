@@ -43,7 +43,7 @@ import java.util.function.Consumer;
 public class SchemaCustomizerForValidation implements SchemaCustomizer {
 
     @Override
-    public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+    public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveResolver recursiveResolver) {
         apply(annotationsSupplier, Min.class, a -> schema.setMinimum(new BigDecimal(a.value())));
         apply(annotationsSupplier, Max.class, a -> schema.setMaximum(new BigDecimal(a.value())));
         apply(annotationsSupplier, DecimalMin.class, a -> schema.setMinimum(new BigDecimal(a.value())));

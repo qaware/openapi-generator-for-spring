@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static de.qaware.openapigeneratorforspring.test.app12.App12Configuration.X_FILTERED_HEADER_NAME;
 
 @RestController
-public class App12Controller {
+class App12Controller {
 
     @GetMapping("mapping-1")
     public void mapping1(

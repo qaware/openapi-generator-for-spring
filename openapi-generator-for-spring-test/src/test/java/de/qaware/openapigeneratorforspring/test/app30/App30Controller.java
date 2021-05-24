@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class App30Controller {
+class App30Controller {
 
 
     @PostMapping(value = "/mapping1", consumes = MediaType.TEXT_HTML_VALUE)

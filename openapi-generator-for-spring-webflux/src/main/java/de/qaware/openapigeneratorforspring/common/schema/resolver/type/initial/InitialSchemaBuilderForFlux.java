@@ -20,7 +20,6 @@
 
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
-import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverSupport;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.EqualsAndHashCode;
@@ -34,8 +33,8 @@ public class InitialSchemaBuilderForFlux implements InitialSchemaBuilder, TypeRe
 
     @Nullable
     @Override
-    public Schema buildFromType(JavaType javaType) {
-        if (javaType.getRawClass().equals(Flux.class)) {
+    public Schema buildFromType(InitialType initialType) {
+        if (initialType.getType().getRawClass().equals(Flux.class)) {
             return new FluxSchema();
         }
         return null;

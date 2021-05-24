@@ -90,6 +90,7 @@ public class Schema implements HasExtensions, HasReference<Schema>, HasIsEmpty<S
     private List<Object> enumValues;
     private Discriminator discriminator;
     private Schema items;
+    private List<Schema> oneOf;
     private Map<String, Object> extensions;
 
     public void setProperty(String propertyName, Schema propertySchema) {

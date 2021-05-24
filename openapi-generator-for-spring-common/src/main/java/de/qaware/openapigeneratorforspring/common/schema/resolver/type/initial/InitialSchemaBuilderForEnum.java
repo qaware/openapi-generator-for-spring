@@ -35,7 +35,8 @@ public class InitialSchemaBuilderForEnum implements InitialSchemaBuilder {
 
     @Nullable
     @Override
-    public Schema buildFromType(JavaType javaType) {
+    public Schema buildFromType(InitialType initialType) {
+        JavaType javaType = initialType.getType();
         if (javaType.isEnumImplType()) {
             List<Object> enumValues = Arrays.asList(javaType.getRawClass().getEnumConstants());
             return Schema.builder()

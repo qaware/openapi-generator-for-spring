@@ -33,7 +33,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         paramName = "Api-Key",
         in = SecuritySchemeIn.HEADER
 )
-public class App16 {
+class App16 {
     public static void main(String[] args) {
         SpringApplication.run(App16.class, args);
     }

@@ -54,13 +54,14 @@ public interface TypeResolver extends OpenApiOrderedUtils.DefaultOrdered {
      * the obligation to completely construct the final schema.
      */
     interface RecursionKey {
-        boolean equals(Object other);
 
-        int hashCode();
     }
 
     /**
      * Helper interface for {@link #resolve}.
+     *
+     * <p>Note that the provided schema consumers might be
+     * called several times during recursive schema building.
      */
     interface SchemaBuilderFromType {
         /**
@@ -71,5 +72,16 @@ public interface TypeResolver extends OpenApiOrderedUtils.DefaultOrdered {
          * @param schemaConsumer      consumer for schema
          */
         void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer);
+
+        /**
+         * Identical to {@link #buildSchemaFromType} but
+         * ensures that the schema provided to the given schema
+         * consumer will have a reference set eventually.
+         *
+         * @param javaType            nested java type
+         * @param annotationsSupplier annotations supplier for type
+         * @param schemaConsumer      consumer for schema, {@link Schema#getRef()} will eventually return non-empty string
+         */
+        void buildSchemaReferenceFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer);
     }
 }

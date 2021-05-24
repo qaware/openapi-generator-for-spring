@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "simple")
-public class App7SimpleController {
+class App7SimpleController {
 
     @GetMapping("get-mapping")
     public String getMappingReturnString() {

@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class SchemaCustomizerForRequiredProperties implements SchemaPropertiesCustomizer {
     @Override
-    public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Map<String, ? extends SchemaProperty> properties) {
+    public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Map<String, ? extends SchemaPropertyCallback> properties) {
         properties.forEach((propertyName, customizer) ->
                 customizer.customize((propertySchema, propertyJavaType, propertyAnnotationsSupplier) ->
                         propertyAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)

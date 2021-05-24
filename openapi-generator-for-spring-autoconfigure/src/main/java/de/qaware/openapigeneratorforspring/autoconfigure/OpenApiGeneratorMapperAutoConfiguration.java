@@ -66,9 +66,9 @@ import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotatio
 import de.qaware.openapigeneratorforspring.common.mapper.ServerAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ServerVariableAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.TagAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.schema.mapper.DefaultSchemaAnnotationMapperFactory;
+import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForSchemaAnnotation;
+import de.qaware.openapigeneratorforspring.common.schema.mapper.DefaultSchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -79,20 +79,10 @@ public class OpenApiGeneratorMapperAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public SchemaAnnotationMapper defaultSchemaAnnotationMapper(
-            SchemaAnnotationMapperFactory schemaAnnotationMapperFactory,
+            SchemaCustomizerForSchemaAnnotation schemaCustomizerForSchemaAnnotation,
             SchemaResolver schemaResolver
     ) {
-        return schemaAnnotationMapperFactory.create(schemaResolver);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public SchemaAnnotationMapperFactory defaultSchemaAnnotationMapperFactory(
-            ParsableValueMapper parsableValueMapper,
-            ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper,
-            ExtensionAnnotationMapper extensionAnnotationMapper
-    ) {
-        return new DefaultSchemaAnnotationMapperFactory(parsableValueMapper, externalDocumentationAnnotationMapper, extensionAnnotationMapper);
+        return new DefaultSchemaAnnotationMapper(schemaCustomizerForSchemaAnnotation, schemaResolver);
     }
 
     @Bean

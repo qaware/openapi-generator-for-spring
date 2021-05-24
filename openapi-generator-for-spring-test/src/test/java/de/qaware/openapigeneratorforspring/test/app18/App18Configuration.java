@@ -11,7 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Arrays;
 
 @Configuration
-public class App18Configuration {
+class App18Configuration {
 
     @Bean
     public HandlerMethodFilter handlerMethodFilterForGroupsQueryParam(OpenApiRequestParameterProvider parameterProvider) {

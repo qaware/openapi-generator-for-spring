@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "all-deprecated")
 @Deprecated
-public class App2DeprecatedController {
+class App2DeprecatedController {
 
     @GetMapping("get-mapping")
     public String allDeprecatedGetMapping() {

@@ -21,12 +21,15 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForDeprecated;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForNullable;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForRequiredProperties;
+import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForSchemaAnnotation;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer;
-import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaNameBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameBuilder;
@@ -38,6 +41,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.Sch
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilterForNamelessMembers;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForJacksonPolymorphism;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForProperties;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForCollectionLikeType;
@@ -64,7 +68,6 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public SchemaResolver defaultSchemaResolver(
             OpenApiObjectMapperSupplier openApiObjectMapperSupplier,
-            SchemaAnnotationMapperFactory schemaAnnotationMapperFactory,
             AnnotationsSupplierFactory annotationsSupplierFactory,
             List<InitialTypeBuilder> initialTypeBuilders,
             List<InitialSchemaBuilder> initialSchemaBuilders,
@@ -72,7 +75,7 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
             List<TypeResolver> typeResolvers
     ) {
         return new DefaultSchemaResolver(
-                openApiObjectMapperSupplier, schemaAnnotationMapperFactory, annotationsSupplierFactory,
+                openApiObjectMapperSupplier, annotationsSupplierFactory,
                 initialTypeBuilders, initialSchemaBuilders, schemaCustomizers, typeResolvers
         );
     }
@@ -90,10 +93,22 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public TypeResolverForProperties defaultTypeResolverForProperties(
             InitialSchemaBuilderForObject initialSchemaBuilder,
-            SchemaPropertiesResolver schemaPropertiesResolver,
-            List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers
+            List<SchemaPropertiesResolver> schemaPropertiesResolvers,
+            List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers,
+            OpenApiObjectMapperSupplier openApiObjectMapperSupplier
     ) {
-        return new TypeResolverForProperties(initialSchemaBuilder, schemaPropertiesResolver, schemaPropertiesCustomizers);
+        return new TypeResolverForProperties(initialSchemaBuilder, schemaPropertiesResolvers,
+                schemaPropertiesCustomizers, openApiObjectMapperSupplier);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TypeResolverForJacksonPolymorphism defaultTypeResolverForJacksonPolymorphism(
+            SchemaNameBuilder schemaNameBuilder,
+            AnnotationsSupplierFactory annotationsSupplierFactory,
+            OpenApiObjectMapperSupplier openApiObjectMapperSupplier
+    ) {
+        return new TypeResolverForJacksonPolymorphism(schemaNameBuilder, annotationsSupplierFactory, openApiObjectMapperSupplier);
     }
 
     @Bean
@@ -145,6 +160,16 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public SchemaCustomizerForSchemaAnnotation defaultSchemaCustomizerForSchemaAnnotation(
+            ParsableValueMapper parsableValueMapper,
+            ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper
+    ) {
+        return new SchemaCustomizerForSchemaAnnotation(parsableValueMapper, externalDocumentationAnnotationMapper, extensionAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public SchemaCustomizerForNullable defaultSchemaCustomizerForNullable() {
         return new SchemaCustomizerForNullable();
     }
@@ -170,7 +195,7 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SchemaPropertiesResolver defaultSchemaPropertiesResolver(
+    public DefaultSchemaPropertiesResolver defaultSchemaPropertiesResolver(
             OpenApiObjectMapperSupplier objectMapperSupplier,
             List<SchemaPropertyFilter> schemaPropertyFilters,
             AnnotationsSupplierFactory annotationsSupplierFactory

@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class App9Configuration {
+class App9Configuration {
     @Bean
     public ReferenceIdentifierBuilderForRequestBody referenceIdentifierFactoryForRequestBody() {
         return (item, suggestedIdentifier, numberOfSetters) -> "RequestBody";

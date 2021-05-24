@@ -8,7 +8,7 @@ import org.springframework.security.web.server.csrf.CsrfWebFilter;
 import org.springframework.web.server.WebFilter;
 
 @Configuration
-public class App40SpringSecurityConfiguration {
+class App40SpringSecurityConfiguration {
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public WebFilter skipCsrfFilter() {

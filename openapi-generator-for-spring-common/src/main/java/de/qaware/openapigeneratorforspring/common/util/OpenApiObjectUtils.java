@@ -28,7 +28,6 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OpenApiObjectUtils {
@@ -45,9 +44,5 @@ public class OpenApiObjectUtils {
 
     public static <T extends HasIsEmpty<?>> void setIfNotEmpty(T value, Consumer<T> setter) {
         setIf(value, v -> !v.isEmpty(), setter);
-    }
-
-    public static <T> T ifNullGet(@Nullable T value, Supplier<T> defValueGetter) {
-        return value == null ? defValueGetter.get() : value;
     }
 }

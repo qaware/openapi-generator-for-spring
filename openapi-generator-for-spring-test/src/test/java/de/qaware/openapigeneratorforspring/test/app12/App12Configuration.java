@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import java.util.Objects;
 
 @Configuration
-public class App12Configuration {
+class App12Configuration {
 
     public static final String X_FILTERED_HEADER_NAME = "X-Filtered-Header-Name";
 
