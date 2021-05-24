@@ -205,8 +205,13 @@ public class DefaultSchemaResolver implements SchemaResolver {
         private class TypeResolverActions extends LinkedList<TypeResolverAction> implements TypeResolver.SchemaBuilderFromType {
 
             @Override
-            public void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, boolean mustBeReferenced, Consumer<Schema> schemaConsumer) {
-                add(TypeResolverAction.of(javaType, annotationsSupplier, schemaConsumer, mustBeReferenced));
+            public void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer) {
+                add(TypeResolverAction.of(javaType, annotationsSupplier, schemaConsumer, false));
+            }
+
+            @Override
+            public void buildSchemaReferenceFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer) {
+                add(TypeResolverAction.of(javaType, annotationsSupplier, schemaConsumer, true));
             }
 
             void runRecursively() {
@@ -255,7 +260,6 @@ public class DefaultSchemaResolver implements SchemaResolver {
         ReferencableSchema run(RecursiveSchemaBuilder recursiveSchemaBuilder) {
             Schema schema = recursiveSchemaBuilder.buildSchemaFromTypeRecursively(javaType, annotationsSupplier);
             LOGGER.debug("Setting {}", logPretty(schema));
-            // TODO using proxy magic, one could infer the flag "mustBeReferenced" here I guess
             schemaConsumer.accept(schema);
             return ReferencableSchema.of(schema, schemaConsumer, mustBeReferenced);
         }

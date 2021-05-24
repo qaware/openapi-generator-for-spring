@@ -138,10 +138,9 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
                     jsonSubTypes.keySet().stream(), IntStream.range(0, jsonSubTypes.size()).boxed()
             ).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
-            jsonSubTypes.forEach((typeName, type) -> schemaBuilderFromType.buildSchemaFromType(
+            jsonSubTypes.forEach((typeName, type) -> schemaBuilderFromType.buildSchemaReferenceFromType(
                     objectMapper.constructType(type),
                     createAnnotationsSupplier(type, propertyName, jsonSubTypes.keySet(), propertySchemaName),
-                    true,
                     schemaReference -> {
                         schemaReferenceMapping.put(typeName, schemaReference.getRef());
                         oneOfSchemas.set(oneOfSchemasIndexMap.get(typeName), schemaReference);
