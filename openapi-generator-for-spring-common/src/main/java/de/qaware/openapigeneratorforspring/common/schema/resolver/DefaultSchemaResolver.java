@@ -115,7 +115,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                         schema,
                         initialType.getType(),
                         initialType.getAnnotationsSupplier(),
-                        actions::add
+                        actions
                 );
                 if (actions.isEmpty()) {
                     continue;
@@ -138,6 +138,8 @@ public class DefaultSchemaResolver implements SchemaResolver {
                 if (referencableSchema.getSchema() instanceof RecursiveSchema) {
                     RecursiveSchema recursiveSchema = (RecursiveSchema) referencableSchema.getSchema();
                     referencedSchemaConsumer.alwaysAsReference(recursiveSchema.getSchema(), referencableSchema.getSchemaConsumer());
+                } else if (referencableSchema.isMustBeReferenced()) {
+                    referencedSchemaConsumer.alwaysAsReference(referencableSchema.getSchema(), referencableSchema.getSchemaConsumer());
                 } else {
                     referencedSchemaConsumer.maybeAsReference(referencableSchema.getSchema(), referencableSchema.getSchemaConsumer());
                 }
@@ -170,7 +172,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
         private Schema buildInitialSchema(InitialType initialType) {
             for (InitialSchemaBuilder initialSchemaBuilder : initialSchemaBuilders) {
-                Schema initialSchema = initialSchemaBuilder.buildFromType(initialType.getType());
+                Schema initialSchema = initialSchemaBuilder.buildFromType(initialType);
                 if (initialSchema != null) {
                     return initialSchema;
                 }
@@ -200,10 +202,16 @@ public class DefaultSchemaResolver implements SchemaResolver {
             ));
         }
 
-        private class TypeResolverActions extends LinkedList<TypeResolverAction> {
+        private class TypeResolverActions extends LinkedList<TypeResolverAction> implements TypeResolver.SchemaBuilderFromType {
 
-            void add(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer) {
-                super.add(TypeResolverAction.of(javaType, annotationsSupplier, schemaConsumer));
+            @Override
+            public void buildSchemaFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<Schema> schemaConsumer) {
+                add(TypeResolverAction.of(javaType, annotationsSupplier, schemaConsumer, false));
+            }
+
+            @Override
+            public void buildSchemaReferenceFromType(JavaType javaType, AnnotationsSupplier annotationsSupplier, Consumer<String> schemaReferenceConsumer) {
+                add(TypeResolverAction.of(javaType, annotationsSupplier, schema -> schemaReferenceConsumer.accept(schema.getRef()), true));
             }
 
             void runRecursively() {
@@ -239,6 +247,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
     private static class ReferencableSchema {
         private final Schema schema;
         private final Consumer<Schema> schemaConsumer;
+        private final boolean mustBeReferenced;
     }
 
     @RequiredArgsConstructor(staticName = "of")
@@ -246,12 +255,13 @@ public class DefaultSchemaResolver implements SchemaResolver {
         private final JavaType javaType;
         private final AnnotationsSupplier annotationsSupplier;
         private final Consumer<Schema> schemaConsumer;
+        private final boolean mustBeReferenced;
 
         ReferencableSchema run(RecursiveSchemaBuilder recursiveSchemaBuilder) {
             Schema schema = recursiveSchemaBuilder.buildSchemaFromTypeRecursively(javaType, annotationsSupplier);
             LOGGER.debug("Setting {}", logPretty(schema));
             schemaConsumer.accept(schema);
-            return ReferencableSchema.of(schema, schemaConsumer);
+            return ReferencableSchema.of(schema, schemaConsumer, mustBeReferenced);
         }
     }
 
