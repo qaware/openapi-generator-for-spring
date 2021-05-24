@@ -388,7 +388,7 @@
                                 <configuration>
                                     <!--
                                     Prevent gpg from using pinentry programs.
-                                    See https://github.com/actions/setup-java#extra-setup-for-pomxml
+                                    See https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#extra-setup-for-pomxml
                                     Fixes: gpg: signing failed: Inappropriate ioctl for device
                                     -->
                                     <gpgArguments>
