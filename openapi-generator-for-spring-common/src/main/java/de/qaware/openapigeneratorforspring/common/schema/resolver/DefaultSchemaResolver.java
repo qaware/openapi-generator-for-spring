@@ -26,8 +26,6 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizer;
-import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
-import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
@@ -48,7 +46,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier.Purpose.SCHEMA_BUILDING;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiLoggingUtils.logPretty;
@@ -60,7 +57,6 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils
 public class DefaultSchemaResolver implements SchemaResolver {
 
     private final OpenApiObjectMapperSupplier openApiObjectMapperSupplier;
-    private final SchemaAnnotationMapperFactory schemaAnnotationMapperFactory;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     private final List<InitialTypeBuilder> initialTypeBuilders;
@@ -82,7 +78,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
     private Schema resolveFromTypeWithoutReference(Mode mode, Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer) {
         ObjectMapper mapper = openApiObjectMapperSupplier.get(SCHEMA_BUILDING);
-        Context context = new Context(mode, schemaAnnotationMapperFactory.create(this), referencedSchemaConsumer, mapper);
+        Context context = new Context(mode, referencedSchemaConsumer, mapper);
         JavaType javaType = mapper.constructType(type);
         Schema schema = context.buildSchemaFromTypeRecursively(javaType, annotationsSupplier);
         context.resolveReferencedSchemas();
@@ -93,7 +89,6 @@ public class DefaultSchemaResolver implements SchemaResolver {
     private class Context implements RecursiveSchemaBuilder {
 
         private final Mode mode;
-        private final SchemaAnnotationMapper schemaAnnotationMapper;
         private final ReferencedSchemaConsumer referencedSchemaConsumer;
         private final ObjectMapper objectMapper;
         private final Map<TypeResolver.RecursionKey, Schema> knownSchemas = new LinkedHashMap<>();
@@ -181,22 +176,11 @@ public class DefaultSchemaResolver implements SchemaResolver {
         }
 
         private void customizeSchema(Schema schema, InitialType initialType) {
-            // applying the schemaAnnotationMapper is treated specially here (and not implemented as SchemaCustomizer bean):
-            // 1) schemaAnnotationMapper can only be built with an existing SchemaResolver (this class!) due to discriminator mappings
-            //    so that would end up in a circular loop if it wasn't resolved by using the schemaAnnotationMapperFactory
-            // 2) Using it requires a referencedSchemaConsumer, something which is only present during building and not as a singleton bean
-            initialType.getAnnotationsSupplier().findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
-                    // apply in reverse order
-                    .collect(Collectors.toCollection(LinkedList::new))
-                    .descendingIterator()
-                    .forEachRemaining(schemaAnnotation -> schemaAnnotationMapper.applyFromAnnotation(mode, schema, schemaAnnotation, referencedSchemaConsumer));
-
-            // then run the other customizers
             schemaCustomizers.forEach(customizer -> customizer.customize(schema,
                     initialType.getType(),
                     initialType.getAnnotationsSupplier(),
-                    (clazz, annotationsSupplier, setter) -> setIfNotEmpty(
-                            DefaultSchemaResolver.this.resolveFromTypeWithoutReference(mode, clazz, annotationsSupplier, referencedSchemaConsumer),
+                    (clazz, setter) -> setIfNotEmpty(
+                            DefaultSchemaResolver.this.resolveFromClassWithoutReference(mode, clazz, referencedSchemaConsumer),
                             innerSchema -> referencedSchemaConsumer.alwaysAsReference(innerSchema, setter)
                     )
             ));

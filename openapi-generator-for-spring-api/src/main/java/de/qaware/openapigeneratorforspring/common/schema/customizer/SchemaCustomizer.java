@@ -56,14 +56,13 @@ public interface SchemaCustomizer extends OpenApiOrderedUtils.DefaultOrdered {
      * endless recursion by only applying the customization
      * on a condition, such as a annotation being present.
      *
-     * @see SchemaResolver
+     * @see SchemaResolver#resolveFromClassWithoutReference
      */
     interface RecursiveResolver {
         /**
-         * @param clazz               class type to be resolved
-         * @param annotationsSupplier annotations supplier
-         * @param setter              setter to apply the schema reference
+         * @param clazz  class type to be resolved
+         * @param setter setter to apply the schema reference
          */
-        void alwaysAsReference(Class<?> clazz, AnnotationsSupplier annotationsSupplier, Consumer<Schema> setter);
+        void alwaysAsReference(Class<?> clazz, Consumer<Schema> setter);
     }
 }

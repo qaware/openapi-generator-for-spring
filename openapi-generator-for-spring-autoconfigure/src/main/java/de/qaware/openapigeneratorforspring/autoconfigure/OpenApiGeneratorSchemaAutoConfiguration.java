@@ -21,12 +21,15 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ExternalDocumentationAnnotationMapper;
+import de.qaware.openapigeneratorforspring.common.mapper.ParsableValueMapper;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForDeprecated;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForNullable;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForRequiredProperties;
+import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForSchemaAnnotation;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer;
-import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapperFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaNameBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.DefaultSchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameBuilder;
@@ -65,7 +68,6 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public SchemaResolver defaultSchemaResolver(
             OpenApiObjectMapperSupplier openApiObjectMapperSupplier,
-            SchemaAnnotationMapperFactory schemaAnnotationMapperFactory,
             AnnotationsSupplierFactory annotationsSupplierFactory,
             List<InitialTypeBuilder> initialTypeBuilders,
             List<InitialSchemaBuilder> initialSchemaBuilders,
@@ -73,7 +75,7 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
             List<TypeResolver> typeResolvers
     ) {
         return new DefaultSchemaResolver(
-                openApiObjectMapperSupplier, schemaAnnotationMapperFactory, annotationsSupplierFactory,
+                openApiObjectMapperSupplier, annotationsSupplierFactory,
                 initialTypeBuilders, initialSchemaBuilders, schemaCustomizers, typeResolvers
         );
     }
@@ -154,6 +156,16 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public InitialSchemaBuilderForCollectionLikeType defaultInitialSchemaBuilderForCollectionLikeType() {
         return new InitialSchemaBuilderForCollectionLikeType();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SchemaCustomizerForSchemaAnnotation defaultSchemaCustomizerForSchemaAnnotation(
+            ParsableValueMapper parsableValueMapper,
+            ExternalDocumentationAnnotationMapper externalDocumentationAnnotationMapper,
+            ExtensionAnnotationMapper extensionAnnotationMapper
+    ) {
+        return new SchemaCustomizerForSchemaAnnotation(parsableValueMapper, externalDocumentationAnnotationMapper, extensionAnnotationMapper);
     }
 
     @Bean

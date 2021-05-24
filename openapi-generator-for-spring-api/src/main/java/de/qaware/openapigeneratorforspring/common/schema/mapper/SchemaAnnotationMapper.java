@@ -26,11 +26,7 @@ import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 /**
  * Mapper for {@link io.swagger.v3.oas.annotations.media.Schema Schema annotation}.
- *
- * <p>Created by {@link SchemaAnnotationMapperFactory}.
  */
 public interface SchemaAnnotationMapper {
     Schema buildFromAnnotation(SchemaResolver.Mode mode, io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer);
-
-    void applyFromAnnotation(SchemaResolver.Mode mode, Schema schema, io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer);
 }
