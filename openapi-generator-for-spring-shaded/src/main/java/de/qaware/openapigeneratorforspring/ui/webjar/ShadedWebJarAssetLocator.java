@@ -41,7 +41,7 @@ public class ShadedWebJarAssetLocator {
     private final Map<String, List<String>> pathsByWebJarName = new HashMap<>();
 
     public ShadedWebJarAssetLocator() {
-        try (ScanResult scanResult = new ClassGraph().whitelistPaths(SHADED_WEBJARS_PATH).scan()) {
+        try (ScanResult scanResult = new ClassGraph().acceptPaths(SHADED_WEBJARS_PATH).scan()) {
             for (Resource resource : scanResult.getAllResources()) {
                 String pathWithPrefix = resource.getPath().substring(SHADED_WEBJARS_PATH.length() + 1);
                 String webJarName = pathWithPrefix.substring(0, pathWithPrefix.indexOf("/"));
