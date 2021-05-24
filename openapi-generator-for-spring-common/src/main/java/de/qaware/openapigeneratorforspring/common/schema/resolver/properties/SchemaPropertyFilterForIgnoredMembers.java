@@ -26,8 +26,6 @@ import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Set;
-
 @RequiredArgsConstructor
 public class SchemaPropertyFilterForIgnoredMembers implements SchemaPropertyFilter {
 
@@ -35,8 +33,10 @@ public class SchemaPropertyFilterForIgnoredMembers implements SchemaPropertyFilt
 
     @Override
     public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType, AnnotationsSupplier annotationsSupplierForType, MapperConfig<?> mapperConfig) {
-        Set<String> ignored = mapperConfig.getAnnotationIntrospector().findPropertyIgnorals(beanDescriptionForType.getClassInfo()).getIgnored();
-        return !ignored.contains(property.getName());
+        return !mapperConfig.getAnnotationIntrospector()
+                .findPropertyIgnoralByName(mapperConfig, beanDescriptionForType.getClassInfo())
+                .getIgnored()
+                .contains(property.getName());
     }
 
     @Override
