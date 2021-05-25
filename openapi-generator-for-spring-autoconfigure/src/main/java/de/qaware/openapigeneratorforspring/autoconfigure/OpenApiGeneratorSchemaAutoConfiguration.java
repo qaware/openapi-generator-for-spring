@@ -41,7 +41,6 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.Sch
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilterForNamelessMembers;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeType;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForJacksonPolymorphism;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForProperties;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForCollectionLikeType;
@@ -99,16 +98,6 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     ) {
         return new TypeResolverForProperties(initialSchemaBuilder, schemaPropertiesResolvers,
                 schemaPropertiesCustomizers, openApiObjectMapperSupplier);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public TypeResolverForJacksonPolymorphism defaultTypeResolverForJacksonPolymorphism(
-            SchemaNameBuilder schemaNameBuilder,
-            AnnotationsSupplierFactory annotationsSupplierFactory,
-            OpenApiObjectMapperSupplier openApiObjectMapperSupplier
-    ) {
-        return new TypeResolverForJacksonPolymorphism(schemaNameBuilder, annotationsSupplierFactory, openApiObjectMapperSupplier);
     }
 
     @Bean

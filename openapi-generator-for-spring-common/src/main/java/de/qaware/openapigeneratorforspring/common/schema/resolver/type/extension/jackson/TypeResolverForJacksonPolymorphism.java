@@ -18,7 +18,7 @@
  * #L%
  */
 
-package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
+package de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.jackson;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -32,6 +32,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameBuil
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaProperty;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
@@ -75,6 +76,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
     private final SchemaNameBuilder schemaNameBuilder;
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
     private final OpenApiObjectMapperSupplier objectMapperSupplier;
+    private final JacksonPolymorphismTypeSchemaNameBuilder typeSchemaNameBuilder;
 
     @Nullable
     @Override
@@ -121,7 +123,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
                 this::findTypeName;
 
         ObjectMapper objectMapper = objectMapperSupplier.get(SCHEMA_BUILDING);
-        String propertySchemaName = getPropertySchemaName(classOwningJsonTypeInfo, objectMapper, findPropertySchemaNameSuffix(propertyName));
+        String propertySchemaName = getPropertySchemaName(objectMapper, classOwningJsonTypeInfo, jsonTypeInfo);
 
         setMapIfNotEmpty(buildStringMapFromStream(
                 annotationsSupplier.findAnnotations(JsonSubTypes.class)
@@ -236,14 +238,9 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
         };
     }
 
-    private String getPropertySchemaName(Class<?> classOwningJsonTypeInfo, ObjectMapper objectMapper, String schemaNameSuffix) {
+    private String getPropertySchemaName(ObjectMapper objectMapper, Class<?> classOwningJsonTypeInfo, JsonTypeInfo jsonTypeInfo) {
         JavaType javaTypeOwningJsonTypeInfo = objectMapper.constructType(classOwningJsonTypeInfo);
-        return schemaNameBuilder.buildFromType(javaTypeOwningJsonTypeInfo) + schemaNameSuffix;
-    }
-
-    private String findPropertySchemaNameSuffix(String propertyName) {
-        // Maybe make this more customizable?
-        return propertyName;
+        return typeSchemaNameBuilder.build(javaTypeOwningJsonTypeInfo, jsonTypeInfo);
     }
 
     private String findTypeName(JsonSubTypes.Type type) {

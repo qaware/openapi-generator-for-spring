@@ -28,7 +28,7 @@
   },
   "components": {
     "schemas": {
-      "Base1@c": {
+      "Base1Type": {
         "type": "string",
         "enum": [
           ".SomeClass1",
@@ -46,7 +46,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1@c"
+            "$ref": "#/components/schemas/Base1Type"
           },
           "property1": {
             "type": "string"
@@ -57,7 +57,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1@c"
+            "$ref": "#/components/schemas/Base1Type"
           },
           "property2": {
             "type": "string"
@@ -68,7 +68,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1@c"
+            "$ref": "#/components/schemas/Base1Type"
           },
           "property7": {
             "type": "string"
@@ -79,7 +79,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1@c"
+            "$ref": "#/components/schemas/Base1Type"
           },
           "property6": {
             "type": "string"
@@ -90,7 +90,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1@c"
+            "$ref": "#/components/schemas/Base1Type"
           },
           "property4": {
             "type": "string"
@@ -101,7 +101,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1@c"
+            "$ref": "#/components/schemas/Base1Type"
           },
           "property5": {
             "type": "string"
@@ -112,7 +112,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1@c"
+            "$ref": "#/components/schemas/Base1Type"
           },
           "property3": {
             "type": "string"
@@ -123,7 +123,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1@c"
+            "$ref": "#/components/schemas/Base1Type"
           },
           "property8": {
             "type": "string"
@@ -134,7 +134,7 @@
         "type": "object",
         "properties": {
           "@c": {
-            "$ref": "#/components/schemas/Base1@c"
+            "$ref": "#/components/schemas/Base1Type"
           },
           "property9": {
             "type": "string"

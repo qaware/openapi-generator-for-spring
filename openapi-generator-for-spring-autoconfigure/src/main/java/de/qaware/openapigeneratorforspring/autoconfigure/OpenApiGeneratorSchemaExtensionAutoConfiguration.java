@@ -21,10 +21,16 @@
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaCustomizerForValidation;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameBuilder;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.jackson.DefaultJacksonPolymorphismTypeSchemaNameBuilder;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.jackson.JacksonPolymorphismTypeSchemaNameBuilder;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.jackson.TypeResolverForJacksonPolymorphism;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.DefaultJava8TimeInitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeInitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolverConfigurationProperties;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -50,5 +56,25 @@ public class OpenApiGeneratorSchemaExtensionAutoConfiguration {
     @ConditionalOnClass(Min.class)
     public SchemaCustomizerForValidation defaultSchemaCustomizerForValidation() {
         return new SchemaCustomizerForValidation();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TypeResolverForJacksonPolymorphism defaultTypeResolverForJacksonPolymorphism(
+            SchemaNameBuilder schemaNameBuilder,
+            AnnotationsSupplierFactory annotationsSupplierFactory,
+            OpenApiObjectMapperSupplier openApiObjectMapperSupplier,
+            JacksonPolymorphismTypeSchemaNameBuilder jacksonPolymorphismTypeSchemaNameBuilder
+    ) {
+        return new TypeResolverForJacksonPolymorphism(schemaNameBuilder, annotationsSupplierFactory,
+                openApiObjectMapperSupplier, jacksonPolymorphismTypeSchemaNameBuilder);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public JacksonPolymorphismTypeSchemaNameBuilder defaultJacksonPolymorphismTypeSchemaNameBuilder(
+            SchemaNameBuilder schemaNameBuilder
+    ) {
+        return new DefaultJacksonPolymorphismTypeSchemaNameBuilder(schemaNameBuilder);
     }
 }
