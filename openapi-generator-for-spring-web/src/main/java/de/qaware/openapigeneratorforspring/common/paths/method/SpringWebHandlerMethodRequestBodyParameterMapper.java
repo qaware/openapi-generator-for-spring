@@ -24,24 +24,34 @@ import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.InputStream;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+@Slf4j
 public class SpringWebHandlerMethodRequestBodyParameterMapper {
 
     public Optional<RequestBodyParameter> findRequestBodyParameter(SpringWebHandlerMethod handlerMethod) {
         return handlerMethod.getParameters().stream()
-                .flatMap(parameter -> parameter.getAnnotationsSupplier()
-                        .findAnnotations(RequestBody.class)
-                        .findFirst()
-                        .map(RequestBody::required)
-                        .map(requiredFlag -> RequestBodyParameter.of(parameter, requiredFlag))
-                        .map(Stream::of).orElseGet(Stream::empty) // Optional.toStream()
+                .flatMap(parameter ->
+                        Stream.concat(
+                                parameter.getAnnotationsSupplier()
+                                        .findAnnotations(RequestBody.class)
+                                        .map(RequestBody::required)
+                                        .map(requiredFlag -> RequestBodyParameter.of(parameter, requiredFlag)),
+                                // also check if we're encountering a "bare" InputStream as a parameter
+                                // this can also be seen as request body
+                                parameter.getType()
+                                        .filter(type -> type.getType().equals(InputStream.class))
+                                        .map(type -> RequestBodyParameter.of(parameter, false))
+                                        .map(Stream::of).orElseGet(Stream::empty)
+                        )
                 )
                 .reduce((a, b) -> {
-                    throw new IllegalStateException("Found more than one parameter marked with @RequestBody on " + this);
+                    throw new IllegalStateException("Found more than one parameter as a request body candidate on " + handlerMethod);
                 });
     }
 

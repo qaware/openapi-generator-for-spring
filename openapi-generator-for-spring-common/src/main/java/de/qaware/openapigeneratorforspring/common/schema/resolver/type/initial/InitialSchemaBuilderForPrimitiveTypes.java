@@ -21,6 +21,7 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import de.qaware.openapigeneratorforspring.model.media.Schema;
+import org.springframework.core.io.InputStreamResource;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -55,6 +56,10 @@ public class InitialSchemaBuilderForPrimitiveTypes implements InitialSchemaBuild
         return getSchemaSupplier("number", format);
     }
 
+    private static Supplier<Schema> getBinaryStringSchemaSupplier() {
+        return getStringSchemaSupplier("binary");
+    }
+
     private static final Map<Class<?>, Supplier<Schema>> PRIMITIVE_TYPE_CLASS_TO_SCHEMA;
 
     static {
@@ -71,7 +76,9 @@ public class InitialSchemaBuilderForPrimitiveTypes implements InitialSchemaBuild
         putValueForKeys(map, getNumberSchemaSupplier("double"), Double.class, Double.TYPE);
         putValueForKeys(map, getIntegerSchemaSupplier(null), BigInteger.class);
         putValueForKeys(map, getNumberSchemaSupplier(null), BigDecimal.class, Number.class);
-        putValueForKeys(map, getStringSchemaSupplier("binary"), java.io.File.class);
+        putValueForKeys(map, getBinaryStringSchemaSupplier(), java.io.File.class);
+        putValueForKeys(map, getBinaryStringSchemaSupplier(), java.io.InputStream.class);
+        putValueForKeys(map, getBinaryStringSchemaSupplier(), InputStreamResource.class);
         PRIMITIVE_TYPE_CLASS_TO_SCHEMA = map;
     }
 

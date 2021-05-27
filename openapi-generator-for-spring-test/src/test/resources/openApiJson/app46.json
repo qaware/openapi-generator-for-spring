@@ -1,0 +1,52 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App46",
+    "version": "unknown"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "download",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "audio/wav": {
+                "schema": {
+                  "$ref": "#/components/schemas/string_binary"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "upload",
+        "requestBody": {
+          "content": {
+            "audio/wav": {
+              "schema": {
+                "$ref": "#/components/schemas/string_binary"
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "204": {
+            "description": "Default response"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "string_binary": {
+        "type": "string",
+        "format": "binary"
+      }
+    }
+  }
+}
