@@ -8,7 +8,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-class OpenApiDisabledSpringSecurityTestConfiguration {
+/**
+ * Disables Spring Security by default, which is activated because some
+ * tests focus on CSRF support and thus Spring Security Basic Auth kicks in.
+ */
+public class OpenApiDisabledSpringSecurityTestConfiguration {
     @Bean
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
     public WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {

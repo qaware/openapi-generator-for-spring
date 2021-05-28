@@ -3,7 +3,7 @@ package de.qaware.openapigeneratorforspring.test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.RequestHeadersSpec;
@@ -15,9 +15,9 @@ import java.util.function.Function;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @TestPropertySource(properties = "spring.main.web-application-type = REACTIVE")
 @AutoConfigureWebTestClient(timeout = "40000000")
-@Import(OpenApiDisabledSpringSecurityTestConfiguration.class)
 public abstract class AbstractOpenApiGeneratorWebFluxBaseIntTest {
 
     @Autowired

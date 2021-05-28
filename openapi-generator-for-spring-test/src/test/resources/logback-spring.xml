@@ -1,0 +1,20 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <springProfile name="!test">
+        <root level="INFO">
+            <appender-ref ref="STDOUT"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="test">
+        <!-- Don't spam the console with useless Spring Boot Application log messages -->
+        <root level="WARN">
+            <appender-ref ref="STDOUT"/>
+        </root>
+    </springProfile>
+</configuration>
