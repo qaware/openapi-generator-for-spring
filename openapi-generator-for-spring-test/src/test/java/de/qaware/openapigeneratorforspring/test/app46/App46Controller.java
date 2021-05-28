@@ -17,19 +17,37 @@ import java.io.InputStream;
 @RestController
 class App46Controller {
 
-    private byte[] audio = new byte[0];
+    private static final String AUDIO_WAV = "audio/wav";
+    private static final String IMAGE_PNG = "image/png";
 
-    @PostMapping(consumes = "audio/wav")
+    private byte[] audio = new byte[0];
+    private byte[] image = new byte[0];
+
+    @PostMapping(consumes = AUDIO_WAV)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void upload(InputStream requestBody) throws IOException {
+    public void uploadAudio(InputStream requestBody) throws IOException {
         audio = IOUtils.toByteArray(requestBody);
     }
 
-    @GetMapping(produces = "audio/wav")
-    public ResponseEntity<InputStreamResource> download() {
+    @PostMapping(consumes = IMAGE_PNG)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void uploadImage(InputStream requestBody) throws IOException {
+        image = IOUtils.toByteArray(requestBody);
+    }
+
+
+    @GetMapping(produces = AUDIO_WAV)
+    public ResponseEntity<InputStreamResource> downloadAudio() {
         return ResponseEntity.ok()
-                .contentType(new MediaType("audio", "wav"))
+                .contentType(MediaType.parseMediaType(AUDIO_WAV))
                 .body(new InputStreamResource(new ByteArrayInputStream(audio)));
+    }
+
+    @GetMapping(produces = IMAGE_PNG)
+    public ResponseEntity<byte[]> downloadImage() {
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(IMAGE_PNG))
+                .body(image);
     }
 
 }

@@ -28,6 +28,7 @@ import de.qaware.openapigeneratorforspring.model.trait.HasIsEmpty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -42,8 +43,10 @@ public abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
 
     @RequiredArgsConstructor(staticName = "of")
     @Getter
+    @ToString
     public static class SpringWebType implements HandlerMethod.Type {
         private final java.lang.reflect.Type type;
+        @ToString.Exclude
         private final AnnotationsSupplier annotationsSupplier;
     }
 

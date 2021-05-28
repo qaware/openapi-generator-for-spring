@@ -7,12 +7,17 @@
   "paths": {
     "/": {
       "get": {
-        "operationId": "download",
+        "operationId": "download_Audio_Image",
         "responses": {
           "200": {
             "description": "Default response",
             "content": {
               "audio/wav": {
+                "schema": {
+                  "$ref": "#/components/schemas/string_binary"
+                }
+              },
+              "image/png": {
                 "schema": {
                   "$ref": "#/components/schemas/string_binary"
                 }
@@ -22,10 +27,15 @@
         }
       },
       "post": {
-        "operationId": "upload",
+        "operationId": "upload_Audio_Image",
         "requestBody": {
           "content": {
             "audio/wav": {
+              "schema": {
+                "$ref": "#/components/schemas/string_binary"
+              }
+            },
+            "image/png": {
               "schema": {
                 "$ref": "#/components/schemas/string_binary"
               }

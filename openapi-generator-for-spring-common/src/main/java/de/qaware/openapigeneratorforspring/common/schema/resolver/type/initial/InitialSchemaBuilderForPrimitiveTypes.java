@@ -79,6 +79,7 @@ public class InitialSchemaBuilderForPrimitiveTypes implements InitialSchemaBuild
         putValueForKeys(map, getBinaryStringSchemaSupplier(), java.io.File.class);
         putValueForKeys(map, getBinaryStringSchemaSupplier(), java.io.InputStream.class);
         putValueForKeys(map, getBinaryStringSchemaSupplier(), InputStreamResource.class);
+        putValueForKeys(map, getBinaryStringSchemaSupplier(), byte[].class);
         PRIMITIVE_TYPE_CLASS_TO_SCHEMA = map;
     }
 
