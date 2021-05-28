@@ -32,12 +32,8 @@ public class DefaultOperationParameterNameCustomizer implements OperationParamet
         context.getHandlerMethodParameter()
                 .flatMap(HandlerMethod.Parameter::getName)
                 .ifPresent(methodParameterName -> {
-                    String parameterName = parameter.getName();
-                    if (parameterName == null) {
+                    if (parameter.getName() == null) {
                         parameter.setName(methodParameterName);
-                    } else if (!parameterName.equals(methodParameterName)) {
-                        LOGGER.warn("Parameter name {} different from parameter variable name {} in {}",
-                                parameterName, methodParameterName, context.getOperationInfo());
                     }
                 });
         if (StringUtils.isBlank(parameter.getName())) {
