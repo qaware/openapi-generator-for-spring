@@ -19,10 +19,6 @@ class App44Test extends AbstractOpenApiGeneratorWebMvcIntTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public App44Test() {
-        super("app44.json");
-    }
-
     @Test
     void ensureJacksonTypeNamesAreEqualWithSpec() throws Exception {
         String specJson = performApiDocsRequest(x -> x)

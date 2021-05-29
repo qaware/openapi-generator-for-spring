@@ -19,6 +19,17 @@ public class OpenApiJsonIntegrationTestUtils {
     private static final String JSON_PATH_PREFIX = "/openApiJson/";
     private static final String YAML_PATH_PREFIX = "/openApiYaml/";
 
+    public static String findResourceFilenameFromTestClass(Class<?> testClass, String fileSuffix) {
+        String testClassName = testClass.getSimpleName();
+        if (testClassName.startsWith("App") && testClassName.endsWith("Test")) {
+            String testNumber = testClassName
+                    .substring(0, testClassName.length() - "Test".length())
+                    .substring("App".length());
+            return "app" + testNumber + fileSuffix;
+        }
+        throw new IllegalArgumentException("Cannot infer resource file name from " + testClassName);
+    }
+
     public static void assertMatchesOpenApiJson(String expectedJsonFile, Callable<String> jsonSupplier) throws Exception {
         String expectedJson = readFileAsString(JSON_PATH_PREFIX + expectedJsonFile);
         String actualJson = jsonSupplier.call();
