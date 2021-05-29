@@ -41,6 +41,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.Sch
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertyFilterForNamelessMembers;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeTypeSupport;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForProperties;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForEnum;
@@ -80,11 +81,19 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public TypeResolverForCollectionLikeType defaultTypeResolverForCollectionLikeType(
+    public TypeResolverForCollectionLikeTypeSupport defaultTypeResolverForCollectionLikeTypeSupport(
             AnnotationsSupplierFactory annotationsSupplierFactory,
             ExtensionAnnotationMapper extensionAnnotationMapper
     ) {
-        return new TypeResolverForCollectionLikeType(annotationsSupplierFactory, extensionAnnotationMapper);
+        return new TypeResolverForCollectionLikeTypeSupport(annotationsSupplierFactory, extensionAnnotationMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TypeResolverForCollectionLikeType defaultTypeResolverForCollectionLikeType(
+            TypeResolverForCollectionLikeTypeSupport typeResolverForCollectionLikeTypeSupport
+    ) {
+        return new TypeResolverForCollectionLikeType(typeResolverForCollectionLikeTypeSupport);
     }
 
     @Bean

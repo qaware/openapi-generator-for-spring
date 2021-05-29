@@ -21,27 +21,39 @@
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 
 import com.fasterxml.jackson.databind.JavaType;
+import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForFlux;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilder;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
+import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 
 import javax.annotation.Nullable;
 
-public class TypeResolverForFlux extends AbstractTypeResolver {
-
+@RequiredArgsConstructor
+public class TypeResolverForFlux implements InitialTypeBuilder, InitialSchemaBuilder, TypeResolver {
     public static final int ORDER = DEFAULT_ORDER;
 
-    public TypeResolverForFlux(InitialSchemaBuilderForFlux typeResolverSupport) {
-        super(typeResolverSupport);
+    private final TypeResolverForCollectionLikeTypeSupport support;
+
+    @Nullable
+    @Override
+    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
+        return javaType.getRawClass().equals(Flux.class) ? support.build(this, javaType, annotationsSupplier) : null;
     }
 
-    @Override
     @Nullable
-    public RecursionKey resolveIfSupported(SchemaResolver.Mode mode, Schema schema, InitialType initialType, SchemaBuilderFromType schemaBuilderFromType) {
-        JavaType innerType = initialType.getType().getBindings().getTypeParameters().iterator().next();
-        schemaBuilderFromType.buildSchemaFromType(innerType, initialType.getAnnotationsSupplier(), schema::setItems);
-        return null; // Flux never creates cyclic schema dependencies
+    @Override
+    public Schema buildFromType(InitialType initialType) {
+        return support.buildFromType(this, initialType);
+    }
+
+    @Nullable
+    @Override
+    public RecursionKey resolve(SchemaResolver.Mode mode, Schema schema, InitialType initialType, SchemaBuilderFromType schemaBuilderFromType) {
+        return support.resolve(this, schema, initialType, () -> initialType.getType().getBindings().getTypeParameters().iterator().next(), schemaBuilderFromType);
     }
 
     @Override

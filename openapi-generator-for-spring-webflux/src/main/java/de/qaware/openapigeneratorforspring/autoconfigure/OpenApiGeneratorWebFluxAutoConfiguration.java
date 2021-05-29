@@ -24,8 +24,8 @@ import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodEnumMapper;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeTypeSupport;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForFlux;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForFlux;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilderForMono;
 import de.qaware.openapigeneratorforspring.common.web.OpenApiResource;
 import de.qaware.openapigeneratorforspring.webflux.HandlerMethodsProviderForWebFlux;
@@ -91,14 +91,8 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public TypeResolverForFlux defaultTypeResolverForFlux(InitialSchemaBuilderForFlux initialSchemaBuilder) {
-        return new TypeResolverForFlux(initialSchemaBuilder);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public InitialSchemaBuilderForFlux defaultInitialSchemaBuilderForFlux() {
-        return new InitialSchemaBuilderForFlux();
+    public TypeResolverForFlux defaultTypeResolverForFlux(TypeResolverForCollectionLikeTypeSupport typeResolverForCollectionLikeTypeSupport) {
+        return new TypeResolverForFlux(typeResolverForCollectionLikeTypeSupport);
     }
 
     @Bean

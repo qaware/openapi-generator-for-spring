@@ -1,0 +1,38 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App48",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping-1": {
+      "get": {
+        "operationId": "mapping1",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "maxItems": 10,
+                  "minItems": 4,
+                  "type": "array",
+                  "description": "Description for array schema",
+                  "items": {
+                    "maxItems": 9,
+                    "minItems": 5,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "Description for ListLikeDto items"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

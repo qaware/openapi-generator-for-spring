@@ -32,6 +32,7 @@
               "application/json": {
                 "schema": {
                   "type": "array",
+                  "description": "Many SomeDtos",
                   "items": {
                     "$ref": "#/components/schemas/App20Controller.SomeDto_0"
                   }
@@ -59,7 +60,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/App20Controller.SomeDto_1"
+                "$ref": "#/components/schemas/App20Controller.SomeDto_2"
               }
             }
           },
@@ -104,7 +105,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/App20Controller.SomeDto_0"
+              "$ref": "#/components/schemas/App20Controller.SomeDto_1"
             }
           }
         }
@@ -120,9 +121,21 @@
           "booleanProperty2": {
             "type": "boolean"
           }
-        }
+        },
+        "description": "Some DTO description"
       },
       "App20Controller.SomeDto_1": {
+        "type": "object",
+        "properties": {
+          "stringProperty1": {
+            "type": "string"
+          },
+          "booleanProperty2": {
+            "type": "boolean"
+          }
+        }
+      },
+      "App20Controller.SomeDto_2": {
         "type": "object",
         "properties": {
           "stringProperty1": {
