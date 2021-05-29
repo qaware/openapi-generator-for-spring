@@ -138,12 +138,14 @@
         }
       },
       "array_array_App17Controller.SomeDto": {
+        "uniqueItems": true,
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/array_App17Controller.SomeDto"
         }
       },
       "nullable_array_array_App17Controller.SomeDto": {
+        "uniqueItems": true,
         "type": "array",
         "nullable": true,
         "items": {

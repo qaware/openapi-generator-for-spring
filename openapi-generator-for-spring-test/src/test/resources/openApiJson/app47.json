@@ -1,0 +1,95 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App47",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping1": {
+      "get": {
+        "operationId": "mapping1",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "/mapping2": {
+      "get": {
+        "operationId": "mapping2",
+        "parameters": [
+          {
+            "name": "param1",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/array_string_1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/array_string_1"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mapping3": {
+      "get": {
+        "operationId": "mapping3",
+        "parameters": [
+          {
+            "name": "param2",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/array_string_0"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "200": {
+        "description": "Default response",
+        "content": {
+          "*/*": {
+            "schema": {
+              "$ref": "#/components/schemas/array_string_0"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "array_string_0": {
+        "uniqueItems": true,
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "array_string_1": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
