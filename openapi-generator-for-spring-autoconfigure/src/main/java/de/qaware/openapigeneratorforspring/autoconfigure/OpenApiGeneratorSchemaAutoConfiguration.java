@@ -43,13 +43,11 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResol
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForProperties;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForCollectionLikeType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForEnum;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForObject;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForPrimitiveTypes;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForVoid;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilder;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilderForCollectionLikeType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilderForReferenceType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilderForSchemaAnnotation;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
@@ -83,10 +81,10 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public TypeResolverForCollectionLikeType defaultTypeResolverForCollectionLikeType(
-            InitialSchemaBuilderForCollectionLikeType initialSchemaBuilder,
-            AnnotationsSupplierFactory annotationsSupplierFactory
+            AnnotationsSupplierFactory annotationsSupplierFactory,
+            ExtensionAnnotationMapper extensionAnnotationMapper
     ) {
-        return new TypeResolverForCollectionLikeType(initialSchemaBuilder, annotationsSupplierFactory);
+        return new TypeResolverForCollectionLikeType(annotationsSupplierFactory, extensionAnnotationMapper);
     }
 
     @Bean
@@ -99,12 +97,6 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     ) {
         return new TypeResolverForProperties(initialSchemaBuilder, schemaPropertiesResolvers,
                 schemaPropertiesCustomizers, openApiObjectMapperSupplier);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public InitialTypeBuilderForCollectionLikeType defaultInitialTypeBuilderForCollectionLikeType() {
-        return new InitialTypeBuilderForCollectionLikeType();
     }
 
     @Bean
@@ -146,14 +138,6 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public InitialSchemaBuilderForObject defaultInitialSchemaBuilderForObject(SchemaNameBuilder schemaNameBuilder) {
         return new InitialSchemaBuilderForObject(schemaNameBuilder);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public InitialSchemaBuilderForCollectionLikeType defaultInitialSchemaBuilderForCollectionLikeType(
-            ExtensionAnnotationMapper extensionAnnotationMapper
-    ) {
-        return new InitialSchemaBuilderForCollectionLikeType(extensionAnnotationMapper);
     }
 
     @Bean
