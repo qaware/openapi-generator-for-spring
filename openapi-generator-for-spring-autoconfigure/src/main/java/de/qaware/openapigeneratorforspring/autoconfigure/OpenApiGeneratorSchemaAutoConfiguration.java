@@ -42,10 +42,9 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.Sch
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeTypeSupport;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForProperties;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForObject;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForEnum;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForObject;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForPrimitiveTypes;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForVoid;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilder;
@@ -98,13 +97,13 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public TypeResolverForProperties defaultTypeResolverForProperties(
-            InitialSchemaBuilderForObject initialSchemaBuilder,
+    public TypeResolverForObject defaultTypeResolverForObject(
+            SchemaNameBuilder schemaNameBuilder,
             List<SchemaPropertiesResolver> schemaPropertiesResolvers,
             List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers,
             OpenApiObjectMapperSupplier openApiObjectMapperSupplier
     ) {
-        return new TypeResolverForProperties(initialSchemaBuilder, schemaPropertiesResolvers,
+        return new TypeResolverForObject(schemaNameBuilder, schemaPropertiesResolvers,
                 schemaPropertiesCustomizers, openApiObjectMapperSupplier);
     }
 
@@ -141,12 +140,6 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public InitialSchemaBuilderForEnum defaultInitialSchemaBuilderForEnum(SchemaNameBuilder schemaNameBuilder) {
         return new InitialSchemaBuilderForEnum(schemaNameBuilder);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public InitialSchemaBuilderForObject defaultInitialSchemaBuilderForObject(SchemaNameBuilder schemaNameBuilder) {
-        return new InitialSchemaBuilderForObject(schemaNameBuilder);
     }
 
     @Bean
