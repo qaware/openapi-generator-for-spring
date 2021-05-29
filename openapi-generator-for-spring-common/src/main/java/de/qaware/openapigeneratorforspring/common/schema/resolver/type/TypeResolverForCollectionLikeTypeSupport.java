@@ -20,11 +20,14 @@
 
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.ResolvedRecursiveType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
+import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import lombok.EqualsAndHashCode;
@@ -37,10 +40,12 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier.Purpose.SCHEMA_BUILDING;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.mergeWithExistingMap;
 
 @RequiredArgsConstructor
@@ -48,17 +53,24 @@ public class TypeResolverForCollectionLikeTypeSupport {
 
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
     private final ExtensionAnnotationMapper extensionAnnotationMapper;
+    private final OpenApiObjectMapperSupplier objectMapperSupplier;
 
     @Nullable
-    public InitialType build(Object caller, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-        val arraySchemaAnnotations = annotationsSupplier.findAnnotations(ArraySchema.class)
-                .collect(Collectors.toCollection(LinkedList::new));
-        return new CollectionLikeInitialType(
-                javaType,
-                extendAnnotationsSupplier(annotationsSupplier, arraySchemaAnnotations, ArraySchema::arraySchema),
-                arraySchemaAnnotations,
-                caller
-        );
+    public InitialType build(Object caller, Predicate<JavaType> condition, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+        JavaType unpackedJavaType = unpackJacksonResolvedRecursiveType(javaType);
+
+        if (condition.test(unpackedJavaType)) {
+            val arraySchemaAnnotations = annotationsSupplier.findAnnotations(ArraySchema.class)
+                    .collect(Collectors.toCollection(LinkedList::new));
+            return new CollectionLikeInitialType(
+                    unpackedJavaType,
+                    extendAnnotationsSupplier(annotationsSupplier, arraySchemaAnnotations, ArraySchema::arraySchema),
+                    arraySchemaAnnotations,
+                    unpackedJavaType != javaType,
+                    caller
+            );
+        }
+        return null;
     }
 
     @Nullable
@@ -85,8 +97,17 @@ public class TypeResolverForCollectionLikeTypeSupport {
                     collectionLikeInitialType.getArraySchemaAnnotations(), ArraySchema::schema
             );
             schemaBuilderFromType.buildSchemaFromType(contentType, annotationsSupplierFromContentType, schema::setItems);
+            return collectionLikeInitialType.isRecursiveJacksonType() ? new UniqueSchemaKey(initialType.getType(), getSchemaSnapshot(schema)) : null;
         }
-        return null; // collections never create cyclic dependencies
+        return null;
+    }
+
+    private String getSchemaSnapshot(Schema schema) {
+        try {
+            return objectMapperSupplier.get(SCHEMA_BUILDING).writeValueAsString(schema);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Cannot serialized schema for snapshot", e);
+        }
     }
 
     private CollectionLikeSchema buildArraySchema(LinkedList<ArraySchema> arraySchemaAnnotations) {
@@ -109,7 +130,17 @@ public class TypeResolverForCollectionLikeTypeSupport {
         mergeWithExistingMap(schema::getExtensions, schema::setExtensions, extensionAnnotationMapper.mapArray(annotation.extensions()));
     }
 
-    private AnnotationsSupplier extendAnnotationsSupplier(
+    private static JavaType unpackJacksonResolvedRecursiveType(JavaType javaType) {
+        if (javaType instanceof ResolvedRecursiveType) {
+            JavaType selfReferencedType = ((ResolvedRecursiveType) javaType).getSelfReferencedType();
+            if (selfReferencedType != null) {
+                return selfReferencedType;
+            }
+        }
+        return javaType;
+    }
+
+    private static AnnotationsSupplier extendAnnotationsSupplier(
             AnnotationsSupplier annotationsSupplier,
             Collection<ArraySchema> arraySchemaAnnotations,
             Function<ArraySchema, io.swagger.v3.oas.annotations.media.Schema> mapper
@@ -139,22 +170,31 @@ public class TypeResolverForCollectionLikeTypeSupport {
     }
 
     private static class CollectionLikeInitialType extends InitialType {
-
         @Getter
         private final LinkedList<ArraySchema> arraySchemaAnnotations;
+        @Getter
+        private final boolean recursiveJacksonType;
         private final Object caller;
 
         protected CollectionLikeInitialType(
                 JavaType type, AnnotationsSupplier annotationsSupplier,
-                LinkedList<ArraySchema> arraySchemaAnnotations, Object caller
+                LinkedList<ArraySchema> arraySchemaAnnotations, boolean recursiveJacksonType, Object caller
         ) {
             super(type, annotationsSupplier);
             this.arraySchemaAnnotations = arraySchemaAnnotations;
+            this.recursiveJacksonType = recursiveJacksonType;
             this.caller = caller;
         }
 
         static boolean matches(Object caller, InitialType initialType) {
             return initialType instanceof CollectionLikeInitialType && ((CollectionLikeInitialType) initialType).caller.equals(caller);
         }
+    }
+
+    @RequiredArgsConstructor
+    @EqualsAndHashCode // important!
+    private static class UniqueSchemaKey implements TypeResolver.RecursionKey {
+        private final JavaType javaType;
+        private final String schemaSnapshot;
     }
 }

@@ -108,14 +108,14 @@ public class TypeResolverForObject implements InitialSchemaBuilder, TypeResolver
 
 
     private Map<String, PropertyCustomizer> buildPropertyCustomizers(Schema schema, InitialType initialType, Set<String> propertyNames) {
-        Map<String, PropertyCustomizer> customizerProperties = buildStringMapFromStream(
+        Map<String, PropertyCustomizer> propertyCustomizers = buildStringMapFromStream(
                 propertyNames.stream(),
                 x -> x,
                 ignored -> new PropertyCustomizer()
         );
         // capture the customization callbacks already here
-        schemaPropertiesCustomizers.forEach(customizer -> customizer.customize(schema, initialType.getType(), initialType.getAnnotationsSupplier(), customizerProperties));
-        return customizerProperties;
+        schemaPropertiesCustomizers.forEach(customizer -> customizer.customize(schema, initialType.getType(), initialType.getAnnotationsSupplier(), propertyCustomizers));
+        return propertyCustomizers;
     }
 
     @RequiredArgsConstructor

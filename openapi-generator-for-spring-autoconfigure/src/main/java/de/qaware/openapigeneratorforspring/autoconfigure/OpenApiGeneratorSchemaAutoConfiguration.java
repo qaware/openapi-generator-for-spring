@@ -82,9 +82,10 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
     @ConditionalOnMissingBean
     public TypeResolverForCollectionLikeTypeSupport defaultTypeResolverForCollectionLikeTypeSupport(
             AnnotationsSupplierFactory annotationsSupplierFactory,
-            ExtensionAnnotationMapper extensionAnnotationMapper
+            ExtensionAnnotationMapper extensionAnnotationMapper,
+            OpenApiObjectMapperSupplier openApiObjectMapperSupplier
     ) {
-        return new TypeResolverForCollectionLikeTypeSupport(annotationsSupplierFactory, extensionAnnotationMapper);
+        return new TypeResolverForCollectionLikeTypeSupport(annotationsSupplierFactory, extensionAnnotationMapper, openApiObjectMapperSupplier);
     }
 
     @Bean

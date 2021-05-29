@@ -41,7 +41,7 @@ public class TypeResolverForFlux implements InitialTypeBuilder, InitialSchemaBui
     @Nullable
     @Override
     public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
-        return javaType.getRawClass().equals(Flux.class) ? support.build(this, javaType, annotationsSupplier) : null;
+        return support.build(this, type -> type.getRawClass().equals(Flux.class), javaType, annotationsSupplier);
     }
 
     @Nullable

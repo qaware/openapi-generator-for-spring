@@ -42,7 +42,7 @@ public class TypeResolverForCollectionLikeType implements InitialTypeBuilder, In
     @Nullable
     @Override
     public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
-        return javaType.isCollectionLikeType() ? support.build(this, javaType, annotationsSupplier) : null;
+        return support.build(this, JavaType::isCollectionLikeType, javaType, annotationsSupplier);
     }
 
     @Nullable

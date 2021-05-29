@@ -53,7 +53,6 @@ public class SpringWebHandlerMethodContentTypesMapper {
                 .findFirst()
                 .map(Stream::of)
                 .orElse(Stream.of(ALL_VALUE))
-                .flatMap(Stream::of)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }
