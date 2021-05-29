@@ -29,6 +29,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaProperty;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForObject;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
@@ -73,19 +74,18 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
     public RecursionKey resolveIfSupported(
             SchemaResolver.Mode mode,
             Schema schema,
-            JavaType javaType,
-            AnnotationsSupplier annotationsSupplier,
+            InitialType initialType,
             SchemaBuilderFromType schemaBuilderFromType
     ) {
 
         Map<String, SchemaProperty> properties = OpenApiMapUtils.buildStringMapFromStream(
                 schemaPropertiesResolvers.stream()
-                        .flatMap(resolver -> resolver.findProperties(javaType, annotationsSupplier, mode).entrySet().stream()),
+                        .flatMap(resolver -> resolver.findProperties(initialType.getType(), initialType.getAnnotationsSupplier(), mode).entrySet().stream()),
                 Map.Entry::getKey,
                 Map.Entry::getValue
         );
 
-        Map<String, PropertyCustomizer> propertyCustomizers = buildPropertyCustomizers(schema, javaType, annotationsSupplier, properties.keySet());
+        Map<String, PropertyCustomizer> propertyCustomizers = buildPropertyCustomizers(schema, initialType, properties.keySet());
 
         properties.forEach((propertyName, property) -> {
             PropertyCustomizer propertyCustomizer = propertyCustomizers.get(propertyName);
@@ -96,7 +96,7 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
             );
         });
 
-        return new UniqueSchemaKey(javaType, getSchemaSnapshot(schema));
+        return new UniqueSchemaKey(initialType.getType(), getSchemaSnapshot(schema));
     }
 
     private String getSchemaSnapshot(Schema schema) {
@@ -114,14 +114,14 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
         private final String schemaSnapshot;
     }
 
-    private Map<String, PropertyCustomizer> buildPropertyCustomizers(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Set<String> propertyNames) {
+    private Map<String, PropertyCustomizer> buildPropertyCustomizers(Schema schema, InitialType initialType, Set<String> propertyNames) {
         Map<String, PropertyCustomizer> customizerProperties = buildStringMapFromStream(
                 propertyNames.stream(),
                 x -> x,
                 ignored -> new PropertyCustomizer()
         );
         // capture the customization callbacks already here
-        schemaPropertiesCustomizers.forEach(customizer -> customizer.customize(schema, javaType, annotationsSupplier, customizerProperties));
+        schemaPropertiesCustomizers.forEach(customizer -> customizer.customize(schema, initialType.getType(), initialType.getAnnotationsSupplier(), customizerProperties));
         return customizerProperties;
     }
 

@@ -105,14 +105,9 @@ public class DefaultSchemaResolver implements SchemaResolver {
         private Schema runTypeResolvers(Schema schema, InitialType initialType) {
             for (TypeResolver typeResolver : typeResolvers) {
                 TypeResolverActions actions = new TypeResolverActions();
-                TypeResolver.RecursionKey recursionKey = typeResolver.resolve(
-                        mode,
-                        schema,
-                        initialType.getType(),
-                        initialType.getAnnotationsSupplier(),
-                        actions
-                );
+                TypeResolver.RecursionKey recursionKey = typeResolver.resolve(mode, schema, initialType, actions);
                 if (actions.isEmpty()) {
+                    // the type resolve hasn't added any "recursive" actions, so try the next type resolver
                     continue;
                 }
                 // prevent depth-first recursion if we already know this schema

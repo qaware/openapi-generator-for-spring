@@ -25,6 +25,7 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForCollectionLikeType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 
@@ -45,9 +46,9 @@ public class TypeResolverForCollectionLikeType extends AbstractTypeResolver {
 
     @Nullable
     @Override
-    protected RecursionKey resolveIfSupported(SchemaResolver.Mode mode, Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
-        JavaType contentType = javaType.getContentType();
-        ArraySchema arraySchemaAnnotation = annotationsSupplier.findAnnotations(ArraySchema.class).findFirst().orElse(null);
+    protected RecursionKey resolveIfSupported(SchemaResolver.Mode mode, Schema schema, InitialType initialType, SchemaBuilderFromType schemaBuilderFromType) {
+        JavaType contentType = initialType.getType().getContentType();
+        ArraySchema arraySchemaAnnotation = initialType.getAnnotationsSupplier().findAnnotations(ArraySchema.class).findFirst().orElse(null);
         schemaBuilderFromType.buildSchemaFromType(contentType, createAnnotationsSupplierFromContentType(arraySchemaAnnotation, contentType), schema::setItems);
         return null; // collections never create cyclic dependencies
     }

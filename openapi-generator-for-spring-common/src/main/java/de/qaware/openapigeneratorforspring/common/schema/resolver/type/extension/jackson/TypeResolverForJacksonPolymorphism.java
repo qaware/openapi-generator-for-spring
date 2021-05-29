@@ -105,9 +105,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
     public RecursionKey resolve(
             SchemaResolver.Mode mode,
             Schema schema,
-            JavaType javaType,
-            AnnotationsSupplier annotationsSupplier,
-            SchemaBuilderFromType schemaBuilderFromType
+            InitialType initialType, SchemaBuilderFromType schemaBuilderFromType
     ) {
         JsonTypeInfo jsonTypeInfo = getJsonTypeInfo(schema);
         if (jsonTypeInfo == null) {
@@ -115,7 +113,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
         }
 
         String propertyName = findPropertyName(jsonTypeInfo);
-        Class<?> classOwningJsonTypeInfo = findClassOwningJsonTypeInfo(javaType.getRawClass())
+        Class<?> classOwningJsonTypeInfo = findClassOwningJsonTypeInfo(initialType.getType().getRawClass())
                 .orElseThrow(() -> new IllegalStateException("Cannot find class/interface annotated with @JsonTypeInfo although the given annotationSupplier detected one"));
 
         Function<JsonSubTypes.Type, String> typeNameMapper = jsonTypeInfo.use() == MINIMAL_CLASS ?
@@ -126,7 +124,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
         String propertySchemaName = getPropertySchemaName(objectMapper, classOwningJsonTypeInfo, jsonTypeInfo);
 
         setMapIfNotEmpty(buildStringMapFromStream(
-                annotationsSupplier.findAnnotations(JsonSubTypes.class)
+                initialType.getAnnotationsSupplier().findAnnotations(JsonSubTypes.class)
                         .flatMap(jsonSubTypes -> Arrays.stream(jsonSubTypes.value())),
                 typeNameMapper,
                 JsonSubTypes.Type::value

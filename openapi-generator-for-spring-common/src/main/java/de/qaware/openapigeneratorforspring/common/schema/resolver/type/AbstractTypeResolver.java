@@ -20,9 +20,8 @@
 
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 
-import com.fasterxml.jackson.databind.JavaType;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -36,14 +35,14 @@ public abstract class AbstractTypeResolver implements TypeResolver {
 
     @Nullable
     @Override
-    public final RecursionKey resolve(SchemaResolver.Mode mode, Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
+    public final RecursionKey resolve(SchemaResolver.Mode mode, Schema schema, InitialType initialType, SchemaBuilderFromType schemaBuilderFromType) {
         if (typeResolverSupport.supports(schema)) {
-            return resolveIfSupported(mode, schema, javaType, annotationsSupplier, schemaBuilderFromType);
+            return resolveIfSupported(mode, schema, initialType, schemaBuilderFromType);
         }
         return null;
     }
 
     @Nullable
-    protected abstract RecursionKey resolveIfSupported(SchemaResolver.Mode mode, Schema initialSchema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType);
+    protected abstract RecursionKey resolveIfSupported(SchemaResolver.Mode mode, Schema schema, InitialType initialType, SchemaBuilderFromType schemaBuilderFromType);
 
 }
