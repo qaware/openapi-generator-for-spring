@@ -30,7 +30,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
-import java.util.Set;
 import java.util.stream.Stream;
 
 public class TypeResolverForCollectionLikeType extends AbstractTypeResolver {
@@ -48,21 +47,14 @@ public class TypeResolverForCollectionLikeType extends AbstractTypeResolver {
     @Override
     protected RecursionKey resolveIfSupported(SchemaResolver.Mode mode, Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
         JavaType contentType = javaType.getContentType();
-        // do not use the current annotationsSupplier, but only use annotations directly present on contentType
         ArraySchema arraySchemaAnnotation = annotationsSupplier.findAnnotations(ArraySchema.class).findFirst().orElse(null);
-        applyUniqueness(schema, javaType, arraySchemaAnnotation);
         schemaBuilderFromType.buildSchemaFromType(contentType, createAnnotationsSupplierFromContentType(arraySchemaAnnotation, contentType), schema::setItems);
         return null; // collections never create cyclic dependencies
     }
 
-    private void applyUniqueness(Schema schema, JavaType javaType, @Nullable ArraySchema arraySchemaAnnotation) {
-        if (arraySchemaAnnotation != null && arraySchemaAnnotation.uniqueItems()
-                || Set.class.isAssignableFrom(javaType.getRawClass())) {
-            schema.setUniqueItems(true);
-        }
-    }
-
     private AnnotationsSupplier createAnnotationsSupplierFromContentType(@Nullable ArraySchema arraySchemaAnnotation, JavaType contentType) {
+        // do not use the current annotationsSupplier, but only use annotations directly present on contentType
+        // and add possible schema annotations from the array schema annotation
         AnnotationsSupplier annotationsSupplierForRawClass = annotationsSupplierFactory.createFromAnnotatedElement(contentType.getRawClass());
         if (arraySchemaAnnotation != null) {
             AnnotationsSupplier annotationsSupplierFromArraySchema = new AnnotationsSupplier() {

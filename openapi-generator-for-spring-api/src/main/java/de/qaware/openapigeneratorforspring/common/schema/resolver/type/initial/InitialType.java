@@ -22,6 +22,7 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -32,8 +33,12 @@ import lombok.RequiredArgsConstructor;
  * @see InitialTypeBuilder
  */
 @Getter
-@RequiredArgsConstructor(staticName = "of")
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class InitialType {
     private final JavaType type;
     private final AnnotationsSupplier annotationsSupplier;
+
+    public static InitialType of(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
+        return new InitialType(javaType, annotationsSupplier);
+    }
 }

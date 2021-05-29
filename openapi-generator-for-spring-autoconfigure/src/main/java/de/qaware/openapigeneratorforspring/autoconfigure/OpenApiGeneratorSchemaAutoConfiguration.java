@@ -49,6 +49,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.I
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForPrimitiveTypes;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForVoid;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilder;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilderForCollectionLikeType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilderForReferenceType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilderForSchemaAnnotation;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
@@ -102,6 +103,12 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public InitialTypeBuilderForCollectionLikeType defaultInitialTypeBuilderForCollectionLikeType() {
+        return new InitialTypeBuilderForCollectionLikeType();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public InitialTypeBuilderForReferenceType defaultInitialTypeBuilderForReferenceType(
             AnnotationsSupplierFactory annotationsSupplierFactory
     ) {
@@ -143,8 +150,10 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public InitialSchemaBuilderForCollectionLikeType defaultInitialSchemaBuilderForCollectionLikeType() {
-        return new InitialSchemaBuilderForCollectionLikeType();
+    public InitialSchemaBuilderForCollectionLikeType defaultInitialSchemaBuilderForCollectionLikeType(
+            ExtensionAnnotationMapper extensionAnnotationMapper
+    ) {
+        return new InitialSchemaBuilderForCollectionLikeType(extensionAnnotationMapper);
     }
 
     @Bean

@@ -61,6 +61,54 @@
           }
         }
       }
+    },
+    "/mapping4": {
+      "get": {
+        "operationId": "mapping4",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "description": "Description for array",
+                  "items": {
+                    "type": "string",
+                    "description": "Description for array items"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mapping5": {
+      "get": {
+        "operationId": "mapping5",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "maxItems": 5,
+                  "minItems": 2,
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "x-extension1": {
+                    "name1": "value1",
+                    "name2": "value2"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
