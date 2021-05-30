@@ -17,15 +17,16 @@ specification of your application.
 * Spring WebFlux support
   including [Router Functions](https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-fn)
 * Integrated [Swagger UI](https://github.com/swagger-api/swagger-ui)
-* [Swagger Annotations](https://github.com/swagger-api/swagger-core/tree/master/modules/swagger-annotations) support
+* [Swagger Annotations v3](https://github.com/swagger-api/swagger-core/tree/master/modules/swagger-annotations) support
 * No dependency on
   [swagger-core module](https://github.com/swagger-api/swagger-core/tree/master/modules/swagger-core)
   or
   [swagger-models module](https://github.com/swagger-api/swagger-core/tree/master/modules/swagger-models)
 * Extended support for `Schema` building, including self-referencing types
+  and [Jackson polymorphism](https://github.com/FasterXML/jackson-docs/wiki/JacksonPolymorphicDeserialization)
 
 Note that some features are not fully implemented yet,
-see [Issues](https://github.com/qaware/openapi-generator-for-spring/issues)
+see [issues](https://github.com/qaware/openapi-generator-for-spring/issues).
 
 ## Getting started
 
