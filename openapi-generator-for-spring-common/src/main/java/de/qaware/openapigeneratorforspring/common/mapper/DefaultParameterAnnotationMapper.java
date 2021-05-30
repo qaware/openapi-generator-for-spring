@@ -24,6 +24,7 @@ import de.qaware.openapigeneratorforspring.common.reference.component.example.Re
 import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.mapper.SchemaAnnotationMapper;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
+import io.swagger.v3.oas.annotations.enums.Explode;
 import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -70,6 +71,7 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
             parameter.setAllowEmptyValue(true);
         }
         setIf(annotation.style(), style -> style != ParameterStyle.DEFAULT, style -> parameter.setStyle(style.toString()));
+        setIf(annotation.explode(), explode -> explode != Explode.DEFAULT, explode -> parameter.setExplode(explode == Explode.TRUE));
         if (annotation.allowReserved()) {
             parameter.setAllowReserved(true);
         }

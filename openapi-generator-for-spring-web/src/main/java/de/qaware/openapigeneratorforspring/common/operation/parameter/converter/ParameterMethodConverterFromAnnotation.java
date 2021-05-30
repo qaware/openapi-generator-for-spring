@@ -24,9 +24,13 @@ import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
+import org.springframework.web.bind.annotation.ValueConstants;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
+
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class ParameterMethodConverterFromAnnotation<A extends Annotation> implements ParameterMethodConverter {
@@ -44,4 +48,17 @@ public abstract class ParameterMethodConverterFromAnnotation<A extends Annotatio
 
     @Nullable
     protected abstract Parameter buildParameter(A annotation);
+
+    protected static Parameter.ParameterBuilder createDefaultParameterBuilder(String name) {
+        val parameterBuilder = Parameter.builder();
+        setStringIfNotBlank(name, parameterBuilder::name);
+        return parameterBuilder;
+    }
+
+    protected static boolean getRequiredFlag(boolean required, String defaultValue) {
+        if (!defaultValue.equals(ValueConstants.DEFAULT_NONE)) {
+            return false;
+        }
+        return required;
+    }
 }

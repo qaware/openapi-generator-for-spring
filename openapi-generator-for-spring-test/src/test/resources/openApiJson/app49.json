@@ -1,0 +1,61 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App49",
+    "version": "unknown"
+  },
+  "paths": {
+    "/users{id}": {
+      "get": {
+        "operationId": "getUsers",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "matrix",
+            "explode": true,
+            "schema": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/integer_int32"
+              }
+            }
+          },
+          {
+            "name": "metadata",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/integer_int32"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "integer_int32": {
+        "type": "integer",
+        "format": "int32"
+      }
+    }
+  }
+}

@@ -23,10 +23,10 @@ package de.qaware.openapigeneratorforspring.autoconfigure;
 import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromMatrixVariableAnnotation;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromPathVariableAnnotation;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromRequestHeaderAnnotation;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromRequestParamAnnotation;
-import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.SpringWebOpenApiParameterBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.DefaultSpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodEnumMapper;
@@ -65,26 +65,26 @@ public class OpenApiGeneratorWebAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SpringWebOpenApiParameterBuilder springWebOpenApiParameterBuilder() {
-        return new SpringWebOpenApiParameterBuilder();
+    public DefaultParameterMethodConverterFromPathVariableAnnotation defaultParameterMethodConverterFromPathVariableAnnotation() {
+        return new DefaultParameterMethodConverterFromPathVariableAnnotation();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultParameterMethodConverterFromPathVariableAnnotation defaultParameterMethodConverterFromPathVariableAnnotation(SpringWebOpenApiParameterBuilder springWebOpenApiParameterBuilder) {
-        return new DefaultParameterMethodConverterFromPathVariableAnnotation(springWebOpenApiParameterBuilder);
+    public DefaultParameterMethodConverterFromRequestHeaderAnnotation defaultParameterMethodConverterFromRequestHeaderAnnotation() {
+        return new DefaultParameterMethodConverterFromRequestHeaderAnnotation();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultParameterMethodConverterFromRequestHeaderAnnotation defaultParameterMethodConverterFromRequestHeaderAnnotation(SpringWebOpenApiParameterBuilder springWebOpenApiParameterBuilder) {
-        return new DefaultParameterMethodConverterFromRequestHeaderAnnotation(springWebOpenApiParameterBuilder);
+    public DefaultParameterMethodConverterFromRequestParamAnnotation defaultParameterMethodConverterFromRequestParamAnnotation() {
+        return new DefaultParameterMethodConverterFromRequestParamAnnotation();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultParameterMethodConverterFromRequestParamAnnotation defaultParameterMethodConverterFromRequestParamAnnotation(SpringWebOpenApiParameterBuilder springWebOpenApiParameterBuilder) {
-        return new DefaultParameterMethodConverterFromRequestParamAnnotation(springWebOpenApiParameterBuilder);
+    public DefaultParameterMethodConverterFromMatrixVariableAnnotation defaultParameterMethodConverterFromMatrixVariableAnnotation() {
+        return new DefaultParameterMethodConverterFromMatrixVariableAnnotation();
     }
 
     @Bean

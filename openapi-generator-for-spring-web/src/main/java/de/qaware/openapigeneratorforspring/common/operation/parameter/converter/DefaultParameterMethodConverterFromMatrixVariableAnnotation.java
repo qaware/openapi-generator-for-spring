@@ -22,24 +22,28 @@ package de.qaware.openapigeneratorforspring.common.operation.parameter.converter
 
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import org.springframework.web.bind.annotation.RequestHeader;
+import io.swagger.v3.oas.annotations.enums.ParameterStyle;
+import org.springframework.web.bind.annotation.MatrixVariable;
 
 import javax.annotation.Nullable;
 
-public class DefaultParameterMethodConverterFromRequestHeaderAnnotation extends ParameterMethodConverterFromAnnotation<RequestHeader> {
+public class DefaultParameterMethodConverterFromMatrixVariableAnnotation extends ParameterMethodConverterFromAnnotation<MatrixVariable> {
 
     public static final int ORDER = DEFAULT_ORDER;
 
-    public DefaultParameterMethodConverterFromRequestHeaderAnnotation() {
-        super(RequestHeader.class);
+    public DefaultParameterMethodConverterFromMatrixVariableAnnotation() {
+        super(MatrixVariable.class);
     }
 
     @Nullable
     @Override
-    protected Parameter buildParameter(RequestHeader annotation) {
+    protected Parameter buildParameter(MatrixVariable annotation) {
         return createDefaultParameterBuilder(annotation.name())
-                .in(ParameterIn.HEADER.toString())
-                .required(getRequiredFlag(annotation.required(), annotation.defaultValue()))
+                .in(ParameterIn.PATH.toString())
+                // the spec says that if the parameter location is "path",
+                // it must be required
+                .required(true)
+                .style(ParameterStyle.MATRIX.toString())
                 .build();
     }
 

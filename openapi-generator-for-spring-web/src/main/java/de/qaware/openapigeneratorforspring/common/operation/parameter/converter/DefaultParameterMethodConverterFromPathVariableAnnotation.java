@@ -30,19 +30,20 @@ public class DefaultParameterMethodConverterFromPathVariableAnnotation extends P
 
     public static final int ORDER = DEFAULT_ORDER;
 
-    private final SpringWebOpenApiParameterBuilder parameterBuilder;
 
-    public DefaultParameterMethodConverterFromPathVariableAnnotation(SpringWebOpenApiParameterBuilder parameterBuilder) {
+    public DefaultParameterMethodConverterFromPathVariableAnnotation() {
         super(PathVariable.class);
-        this.parameterBuilder = parameterBuilder;
     }
 
     @Nullable
     @Override
     protected Parameter buildParameter(PathVariable annotation) {
-        return parameterBuilder.build(ParameterIn.PATH,
-                annotation.name(), annotation.required()
-        );
+        return createDefaultParameterBuilder(annotation.name())
+                .in(ParameterIn.PATH.toString())
+                // the spec says that if the parameter location is "path",
+                // it must be required
+                .required(true)
+                .build();
     }
 
     @Override

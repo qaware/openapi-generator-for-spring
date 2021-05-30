@@ -30,19 +30,18 @@ public class DefaultParameterMethodConverterFromRequestParamAnnotation extends P
 
     public static final int ORDER = DEFAULT_ORDER;
 
-    private final SpringWebOpenApiParameterBuilder parameterBuilder;
 
-    public DefaultParameterMethodConverterFromRequestParamAnnotation(SpringWebOpenApiParameterBuilder parameterBuilder) {
+    public DefaultParameterMethodConverterFromRequestParamAnnotation() {
         super(RequestParam.class);
-        this.parameterBuilder = parameterBuilder;
     }
 
     @Nullable
     @Override
     protected Parameter buildParameter(RequestParam annotation) {
-        return parameterBuilder.build(ParameterIn.QUERY,
-                annotation.name(), annotation.required(), annotation.defaultValue()
-        );
+        return createDefaultParameterBuilder(annotation.name())
+                .in(ParameterIn.QUERY.toString())
+                .required(getRequiredFlag(annotation.required(), annotation.defaultValue()))
+                .build();
     }
 
     @Override
