@@ -22,51 +22,47 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
-import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForCollectionLikeType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilder;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
+import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
-import java.lang.annotation.Annotation;
-import java.util.stream.Stream;
+import java.util.Set;
 
-public class TypeResolverForCollectionLikeType extends AbstractTypeResolver {
+@RequiredArgsConstructor
+public class TypeResolverForCollectionLikeType implements InitialTypeBuilder, InitialSchemaBuilder, TypeResolver {
 
     public static final int ORDER = DEFAULT_ORDER;
 
-    private final AnnotationsSupplierFactory annotationsSupplierFactory;
+    private final TypeResolverForCollectionLikeTypeSupport support;
 
-    public TypeResolverForCollectionLikeType(InitialSchemaBuilderForCollectionLikeType typeResolverSupport, AnnotationsSupplierFactory annotationsSupplierFactory) {
-        super(typeResolverSupport);
-        this.annotationsSupplierFactory = annotationsSupplierFactory;
+    @Nullable
+    @Override
+    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
+        return support.build(this, JavaType::isCollectionLikeType, javaType, annotationsSupplier);
     }
 
     @Nullable
     @Override
-    protected RecursionKey resolveIfSupported(SchemaResolver.Mode mode, Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaBuilderFromType schemaBuilderFromType) {
-        JavaType contentType = javaType.getContentType();
-        // do not use the current annotationsSupplier, but only use annotations directly present on contentType
-        ArraySchema arraySchemaAnnotation = annotationsSupplier.findAnnotations(ArraySchema.class).findFirst().orElse(null);
-        schemaBuilderFromType.buildSchemaFromType(contentType, createAnnotationsSupplierFromContentType(arraySchemaAnnotation, contentType), schema::setItems);
-        return null; // collections never create cyclic dependencies
+    public Schema buildFromType(InitialType initialType) {
+        Schema schema = support.buildFromType(this, initialType);
+        setUniqueItemsIfAssignableToSet(schema, initialType.getType());
+        return schema;
     }
 
-    private AnnotationsSupplier createAnnotationsSupplierFromContentType(@Nullable ArraySchema arraySchemaAnnotation, JavaType contentType) {
-        AnnotationsSupplier annotationsSupplierForRawClass = annotationsSupplierFactory.createFromAnnotatedElement(contentType.getRawClass());
-        if (arraySchemaAnnotation != null) {
-            AnnotationsSupplier annotationsSupplierFromArraySchema = new AnnotationsSupplier() {
-                @Override
-                public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
-                    return Stream.of(arraySchemaAnnotation.schema())
-                            .filter(annotationType::isInstance)
-                            .map(annotationType::cast);
-                }
-            };
-            return annotationsSupplierFromArraySchema.andThen(annotationsSupplierForRawClass);
+    @Nullable
+    @Override
+    public RecursionKey resolve(SchemaResolver.Mode mode, Schema schema, InitialType initialType, SchemaBuilderFromType schemaBuilderFromType) {
+        return support.resolve(this, schema, initialType, () -> initialType.getType().getContentType(), schemaBuilderFromType);
+    }
+
+    private void setUniqueItemsIfAssignableToSet(@Nullable Schema schema, JavaType type) {
+        if (schema != null && Set.class.isAssignableFrom(type.getRawClass())) {
+            schema.setUniqueItems(true);
         }
-        return annotationsSupplierForRawClass;
     }
 
     @Override

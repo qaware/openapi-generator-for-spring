@@ -1,0 +1,120 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App48",
+    "version": "unknown"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "mapping_1_3",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "maxItems": 10,
+                  "minItems": 4,
+                  "type": "array",
+                  "description": "Description for array schema",
+                  "items": {
+                    "maxItems": 9,
+                    "minItems": 5,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "Description for ListLikeDto items"
+                    }
+                  }
+                }
+              },
+              "application/atom+xml": {
+                "schema": {
+                  "maxItems": 10,
+                  "minItems": 4,
+                  "type": "array",
+                  "description": "Description for array schema",
+                  "items": {
+                    "$ref": "#/components/schemas/array_Schema_0"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "mapping2",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/array_Schema_0"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "minItems": 4,
+                  "type": "array",
+                  "description": "Description for RecursiveListDto",
+                  "example": [
+                    [
+                      [
+                        [
+                          [
+                            []
+                          ]
+                        ]
+                      ]
+                    ],
+                    null,
+                    [
+                      null
+                    ]
+                  ],
+                  "items": {
+                    "$ref": "#/components/schemas/array_Schema_0"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "array_Schema_0": {
+        "type": "array",
+        "description": "Description for RecursiveListDto",
+        "example": [
+          [
+            [
+              [
+                [
+                  []
+                ]
+              ]
+            ]
+          ],
+          null,
+          [
+            null
+          ]
+        ],
+        "items": {
+          "$ref": "#/components/schemas/array_Schema_0"
+        }
+      }
+    }
+  }
+}

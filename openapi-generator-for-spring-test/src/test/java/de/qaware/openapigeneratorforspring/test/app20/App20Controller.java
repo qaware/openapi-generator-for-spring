@@ -1,5 +1,6 @@
 package de.qaware.openapigeneratorforspring.test.app20;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Value;
 import org.springframework.http.MediaType;
@@ -24,6 +25,7 @@ class App20Controller {
     }
 
     @PutMapping("/mapping-2")
+    @ArraySchema(arraySchema = @Schema(description = "Many SomeDtos"))
     public Flux<SomeDto> mapping2() {
         return null;
     }

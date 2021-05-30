@@ -292,6 +292,7 @@
         }
       },
       "array_string": {
+        "uniqueItems": true,
         "type": "array",
         "items": {
           "type": "string"
@@ -324,6 +325,7 @@
         }
       },
       "array_array_App5Controller.SimpleDto": {
+        "uniqueItems": true,
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/array_App5Controller.SimpleDto"

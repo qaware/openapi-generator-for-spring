@@ -25,10 +25,12 @@ import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer;
 import de.qaware.openapigeneratorforspring.common.schema.customizer.SchemaPropertiesCustomizer.SchemaPropertyCustomizer;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaPropertiesResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.SchemaProperty;
-import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForObject;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
@@ -46,57 +48,54 @@ import static de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectM
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.buildStringMapFromStream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils.laterThan;
 
+@RequiredArgsConstructor
 @Slf4j
-public class TypeResolverForProperties extends AbstractTypeResolver {
+public class TypeResolverForObject implements InitialSchemaBuilder, TypeResolver {
 
     // this resolver does not have any condition, so run this always later then the other resolvers as a fallback
     public static final int ORDER = laterThan(DEFAULT_ORDER);
 
+    private final SchemaNameBuilder schemaNameBuilder;
     private final List<SchemaPropertiesResolver> schemaPropertiesResolvers;
     private final List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers;
     private final OpenApiObjectMapperSupplier objectMapperSupplier;
 
-    public TypeResolverForProperties(
-            InitialSchemaBuilderForObject initialSchemaBuilderForObject,
-            List<SchemaPropertiesResolver> schemaPropertiesResolvers,
-            List<SchemaPropertiesCustomizer> schemaPropertiesCustomizers,
-            OpenApiObjectMapperSupplier objectMapperSupplier
-    ) {
-        super(initialSchemaBuilderForObject);
-        this.schemaPropertiesResolvers = schemaPropertiesResolvers;
-        this.schemaPropertiesCustomizers = schemaPropertiesCustomizers;
-        this.objectMapperSupplier = objectMapperSupplier;
+    @Nullable
+    @Override
+    public Schema buildFromType(InitialType initialType) {
+        return new ObjectSchema(schemaNameBuilder.buildFromType(initialType.getType()));
     }
 
     @Override
     @Nullable
-    public RecursionKey resolveIfSupported(
+    public RecursionKey resolve(
             SchemaResolver.Mode mode,
             Schema schema,
-            JavaType javaType,
-            AnnotationsSupplier annotationsSupplier,
+            InitialType initialType,
             SchemaBuilderFromType schemaBuilderFromType
     ) {
-
-        Map<String, SchemaProperty> properties = OpenApiMapUtils.buildStringMapFromStream(
-                schemaPropertiesResolvers.stream()
-                        .flatMap(resolver -> resolver.findProperties(javaType, annotationsSupplier, mode).entrySet().stream()),
-                Map.Entry::getKey,
-                Map.Entry::getValue
-        );
-
-        Map<String, PropertyCustomizer> propertyCustomizers = buildPropertyCustomizers(schema, javaType, annotationsSupplier, properties.keySet());
-
-        properties.forEach((propertyName, property) -> {
-            PropertyCustomizer propertyCustomizer = propertyCustomizers.get(propertyName);
-            schemaBuilderFromType.buildSchemaFromType(property.getType(), property.getAnnotationsSupplier(),
-                    propertySchema -> schema.setProperty(propertyName,
-                            propertyCustomizer.customize(propertySchema, property.getType(), property.getAnnotationsSupplier())
-                    )
+        if (schema instanceof ObjectSchema) {
+            Map<String, SchemaProperty> properties = OpenApiMapUtils.buildStringMapFromStream(
+                    schemaPropertiesResolvers.stream()
+                            .flatMap(resolver -> resolver.findProperties(initialType.getType(), initialType.getAnnotationsSupplier(), mode).entrySet().stream()),
+                    Map.Entry::getKey,
+                    Map.Entry::getValue
             );
-        });
 
-        return new UniqueSchemaKey(javaType, getSchemaSnapshot(schema));
+            Map<String, PropertyCustomizer> propertyCustomizers = buildPropertyCustomizers(schema, initialType, properties.keySet());
+
+            properties.forEach((propertyName, property) -> {
+                PropertyCustomizer propertyCustomizer = propertyCustomizers.get(propertyName);
+                schemaBuilderFromType.buildSchemaFromType(property.getType(), property.getAnnotationsSupplier(),
+                        propertySchema -> schema.setProperty(propertyName,
+                                propertyCustomizer.customize(propertySchema, property.getType(), property.getAnnotationsSupplier())
+                        )
+                );
+            });
+
+            return new UniqueSchemaKey(initialType.getType(), getSchemaSnapshot(schema));
+        }
+        return null;
     }
 
     private String getSchemaSnapshot(Schema schema) {
@@ -107,22 +106,16 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
         }
     }
 
-    @RequiredArgsConstructor
-    @EqualsAndHashCode // important!
-    private static class UniqueSchemaKey implements RecursionKey {
-        private final JavaType javaType;
-        private final String schemaSnapshot;
-    }
 
-    private Map<String, PropertyCustomizer> buildPropertyCustomizers(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Set<String> propertyNames) {
-        Map<String, PropertyCustomizer> customizerProperties = buildStringMapFromStream(
+    private Map<String, PropertyCustomizer> buildPropertyCustomizers(Schema schema, InitialType initialType, Set<String> propertyNames) {
+        Map<String, PropertyCustomizer> propertyCustomizers = buildStringMapFromStream(
                 propertyNames.stream(),
                 x -> x,
                 ignored -> new PropertyCustomizer()
         );
         // capture the customization callbacks already here
-        schemaPropertiesCustomizers.forEach(customizer -> customizer.customize(schema, javaType, annotationsSupplier, customizerProperties));
-        return customizerProperties;
+        schemaPropertiesCustomizers.forEach(customizer -> customizer.customize(schema, initialType.getType(), initialType.getAnnotationsSupplier(), propertyCustomizers));
+        return propertyCustomizers;
     }
 
     @RequiredArgsConstructor
@@ -146,5 +139,20 @@ public class TypeResolverForProperties extends AbstractTypeResolver {
     @Override
     public int getOrder() {
         return ORDER;
+    }
+
+    @RequiredArgsConstructor
+    @EqualsAndHashCode // important!
+    private static class UniqueSchemaKey implements RecursionKey {
+        private final JavaType javaType;
+        private final String schemaSnapshot;
+    }
+
+    @EqualsAndHashCode(callSuper = true)
+    private static class ObjectSchema extends Schema {
+        public ObjectSchema(String name) {
+            setType("object");
+            setName(name);
+        }
     }
 }
