@@ -1,6 +1,14 @@
 version: 2
 updates:
   - package-ecosystem: "maven"
-    directory: "/" # Location of package manifests
+    directory: "/"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "demo/openapi-generator-for-spring-demo-webmvc"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "demo/openapi-generator-for-spring-demo-webflux"
     schedule:
       interval: "daily"
