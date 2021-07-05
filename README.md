@@ -131,6 +131,25 @@ Feel free to investigate the
 [api module](openapi-generator-for-spring-api/src/main/java/de/qaware/openapigeneratorforspring/common)
 for more details. The relevant interfaces all have the suffix `Customizer` and extend the `Ordered` interface.
 
+#### Example
+OperationCustomizer bean that uses the class name of the RestController to set it as OpenAPI tag
+```
+    @Bean
+    public OperationCustomizer operationTagCustomizer() {
+        return (operation, operationBuilderContext) -> {
+            if (CollectionUtils.isEmpty(operation.getTags())) {
+                operationBuilderContext.getHandlerMethod(SpringWebHandlerMethod.class).ifPresent(handlerMethod -> {
+                    String declaringClassName = handlerMethod.getMethod().getMethod().getDeclaringClass().getSimpleName();
+                    operation.setTags(singletonList(declaringClassName));
+                    operationBuilderContext.getReferencedItemConsumer(ReferencedTagsConsumer.class)
+                            .accept(singletonList(Tag.builder().name(declaringClassName).build()));
+                });
+            }
+        };
+    }
+
+```
+
 ### How to customize the included Swagger UI?
 
 The Swagger UI `index.html` is generated from a
