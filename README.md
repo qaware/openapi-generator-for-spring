@@ -134,6 +134,11 @@ for more details. The relevant interfaces all have the suffix `Customizer` and e
 #### Examples
 OperationCustomizer bean that uses the class name of the RestController to set it as OpenAPI tag
 ```
+    /**
+     * Provide an OperationCustomizer to use the class name of the REST controller as Tag. This way the API endpoints are grouped per REST controller.
+     *
+     * @return OperationCustomizer
+     */
     @Bean
     public OperationCustomizer operationTagCustomizer() {
         return (operation, operationBuilderContext) -> {
@@ -152,6 +157,11 @@ OperationCustomizer bean that uses the class name of the RestController to set i
 
 OperationIdProvider to generate deep-links to specific endpoints that are compatible to the SpringFox style
 ```
+    /**
+     * Provide an OperationIdProvider to generate deep-links that are compatible to the SpringFox style.
+     *
+     * @return OperationIdProvider
+     */
     @Bean
     public OperationIdProvider operationIdProvider() {
         return operationInfo -> operationInfo.getHandlerMethod().getIdentifier() + "Using" + operationInfo.getRequestMethod().name();
