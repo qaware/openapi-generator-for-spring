@@ -131,7 +131,7 @@ Feel free to investigate the
 [api module](openapi-generator-for-spring-api/src/main/java/de/qaware/openapigeneratorforspring/common)
 for more details. The relevant interfaces all have the suffix `Customizer` and extend the `Ordered` interface.
 
-#### Example
+#### Examples
 OperationCustomizer bean that uses the class name of the RestController to set it as OpenAPI tag
 ```
     @Bean
@@ -149,6 +149,16 @@ OperationCustomizer bean that uses the class name of the RestController to set i
     }
 
 ```
+
+OperationIdProvider to generate deep-links to specific endpoints that are compatible to the SpringFox style
+```
+    @Bean
+    public OperationIdProvider operationIdProvider() {
+        return operationInfo -> operationInfo.getHandlerMethod().getIdentifier() + "Using" + operationInfo.getRequestMethod().name();
+    }
+```
+
+
 
 ### How to customize the included Swagger UI?
 
