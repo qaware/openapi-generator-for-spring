@@ -22,6 +22,7 @@ package de.qaware.openapigeneratorforspring.common.reference.component.parameter
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
 import de.qaware.openapigeneratorforspring.common.reference.handler.AbstractDependentReferencedComponentHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemBuildContext;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +53,7 @@ public class ReferencedParametersHandlerImpl extends AbstractDependentReferenced
     }
 
     @Override
-    public void applyToComponents(Components components) {
-        storage.buildReferencedItems(components::setParameters);
+    public void applyToComponents(Components components, @Nullable ReferencedItemBuildContext context) {
+        storage.buildReferencedItems(components::setParameters, context);
     }
 }

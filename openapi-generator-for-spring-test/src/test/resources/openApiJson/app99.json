@@ -1,0 +1,49 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "My own title",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping1": {
+      "get": {
+        "operationId": "mapping1",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "/mapping2": {
+      "get": {
+        "operationId": "mapping2",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "200": {
+        "description": "Default response",
+        "content": {
+          "*/*": {
+            "schema": {
+              "$ref": "#/components/schemas/string_date-time"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "string_date-time": {
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  }
+}
