@@ -32,7 +32,7 @@ see [issues](https://github.com/qaware/openapi-generator-for-spring/issues).
 
 Inside your Spring Boot application, add the following (maven) dependency:
 
-```
+```xml
 <dependency>
     <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
     <artifactId>openapi-generator-for-spring-starter</artifactId>
@@ -132,40 +132,39 @@ Feel free to investigate the
 for more details. The relevant interfaces all have the suffix `Customizer` and extend the `Ordered` interface.
 
 #### Examples
-OperationCustomizer bean that uses the class name of the RestController to set it as OpenAPI tag
+`OperationCustomizer` bean that uses the class name of the RestController to set it as OpenAPI tag
+```java
+/**
+ * Provide an OperationCustomizer to use the class name of the REST controller as Tag. This way the API endpoints are grouped per REST controller.
+ *
+ * @return OperationCustomizer
+ */
+@Bean
+public OperationCustomizer operationTagCustomizer() {
+    return (operation, operationBuilderContext) -> {
+        if (CollectionUtils.isEmpty(operation.getTags())) {
+            operationBuilderContext.getHandlerMethod(SpringWebHandlerMethod.class).ifPresent(handlerMethod -> {
+                String declaringClassName = handlerMethod.getMethod().getMethod().getDeclaringClass().getSimpleName();
+                operation.setTags(singletonList(declaringClassName));
+                operationBuilderContext.getReferencedItemConsumer(ReferencedTagsConsumer.class)
+                        .accept(singletonList(Tag.builder().name(declaringClassName).build()));
+            });
+        }
+    };
+}
 ```
-    /**
-     * Provide an OperationCustomizer to use the class name of the REST controller as Tag. This way the API endpoints are grouped per REST controller.
-     *
-     * @return OperationCustomizer
-     */
-    @Bean
-    public OperationCustomizer operationTagCustomizer() {
-        return (operation, operationBuilderContext) -> {
-            if (CollectionUtils.isEmpty(operation.getTags())) {
-                operationBuilderContext.getHandlerMethod(SpringWebHandlerMethod.class).ifPresent(handlerMethod -> {
-                    String declaringClassName = handlerMethod.getMethod().getMethod().getDeclaringClass().getSimpleName();
-                    operation.setTags(singletonList(declaringClassName));
-                    operationBuilderContext.getReferencedItemConsumer(ReferencedTagsConsumer.class)
-                            .accept(singletonList(Tag.builder().name(declaringClassName).build()));
-                });
-            }
-        };
-    }
 
-```
-
-OperationIdProvider to generate deep-links to specific endpoints that are compatible to the SpringFox style
-```
-    /**
-     * Provide an OperationIdProvider to generate deep-links that are compatible to the SpringFox style.
-     *
-     * @return OperationIdProvider
-     */
-    @Bean
-    public OperationIdProvider operationIdProvider() {
-        return operationInfo -> operationInfo.getHandlerMethod().getIdentifier() + "Using" + operationInfo.getRequestMethod().name();
-    }
+`OperationIdProvider` to generate deep-links to specific endpoints that are compatible to the SpringFox style
+```java
+/**
+ * Provide an OperationIdProvider to generate deep-links that are compatible to the SpringFox style.
+ *
+ * @return OperationIdProvider
+ */
+@Bean
+public OperationIdProvider operationIdProvider() {
+    return operationInfo -> operationInfo.getHandlerMethod().getIdentifier() + "Using" + operationInfo.getRequestMethod().name();
+}
 ```
 
 
@@ -192,7 +191,7 @@ for an example how to customize the offered API Docs within the Swagger UI.
 Define the following bean of type `InitialTypeBuilder` if you want to resolve the type `YourType` always as if it was of
 type `String`:
 
-```
+```java
 @Bean
 public InitialTypeBuilder openApiSchemaTypeSubstitutionForYourType() {
     return (javaType, annotationsSupplier, recursiveBuilder) -> {
