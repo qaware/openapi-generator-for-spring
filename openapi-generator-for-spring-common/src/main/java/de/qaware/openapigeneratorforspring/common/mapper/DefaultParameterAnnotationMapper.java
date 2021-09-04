@@ -59,6 +59,7 @@ public class DefaultParameterAnnotationMapper implements ParameterAnnotationMapp
 
     @Override
     public void applyFromAnnotation(Parameter parameter, io.swagger.v3.oas.annotations.Parameter annotation, MapperContext mapperContext) {
+        setStringIfNotBlank(annotation.name(), parameter::setName);
         setStringIfNotBlank(annotation.in().toString(), parameter::setIn);
         setStringIfNotBlank(annotation.description(), parameter::setDescription);
         if (annotation.required()) {

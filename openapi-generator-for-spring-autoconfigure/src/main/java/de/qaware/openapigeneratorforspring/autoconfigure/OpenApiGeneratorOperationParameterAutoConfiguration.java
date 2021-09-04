@@ -28,6 +28,7 @@ import de.qaware.openapigeneratorforspring.common.mapper.ExampleObjectAnnotation
 import de.qaware.openapigeneratorforspring.common.mapper.ExtensionAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.mapper.ParameterAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.DefaultOperationParameterCustomizer;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromParameterAnnotation;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.ParameterMethodConverter;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterAnnotationCustomizer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.customizer.DefaultOperationParameterDeprecatedCustomizer;
@@ -71,6 +72,12 @@ public class OpenApiGeneratorOperationParameterAutoConfiguration {
         return new DefaultParameterAnnotationMapper(
                 schemaAnnotationMapper, contentAnnotationMapper, exampleObjectAnnotationMapper, extensionAnnotationMapper
         );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultParameterMethodConverterFromParameterAnnotation defaultParameterMethodConverterFromParameterAnnotation() {
+        return new DefaultParameterMethodConverterFromParameterAnnotation();
     }
 
     @Bean
