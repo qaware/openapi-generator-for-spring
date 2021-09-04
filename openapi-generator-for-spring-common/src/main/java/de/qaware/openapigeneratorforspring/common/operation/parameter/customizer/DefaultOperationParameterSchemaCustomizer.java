@@ -23,6 +23,7 @@ package de.qaware.openapigeneratorforspring.common.operation.parameter.customize
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.reference.component.schema.ReferencedSchemaConsumer;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
+import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import lombok.RequiredArgsConstructor;
 
 import static de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver.Mode.FOR_DESERIALIZATION;
@@ -32,7 +33,7 @@ public class DefaultOperationParameterSchemaCustomizer implements OperationParam
     private final SchemaResolver schemaResolver;
 
     @Override
-    public void customize(de.qaware.openapigeneratorforspring.model.parameter.Parameter parameter, OperationParameterCustomizerContext context) {
+    public void customize(Parameter parameter, OperationParameterCustomizerContext context) {
         context.getHandlerMethodParameter().ifPresent(handlerMethodParameter ->
                 handlerMethodParameter.getType().ifPresent(parameterType -> {
                     ReferencedSchemaConsumer referencedSchemaConsumer = context.getReferencedItemConsumer(ReferencedSchemaConsumer.class);

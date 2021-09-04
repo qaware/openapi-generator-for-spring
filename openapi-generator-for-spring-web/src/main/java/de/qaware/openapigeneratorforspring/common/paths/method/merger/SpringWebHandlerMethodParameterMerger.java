@@ -26,14 +26,19 @@ import de.qaware.openapigeneratorforspring.common.paths.method.AbstractSpringWeb
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethod;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Slf4j
 public class SpringWebHandlerMethodParameterMerger {
 
     private final SpringWebHandlerMethodTypeMerger springWebHandlerMethodTypeMerger;
@@ -41,21 +46,21 @@ public class SpringWebHandlerMethodParameterMerger {
     public List<HandlerMethod.Parameter> mergeParameters(List<SpringWebHandlerMethod> handlerMethods) {
         return handlerMethods.stream()
                 .flatMap(handlerMethod -> handlerMethod.getParameters().stream()
-                        .map(parameter -> Pair.of(parameter.getName(), Pair.of(parameter, handlerMethod)))
+                        .map(parameter -> buildExtendedParameterPair(handlerMethod, parameter))
                 )
                 .collect(OpenApiStreamUtils.groupingByPairKeyAndCollectingValuesToList())
                 .entrySet().stream()
                 .map(entry -> entry.getKey()
                         .map(parameterName -> {
-                            List<HandlerMethod.Parameter> parameters = entry.getValue().stream()
-                                    .map(Pair::getLeft)
+                            val parameters = entry.getValue().stream()
+                                    .map(ExtendedParameter::getParameter)
                                     .collect(Collectors.toList());
-                            List<HandlerMethod> handlerMethodsForParameters = entry.getValue().stream()
-                                    .map(Pair::getRight)
+                            val handlerMethodsForParameters = entry.getValue().stream()
+                                    .map(ExtendedParameter::getOwningHandlerMethod)
                                     .collect(Collectors.toList());
                             return buildMergedParameter(parameterName, parameters, parameter -> {
                                 if (!handlerMethodsForParameters.containsAll(handlerMethods)) {
-                                    parameter.setRequired(false); // otherwise the UI doesn't work
+                                    parameter.setRequired(false); // otherwise, the Swagger UI doesn't work
                                     if (parameter.getDescription() == null) {
                                         parameter.setDescription("Only used by " + handlerMethodsForParameters.stream()
                                                 .map(HandlerMethod::getIdentifier)
@@ -70,9 +75,13 @@ public class SpringWebHandlerMethodParameterMerger {
                 .collect(Collectors.toList());
     }
 
+    private Pair<Optional<String>, ExtendedParameter> buildExtendedParameterPair(SpringWebHandlerMethod handlerMethod, HandlerMethod.Parameter parameter) {
+        return Pair.of(parameter.getName(), ExtendedParameter.of(parameter, handlerMethod));
+    }
+
     private HandlerMethod.Parameter buildMergedParameter(String parameterName, List<HandlerMethod.Parameter> parameters, Consumer<Parameter> parameterCustomizer) {
-        AnnotationsSupplier mergedAnnotationsSupplier = AnnotationsSupplier.merge(parameters.stream());
-        HandlerMethod.Type mergedType = springWebHandlerMethodTypeMerger.mergeTypes(parameters.stream())
+        val mergedAnnotationsSupplier = AnnotationsSupplier.merge(parameters.stream());
+        val mergedType = springWebHandlerMethodTypeMerger.mergeTypes(parameters.stream())
                 .orElseThrow(() -> new IllegalStateException("Grouped parameters should contain at least one entry"));
         return new SpringWebParameter(parameterName, mergedType, mergedAnnotationsSupplier) {
             @Override
@@ -80,5 +89,12 @@ public class SpringWebHandlerMethodParameterMerger {
                 parameterCustomizer.accept(parameter);
             }
         };
+    }
+
+    @RequiredArgsConstructor(staticName = "of")
+    @Getter
+    private static class ExtendedParameter {
+        private final HandlerMethod.Parameter parameter;
+        private final HandlerMethod owningHandlerMethod;
     }
 }
