@@ -1,5 +1,7 @@
 package de.qaware.openapigeneratorforspring.test.app50;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping
@@ -21,6 +24,11 @@ class App50Controller {
             @PathVariable("id") UserId userId,
             @RequestHeader(name = "X-Custom-Header") HeaderDto header
     ) {
+        return Collections.emptyList();
+    }
+
+    @GetMapping("/users/localized")
+    public List<String> getWithAcceptHeader(@Parameter(in = ParameterIn.HEADER, name = "Accept-Language") Locale locale) {
         return Collections.emptyList();
     }
 
