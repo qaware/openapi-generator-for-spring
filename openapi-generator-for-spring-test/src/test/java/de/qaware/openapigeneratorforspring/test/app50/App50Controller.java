@@ -32,7 +32,9 @@ class App50Controller {
     @GetMapping("/users")
     public ResponseEntity<List<UserId>> getWithAcceptHeader(
             @Parameter(in = ParameterIn.HEADER, name = "Accept-Language") Locale locale,
-            @RequestParam(value = "user", defaultValue = "") List<UserId> userIds
+            @RequestParam(value = "user", defaultValue = "") List<UserId> userIds,
+            @RequestParam(defaultValue = "true") boolean flag,
+            @RequestParam(defaultValue = "10") int size
     ) {
         return ResponseEntity.ok(userIds);
     }

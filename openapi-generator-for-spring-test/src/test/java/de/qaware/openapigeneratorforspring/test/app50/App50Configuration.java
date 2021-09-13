@@ -33,7 +33,7 @@ public class App50Configuration {
             @Nullable
             @Override
             public InitialType build(SchemaResolver.Caller caller, JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
-                if (javaType.isTypeOrSubTypeOf(String.class) || caller != SchemaResolver.Caller.PARAMETER) {
+                if (javaType.isPrimitive() || javaType.isTypeOrSubTypeOf(String.class) || caller != SchemaResolver.Caller.PARAMETER) {
                     return null;
                 }
                 TypeDescriptor parameterTypeDescriptor = new TypeDescriptor(ResolvableType.forType(javaType), javaType.getRawClass(), null);
