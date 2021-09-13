@@ -11,10 +11,10 @@ public class App43Configuration {
 
     @Bean
     public JacksonPolymorphismTypeSchemaNameBuilder jacksonPolymorphismTypeSchemaNameBuilder(SchemaNameBuilder schemaNameBuilder) {
-        return (javaTypeOwningJsonTypeInfo, jsonTypeInfo) -> {
+        return (caller, javaTypeOwningJsonTypeInfo, jsonTypeInfo) -> {
             String property = jsonTypeInfo.property();
             String propertyName = StringUtils.isNotBlank(property) ? property : jsonTypeInfo.use().getDefaultPropertyName();
-            return schemaNameBuilder.buildFromType(javaTypeOwningJsonTypeInfo) + propertyName;
+            return schemaNameBuilder.buildFromType(caller, javaTypeOwningJsonTypeInfo) + propertyName;
         };
     }
 }

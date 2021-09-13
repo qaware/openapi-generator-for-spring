@@ -23,6 +23,7 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class InitialTypeBuilderForSchemaAnnotation implements InitialTypeBuilder
 
     @Nullable
     @Override
-    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
+    public InitialType build(SchemaResolver.Caller caller, JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
         return annotationsSupplier.findAnnotations(Schema.class)
                 .map(Schema::implementation)
                 .filter(clazz -> !Void.class.equals(clazz))

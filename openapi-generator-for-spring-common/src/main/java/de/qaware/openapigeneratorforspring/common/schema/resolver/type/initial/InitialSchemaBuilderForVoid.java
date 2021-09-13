@@ -20,6 +20,7 @@
 
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 import javax.annotation.Nullable;
@@ -27,7 +28,7 @@ import javax.annotation.Nullable;
 public class InitialSchemaBuilderForVoid implements InitialSchemaBuilder {
     @Nullable
     @Override
-    public Schema buildFromType(InitialType initialType) {
+    public Schema buildFromType(SchemaResolver.Caller caller, InitialType initialType) {
         Class<?> rawClass = initialType.getType().getRawClass();
         if (Void.TYPE.equals(rawClass) || Void.class.equals(rawClass)) {
             return new Schema();

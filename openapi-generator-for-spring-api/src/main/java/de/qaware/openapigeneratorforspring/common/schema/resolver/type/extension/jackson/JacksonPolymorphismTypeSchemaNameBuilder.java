@@ -22,6 +22,7 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.extensio
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.JavaType;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 
 /**
  * Interface allowing to customize the schema name for the type property field.
@@ -32,9 +33,10 @@ public interface JacksonPolymorphismTypeSchemaNameBuilder {
     /**
      * Build the schema name (must not be unique).
      *
+     * @param caller                     caller of the schema resolver
      * @param javaTypeOwningJsonTypeInfo java type of class where @JsonTypeInfo is located
      * @param jsonTypeInfo               annotation
      * @return schema name for type property field
      */
-    String build(JavaType javaTypeOwningJsonTypeInfo, JsonTypeInfo jsonTypeInfo);
+    String build(SchemaResolver.Caller caller, JavaType javaTypeOwningJsonTypeInfo, JsonTypeInfo jsonTypeInfo);
 }

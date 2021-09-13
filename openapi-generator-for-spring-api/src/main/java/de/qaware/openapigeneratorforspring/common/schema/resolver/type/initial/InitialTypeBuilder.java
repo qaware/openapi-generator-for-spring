@@ -22,6 +22,7 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 
 import javax.annotation.Nullable;
@@ -31,20 +32,21 @@ import javax.annotation.Nullable;
  *
  * <p>They are queried in {@link org.springframework.core.Ordered order} by the {@link
  * de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver
- * schema resolver} to before {@link InitialSchemaBuilder} are queried.
+ * schema resolver} before {@link InitialSchemaBuilder} are queried.
  */
 @FunctionalInterface
 public interface InitialTypeBuilder extends OpenApiOrderedUtils.DefaultOrdered {
     /**
      * Build the initial type for schema resolution, possibly recursively using fallback builder.
      *
+     * @param caller              caller of the schema resolver
      * @param javaType            current java type
      * @param annotationsSupplier annotations supplier for java type
      * @param recursiveBuilder    builder to recursively build type (useful for generic types)
      * @return initial type, or null if given type can't be handled
      */
     @Nullable
-    InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder);
+    InitialType build(SchemaResolver.Caller caller, JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder);
 
     /**
      * Helper for {@link InitialTypeBuilder#build}.

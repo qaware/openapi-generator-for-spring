@@ -30,8 +30,9 @@ public interface SchemaNameBuilder {
     /**
      * Build name from Jackson java type.
      *
+     * @param caller   caller of the schema resolver
      * @param javaType java type
      * @return schema name, can be non-unique but should be descriptive
      */
-    String buildFromType(JavaType javaType);
+    String buildFromType(SchemaResolver.Caller caller, JavaType javaType);
 }

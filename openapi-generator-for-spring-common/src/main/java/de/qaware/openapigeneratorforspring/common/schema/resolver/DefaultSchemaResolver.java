@@ -65,20 +65,20 @@ public class DefaultSchemaResolver implements SchemaResolver {
     private final List<TypeResolver> typeResolvers;
 
     @Override
-    public Schema resolveFromClassWithoutReference(Mode mode, Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer) {
-        return resolveFromTypeWithoutReference(mode, clazz, annotationsSupplierFactory.createFromAnnotatedElement(clazz), referencedSchemaConsumer);
+    public Schema resolveFromClassWithoutReference(Caller caller, Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer) {
+        return resolveFromTypeWithoutReference(caller, clazz, annotationsSupplierFactory.createFromAnnotatedElement(clazz), referencedSchemaConsumer);
     }
 
     @Override
-    public void resolveFromType(Mode mode, Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer, Consumer<Schema> schemaSetter) {
-        setIfNotEmpty(resolveFromTypeWithoutReference(mode, type, annotationsSupplier, referencedSchemaConsumer),
+    public void resolveFromType(Caller caller, Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer, Consumer<Schema> schemaSetter) {
+        setIfNotEmpty(resolveFromTypeWithoutReference(caller, type, annotationsSupplier, referencedSchemaConsumer),
                 schema -> referencedSchemaConsumer.maybeAsReference(schema, schemaSetter)
         );
     }
 
-    private Schema resolveFromTypeWithoutReference(Mode mode, Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer) {
+    private Schema resolveFromTypeWithoutReference(Caller caller, Type type, AnnotationsSupplier annotationsSupplier, ReferencedSchemaConsumer referencedSchemaConsumer) {
         ObjectMapper mapper = openApiObjectMapperSupplier.get(SCHEMA_BUILDING);
-        Context context = new Context(mode, referencedSchemaConsumer, mapper);
+        Context context = new Context(caller, referencedSchemaConsumer, mapper);
         JavaType javaType = mapper.constructType(type);
         Schema schema = context.buildSchemaFromTypeRecursively(javaType, annotationsSupplier);
         context.resolveReferencedSchemas();
@@ -88,7 +88,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
     @RequiredArgsConstructor
     private class Context implements RecursiveSchemaBuilder {
 
-        private final Mode mode;
+        private final Caller caller;
         private final ReferencedSchemaConsumer referencedSchemaConsumer;
         private final ObjectMapper objectMapper;
         private final Map<TypeResolver.RecursionKey, Schema> knownSchemas = new LinkedHashMap<>();
@@ -105,7 +105,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
         private Schema runTypeResolvers(Schema schema, InitialType initialType) {
             for (TypeResolver typeResolver : typeResolvers) {
                 TypeResolverActions actions = new TypeResolverActions();
-                TypeResolver.RecursionKey recursionKey = typeResolver.resolve(mode, schema, initialType, actions);
+                TypeResolver.RecursionKey recursionKey = typeResolver.resolve(caller, schema, initialType, actions);
                 if (actions.isEmpty()) {
                     // the type resolve hasn't added any "recursive" actions, so try the next type resolver
                     continue;
@@ -152,7 +152,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
         private InitialType buildInitialType(JavaType javaType, AnnotationsSupplier annotationsSupplier) {
             InitialTypeBuilder.RecursiveBuilder recursiveBuilder = new InitialTypeRecursiveBuilder();
             for (InitialTypeBuilder initialTypeBuilder : initialTypeBuilders) {
-                InitialType initialType = initialTypeBuilder.build(javaType, annotationsSupplier, recursiveBuilder);
+                InitialType initialType = initialTypeBuilder.build(caller, javaType, annotationsSupplier, recursiveBuilder);
                 if (initialType != null) {
                     return initialType;
                 }
@@ -162,7 +162,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
 
         private Schema buildInitialSchema(InitialType initialType) {
             for (InitialSchemaBuilder initialSchemaBuilder : initialSchemaBuilders) {
-                Schema initialSchema = initialSchemaBuilder.buildFromType(initialType);
+                Schema initialSchema = initialSchemaBuilder.buildFromType(caller, initialType);
                 if (initialSchema != null) {
                     return initialSchema;
                 }
@@ -175,7 +175,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     initialType.getType(),
                     initialType.getAnnotationsSupplier(),
                     (clazz, setter) -> setIfNotEmpty(
-                            DefaultSchemaResolver.this.resolveFromClassWithoutReference(mode, clazz, referencedSchemaConsumer),
+                            DefaultSchemaResolver.this.resolveFromClassWithoutReference(caller, clazz, referencedSchemaConsumer),
                             innerSchema -> referencedSchemaConsumer.alwaysAsReference(innerSchema, setter)
                     )
             ));

@@ -23,6 +23,7 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.extensio
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaNameBuilder;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class DefaultJacksonPolymorphismTypeSchemaNameBuilder implements JacksonP
     private final SchemaNameBuilder schemaNameBuilder;
 
     @Override
-    public String build(JavaType javaTypeOwningJsonTypeInfo, JsonTypeInfo jsonTypeInfo) {
-        return schemaNameBuilder.buildFromType(javaTypeOwningJsonTypeInfo) + SCHEMA_NAME_SUFFIX;
+    public String build(SchemaResolver.Caller caller, JavaType javaTypeOwningJsonTypeInfo, JsonTypeInfo jsonTypeInfo) {
+        return schemaNameBuilder.buildFromType(caller, javaTypeOwningJsonTypeInfo) + SCHEMA_NAME_SUFFIX;
     }
 }

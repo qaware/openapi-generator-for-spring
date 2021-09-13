@@ -36,6 +36,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
+import static de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver.Caller.REQUEST_BODY;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
 
@@ -70,7 +71,7 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
                 MediaType mediaType = addMediaTypeIfNotPresent(contentType, requestBody);
                 if (mediaType.getSchema() == null) {
                     handlerMethodRequestBodyParameter.getType().ifPresent(parameterType -> schemaResolver.resolveFromType(
-                            SchemaResolver.Mode.FOR_DESERIALIZATION,
+                            REQUEST_BODY,
                             parameterType.getType(),
                             handlerMethodRequestBodyParameter.getAnnotationsSupplier().andThen(parameterType.getAnnotationsSupplier()),
                             operationBuilderContext.getReferencedItemConsumer(ReferencedSchemaConsumer.class),

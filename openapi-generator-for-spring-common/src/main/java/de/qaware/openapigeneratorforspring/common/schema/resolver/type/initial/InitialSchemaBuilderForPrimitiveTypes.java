@@ -20,6 +20,7 @@
 
 package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.model.media.Schema;
 import org.springframework.core.io.InputStreamResource;
 
@@ -92,7 +93,7 @@ public class InitialSchemaBuilderForPrimitiveTypes implements InitialSchemaBuild
 
     @Nullable
     @Override
-    public Schema buildFromType(InitialType initialType) {
+    public Schema buildFromType(SchemaResolver.Caller caller, InitialType initialType) {
         return Optional.ofNullable(PRIMITIVE_TYPE_CLASS_TO_SCHEMA.get(initialType.getType().getRawClass()))
                 .map(Supplier::get)
                 .orElse(null);

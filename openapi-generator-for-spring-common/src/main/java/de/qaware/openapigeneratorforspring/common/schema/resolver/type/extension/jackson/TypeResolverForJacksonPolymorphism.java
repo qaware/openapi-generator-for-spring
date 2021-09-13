@@ -80,7 +80,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
 
     @Nullable
     @Override
-    public Schema buildFromType(InitialType initialType) {
+    public Schema buildFromType(SchemaResolver.Caller caller, InitialType initialType) {
         return initialType.getAnnotationsSupplier().findAnnotations(JsonTypeInfo.class)
                 .reduce((a, b) -> {
                     LOGGER.warn("Found more than one @JsonTypeInfo on {}, will prefer {} over {}", initialType.getType(), a, b);
@@ -94,7 +94,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
                     return true;
                 })
                 .map(jsonTypeInfo -> {
-                    String schemaName = schemaNameBuilder.buildFromType(initialType.getType());
+                    String schemaName = schemaNameBuilder.buildFromType(caller, initialType.getType());
                     return new JacksonPolymorphismSchema(schemaName, jsonTypeInfo);
                 })
                 .orElse(null);
@@ -103,7 +103,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
     @Override
     @Nullable
     public RecursionKey resolve(
-            SchemaResolver.Mode mode,
+            SchemaResolver.Caller caller,
             Schema schema,
             InitialType initialType, SchemaBuilderFromType schemaBuilderFromType
     ) {
@@ -121,7 +121,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
                 this::findTypeName;
 
         ObjectMapper objectMapper = objectMapperSupplier.get(SCHEMA_BUILDING);
-        String propertySchemaName = getPropertySchemaName(objectMapper, classOwningJsonTypeInfo, jsonTypeInfo);
+        String propertySchemaName = getPropertySchemaName(caller, objectMapper, classOwningJsonTypeInfo, jsonTypeInfo);
 
         setMapIfNotEmpty(buildStringMapFromStream(
                 initialType.getAnnotationsSupplier().findAnnotations(JsonSubTypes.class)
@@ -159,7 +159,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
     }
 
     @Override
-    public Map<String, SchemaProperty> findProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaResolver.Mode mode) {
+    public Map<String, SchemaProperty> findProperties(SchemaResolver.Caller caller, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
         return annotationsSupplier.findAnnotations(PropertyNameAnnotation.class)
                 .findFirst()
                 .map(propertyNameAnnotation -> Collections.<String, SchemaProperty>singletonMap(
@@ -236,9 +236,9 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
         };
     }
 
-    private String getPropertySchemaName(ObjectMapper objectMapper, Class<?> classOwningJsonTypeInfo, JsonTypeInfo jsonTypeInfo) {
+    private String getPropertySchemaName(SchemaResolver.Caller caller, ObjectMapper objectMapper, Class<?> classOwningJsonTypeInfo, JsonTypeInfo jsonTypeInfo) {
         JavaType javaTypeOwningJsonTypeInfo = objectMapper.constructType(classOwningJsonTypeInfo);
-        return typeSchemaNameBuilder.build(javaTypeOwningJsonTypeInfo, jsonTypeInfo);
+        return typeSchemaNameBuilder.build(caller, javaTypeOwningJsonTypeInfo, jsonTypeInfo);
     }
 
     private String findTypeName(JsonSubTypes.Type type) {

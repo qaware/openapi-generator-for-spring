@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
-import static de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver.Mode.FOR_SERIALIZATION;
+import static de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver.Caller.API_RESPONSE;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 
 @RequiredArgsConstructor
@@ -88,7 +88,7 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
                                     return Stream.empty();
                                 }
                             });
-                    schemaResolver.resolveFromType(FOR_SERIALIZATION, responseType.getType(), annotationsSupplier,
+                    schemaResolver.resolveFromType(API_RESPONSE, responseType.getType(), annotationsSupplier,
                             referencedSchemaConsumer,
                             mediaType::setSchema
                     );

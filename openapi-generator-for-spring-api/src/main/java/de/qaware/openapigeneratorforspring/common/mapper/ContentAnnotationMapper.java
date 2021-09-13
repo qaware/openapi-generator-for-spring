@@ -27,7 +27,7 @@ import de.qaware.openapigeneratorforspring.model.trait.HasContent;
 public interface ContentAnnotationMapper {
     Content mapArray(
             io.swagger.v3.oas.annotations.media.Content[] contentAnnotations,
-            Class<? extends HasContent> owningType, SchemaResolver.Mode mode,
+            Class<? extends HasContent> owningType, SchemaResolver.Caller caller,
             MapperContext mapperContext
     );
 }

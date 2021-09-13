@@ -33,10 +33,10 @@ public class DefaultSchemaAnnotationMapper implements SchemaAnnotationMapper {
     private final SchemaResolver schemaResolver;
 
     @Override
-    public Schema buildFromAnnotation(SchemaResolver.Mode mode, io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
-        Schema schema = schemaResolver.resolveFromClassWithoutReference(mode, schemaAnnotation.implementation(), referencedSchemaConsumer);
+    public Schema buildFromAnnotation(SchemaResolver.Caller caller, io.swagger.v3.oas.annotations.media.Schema schemaAnnotation, ReferencedSchemaConsumer referencedSchemaConsumer) {
+        Schema schema = schemaResolver.resolveFromClassWithoutReference(caller, schemaAnnotation.implementation(), referencedSchemaConsumer);
         schemaCustomizerForSchemaAnnotation.applyFromAnnotation(schema, schemaAnnotation, (clazz, schemaConsumer) ->
-                referencedSchemaConsumer.alwaysAsReference(schemaResolver.resolveFromClassWithoutReference(mode, clazz, referencedSchemaConsumer), schemaConsumer)
+                referencedSchemaConsumer.alwaysAsReference(schemaResolver.resolveFromClassWithoutReference(caller, clazz, referencedSchemaConsumer), schemaConsumer)
         );
         return schema;
     }

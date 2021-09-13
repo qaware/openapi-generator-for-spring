@@ -9,7 +9,7 @@ import org.springframework.core.convert.converter.Converter;
 class App33Configuration {
     @Bean
     public InitialTypeBuilder openApiSchemaTypeSubstitutionForYourType() {
-        return (javaType, annotationsSupplier, recursiveBuilder) -> {
+        return (caller, javaType, annotationsSupplier, recursiveBuilder) -> {
             if (javaType.getRawClass().equals(App33Controller.ResourceId.class)) {
                 return recursiveBuilder.build(Long.class, annotationsSupplier);
             }

@@ -22,6 +22,7 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.extensio
 
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilder;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class SpringWebResponseEntityInitialTypeBuilder implements InitialTypeBui
 
     @Nullable
     @Override
-    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
+    public InitialType build(SchemaResolver.Caller caller, JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
         if (javaType.getRawClass().equals(ResponseEntity.class)) {
             return recursiveBuilder.build(javaType.containedType(0), annotationsSupplier);
         }

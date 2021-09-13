@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
@@ -20,16 +22,19 @@ import java.util.Locale;
 class App50Controller {
 
     @GetMapping("/users/{id}")
-    public List<String> getUsers(
+    public List<UserId> getUsers(
             @PathVariable("id") UserId userId,
             @RequestHeader(name = "X-Custom-Header") HeaderDto header
     ) {
-        return Collections.emptyList();
+        return Collections.singletonList(userId);
     }
 
-    @GetMapping("/users/localized")
-    public List<String> getWithAcceptHeader(@Parameter(in = ParameterIn.HEADER, name = "Accept-Language") Locale locale) {
-        return Collections.emptyList();
+    @GetMapping("/users")
+    public ResponseEntity<List<UserId>> getWithAcceptHeader(
+            @Parameter(in = ParameterIn.HEADER, name = "Accept-Language") Locale locale,
+            @RequestParam(value = "user", defaultValue = "") List<UserId> userIds
+    ) {
+        return ResponseEntity.ok(userIds);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

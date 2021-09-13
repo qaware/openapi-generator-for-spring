@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils;
 
 /**
@@ -35,11 +36,12 @@ public interface SchemaPropertyFilter extends OpenApiOrderedUtils.DefaultOrdered
     /**
      * Filter given property with Jackson bean description.
      *
+     * @param caller                     caller of the schema resolver
      * @param property                   property definition
      * @param beanDescriptionForType     bean description from Jackson for type owning given property
      * @param annotationsSupplierForType annotations supplier for type owning given property
      * @param mapperConfig               object mapper config from Jackson
      * @return true if property shall be used, false otherwise
      */
-    boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType, AnnotationsSupplier annotationsSupplierForType, MapperConfig<?> mapperConfig);
+    boolean accept(SchemaResolver.Caller caller, BeanPropertyDefinition property, BeanDescription beanDescriptionForType, AnnotationsSupplier annotationsSupplierForType, MapperConfig<?> mapperConfig);
 }

@@ -23,6 +23,7 @@ package de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial;
 import com.fasterxml.jackson.databind.JavaType;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
@@ -36,7 +37,7 @@ public class InitialTypeBuilderForReferenceType implements InitialTypeBuilder {
 
     @Nullable
     @Override
-    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
+    public InitialType build(SchemaResolver.Caller caller, JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
         if (javaType.isReferenceType()) {
             JavaType contentType = javaType.getContentType();
             return recursiveBuilder.build(contentType,

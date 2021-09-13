@@ -62,14 +62,14 @@ public class TypeResolverForObject implements InitialSchemaBuilder, TypeResolver
 
     @Nullable
     @Override
-    public Schema buildFromType(InitialType initialType) {
-        return new ObjectSchema(schemaNameBuilder.buildFromType(initialType.getType()));
+    public Schema buildFromType(SchemaResolver.Caller caller, InitialType initialType) {
+        return new ObjectSchema(schemaNameBuilder.buildFromType(caller, initialType.getType()));
     }
 
     @Override
     @Nullable
     public RecursionKey resolve(
-            SchemaResolver.Mode mode,
+            SchemaResolver.Caller caller,
             Schema schema,
             InitialType initialType,
             SchemaBuilderFromType schemaBuilderFromType
@@ -77,7 +77,7 @@ public class TypeResolverForObject implements InitialSchemaBuilder, TypeResolver
         if (schema instanceof ObjectSchema) {
             Map<String, SchemaProperty> properties = OpenApiMapUtils.buildStringMapFromStream(
                     schemaPropertiesResolvers.stream()
-                            .flatMap(resolver -> resolver.findProperties(initialType.getType(), initialType.getAnnotationsSupplier(), mode).entrySet().stream()),
+                            .flatMap(resolver -> resolver.findProperties(caller, initialType.getType(), initialType.getAnnotationsSupplier()).entrySet().stream()),
                     Map.Entry::getKey,
                     Map.Entry::getValue
             );

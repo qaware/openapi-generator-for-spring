@@ -36,10 +36,10 @@ public interface SchemaPropertiesResolver extends OpenApiOrderedUtils.DefaultOrd
     /**
      * Find properties for given java type.
      *
+     * @param caller              caller of the schema resolver
      * @param javaType            Jackson java type
      * @param annotationsSupplier annotations supplier for given java type
-     * @param mode                schema resolver mode
      * @return map of properties (key is property name)
      */
-    Map<String, SchemaProperty> findProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaResolver.Mode mode);
+    Map<String, SchemaProperty> findProperties(SchemaResolver.Caller caller, JavaType javaType, AnnotationsSupplier annotationsSupplier);
 }

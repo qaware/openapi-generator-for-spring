@@ -41,13 +41,13 @@ public class TypeResolverForCollectionLikeType implements InitialTypeBuilder, In
 
     @Nullable
     @Override
-    public InitialType build(JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
+    public InitialType build(SchemaResolver.Caller caller, JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
         return support.build(this, JavaType::isCollectionLikeType, javaType, annotationsSupplier);
     }
 
     @Nullable
     @Override
-    public Schema buildFromType(InitialType initialType) {
+    public Schema buildFromType(SchemaResolver.Caller caller, InitialType initialType) {
         Schema schema = support.buildFromType(this, initialType);
         setUniqueItemsIfAssignableToSet(schema, initialType.getType());
         return schema;
@@ -55,7 +55,7 @@ public class TypeResolverForCollectionLikeType implements InitialTypeBuilder, In
 
     @Nullable
     @Override
-    public RecursionKey resolve(SchemaResolver.Mode mode, Schema schema, InitialType initialType, SchemaBuilderFromType schemaBuilderFromType) {
+    public RecursionKey resolve(SchemaResolver.Caller caller, Schema schema, InitialType initialType, SchemaBuilderFromType schemaBuilderFromType) {
         return support.resolve(this, schema, initialType, () -> initialType.getType().getContentType(), schemaBuilderFromType);
     }
 

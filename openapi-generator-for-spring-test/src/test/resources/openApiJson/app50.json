@@ -5,7 +5,7 @@
     "version": "unknown"
   },
   "paths": {
-    "/users/localized": {
+    "/users": {
       "get": {
         "operationId": "getWithAcceptHeader",
         "parameters": [
@@ -14,6 +14,17 @@
             "in": "header",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "user",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           }
         ],
@@ -60,17 +71,25 @@
         "content": {
           "*/*": {
             "schema": {
-              "$ref": "#/components/schemas/array_string"
+              "$ref": "#/components/schemas/array_App50Controller.UserId"
             }
           }
         }
       }
     },
     "schemas": {
-      "array_string": {
+      "App50Controller.UserId": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "array_App50Controller.UserId": {
         "type": "array",
         "items": {
-          "type": "string"
+          "$ref": "#/components/schemas/App50Controller.UserId"
         }
       }
     }

@@ -54,7 +54,7 @@ class App32Configuration {
 
                                 Content content = new Content();
                                 MediaType mediaType = new MediaType();
-                                schemaResolver.resolveFromType(SchemaResolver.Mode.FOR_SERIALIZATION,
+                                schemaResolver.resolveFromType(SchemaResolver.Caller.of(SchemaResolver.Mode.FOR_SERIALIZATION),
                                         method.getGenericReturnType(), annotationsSupplier,
                                         operationBuilderContext.getReferencedItemConsumer(ReferencedSchemaConsumer.class),
                                         mediaType::setSchema

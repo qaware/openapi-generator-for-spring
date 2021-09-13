@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.apache.commons.lang3.StringUtils;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils.earlierThan;
@@ -33,7 +34,7 @@ public class SchemaPropertyFilterForNamelessMembers implements SchemaPropertyFil
     public static final int ORDER = earlierThan(DEFAULT_ORDER);
 
     @Override
-    public boolean accept(BeanPropertyDefinition property, BeanDescription beanDescriptionForType, AnnotationsSupplier annotationsSupplierForType, MapperConfig<?> mapperConfig) {
+    public boolean accept(SchemaResolver.Caller caller, BeanPropertyDefinition property, BeanDescription beanDescriptionForType, AnnotationsSupplier annotationsSupplierForType, MapperConfig<?> mapperConfig) {
         // properties must have a name, otherwise: ignore them
         return StringUtils.isNotBlank(property.getName());
     }

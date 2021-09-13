@@ -46,8 +46,17 @@ import java.util.function.Consumer;
 @FunctionalInterface
 public interface TypeResolver extends OpenApiOrderedUtils.DefaultOrdered {
 
+    /**
+     * Resolve the given initial type and modify the given schema accordingly.
+     *
+     * @param caller                caller of the schema resolver
+     * @param schema                schema to be modified
+     * @param initialType           initial type
+     * @param schemaBuilderFromType recursive schema builder
+     * @return recursion key, or null if no recursion is necessary
+     */
     @Nullable
-    RecursionKey resolve(SchemaResolver.Mode mode, Schema schema, InitialType initialType, SchemaBuilderFromType schemaBuilderFromType);
+    RecursionKey resolve(SchemaResolver.Caller caller, Schema schema, InitialType initialType, SchemaBuilderFromType schemaBuilderFromType);
 
     /**
      * Helper interface for {@link #resolve}. Represents a

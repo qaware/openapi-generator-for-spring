@@ -57,14 +57,14 @@ public class DefaultSchemaPropertiesResolver implements SchemaPropertiesResolver
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
     @Override
-    public Map<String, SchemaProperty> findProperties(JavaType javaType, AnnotationsSupplier annotationsSupplier, SchemaResolver.Mode mode) {
+    public Map<String, SchemaProperty> findProperties(SchemaResolver.Caller caller, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
         ObjectMapper objectMapper = objectMapperSupplier.get(SCHEMA_BUILDING);
-        BeanDescription beanDescriptionForType = introspectJavaType(objectMapper, mode, javaType);
-        MapperConfig<?> mapperConfig = getMapperConfig(objectMapper, mode);
+        BeanDescription beanDescriptionForType = introspectJavaType(objectMapper, caller.getMode(), javaType);
+        MapperConfig<?> mapperConfig = getMapperConfig(objectMapper, caller.getMode());
         return OpenApiMapUtils.buildStringMapFromStream(
                 beanDescriptionForType.findProperties().stream()
-                        .filter(property -> isAcceptedByAllPropertyFilters(property, beanDescriptionForType, annotationsSupplier, mapperConfig))
-                        .map(property -> buildSchemaPropertyPair(property, mode))
+                        .filter(property -> isAcceptedByAllPropertyFilters(caller, property, beanDescriptionForType, annotationsSupplier, mapperConfig))
+                        .map(property -> buildSchemaPropertyPair(property, caller.getMode()))
                         .filter(Objects::nonNull),
                 Pair::getKey,
                 Pair::getValue
@@ -106,7 +106,7 @@ public class DefaultSchemaPropertiesResolver implements SchemaPropertiesResolver
             AnnotatedMethod setter = property.getSetter();
             AnnotatedMember setterParameter = setter != null && setter.getParameterCount() == 1 ? setter.getParameter(0) : null;
             stream = Stream.of(
-                    // the earlier the annotated member is in this stream, the higher is it's precedence when finding annotations
+                    // the earlier the annotated member is in this stream, the higher is its precedence when finding annotations
                     Optional.ofNullable(property.getConstructorParameter()),
                     Optional.ofNullable(setter),
                     Optional.ofNullable(setterParameter),
@@ -114,7 +114,7 @@ public class DefaultSchemaPropertiesResolver implements SchemaPropertiesResolver
             );
         } else if (mode == SchemaResolver.Mode.FOR_SERIALIZATION) {
             stream = Stream.of(
-                    // the earlier the annotated member is in this stream, the higher is it's precedence when finding annotations
+                    // the earlier the annotated member is in this stream, the higher is its precedence when finding annotations
                     Optional.ofNullable(property.getGetter()),
                     Optional.ofNullable(property.getField())
             );
@@ -146,9 +146,9 @@ public class DefaultSchemaPropertiesResolver implements SchemaPropertiesResolver
         }
     }
 
-    private boolean isAcceptedByAllPropertyFilters(BeanPropertyDefinition property, BeanDescription beanDescriptionForType,
+    private boolean isAcceptedByAllPropertyFilters(SchemaResolver.Caller caller, BeanPropertyDefinition property, BeanDescription beanDescriptionForType,
                                                    AnnotationsSupplier annotationsSupplierForType, MapperConfig<?> mapperConfig) {
-        return propertyFilters.stream().allMatch(filter -> filter.accept(property, beanDescriptionForType, annotationsSupplierForType, mapperConfig));
+        return propertyFilters.stream().allMatch(filter -> filter.accept(caller, property, beanDescriptionForType, annotationsSupplierForType, mapperConfig));
     }
 
     @Override

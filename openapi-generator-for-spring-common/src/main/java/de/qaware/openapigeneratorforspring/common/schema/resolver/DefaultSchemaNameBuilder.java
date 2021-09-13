@@ -25,7 +25,7 @@ import org.springframework.util.ClassUtils;
 
 public class DefaultSchemaNameBuilder implements SchemaNameBuilder {
     @Override
-    public String buildFromType(JavaType javaType) {
+    public String buildFromType(SchemaResolver.Caller caller, JavaType javaType) {
         // works better for nested classes
         return ClassUtils.getShortName(javaType.getRawClass());
     }

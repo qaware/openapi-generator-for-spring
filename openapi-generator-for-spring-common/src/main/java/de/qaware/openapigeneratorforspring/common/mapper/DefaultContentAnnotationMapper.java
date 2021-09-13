@@ -50,10 +50,10 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
     private final ExampleObjectAnnotationMapper exampleObjectAnnotationMapper;
 
     @Override
-    public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations, Class<? extends HasContent> owningType, SchemaResolver.Mode mode, MapperContext mapperContext) {
+    public Content mapArray(io.swagger.v3.oas.annotations.media.Content[] contentAnnotations, Class<? extends HasContent> owningType, SchemaResolver.Caller caller, MapperContext mapperContext) {
         return Arrays.stream(contentAnnotations)
                 .flatMap(contentAnnotation -> {
-                    MediaType mediaTypeValue = map(mode, contentAnnotation, mapperContext);
+                    MediaType mediaTypeValue = map(caller, contentAnnotation, mapperContext);
                     if (StringUtils.isBlank(contentAnnotation.mediaType())) {
                         // if the mapperContext doesn't have any suggested media types,
                         // the mediaTypeValue is discarded!
@@ -72,12 +72,12 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
                 }, Content::new));
     }
 
-    private MediaType map(SchemaResolver.Mode mode, io.swagger.v3.oas.annotations.media.Content contentAnnotation, MapperContext mapperContext) {
+    private MediaType map(SchemaResolver.Caller caller, io.swagger.v3.oas.annotations.media.Content contentAnnotation, MapperContext mapperContext) {
         MediaType mediaType = new MediaType();
         setExampleOrExamples(mediaType, contentAnnotation.examples(), mapperContext);
         setMapIfNotEmpty(encodingAnnotationMapper.mapArray(contentAnnotation.encoding(), mapperContext), mediaType::setEncoding);
         ReferencedSchemaConsumer referencedSchemaConsumer = mapperContext.getReferencedItemConsumer(ReferencedSchemaConsumer.class);
-        setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(mode, contentAnnotation.schema(), referencedSchemaConsumer),
+        setIfNotEmpty(schemaAnnotationMapper.buildFromAnnotation(caller, contentAnnotation.schema(), referencedSchemaConsumer),
                 schema -> referencedSchemaConsumer.maybeAsReference(schema, mediaType::setSchema)
         );
         setMapIfNotEmpty(extensionAnnotationMapper.mapArray(contentAnnotation.extensions()), mediaType::setExtensions);
