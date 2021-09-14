@@ -26,7 +26,8 @@ import de.qaware.openapigeneratorforspring.common.filter.operation.OperationPreF
 import de.qaware.openapigeneratorforspring.common.filter.pathitem.PathItemFilter;
 import de.qaware.openapigeneratorforspring.common.operation.OperationBuilder;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
-import de.qaware.openapigeneratorforspring.common.paths.DefaultPathItemSharedItemsCustomizer;
+import de.qaware.openapigeneratorforspring.common.paths.DefaultPathItemSharedParametersCustomizer;
+import de.qaware.openapigeneratorforspring.common.paths.DefaultPathItemSharedServersCustomizer;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.PathItemBuilderFactory;
@@ -64,7 +65,13 @@ public class OpenApiGeneratorPathsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DefaultPathItemSharedItemsCustomizer defaultPathItemSharedItemsCustomizer() {
-        return new DefaultPathItemSharedItemsCustomizer();
+    public DefaultPathItemSharedParametersCustomizer defaultPathItemSharedParametersCustomizer() {
+        return new DefaultPathItemSharedParametersCustomizer();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultPathItemSharedServersCustomizer defaultPathItemSharedServersCustomizer() {
+        return new DefaultPathItemSharedServersCustomizer();
     }
 }

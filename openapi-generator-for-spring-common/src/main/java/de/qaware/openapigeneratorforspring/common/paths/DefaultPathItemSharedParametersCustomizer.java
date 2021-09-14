@@ -31,14 +31,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Shared items are {@link PathItem#getParameters} and {@link PathItem#getServers}.
- * They are collected from operations as part of the given path item.
+ * Shared parameters are collected from operations as part of the given path item.
  */
-public class DefaultPathItemSharedItemsCustomizer implements PathItemCustomizer {
+public class DefaultPathItemSharedParametersCustomizer implements PathItemCustomizer {
     public static final int ORDER = DEFAULT_ORDER;
 
     @Override
@@ -47,26 +45,6 @@ public class DefaultPathItemSharedItemsCustomizer implements PathItemCustomizer 
         if (pathItem.getOperations().size() < 2) {
             return;
         }
-        customizeSharedServers(pathItem);
-        customizeSharedParameters(pathItem, referencedItemConsumerSupplier);
-    }
-
-    private static void customizeSharedServers(PathItem pathItem) {
-        // we only share servers among operations if the given sharedServers is in all operations
-        // the spec says that descendant server object overrides any parent server objects
-        val operations = pathItem.getOperations().values();
-        val sharedServersInAllOperations = operations.stream()
-                .map(Operation::getServers)
-                .filter(Objects::nonNull)
-                .reduce((a, b) -> a.equals(b) ? a : Collections.emptyList())
-                .orElseGet(Collections::emptyList);
-        if (!sharedServersInAllOperations.isEmpty()) {
-            operations.forEach(operation -> operation.setServers(null));
-            pathItem.setServers(sharedServersInAllOperations);
-        }
-    }
-
-    private static void customizeSharedParameters(PathItem pathItem, ReferencedItemConsumerSupplier referencedItemConsumerSupplier) {
         val operations = pathItem.getOperations().values();
         val sharedParameters = findSharedParametersAmongOperations(operations);
         if (!sharedParameters.isEmpty()) {

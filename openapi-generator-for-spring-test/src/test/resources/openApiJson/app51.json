@@ -22,7 +22,13 @@
           "200": {
             "$ref": "#/components/responses/200"
           }
-        }
+        },
+        "servers": [
+          {
+            "url": "url1",
+            "description": "Description 1"
+          }
+        ]
       },
       "put": {
         "operationId": "mapping2",
@@ -41,7 +47,13 @@
           "200": {
             "$ref": "#/components/responses/200"
           }
-        }
+        },
+        "servers": [
+          {
+            "url": "url1",
+            "description": "Description 2"
+          }
+        ]
       },
       "delete": {
         "operationId": "mapping3",
@@ -63,10 +75,22 @@
           "200": {
             "$ref": "#/components/responses/200"
           }
-        }
+        },
+        "servers": [
+          {
+            "url": "url1",
+            "description": "Description 1"
+          }
+        ]
       }
     },
     "/other": {
+      "servers": [
+        {
+          "url": "url1",
+          "description": "Description 1"
+        }
+      ],
       "get": {
         "operationId": "otherMapping1",
         "parameters": [
