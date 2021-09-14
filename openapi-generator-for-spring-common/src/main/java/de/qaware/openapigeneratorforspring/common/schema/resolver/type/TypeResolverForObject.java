@@ -52,7 +52,7 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtil
 @Slf4j
 public class TypeResolverForObject implements InitialSchemaBuilder, TypeResolver {
 
-    // this resolver does not have any condition, so run this always later then the other resolvers as a fallback
+    // this resolver does not have any condition, so run this always later than the other resolvers as a fallback
     public static final int ORDER = laterThan(DEFAULT_ORDER);
 
     private final SchemaNameBuilder schemaNameBuilder;

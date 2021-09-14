@@ -30,7 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils.earlierThan;
 
 public class SchemaPropertyFilterForNamelessMembers implements SchemaPropertyFilter {
-    // Run a little bit earlier to get rid of weird properties early
+    // Run a little earlier to get rid of weird properties early
     public static final int ORDER = earlierThan(DEFAULT_ORDER);
 
     @Override

@@ -1,0 +1,88 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App52",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping1": {
+      "get": {
+        "operationId": "mapping1",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/App52Controller.DtoWithMap"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mapping2": {
+      "get": {
+        "operationId": "mapping2",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MapOfString": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "App52Controller.InnerDto": {
+        "type": "object",
+        "properties": {
+          "property1": {
+            "type": "string"
+          },
+          "property2": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "MapOfApp52Controller.InnerDto": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/App52Controller.InnerDto"
+        }
+      },
+      "App52Controller.DtoWithMap": {
+        "type": "object",
+        "properties": {
+          "innerStringStringMap": {
+            "$ref": "#/components/schemas/MapOfString"
+          },
+          "innerDtoMap": {
+            "$ref": "#/components/schemas/MapOfApp52Controller.InnerDto"
+          }
+        }
+      },
+      "MapOfObject": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

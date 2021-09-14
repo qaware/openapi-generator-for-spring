@@ -42,6 +42,7 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.properties.Sch
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolver;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeTypeSupport;
+import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForMapLikeType;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForObject;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialSchemaBuilderForEnum;
@@ -94,6 +95,12 @@ public class OpenApiGeneratorSchemaAutoConfiguration {
             TypeResolverForCollectionLikeTypeSupport typeResolverForCollectionLikeTypeSupport
     ) {
         return new TypeResolverForCollectionLikeType(typeResolverForCollectionLikeTypeSupport);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TypeResolverForMapLikeType defaultTypeResolverForMapLikeType(SchemaNameBuilder schemaNameBuilder) {
+        return new TypeResolverForMapLikeType(schemaNameBuilder);
     }
 
     @Bean
