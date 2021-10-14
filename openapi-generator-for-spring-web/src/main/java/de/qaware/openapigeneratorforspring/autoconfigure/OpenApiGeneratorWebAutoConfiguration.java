@@ -39,6 +39,7 @@ import de.qaware.openapigeneratorforspring.common.web.OpenApiResource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.DefaultParameterNameDiscoverer;
 
 import java.util.Optional;
 
@@ -71,7 +72,7 @@ public class OpenApiGeneratorWebAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public OpenApiSpringWebParameterNameDiscoverer defaultOpenApiSpringWebParameterNameDiscoverer() {
-        return new DefaultOpenApiSpringWebParameterNameDiscoverer();
+        return new DefaultOpenApiSpringWebParameterNameDiscoverer(new DefaultParameterNameDiscoverer());
     }
 
     @Bean

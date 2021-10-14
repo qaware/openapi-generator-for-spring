@@ -20,16 +20,21 @@
 
 package de.qaware.openapigeneratorforspring.common.operation.parameter;
 
+import de.qaware.openapigeneratorforspring.autoconfigure.OpenApiGeneratorWebAutoConfiguration;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Default implementation based on Spring's {@link DefaultParameterNameDiscoverer}.
+ * Default implementation based on Spring's {@link
+ * DefaultParameterNameDiscoverer} via {@link #delegate} and {@link
+ * OpenApiGeneratorWebAutoConfiguration#defaultOpenApiSpringWebParameterNameDiscoverer()}.
  * <p>
  * This library does not mess around with the discovered Spring Parameters
  * by calling {@link MethodParameter#initParameterNameDiscovery} in {@link
@@ -39,12 +44,14 @@ import java.util.List;
  * @see org.springframework.core.MethodParameter#getParameterName
  * @see org.springframework.web.method.support.InvocableHandlerMethod#getMethodArgumentValues
  */
+@RequiredArgsConstructor
 public class DefaultOpenApiSpringWebParameterNameDiscoverer implements OpenApiSpringWebParameterNameDiscoverer {
-    private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
+    private final ParameterNameDiscoverer delegate;
 
     @Override
+    @Nullable
     public List<String> getParameterNames(Method method) {
-        String[] parameterNames = PARAMETER_NAME_DISCOVERER.getParameterNames(method);
+        String[] parameterNames = delegate.getParameterNames(method);
         if (parameterNames == null) {
             return null;
         }

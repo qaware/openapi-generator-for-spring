@@ -71,8 +71,8 @@ public class DefaultSpringWebHandlerMethodBuilder implements SpringWebHandlerMet
             if (parameterNames.size() == numberOfMethodParameters) {
                 return parameterNames::get;
             }
-            LOGGER.warn("Handler method {} has {} parameters but mismatching {} parameter names discovered, will ignore parameter names",
-                    springWebHandlerMethod, numberOfMethodParameters, parameterNames.size()
+            LOGGER.warn("Handler method {} has {} parameters but mismatching {} parameter names {} discovered, will ignore parameter names",
+                    springWebHandlerMethod, numberOfMethodParameters, parameterNames.size(), parameterNames
             );
         }
         return parameterIndex -> null;
