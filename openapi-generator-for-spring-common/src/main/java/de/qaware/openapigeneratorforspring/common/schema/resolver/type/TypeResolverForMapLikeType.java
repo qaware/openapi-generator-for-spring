@@ -44,7 +44,6 @@ public class TypeResolverForMapLikeType implements InitialTypeBuilder, InitialSc
     @Override
     public InitialType build(SchemaResolver.Caller caller, JavaType javaType, AnnotationsSupplier annotationsSupplier, RecursiveBuilder recursiveBuilder) {
         if (javaType.isMapLikeType()) {
-            // TODO check that javaType.getKeyType() is String schema?
             return new MapLikeInitialType(javaType, annotationsSupplier);
         }
         return null;
