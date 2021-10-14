@@ -23,6 +23,8 @@ package de.qaware.openapigeneratorforspring.autoconfigure;
 import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.DefaultOpenApiSpringWebParameterNameDiscoverer;
+import de.qaware.openapigeneratorforspring.common.operation.parameter.OpenApiSpringWebParameterNameDiscoverer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromMatrixVariableAnnotation;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromPathVariableAnnotation;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromRequestHeaderAnnotation;
@@ -59,8 +61,17 @@ public class OpenApiGeneratorWebAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SpringWebHandlerMethodBuilder springWebHandlerMethodBuilder(AnnotationsSupplierFactory annotationsSupplierFactory) {
-        return new DefaultSpringWebHandlerMethodBuilder(annotationsSupplierFactory);
+    public SpringWebHandlerMethodBuilder springWebHandlerMethodBuilder(
+            AnnotationsSupplierFactory annotationsSupplierFactory,
+            OpenApiSpringWebParameterNameDiscoverer openApiSpringWebParameterNameDiscoverer
+    ) {
+        return new DefaultSpringWebHandlerMethodBuilder(annotationsSupplierFactory, openApiSpringWebParameterNameDiscoverer);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OpenApiSpringWebParameterNameDiscoverer defaultOpenApiSpringWebParameterNameDiscoverer() {
+        return new DefaultOpenApiSpringWebParameterNameDiscoverer();
     }
 
     @Bean

@@ -1,0 +1,76 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App53",
+    "version": "unknown"
+  },
+  "paths": {
+    "/base/mapping1": {
+      "post": {
+        "operationId": "mapping1",
+        "parameters": [
+          {
+            "name": "param1",
+            "in": "query",
+            "description": "Param1",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Response 1"
+          },
+          "499": {
+            "$ref": "#/components/responses/499"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "200": {
+            "description": "Default response"
+          }
+        }
+      }
+    },
+    "/base/mapping2": {
+      "post": {
+        "operationId": "mapping2",
+        "requestBody": {
+          "description": "Body2",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Response 2"
+          },
+          "499": {
+            "$ref": "#/components/responses/499"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "499": {
+        "description": "Another base response"
+      },
+      "401": {
+        "description": "Base Response"
+      }
+    }
+  }
+}
