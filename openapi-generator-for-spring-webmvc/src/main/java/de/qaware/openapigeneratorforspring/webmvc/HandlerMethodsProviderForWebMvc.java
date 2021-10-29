@@ -25,9 +25,15 @@ import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodEnumMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.pattern.PathPattern;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -42,9 +48,22 @@ public class HandlerMethodsProviderForWebMvc implements HandlerMethodsProvider {
         return requestMappingHandlerMapping.getHandlerMethods().entrySet().stream()
                 .map(entry -> new HandlerMethodWithInfo(
                         springWebHandlerMethodBuilder.build(entry.getValue()),
-                        entry.getKey().getPatternsCondition().getPatterns(),
+                        findPatterns(entry.getKey()),
                         springWebRequestMethodEnumMapper.map(entry.getKey().getMethodsCondition().getMethods())
                 ))
                 .collect(Collectors.toList());
+    }
+
+    private Set<String> findPatterns(RequestMappingInfo requestMappingInfo) {
+        PatternsRequestCondition patternsCondition = requestMappingInfo.getPatternsCondition();
+        PathPatternsRequestCondition pathPatternsCondition = requestMappingInfo.getPathPatternsCondition();
+        if (patternsCondition != null) {
+            return patternsCondition.getPatterns();
+        } else if (pathPatternsCondition != null) {
+            return pathPatternsCondition.getPatterns().stream()
+                    .map(PathPattern::getPatternString)
+                    .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
     }
 }
