@@ -193,9 +193,9 @@ type `String`:
 
 ```java
 @Bean
-public InitialTypeBuilder openApiSchemaTypeSubstitutionForYourType() {
-    return (javaType, annotationsSupplier, recursiveBuilder) -> {
-        if(javaType.getRawClass().equals(YourType.class)) {
+public InitialTypeBuilder openApiSchemaTypeSubstitutionForYourType(){
+        return(caller,javaType,annotationsSupplier,recursiveBuilder)->{
+        if(javaType.getRawClass().equals(YourType.class)){
             return recursiveBuilder.build(String.class, annotationsSupplier);
         }
         return null;
