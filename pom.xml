@@ -12,7 +12,7 @@
     <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
     <artifactId>openapi-generator-for-spring-parent</artifactId>
     <name>OpenAPI Generator for Spring Boot</name>
-    <version>5.1.1</version>
+    <version>5.1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
