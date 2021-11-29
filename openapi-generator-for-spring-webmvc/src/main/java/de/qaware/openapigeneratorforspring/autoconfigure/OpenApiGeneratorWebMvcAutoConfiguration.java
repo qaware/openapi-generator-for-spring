@@ -25,6 +25,7 @@ import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodEnumMapper;
 import de.qaware.openapigeneratorforspring.common.web.OpenApiResource;
+import de.qaware.openapigeneratorforspring.webmvc.HandlerMethodPathPatternsProviderForWebMvc;
 import de.qaware.openapigeneratorforspring.webmvc.HandlerMethodsProviderForWebMvc;
 import de.qaware.openapigeneratorforspring.webmvc.OpenApiRequestAwareSupplierForWebMvc;
 import lombok.val;
@@ -57,7 +58,9 @@ public class OpenApiGeneratorWebMvcAutoConfiguration {
         );
     }
 
-    private RequestMappingInfo.BuilderConfiguration buildRequestMappingInfoOptions(RequestMappingHandlerMapping requestMappingHandlerMapping) {
+    // this snippet will be replaced with https://github.com/spring-projects/spring-framework/pull/27723 once available!
+    @SuppressWarnings("java:S1874") // suppress "deprecated code warning"
+    static RequestMappingInfo.BuilderConfiguration buildRequestMappingInfoOptions(RequestMappingHandlerMapping requestMappingHandlerMapping) {
         val config = new RequestMappingInfo.BuilderConfiguration();
         config.setTrailingSlashMatch(requestMappingHandlerMapping.useTrailingSlashMatch());
         config.setContentNegotiationManager(requestMappingHandlerMapping.getContentNegotiationManager());
@@ -77,9 +80,16 @@ public class OpenApiGeneratorWebMvcAutoConfiguration {
     public HandlerMethodsProvider handlerMethodsProviderFromWebMvc(
             RequestMappingHandlerMapping requestMappingHandlerMapping,
             SpringWebHandlerMethodBuilder springWebHandlerMethodBuilder,
-            SpringWebRequestMethodEnumMapper springWebRequestMethodEnumMapper
+            SpringWebRequestMethodEnumMapper springWebRequestMethodEnumMapper,
+            HandlerMethodPathPatternsProviderForWebMvc handlerMethodPathPatternsProviderForWebMvc
     ) {
-        return new HandlerMethodsProviderForWebMvc(requestMappingHandlerMapping, springWebHandlerMethodBuilder, springWebRequestMethodEnumMapper);
+        return new HandlerMethodsProviderForWebMvc(requestMappingHandlerMapping, springWebHandlerMethodBuilder, springWebRequestMethodEnumMapper, handlerMethodPathPatternsProviderForWebMvc);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public HandlerMethodPathPatternsProviderForWebMvc handlerMethodPathPatternsProviderForWebMvc() {
+        return new HandlerMethodPathPatternsProviderForWebMvc();
     }
 
     @Bean
