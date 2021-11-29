@@ -6,7 +6,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/de.qaware.tools.openapi-generator-for-spring/openapi-generator-for-spring-starter)](https://mvnrepository.com/artifact/de.qaware.tools.openapi-generator-for-spring/openapi-generator-for-spring-starter)
 
 This library automagically generates a [OpenApi v3 specification](https://github.com/OAI/OpenAPI-Specification) at
-runtime for Spring Boot applications.
+runtime for [Spring Boot](https://spring.io/projects/spring-boot) applications.
 
 It aims at fully analyzing Spring request mappings augmented by Swagger annotations to provide a self-descriptive API
 specification of your application.
