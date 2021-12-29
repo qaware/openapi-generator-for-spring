@@ -85,7 +85,7 @@
         <jsr305.version>3.0.2</jsr305.version>
         <swagger-annotations.version>2.1.11</swagger-annotations.version>
         <webjars.swaggerui.version>4.1.2</webjars.swaggerui.version>
-        <classgraph.version>4.8.137</classgraph.version>
+        <classgraph.version>4.8.138</classgraph.version>
         <commons.io.version>2.11.0</commons.io.version>
     </properties>
 
