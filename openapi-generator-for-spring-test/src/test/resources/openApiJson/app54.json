@@ -1,0 +1,76 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API for App54",
+    "version": "unknown"
+  },
+  "paths": {
+    "/mapping1": {
+      "get": {
+        "operationId": "mapping1",
+        "responses": {
+          "200": {
+            "description": "Default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/App54Controller.Animal"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "App54Controller.AnimalType": {
+        "type": "string",
+        "enum": [
+          "DOG",
+          "CAT"
+        ]
+      },
+      "App54Controller.Dog": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/App54Controller.AnimalType"
+          },
+          "wuff": {
+            "type": "string"
+          }
+        }
+      },
+      "App54Controller.Cat": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/App54Controller.AnimalType"
+          },
+          "meow": {
+            "type": "string"
+          }
+        }
+      },
+      "App54Controller.Animal": {
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "DOG": "#/components/schemas/App54Controller.Dog",
+            "CAT": "#/components/schemas/App54Controller.Cat"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/App54Controller.Dog"
+          },
+          {
+            "$ref": "#/components/schemas/App54Controller.Cat"
+          }
+        ]
+      }
+    }
+  }
+}
