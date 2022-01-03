@@ -37,9 +37,6 @@
         "properties": {
           "type": {
             "$ref": "#/components/schemas/App54Controller.AnimalType"
-          },
-          "wuff": {
-            "type": "string"
           }
         }
       },
@@ -48,9 +45,6 @@
         "properties": {
           "type": {
             "$ref": "#/components/schemas/App54Controller.AnimalType"
-          },
-          "meow": {
-            "type": "string"
           }
         }
       },

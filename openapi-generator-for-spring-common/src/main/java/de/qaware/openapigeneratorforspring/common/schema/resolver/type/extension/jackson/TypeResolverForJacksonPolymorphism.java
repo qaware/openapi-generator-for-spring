@@ -111,6 +111,11 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
         if (jsonTypeInfo == null) {
             return null;
         }
+        JsonTypeInfo.As includeAs = jsonTypeInfo.include();
+        if (includeAs != JsonTypeInfo.As.PROPERTY && includeAs != JsonTypeInfo.As.EXISTING_PROPERTY) {
+            LOGGER.warn("Encountered unsupported JsonTypeInfo annotation with include = {}, will ignore", jsonTypeInfo.include());
+            return null;
+        }
 
         String propertyName = findPropertyName(jsonTypeInfo);
         Class<?> classOwningJsonTypeInfo = findClassOwningJsonTypeInfo(initialType.getType().getRawClass())
@@ -140,7 +145,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
 
             jsonSubTypes.forEach((typeName, type) -> schemaBuilderFromType.buildSchemaReferenceFromType(
                     objectMapper.constructType(type),
-                    createAnnotationsSupplier(type, propertyName, jsonSubTypes.keySet(), propertySchemaName),
+                    createAnnotationsSupplier(type, propertyName, jsonSubTypes.keySet(), propertySchemaName, includeAs),
                     schemaReference -> {
                         schemaReferenceMapping.put(typeName, schemaReference.getRef());
                         oneOfSchemas.set(oneOfSchemasIndexMap.get(typeName), schemaReference);
@@ -160,7 +165,9 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
 
     @Override
     public Map<String, SchemaProperty> findProperties(SchemaResolver.Caller caller, JavaType javaType, AnnotationsSupplier annotationsSupplier) {
-        return annotationsSupplier.findAnnotations(PropertyNameAnnotation.class)
+        return annotationsSupplier.findAnnotations(PropertyIncludeAsAnnotation.class)
+                .filter(a -> a.value() == JsonTypeInfo.As.PROPERTY)
+                .flatMap(ignored -> annotationsSupplier.findAnnotations(PropertyNameAnnotation.class))
                 .findFirst()
                 .map(propertyNameAnnotation -> Collections.<String, SchemaProperty>singletonMap(
                         propertyNameAnnotation.value(), new SchemaProperty() {
@@ -199,7 +206,8 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
         if (!propertySchemaName.isPresent()) {
             return;
         }
-        properties.get(propertyName.get()).customize(
+        SchemaPropertyCallback schemaPropertyCallback = properties.get(propertyName.get());
+        schemaPropertyCallback.customize(
                 (propertySchema, propertyJavaType, propertyAnnotationsSupplier) -> {
                     propertySchema.setName(propertySchemaName.get());
                     propertySchema.setEnumValues(propertyEnumValues.get());
@@ -215,7 +223,7 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
         return null;
     }
 
-    private AnnotationsSupplier createAnnotationsSupplier(Class<?> type, String propertyName, Collection<String> propertyEnumValues, String propertySchemaName) {
+    private AnnotationsSupplier createAnnotationsSupplier(Class<?> type, String propertyName, Collection<String> propertyEnumValues, String propertySchemaName, JsonTypeInfo.As includeAs) {
         AnnotationsSupplier annotationsSupplier = annotationsSupplierFactory.createFromAnnotatedElement(type);
         return new AnnotationsSupplier() {
             @Override
@@ -230,6 +238,8 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
                     return Stream.of(annotationType.cast(PropertyEnumValuesAnnotation.FACTORY.apply(propertyEnumValues.toArray(new String[0]))));
                 } else if (PropertySchemaNameAnnotation.class.equals(annotationType)) {
                     return Stream.of(annotationType.cast(PropertySchemaNameAnnotation.FACTORY.apply(propertySchemaName)));
+                } else if (PropertyIncludeAsAnnotation.class.equals(annotationType)) {
+                    return Stream.of(annotationType.cast(PropertyIncludeAsAnnotation.FACTORY.apply(includeAs)));
                 }
                 return annotationsSupplier.findAnnotations(annotationType);
             }
@@ -310,6 +320,12 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
         Function<String, PropertySchemaNameAnnotation> FACTORY = createAnnotationProxyWithValueFactory(PropertySchemaNameAnnotation.class, String.class);
 
         String value();
+    }
+
+    private @interface PropertyIncludeAsAnnotation {
+        Function<JsonTypeInfo.As, PropertyIncludeAsAnnotation> FACTORY = createAnnotationProxyWithValueFactory(PropertyIncludeAsAnnotation.class, JsonTypeInfo.As.class);
+
+        JsonTypeInfo.As value();
     }
 
     @Override
