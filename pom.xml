@@ -84,7 +84,7 @@
         <lombok.version>1.18.22</lombok.version>
         <jsr305.version>3.0.2</jsr305.version>
         <swagger-annotations.version>2.1.13</swagger-annotations.version>
-        <webjars.swaggerui.version>4.6.2</webjars.swaggerui.version>
+        <webjars.swaggerui.version>4.8.0</webjars.swaggerui.version>
         <classgraph.version>4.8.141</classgraph.version>
         <commons.io.version>2.11.0</commons.io.version>
     </properties>
