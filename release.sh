@@ -25,10 +25,6 @@ if [[ "$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" != "master" ]]; then
   ERROR_OCCURRED="1"
 fi
 
-if [[ -n "$(git status --porcelain)" ]]; then
-  echo "Error: There are untracked changes. Please commit or stash them before releasing."
-  ERROR_OCCURRED="1"
-fi
 
 TAG_NAME="version-$NEW_VERSION"
 if [[ "$(git tag -l "$TAG_NAME")" == "$TAG_NAME" ]]; then
@@ -72,7 +68,7 @@ git push "$REMOTE_NAME" "refs/heads/master" "refs/tags/$TAG_NAME"
 
 echo "Updating versions in README and demo pom.xml..."
 
-sed -z -i -f - \
+gsed -z -i -f - \
   README.md \
   demo/openapi-generator-for-spring-demo-webflux/pom.xml \
   demo/openapi-generator-for-spring-demo-webmvc/pom.xml \
