@@ -25,6 +25,10 @@ if [[ "$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" != "master" ]]; then
   ERROR_OCCURRED="1"
 fi
 
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "Error: There are untracked changes. Please commit or stash them before releasing."
+  ERROR_OCCURRED="1"
+fi
 
 TAG_NAME="version-$NEW_VERSION"
 if [[ "$(git tag -l "$TAG_NAME")" == "$TAG_NAME" ]]; then
