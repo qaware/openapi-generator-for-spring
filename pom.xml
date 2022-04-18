@@ -81,7 +81,7 @@
             ${project.basedir}/openapi-generator-for-spring-test/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
 
-        <lombok.version>1.18.22</lombok.version>
+        <lombok.version>1.18.24</lombok.version>
         <jsr305.version>3.0.2</jsr305.version>
         <swagger-annotations.version>2.2.0</swagger-annotations.version>
         <webjars.swaggerui.version>4.10.3</webjars.swaggerui.version>
