@@ -28,7 +28,6 @@ import de.qaware.openapigeneratorforspring.common.web.OpenApiResource;
 import de.qaware.openapigeneratorforspring.webmvc.HandlerMethodPathPatternsProviderForWebMvc;
 import de.qaware.openapigeneratorforspring.webmvc.HandlerMethodsProviderForWebMvc;
 import de.qaware.openapigeneratorforspring.webmvc.OpenApiRequestAwareSupplierForWebMvc;
-import lombok.val;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -52,27 +51,15 @@ public class OpenApiGeneratorWebMvcAutoConfiguration {
             RequestMappingHandlerMapping requestMappingHandlerMapping
     ) {
         return () -> openApiResource.registerMapping(
-                (path, produces) -> RequestMappingInfo.paths(path).methods(GET).produces(produces).options(buildRequestMappingInfoOptions(requestMappingHandlerMapping)).build(),
+                (path, produces) -> RequestMappingInfo
+                        .paths(path)
+                        .methods(GET)
+                        .produces(produces)
+                        .options(requestMappingHandlerMapping.getBuilderConfiguration())
+                        .build(),
                 requestMappingHandlerMapping::registerMapping,
                 openApiResource
         );
-    }
-
-    // this snippet will be replaced with https://github.com/spring-projects/spring-framework/pull/27723 once available!
-    @SuppressWarnings("java:S1874") // suppress "deprecated code warning"
-    static RequestMappingInfo.BuilderConfiguration buildRequestMappingInfoOptions(RequestMappingHandlerMapping requestMappingHandlerMapping) {
-        val config = new RequestMappingInfo.BuilderConfiguration();
-        config.setTrailingSlashMatch(requestMappingHandlerMapping.useTrailingSlashMatch());
-        config.setContentNegotiationManager(requestMappingHandlerMapping.getContentNegotiationManager());
-
-        if (requestMappingHandlerMapping.getPatternParser() != null) {
-            config.setPatternParser(requestMappingHandlerMapping.getPatternParser());
-        } else {
-            config.setSuffixPatternMatch(requestMappingHandlerMapping.useSuffixPatternMatch());
-            config.setRegisteredSuffixPatternMatch(requestMappingHandlerMapping.useRegisteredSuffixPatternMatch());
-            config.setPathMatcher(requestMappingHandlerMapping.getPathMatcher());
-        }
-        return config;
     }
 
     @Bean
