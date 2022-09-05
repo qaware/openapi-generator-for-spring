@@ -72,7 +72,13 @@ git push "$REMOTE_NAME" "refs/heads/master" "refs/tags/$TAG_NAME"
 
 echo "Updating versions in README and demo pom.xml..."
 
-gsed -z -i -f - \
+sedArgs=(-i)
+if [[ "$(uname)" == "Darwin" ]]; then
+	# shellcheck disable=SC2089
+	sedArgs=(-i "")
+fi
+
+sed "${sedArgs[@]}" -z -f - \
   README.md \
   demo/openapi-generator-for-spring-demo-webflux/pom.xml \
   demo/openapi-generator-for-spring-demo-webmvc/pom.xml \
