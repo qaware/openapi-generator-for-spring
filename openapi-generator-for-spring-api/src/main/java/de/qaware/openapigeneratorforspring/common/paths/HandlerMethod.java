@@ -264,7 +264,7 @@ public interface HandlerMethod {
      * de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
      * annotations}.
      *
-     * <p> A type may have its own set of annotations, which are in
+     * <p>Each type here may have its own set of annotations, which are in
      * general different from the element carrying this type.
      *
      * <p>Note that this interface provides exactly

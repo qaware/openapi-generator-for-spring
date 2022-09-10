@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 public interface SchemaResolver {
     /**
      * Resolve from given java type using the given
-     * annotations supplier. The finally built top-level
+     * AnnotationsSupplier. The finally built top-level
      * schema will also be "maybe referenced" if not empty.
      *
      * @param caller                   resolver mode (serialization or deserialization)
@@ -56,7 +56,7 @@ public interface SchemaResolver {
      * @param caller                   resolver mode (serialization or deserialization)
      * @param clazz                    java clazz (Jackson type will be constructed from it)
      * @param referencedSchemaConsumer referenced schema consumer for nested schemas
-     * @return resolved schema, might be empty if input is Void.class
+     * @return resolved schema, might be empty if input is {@code Void.class}
      */
     Schema resolveFromClassWithoutReference(Caller caller, Class<?> clazz, ReferencedSchemaConsumer referencedSchemaConsumer);
 
