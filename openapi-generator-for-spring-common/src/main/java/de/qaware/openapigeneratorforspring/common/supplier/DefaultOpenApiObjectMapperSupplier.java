@@ -28,7 +28,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 public class DefaultOpenApiObjectMapperSupplier implements OpenApiObjectMapperSupplier {
-    // Maybe the "auto-configured" object mapper from spring would works better?
+    // Maybe the autoconfigured object mapper from spring would work better?
     // Allow customizations?
     // See GH Issue #7
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()

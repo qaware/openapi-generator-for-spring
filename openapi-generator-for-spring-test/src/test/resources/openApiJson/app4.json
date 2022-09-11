@@ -142,6 +142,9 @@
                 }
               },
               "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
                 "examples": {
                   "MyExampleName": {
                     "summary": "summary example2",
@@ -151,11 +154,6 @@
                     "summary": "summary example3",
                     "externalValue": "http://some-url2"
                   }
-                }
-              },
-              "*/*": {
-                "schema": {
-                  "type": "string"
                 }
               }
             },
@@ -200,11 +198,11 @@
             "x-extension-api-response-1": {
               "name1": "value2"
             },
+            "x-nameless-property-1": "value2",
             "x-nameless-property-2": {
               "key1": "value1",
               "key2": "value2"
-            },
-            "x-nameless-property-1": "value2"
+            }
           }
         }
       }
@@ -230,6 +228,9 @@
             },
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "string"
+                },
                 "encoding": {
                   "propertyInSchema2": {
                     "contentType": "text/plain",
@@ -244,7 +245,7 @@
                   }
                 }
               },
-              "*/*": {
+              "text/plain": {
                 "schema": {
                   "type": "string"
                 }

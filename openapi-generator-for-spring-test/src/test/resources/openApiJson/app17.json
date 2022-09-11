@@ -10,7 +10,12 @@
         "operationId": "mapping1",
         "requestBody": {
           "content": {
-            "*/*": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/nullable_App17Controller.SomeDto"
+              }
+            },
+            "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/nullable_App17Controller.SomeDto"
               }
@@ -22,7 +27,7 @@
           "200": {
             "description": "Default response",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/array_App17Controller.SomeDto"
                 }
@@ -37,7 +42,12 @@
         "operationId": "mapping2",
         "requestBody": {
           "content": {
-            "*/*": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/array_App17Controller.SomeDto"
+              }
+            },
+            "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/array_App17Controller.SomeDto"
               }
@@ -68,7 +78,7 @@
       "200": {
         "description": "Default response",
         "content": {
-          "*/*": {
+          "application/json": {
             "schema": {
               "$ref": "#/components/schemas/App17Controller.SomeDto"
             }

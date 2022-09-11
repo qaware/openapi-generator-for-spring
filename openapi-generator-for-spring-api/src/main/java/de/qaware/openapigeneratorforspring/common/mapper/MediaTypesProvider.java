@@ -21,6 +21,7 @@
 package de.qaware.openapigeneratorforspring.common.mapper;
 
 import de.qaware.openapigeneratorforspring.model.trait.HasContent;
+import org.springframework.util.MimeType;
 
 import java.util.Set;
 
@@ -31,5 +32,5 @@ import java.util.Set;
 @FunctionalInterface
 public interface MediaTypesProvider {
 
-    Set<String> getMediaTypes(Class<? extends HasContent> owningType);
+    Set<MimeType> getMimeTypes(Class<? extends HasContent> owningType);
 }

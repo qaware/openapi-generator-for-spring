@@ -20,7 +20,7 @@
 
 package de.qaware.openapigeneratorforspring.common.paths.method;
 
-import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
+import de.qaware.openapigeneratorforspring.common.paths.method.AbstractSpringWebHandlerMethod.SpringWebParameter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -32,20 +32,19 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Slf4j
-public class SpringWebHandlerMethodRequestBodyParameterMapper {
+public class SpringWebHandlerMethodRequestBodyParameterProvider {
 
     public Optional<RequestBodyParameter> findRequestBodyParameter(SpringWebHandlerMethod handlerMethod) {
-        return handlerMethod.getParameters().stream()
+        return handlerMethod.getSpringWebParameters().stream()
                 .flatMap(parameter ->
                         Stream.concat(
                                 parameter.getAnnotationsSupplier()
                                         .findAnnotations(RequestBody.class)
-                                        .map(RequestBody::required)
-                                        .map(requiredFlag -> RequestBodyParameter.of(parameter, requiredFlag)),
+                                        .map(requestBodyAnnotation -> RequestBodyParameter.of(parameter, requestBodyAnnotation.required())),
                                 // also check if we're encountering a "bare" InputStream as a parameter
                                 // this can also be seen as request body
                                 parameter.getType()
-                                        .filter(type -> type.getType().equals(InputStream.class))
+                                        .filter(type -> InputStream.class.isAssignableFrom(type.getType().toClass()))
                                         .map(type -> RequestBodyParameter.of(parameter, false))
                                         .map(Stream::of).orElseGet(Stream::empty)
                         )
@@ -58,7 +57,7 @@ public class SpringWebHandlerMethodRequestBodyParameterMapper {
     @RequiredArgsConstructor(staticName = "of", access = AccessLevel.PRIVATE)
     @Getter
     public static class RequestBodyParameter {
-        private final HandlerMethod.Parameter parameter;
+        private final SpringWebParameter parameter;
         private final boolean required;
     }
 }

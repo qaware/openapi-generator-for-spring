@@ -22,7 +22,9 @@ package de.qaware.openapigeneratorforspring.common.paths;
 
 import de.qaware.openapigeneratorforspring.common.annotation.HasAnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.model.response.ApiResponse;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.MimeType;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
@@ -105,13 +107,13 @@ public interface HandlerMethod {
 
     interface RequestBody extends HasAnnotationsSupplier, HasType, HasContext,
             HasCustomize<de.qaware.openapigeneratorforspring.model.requestbody.RequestBody> {
-        Set<String> getConsumesContentTypes();
+        Set<MimeType> getConsumesMimeTypes();
     }
 
     interface Response extends HasType, HasCustomize<ApiResponse> {
         String getResponseCode();
 
-        Set<String> getProducesContentTypes();
+        Set<MimeType> getProducesMimeTypes();
     }
 
     /**
@@ -272,7 +274,7 @@ public interface HandlerMethod {
      * de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver#resolveFromType schema resolver}
      */
     interface Type extends HasAnnotationsSupplier {
-        java.lang.reflect.Type getType();
+        ResolvableType getType();
     }
 
     /**

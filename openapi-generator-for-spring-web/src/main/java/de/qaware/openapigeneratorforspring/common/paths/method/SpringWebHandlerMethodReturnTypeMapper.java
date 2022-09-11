@@ -21,20 +21,19 @@
 package de.qaware.openapigeneratorforspring.common.paths.method;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
-import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
+import de.qaware.openapigeneratorforspring.common.paths.method.AbstractSpringWebHandlerMethod.SpringWebType;
 import lombok.RequiredArgsConstructor;
-
-import java.lang.reflect.Method;
+import org.springframework.core.ResolvableType;
+import org.springframework.web.method.HandlerMethod;
 
 @RequiredArgsConstructor
 public class SpringWebHandlerMethodReturnTypeMapper {
 
     private final AnnotationsSupplierFactory annotationsSupplierFactory;
 
-    public HandlerMethod.Type getReturnType(SpringWebHandlerMethod springWebHandlerMethod) {
-        Method method = springWebHandlerMethod.getMethod().getMethod();
+    public SpringWebType getReturnType(SpringWebHandlerMethod springWebHandlerMethod) {
+        HandlerMethod method = springWebHandlerMethod.getMethod();
         // even for Void method return type, there might still be @Schema annotation which could be useful
-        // using method.getReturnType() does not work for generic return types
-        return AbstractSpringWebHandlerMethod.SpringWebType.of(method.getGenericReturnType(), annotationsSupplierFactory.createFromAnnotatedElement(method.getReturnType()));
+        return SpringWebType.of(ResolvableType.forMethodParameter(method.getReturnType()), annotationsSupplierFactory.createFromAnnotatedElement(method.getReturnType().getParameterType()));
     }
 }

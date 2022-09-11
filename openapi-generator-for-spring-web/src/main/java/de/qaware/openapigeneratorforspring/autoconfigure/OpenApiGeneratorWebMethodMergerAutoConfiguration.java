@@ -20,8 +20,9 @@
 
 package de.qaware.openapigeneratorforspring.autoconfigure;
 
-import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodContentTypesMapper;
-import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodRequestBodyParameterMapper;
+import de.qaware.openapigeneratorforspring.common.operation.mimetype.ConsumesMimeTypeProviderStrategy;
+import de.qaware.openapigeneratorforspring.common.operation.mimetype.ProducesMimeTypeProviderStrategy;
+import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodRequestBodyParameterProvider;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodResponseCodeMapper;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodReturnTypeMapper;
 import de.qaware.openapigeneratorforspring.common.paths.method.merger.MergedSpringWebHandlerMethodMapper;
@@ -83,23 +84,23 @@ public class OpenApiGeneratorWebMethodMergerAutoConfiguration {
     @ConditionalOnMissingBean
     public SpringWebHandlerMethodRequestBodyMerger springWebHandlerMethodRequestBodyMerger(
             SpringWebHandlerMethodTypeMerger springWebHandlerMethodTypeMerger,
-            SpringWebHandlerMethodContentTypesMapper springWebHandlerMethodContentTypesMapper,
-            SpringWebHandlerMethodRequestBodyParameterMapper springWebHandlerMethodRequestBodyParameterMapper
+            ConsumesMimeTypeProviderStrategy consumesMimeTypeProviderStrategy,
+            SpringWebHandlerMethodRequestBodyParameterProvider springWebHandlerMethodRequestBodyParameterProvider
 
     ) {
-        return new SpringWebHandlerMethodRequestBodyMerger(springWebHandlerMethodTypeMerger, springWebHandlerMethodContentTypesMapper,
-                springWebHandlerMethodRequestBodyParameterMapper);
+        return new SpringWebHandlerMethodRequestBodyMerger(springWebHandlerMethodTypeMerger, consumesMimeTypeProviderStrategy,
+                springWebHandlerMethodRequestBodyParameterProvider);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public SpringWebHandlerMethodResponseMerger springWebHandlerMethodResponseMerger(
             SpringWebHandlerMethodTypeMerger springWebHandlerMethodTypeMerger,
-            SpringWebHandlerMethodContentTypesMapper springWebHandlerMethodContentTypesMapper,
+            ProducesMimeTypeProviderStrategy producesMimeTypeProviderStrategy,
             SpringWebHandlerMethodResponseCodeMapper springWebHandlerMethodResponseCodeMapper,
             SpringWebHandlerMethodReturnTypeMapper springWebHandlerMethodReturnTypeMapper
     ) {
-        return new SpringWebHandlerMethodResponseMerger(springWebHandlerMethodTypeMerger, springWebHandlerMethodContentTypesMapper,
+        return new SpringWebHandlerMethodResponseMerger(springWebHandlerMethodTypeMerger, producesMimeTypeProviderStrategy,
                 springWebHandlerMethodResponseCodeMapper, springWebHandlerMethodReturnTypeMapper);
     }
 }

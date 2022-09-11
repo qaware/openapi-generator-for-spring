@@ -36,7 +36,7 @@
           "200": {
             "description": "Default response",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {

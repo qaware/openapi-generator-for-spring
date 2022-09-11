@@ -17,11 +17,17 @@ paths:
           '*/*':
             schema:
               type: string
+          text/plain;charset=UTF-8:
+            schema:
+              type: string
         required: true
       responses:
         "200":
           description: Default response
           content:
-            '*/*':
+            text/plain;charset=UTF-8:
+              schema:
+                type: string
+            text/event-stream:
               schema:
                 type: string

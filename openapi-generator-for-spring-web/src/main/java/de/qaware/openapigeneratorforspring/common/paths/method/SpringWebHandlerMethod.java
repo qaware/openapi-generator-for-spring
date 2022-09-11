@@ -39,7 +39,7 @@ public class SpringWebHandlerMethod extends AbstractSpringWebHandlerMethod imple
     private final org.springframework.web.method.HandlerMethod method;
     private final AnnotationsSupplier annotationsSupplier;
 
-    public SpringWebHandlerMethod(AnnotationsSupplier annotationsSupplier, List<Parameter> parameters, org.springframework.web.method.HandlerMethod method) {
+    public SpringWebHandlerMethod(AnnotationsSupplier annotationsSupplier, List<SpringWebParameter> parameters, org.springframework.web.method.HandlerMethod method) {
         super(parameters);
         this.method = method;
         this.annotationsSupplier = annotationsSupplier;

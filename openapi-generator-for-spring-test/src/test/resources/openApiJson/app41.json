@@ -10,7 +10,12 @@
         "operationId": "mapping1",
         "requestBody": {
           "content": {
-            "*/*": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/App41Controller.SomeType1_1"
+              }
+            },
+            "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/App41Controller.SomeType1_1"
               }
@@ -22,7 +27,7 @@
           "200": {
             "description": "Default response",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/App41Controller.SomeType1_0"
                 }
@@ -35,7 +40,12 @@
         "operationId": "mapping2",
         "requestBody": {
           "content": {
-            "*/*": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/App41Controller.SomeType2"
+              }
+            },
+            "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/App41Controller.SomeType2"
               }

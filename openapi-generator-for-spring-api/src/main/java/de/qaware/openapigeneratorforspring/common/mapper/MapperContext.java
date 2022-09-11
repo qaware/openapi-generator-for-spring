@@ -22,6 +22,7 @@ package de.qaware.openapigeneratorforspring.common.mapper;
 
 import de.qaware.openapigeneratorforspring.common.reference.HasReferencedItemConsumer;
 import de.qaware.openapigeneratorforspring.model.trait.HasContent;
+import org.springframework.util.MimeType;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -52,7 +53,7 @@ public interface MapperContext extends HasReferencedItemConsumer {
      * @param owningType owning type, must extend {@link HasContent HasContent}
      * @return media types, or empty optional if nothing can be provided for this owning type
      */
-    Optional<Set<String>> findMediaTypes(Class<? extends HasContent> owningType);
+    Optional<Set<MimeType>> findMimeTypes(Class<? extends HasContent> owningType);
 
     /**
      * Set the owner for any following referenced item.
@@ -64,7 +65,7 @@ public interface MapperContext extends HasReferencedItemConsumer {
 
     /**
      * Sets the {@link MediaTypesProvider media types provider} for any
-     * following calls of {@link #findMediaTypes}.
+     * following calls of {@link #findMimeTypes}.
      *
      * @param mediaTypesProvider media types provider
      * @return mapper context with modified media types provider

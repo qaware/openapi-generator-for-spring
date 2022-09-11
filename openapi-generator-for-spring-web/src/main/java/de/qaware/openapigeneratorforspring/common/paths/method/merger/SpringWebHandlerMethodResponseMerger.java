@@ -20,15 +20,16 @@
 
 package de.qaware.openapigeneratorforspring.common.paths.method.merger;
 
+import de.qaware.openapigeneratorforspring.common.operation.mimetype.ProducesMimeTypeProviderStrategy;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.paths.method.AbstractSpringWebHandlerMethod;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethod;
-import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodContentTypesMapper;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodResponseCodeMapper;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodReturnTypeMapper;
 import de.qaware.openapigeneratorforspring.model.media.Content;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.util.MimeType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,14 +44,14 @@ import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils
 public class SpringWebHandlerMethodResponseMerger {
 
     private final SpringWebHandlerMethodTypeMerger typeMerger;
-    private final SpringWebHandlerMethodContentTypesMapper contentTypesMapper;
+    private final ProducesMimeTypeProviderStrategy producesMimeTypeProviderStrategy;
     private final SpringWebHandlerMethodResponseCodeMapper responseCodeMapper;
     private final SpringWebHandlerMethodReturnTypeMapper returnTypeMapper;
 
     public List<HandlerMethod.Response> mergeResponses(List<SpringWebHandlerMethod> handlerMethods) {
         List<HandlerMethod.Response> mergedResponses = new ArrayList<>();
-        Map<String, Map<Set<String>, List<SpringWebHandlerMethod>>> groupedHandlerMethods = handlerMethods.stream()
-                .map(method -> Pair.of(responseCodeMapper.getResponseCode(method), Pair.of(contentTypesMapper.findProducesContentTypes(method), method)))
+        Map<String, Map<Set<MimeType>, List<SpringWebHandlerMethod>>> groupedHandlerMethods = handlerMethods.stream()
+                .map(method -> Pair.of(responseCodeMapper.getResponseCode(method), Pair.of(producesMimeTypeProviderStrategy.getProducesMimeTypes(method), method)))
                 .collect(groupingByPairKeyAndCollectingValuesTo(groupingByPairKeyAndCollectingValuesToList()));
 
         groupedHandlerMethods.forEach((responseCode, typesGroupedByProduces) ->
@@ -75,6 +76,7 @@ public class SpringWebHandlerMethodResponseMerger {
     private Optional<HandlerMethod.Type> mergeReturnTypes(List<SpringWebHandlerMethod> handlerMethods) {
         return handlerMethods.stream()
                 .map(returnTypeMapper::getReturnType)
-                .reduce(typeMerger::mergeType);
+                .reduce(typeMerger::mergeType)
+                .map(x -> x);
     }
 }

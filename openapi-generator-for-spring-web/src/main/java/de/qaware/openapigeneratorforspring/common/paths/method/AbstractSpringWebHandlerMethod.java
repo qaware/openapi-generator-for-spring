@@ -29,23 +29,35 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.springframework.core.ResolvableType;
+import org.springframework.util.MimeType;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
 
-    @Getter
-    private final List<Parameter> parameters;
+    private final List<SpringWebParameter> parameters;
+
+    @Override
+    public List<Parameter> getParameters() {
+        return new ArrayList<>(parameters);
+    }
+
+    public List<SpringWebParameter> getSpringWebParameters() {
+        return parameters;
+    }
 
     @RequiredArgsConstructor(staticName = "of")
     @Getter
     @ToString
     public static class SpringWebType implements HandlerMethod.Type {
-        private final java.lang.reflect.Type type;
+        private final ResolvableType type;
         @ToString.Exclude
         private final AnnotationsSupplier annotationsSupplier;
     }
@@ -54,7 +66,8 @@ public abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
     public static class SpringWebParameter implements Parameter {
         @Nullable
         private final String parameterName;
-        private final Type parameterType;
+        @Getter
+        private final SpringWebType parameterType;
         @Getter
         private final AnnotationsSupplier annotationsSupplier;
 
@@ -74,7 +87,7 @@ public abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public static class SpringWebRequestBody implements RequestBody {
         private final AnnotationsSupplier annotationsSupplier;
-        private final Set<String> consumesContentTypes;
+        private final Set<MimeType> consumesMimeTypes;
         private final Optional<Type> type;
         @Nullable
         private final Boolean required;
@@ -92,11 +105,11 @@ public abstract class AbstractSpringWebHandlerMethod implements HandlerMethod {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public static class SpringWebResponse implements Response {
         private final String responseCode;
-        private final Set<String> producesContentTypes;
+        private final Set<MimeType> producesMimeTypes;
         private final Optional<Type> type;
 
         public boolean shouldClearContent(Content content) {
-            return producesContentTypes.equals(content.keySet());
+            return producesMimeTypes.stream().map(MimeType::toString).collect(Collectors.toSet()).equals(content.keySet());
         }
 
         @Override

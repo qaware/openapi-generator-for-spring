@@ -24,13 +24,16 @@ import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodEnumMapper;
+import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodRequestBodyParameterProvider;
 import de.qaware.openapigeneratorforspring.common.web.OpenApiResource;
 import de.qaware.openapigeneratorforspring.webmvc.HandlerMethodPathPatternsProviderForWebMvc;
 import de.qaware.openapigeneratorforspring.webmvc.HandlerMethodsProviderForWebMvc;
+import de.qaware.openapigeneratorforspring.webmvc.HttpMessageConvertersMimeTypesProviderForWebMvc;
 import de.qaware.openapigeneratorforspring.webmvc.OpenApiRequestAwareSupplierForWebMvc;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.web.context.request.WebRequest;
@@ -86,5 +89,14 @@ public class OpenApiGeneratorWebMvcAutoConfiguration {
             HttpServletRequest httpServletRequest
     ) {
         return new OpenApiRequestAwareSupplierForWebMvc(webRequest, httpServletRequest);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public HttpMessageConvertersMimeTypesProviderForWebMvc springBootHttpMessageConvertersMimeTypesProvider(
+            HttpMessageConverters httpMessageConverters,
+            SpringWebHandlerMethodRequestBodyParameterProvider springWebHandlerMethodRequestBodyParameterProvider
+    ) {
+        return new HttpMessageConvertersMimeTypesProviderForWebMvc(httpMessageConverters, springWebHandlerMethodRequestBodyParameterProvider);
     }
 }

@@ -69,8 +69,8 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
     }
 
     private void addMediaTypesToApiResponseContent(Content content, HandlerMethod handlerMethod, HandlerMethod.Response handlerMethodResponse, ReferencedSchemaConsumer referencedSchemaConsumer) {
-        handlerMethodResponse.getProducesContentTypes().forEach(contentType -> {
-            MediaType mediaType = content.getOrDefault(contentType, new MediaType());
+        handlerMethodResponse.getProducesMimeTypes().forEach(mimeType -> {
+            MediaType mediaType = content.getOrDefault(mimeType.toString(), new MediaType());
             // we might have already set some media type, only amend this if the schema is not present
             // this gives annotations a higher preference than the schema inferred from the method return type
             if (mediaType.getSchema() == null) {
@@ -78,7 +78,7 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
                     AnnotationsSupplier annotationsSupplier = responseType.getAnnotationsSupplier()
                             // restrict searching the annotations from the handler method to @Schema or @ArraySchema only
                             // this prevents things like @Deprecated on the method to make the response schema also deprecated
-                            // but we can still use @Schema to modify properties of the "default" response
+                            // but, we can still use @Schema to modify properties of the "default" response
                             .andThen(new AnnotationsSupplier() {
                                 @Override
                                 public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
@@ -88,14 +88,14 @@ public class DefaultOperationApiResponsesFromMethodCustomizer implements Operati
                                     return Stream.empty();
                                 }
                             });
-                    schemaResolver.resolveFromType(API_RESPONSE, responseType.getType(), annotationsSupplier,
+                    schemaResolver.resolveFromType(API_RESPONSE, responseType.getType().getType(), annotationsSupplier,
                             referencedSchemaConsumer,
                             mediaType::setSchema
                     );
                 });
                 // putting empty media types is ok
                 // when there are multiple content types present for one response code
-                content.put(contentType, mediaType);
+                content.put(mimeType.toString(), mediaType);
             }
         });
     }

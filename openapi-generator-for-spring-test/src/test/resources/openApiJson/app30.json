@@ -59,12 +59,12 @@
           "200": {
             "description": "Default response",
             "content": {
+              "application/json": {},
               "text/html": {
                 "schema": {
                   "type": "string"
                 }
-              },
-              "*/*": {}
+              }
             }
           }
         }
@@ -73,7 +73,6 @@
         "operationId": "mapping3_post_textHtml",
         "requestBody": {
           "content": {
-            "*/*": {},
             "text/html": {
               "schema": {
                 "type": "string"
