@@ -18,10 +18,12 @@
  * #L%
  */
 
-package de.qaware.openapigeneratorforspring.common.paths.method;
+package de.qaware.openapigeneratorforspring.common.operation.mimetype;
 
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.LinkedHashSet;
@@ -30,29 +32,38 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Collections.singleton;
-import static org.springframework.http.MediaType.ALL_VALUE;
+import static de.qaware.openapigeneratorforspring.common.util.OpenApiOrderedUtils.laterThan;
 
-public class SpringWebHandlerMethodContentTypesMapper {
-    public static final Set<String> SINGLE_ALL_VALUE = singleton(ALL_VALUE);
+@RequiredArgsConstructor
+public class SpringWebRequestMappingAnnotationMimeTypesProvider implements ConsumesMimeTypeProvider, ProducesMimeTypeProvider {
+    // give user-provided providers (if any) precedence by default
+    public static final int ORDER = laterThan(DEFAULT_ORDER);
 
-    public Set<String> findConsumesContentTypes(SpringWebHandlerMethod handlerMethod) {
+    @Override
+    public Set<MimeType> findConsumesMimeTypes(HandlerMethod handlerMethod) {
         return fromRequestMappingAnnotation(handlerMethod, RequestMapping::consumes);
     }
 
-    public Set<String> findProducesContentTypes(SpringWebHandlerMethod handlerMethod) {
+    @Override
+    public Set<MimeType> findProducesMimeTypes(HandlerMethod handlerMethod) {
         return fromRequestMappingAnnotation(handlerMethod, RequestMapping::produces);
     }
 
-    private static Set<String> fromRequestMappingAnnotation(HandlerMethod handlerMethod, Function<RequestMapping, String[]> annotationMapper) {
+    private static Set<MimeType> fromRequestMappingAnnotation(HandlerMethod handlerMethod, Function<RequestMapping, String[]> annotationMapper) {
         return handlerMethod.findAnnotations(RequestMapping.class)
                 .map(annotationMapper)
                 .filter(contentTypes -> !StringUtils.isAllBlank(contentTypes))
                 // Spring doc says the first one should win,
-                // ie. annotation on class level is overridden by method level
+                // i.e. annotation on class level is overridden by method level, there is no merging!
                 .findFirst()
                 .map(Stream::of)
-                .orElse(Stream.of(ALL_VALUE))
+                .orElseGet(Stream::empty)
+                .map(MimeType::valueOf)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    @Override
+    public int getOrder() {
+        return ORDER;
     }
 }

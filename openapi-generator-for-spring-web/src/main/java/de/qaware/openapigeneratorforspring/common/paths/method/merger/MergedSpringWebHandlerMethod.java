@@ -35,7 +35,7 @@ public class MergedSpringWebHandlerMethod extends AbstractSpringWebHandlerMethod
     private final String identifier;
     private final List<SpringWebHandlerMethod> handlerMethods;
 
-    public MergedSpringWebHandlerMethod(List<Parameter> parameters, String identifier, List<SpringWebHandlerMethod> handlerMethods) {
+    public MergedSpringWebHandlerMethod(List<SpringWebParameter> parameters, String identifier, List<SpringWebHandlerMethod> handlerMethods) {
         super(parameters);
         this.identifier = identifier;
         this.handlerMethods = handlerMethods;

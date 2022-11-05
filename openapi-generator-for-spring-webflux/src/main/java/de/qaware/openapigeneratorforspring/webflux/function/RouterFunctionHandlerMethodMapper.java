@@ -24,6 +24,7 @@ import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -52,10 +53,10 @@ public class RouterFunctionHandlerMethodMapper {
                 RouterFunctionHandlerMethod.Response response = new RouterFunctionHandlerMethod.Response(
                         // see GH Issue #4
                         findResponseCode(handlerMethod),
-                        routerFunctionHandlerMethod.getRouterFunctionAnalysisResult().getProducesContentTypesFromHeader(),
+                        routerFunctionHandlerMethod.getRouterFunctionAnalysisResult().getProducesMimeTypesFromHeader(),
                         // Schema building could still use @Schema annotation from bean factory method,
                         // so supply a "dummy" type here for schema building
-                        new RouterFunctionHandlerMethod.RouterFunctionType(AnnotationsSupplier.EMPTY, Void.class)
+                        new RouterFunctionHandlerMethod.RouterFunctionType(AnnotationsSupplier.EMPTY, ResolvableType.forClass(Void.class))
                 );
                 return Collections.singletonList(response);
             }

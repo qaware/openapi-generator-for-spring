@@ -24,11 +24,13 @@ import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethodsProvider;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebHandlerMethodBuilder;
 import de.qaware.openapigeneratorforspring.common.paths.SpringWebRequestMethodEnumMapper;
+import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodRequestBodyParameterProvider;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForCollectionLikeTypeSupport;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.TypeResolverForFlux;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.initial.InitialTypeBuilderForMono;
 import de.qaware.openapigeneratorforspring.common.web.OpenApiResource;
 import de.qaware.openapigeneratorforspring.webflux.HandlerMethodsProviderForWebFlux;
+import de.qaware.openapigeneratorforspring.webflux.HttpMessageConvertersMimeTypesProviderForWebFlux;
 import de.qaware.openapigeneratorforspring.webflux.OpenApiBaseUriSupplierForWebFlux;
 import de.qaware.openapigeneratorforspring.webflux.OpenApiRequestAwareProviderForWebFlux;
 import de.qaware.openapigeneratorforspring.webflux.OpenApiResourceForWebFlux;
@@ -39,6 +41,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.result.method.RequestMappingInfo;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
@@ -105,5 +108,11 @@ public class OpenApiGeneratorWebFluxAutoConfiguration {
     @ConditionalOnMissingBean
     public OpenApiBaseUriSupplierForWebFlux openApiBaseUriProviderForWebFlux(OpenApiConfigurationProperties openApiConfigurationProperties) {
         return new OpenApiBaseUriSupplierForWebFlux(openApiConfigurationProperties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public HttpMessageConvertersMimeTypesProviderForWebFlux httpMessageConvertersMimeTypesProviderForWebFlux(ServerCodecConfigurer serverCodecConfigurer, SpringWebHandlerMethodRequestBodyParameterProvider springWebHandlerMethodRequestBodyParameterProvider) {
+        return new HttpMessageConvertersMimeTypesProviderForWebFlux(serverCodecConfigurer.getReaders(), serverCodecConfigurer.getWriters(), springWebHandlerMethodRequestBodyParameterProvider);
     }
 }

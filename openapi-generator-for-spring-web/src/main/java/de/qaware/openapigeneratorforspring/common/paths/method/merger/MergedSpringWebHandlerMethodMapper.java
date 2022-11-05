@@ -42,7 +42,7 @@ public class MergedSpringWebHandlerMethodMapper {
                 MergedSpringWebHandlerMethodContext mergedHandlerMethodContext = (MergedSpringWebHandlerMethodContext) context;
                 MediaTypesProvider mediaTypesProvider = owningType -> {
                     if (RequestBody.class.equals(owningType)) {
-                        return mergedHandlerMethodContext.getConsumesContentTypes();
+                        return mergedHandlerMethodContext.getConsumesMimeTypes();
                     }
                     throw new IllegalStateException("Cannot provide media types for " + owningType.getSimpleName() + " in merged method");
                 };

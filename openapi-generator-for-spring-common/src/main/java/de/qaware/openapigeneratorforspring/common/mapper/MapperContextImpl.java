@@ -26,6 +26,7 @@ import de.qaware.openapigeneratorforspring.model.trait.HasContent;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
+import org.springframework.util.MimeType;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -48,8 +49,8 @@ public class MapperContextImpl implements MapperContext {
     }
 
     @Override
-    public Optional<Set<String>> findMediaTypes(Class<? extends HasContent> owningType) {
-        return Optional.ofNullable(mediaTypesProvider).map(provider -> provider.getMediaTypes(owningType));
+    public Optional<Set<MimeType>> findMimeTypes(Class<? extends HasContent> owningType) {
+        return Optional.ofNullable(mediaTypesProvider).map(provider -> provider.getMimeTypes(owningType));
     }
 
     @Override

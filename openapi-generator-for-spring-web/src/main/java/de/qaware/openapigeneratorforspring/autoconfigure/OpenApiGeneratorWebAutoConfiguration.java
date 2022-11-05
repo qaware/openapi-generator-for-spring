@@ -23,6 +23,7 @@ package de.qaware.openapigeneratorforspring.autoconfigure;
 import de.qaware.openapigeneratorforspring.common.OpenApiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.common.OpenApiGenerator;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
+import de.qaware.openapigeneratorforspring.common.operation.mimetype.SpringWebRequestMappingAnnotationMimeTypesProvider;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.DefaultOpenApiSpringWebParameterNameDiscoverer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.OpenApiSpringWebParameterNameDiscoverer;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.converter.DefaultParameterMethodConverterFromMatrixVariableAnnotation;
@@ -109,5 +110,11 @@ public class OpenApiGeneratorWebAutoConfiguration {
     @ConditionalOnMissingBean
     public SpringWebRequestMethodEnumMapper springWebRequestMethodEnumMapper() {
         return new SpringWebRequestMethodEnumMapper();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringWebRequestMappingAnnotationMimeTypesProvider springWebRequestMappingAnnotationMimeTypesProvider() {
+        return new SpringWebRequestMappingAnnotationMimeTypesProvider();
     }
 }

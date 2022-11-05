@@ -31,6 +31,7 @@ import de.qaware.openapigeneratorforspring.model.media.MediaType;
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.requestbody.RequestBody;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.MimeType;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -66,20 +67,20 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
     private RequestBody buildRequestBody(List<HandlerMethod.RequestBody> handlerMethodRequestBodies,
                                          @Nullable RequestBody existingRequestBody, OperationBuilderContext operationBuilderContext) {
         RequestBody requestBody = buildRequestBodyFromSwaggerAnnotations(handlerMethodRequestBodies, existingRequestBody, operationBuilderContext);
-        handlerMethodRequestBodies.forEach(handlerMethodRequestBodyParameter -> {
-            for (String contentType : handlerMethodRequestBodyParameter.getConsumesContentTypes()) {
-                MediaType mediaType = addMediaTypeIfNotPresent(contentType, requestBody);
+        handlerMethodRequestBodies.forEach(handlerMethodRequestBody -> {
+            for (MimeType mimeType : handlerMethodRequestBody.getConsumesMimeTypes()) {
+                MediaType mediaType = addMediaTypeIfNotPresent(mimeType, requestBody);
                 if (mediaType.getSchema() == null) {
-                    handlerMethodRequestBodyParameter.getType().ifPresent(parameterType -> schemaResolver.resolveFromType(
+                    handlerMethodRequestBody.getType().ifPresent(parameterType -> schemaResolver.resolveFromType(
                             REQUEST_BODY,
-                            parameterType.getType(),
-                            handlerMethodRequestBodyParameter.getAnnotationsSupplier().andThen(parameterType.getAnnotationsSupplier()),
+                            parameterType.getType().getType(),
+                            handlerMethodRequestBody.getAnnotationsSupplier().andThen(parameterType.getAnnotationsSupplier()),
                             operationBuilderContext.getReferencedItemConsumer(ReferencedSchemaConsumer.class),
                             mediaType::setSchema
                     ));
                 }
             }
-            handlerMethodRequestBodyParameter.customize(requestBody);
+            handlerMethodRequestBody.customize(requestBody);
         });
         return requestBody;
     }
@@ -99,12 +100,12 @@ public class DefaultRequestBodyOperationCustomizer implements OperationCustomize
         return requestBody;
     }
 
-    private static MediaType addMediaTypeIfNotPresent(String contentType, RequestBody requestBody) {
+    private static MediaType addMediaTypeIfNotPresent(MimeType mimeType, RequestBody requestBody) {
         if (requestBody.getContent() == null) {
             Content content = new Content();
             requestBody.setContent(content);
         }
-        return requestBody.getContent().computeIfAbsent(contentType, ignored -> new MediaType());
+        return requestBody.getContent().computeIfAbsent(mimeType.toString(), ignored -> new MediaType());
     }
 
     @Override

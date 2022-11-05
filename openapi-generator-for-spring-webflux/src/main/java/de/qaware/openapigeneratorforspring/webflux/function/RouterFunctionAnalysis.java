@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.util.MimeType;
 import org.springframework.web.reactive.function.server.HandlerFunction;
 import org.springframework.web.reactive.function.server.RequestPredicate;
 import org.springframework.web.reactive.function.server.RequestPredicates;
@@ -113,10 +114,10 @@ class RouterFunctionAnalysis implements RouterFunctions.Visitor, RequestPredicat
         // so it wants to consume what we produce
         if (HttpHeaders.ACCEPT.equals(name)) {
             // see also org.springframework.web.reactive.function.server.RequestPredicates.AcceptPredicate
-            result.producesContentTypesFromHeader.add(value);
+            result.producesMimeTypesFromHeader.add(MimeType.valueOf(value));
         } else if (HttpHeaders.CONTENT_TYPE.equals(name)) {
             // see also org.springframework.web.reactive.function.server.RequestPredicates.ContentTypePredicate
-            result.consumesContentTypesFromHeader.add(value);
+            result.consumesMimeTypesFromHeader.add(MimeType.valueOf(value));
         } else {
             result.parameters.add(new RouterFunctionHandlerMethod.Parameter(name, ParameterIn.HEADER));
         }
@@ -178,7 +179,7 @@ class RouterFunctionAnalysis implements RouterFunctions.Visitor, RequestPredicat
         private final Set<RequestMethod> requestMethods = new LinkedHashSet<>();
         private final Set<String> paths = new LinkedHashSet<>();
         private final List<HandlerMethod.Parameter> parameters = new ArrayList<>();
-        private final Set<String> consumesContentTypesFromHeader = new LinkedHashSet<>();
-        private final Set<String> producesContentTypesFromHeader = new LinkedHashSet<>();
+        private final Set<MimeType> consumesMimeTypesFromHeader = new LinkedHashSet<>();
+        private final Set<MimeType> producesMimeTypesFromHeader = new LinkedHashSet<>();
     }
 }

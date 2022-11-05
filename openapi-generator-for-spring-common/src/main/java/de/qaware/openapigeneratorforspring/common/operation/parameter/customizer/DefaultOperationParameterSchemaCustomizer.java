@@ -39,7 +39,7 @@ public class DefaultOperationParameterSchemaCustomizer implements OperationParam
                     ReferencedSchemaConsumer referencedSchemaConsumer = context.getReferencedItemConsumer(ReferencedSchemaConsumer.class);
                     AnnotationsSupplier annotationsSupplier = handlerMethodParameter.getAnnotationsSupplier()
                             .andThen(parameterType.getAnnotationsSupplier());
-                    schemaResolver.resolveFromType(PARAMETER, parameterType.getType(), annotationsSupplier, referencedSchemaConsumer, parameter::setSchema);
+                    schemaResolver.resolveFromType(PARAMETER, parameterType.getType().getType(), annotationsSupplier, referencedSchemaConsumer, parameter::setSchema);
                 })
         );
     }

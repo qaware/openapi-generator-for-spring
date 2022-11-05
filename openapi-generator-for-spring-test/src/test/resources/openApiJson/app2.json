@@ -97,8 +97,8 @@
           "description": "external doc description",
           "url": "http://some-url",
           "x-extension1": {
-            "property2": "value2",
-            "property1": "value1"
+            "property1": "value1",
+            "property2": "value2"
           }
         },
         "operationId": "getMappingOperation3",
@@ -130,14 +130,14 @@
                 ],
                 "default": "A",
                 "x-extension2": {
-                  "property4": "value4",
-                  "property3": "value3"
+                  "property3": "value3",
+                  "property4": "value4"
                 }
               }
             },
             "x-extension3": {
-              "property6": "value6",
-              "property5": "value5"
+              "property5": "value5",
+              "property6": "value6"
             }
           }
         ]
@@ -189,7 +189,12 @@
       "200": {
         "description": "Default response",
         "content": {
-          "*/*": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "application/json": {
             "schema": {
               "type": "string"
             }

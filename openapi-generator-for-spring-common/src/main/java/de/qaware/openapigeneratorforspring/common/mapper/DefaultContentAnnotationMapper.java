@@ -31,6 +31,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.util.MimeType;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -57,16 +58,16 @@ public class DefaultContentAnnotationMapper implements ContentAnnotationMapper {
                     if (StringUtils.isBlank(contentAnnotation.mediaType())) {
                         // if the mapperContext doesn't have any suggested media types,
                         // the mediaTypeValue is discarded!
-                        Set<String> mediaTypes = mapperContext.findMediaTypes(owningType)
-                                .orElseThrow(() -> new IllegalStateException("No media types available in context for " + owningType.getSimpleName()
+                        Set<MimeType> mimeTypes = mapperContext.findMimeTypes(owningType)
+                                .orElseThrow(() -> new IllegalStateException("No mime types available in context for " + owningType.getSimpleName()
                                         + " and Content annotation has blank mediaType"));
-                        return mediaTypes.stream().map(mediaType -> Pair.of(mediaType, mediaTypeValue));
+                        return mimeTypes.stream().map(mimeType -> Pair.of(mimeType, mediaTypeValue));
                     }
-                    return Stream.of(Pair.of(contentAnnotation.mediaType(), mediaTypeValue));
+                    return Stream.of(Pair.of(MimeType.valueOf(contentAnnotation.mediaType()), mediaTypeValue));
                 })
-                .collect(Collectors.toMap(Pair::getKey, Pair::getValue, (a, b) -> {
+                .collect(Collectors.toMap(p -> p.getKey().toString(), Pair::getValue, (a, b) -> {
                     if (!Objects.equals(a, b)) {
-                        throw new IllegalStateException("Conflicting media type found for " + a + " vs. " + b);
+                        throw new IllegalStateException("Conflicting mime type found for " + a + " vs. " + b);
                     }
                     return a;
                 }, Content::new));

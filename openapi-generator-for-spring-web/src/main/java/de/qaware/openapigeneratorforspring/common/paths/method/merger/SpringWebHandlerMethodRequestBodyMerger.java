@@ -21,25 +21,27 @@
 package de.qaware.openapigeneratorforspring.common.paths.method.merger;
 
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
+import de.qaware.openapigeneratorforspring.common.operation.mimetype.ConsumesMimeTypeProviderStrategy;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
+import de.qaware.openapigeneratorforspring.common.paths.method.AbstractSpringWebHandlerMethod.SpringWebParameter;
 import de.qaware.openapigeneratorforspring.common.paths.method.AbstractSpringWebHandlerMethod.SpringWebRequestBody;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethod;
-import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodContentTypesMapper;
-import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodRequestBodyParameterMapper;
-import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodRequestBodyParameterMapper.RequestBodyParameter;
+import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodRequestBodyParameterProvider;
+import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodRequestBodyParameterProvider.RequestBodyParameter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.util.MimeType;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodContentTypesMapper.SINGLE_ALL_VALUE;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.groupingByPairKeyAndCollectingValuesToList;
 import static java.util.Collections.emptyList;
 
@@ -47,20 +49,23 @@ import static java.util.Collections.emptyList;
 public class SpringWebHandlerMethodRequestBodyMerger {
 
     private final SpringWebHandlerMethodTypeMerger typeMerger;
-    private final SpringWebHandlerMethodContentTypesMapper contentTypesMapper;
-    private final SpringWebHandlerMethodRequestBodyParameterMapper requestBodyParameterMapper;
+    private final ConsumesMimeTypeProviderStrategy consumesMimeTypeProviderStrategy;
+    private final SpringWebHandlerMethodRequestBodyParameterProvider requestBodyParameterProvider;
 
     public List<HandlerMethod.RequestBody> mergeRequestBodies(List<SpringWebHandlerMethod> handlerMethods) {
-        // group request bodies by (unique) list of consumesContentTypes
+        // group request bodies by set of consumesContentTypes
         // this way, we can detect best how to build the final request body list
-        Map<Set<String>, List<Optional<RequestBodyParameter>>> groupedRequestBodyParameters = handlerMethods.stream()
-                .map(handlerMethod -> Pair.of(contentTypesMapper.findConsumesContentTypes(handlerMethod), requestBodyParameterMapper.findRequestBodyParameter(handlerMethod)))
+        Map<Set<MimeType>, List<Optional<RequestBodyParameter>>> groupedRequestBodyParameters = handlerMethods.stream()
+                .map(handlerMethod -> {
+                    Optional<RequestBodyParameter> requestBodyParameter = requestBodyParameterProvider.findRequestBodyParameter(handlerMethod);
+                    return Pair.of(consumesMimeTypeProviderStrategy.getConsumesMimeTypes(handlerMethod), requestBodyParameter);
+                })
                 .collect(groupingByPairKeyAndCollectingValuesToList());
 
-        List<Optional<RequestBodyParameter>> allValueRequestBodyParameters = groupedRequestBodyParameters.get(SINGLE_ALL_VALUE);
+        List<Optional<RequestBodyParameter>> emptyRequestBodyParameters = groupedRequestBodyParameters.get(Collections.emptySet());
         if (groupedRequestBodyParameters.size() == 1
-                && allValueRequestBodyParameters != null && allValueRequestBodyParameters.stream().noneMatch(Optional::isPresent)) {
-            // we can omit the request bodies entirely if there's only empty request bodies matching for ALL_VALUE
+                && emptyRequestBodyParameters != null && emptyRequestBodyParameters.stream().noneMatch(Optional::isPresent)) {
+            // we can omit the request bodies entirely if there are no request body parameters without any consumesContentTypes
             return emptyList();
         }
 
@@ -70,12 +75,12 @@ public class SpringWebHandlerMethodRequestBodyMerger {
 
         return groupedRequestBodyParameters.entrySet().stream()
                 .map(entry -> {
-                    Set<String> consumesContentTypes = entry.getKey();
+                    Set<MimeType> consumesMimeTypes = entry.getKey();
                     List<RequestBodyParameter> requestBodyParameters = entry.getValue().stream()
                             .filter(Optional::isPresent)
                             .map(Optional::get)
                             .collect(Collectors.toList());
-                    return typeMerger.mergeTypes(requestBodyParameters.stream().map(RequestBodyParameter::getParameter))
+                    return typeMerger.mergeTypes(requestBodyParameters.stream().map(RequestBodyParameter::getParameter).map(SpringWebParameter::getParameterType))
                             .map(parameterType -> {
                                 boolean required = requestBodyParameters.stream()
                                         .map(RequestBodyParameter::isRequired)
@@ -83,20 +88,20 @@ public class SpringWebHandlerMethodRequestBodyMerger {
                                         .orElse(false);
                                 return new SpringWebRequestBody(
                                         AnnotationsSupplier.merge(requestBodyParameters.stream().map(RequestBodyParameter::getParameter)),
-                                        consumesContentTypes,
+                                        consumesMimeTypes,
                                         Optional.of(parameterType),
                                         noEmptyEntries ? required : null
                                 ) {
                                     @Nullable
                                     @Override
                                     public HandlerMethod.Context getContext() {
-                                        return MergedSpringWebHandlerMethodContext.of(consumesContentTypes);
+                                        return MergedSpringWebHandlerMethodContext.of(consumesMimeTypes);
                                     }
                                 };
                             })
                             .map(HandlerMethod.RequestBody.class::cast)
                             // do not omit request body entry just because the handler method doesn't have a parameter here
-                            .orElseGet(() -> new EmptyRequestBody(consumesContentTypes));
+                            .orElseGet(() -> new EmptyRequestBody(consumesMimeTypes));
                 })
                 .collect(Collectors.toList());
     }
@@ -104,7 +109,7 @@ public class SpringWebHandlerMethodRequestBodyMerger {
     @RequiredArgsConstructor
     private static class EmptyRequestBody implements HandlerMethod.RequestBody {
         @Getter
-        private final Set<String> consumesContentTypes;
+        private final Set<MimeType> consumesMimeTypes;
 
         @Override
         public Optional<HandlerMethod.Type> getType() {

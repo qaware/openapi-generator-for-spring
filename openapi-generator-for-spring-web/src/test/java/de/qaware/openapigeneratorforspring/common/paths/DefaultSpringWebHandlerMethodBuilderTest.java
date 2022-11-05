@@ -27,8 +27,6 @@ class DefaultSpringWebHandlerMethodBuilderTest {
     private OpenApiSpringWebParameterNameDiscoverer parameterNameDiscoverer;
     @Mock
     private org.springframework.web.method.HandlerMethod springWebHandlerMethod;
-    @Mock
-    private MethodParameter methodParameter1;
 
 
     @BeforeEach
@@ -39,7 +37,7 @@ class DefaultSpringWebHandlerMethodBuilderTest {
     @Test
     void build_parameterNumberMismatch() {
         when(parameterNameDiscoverer.getParameterNames(null)).thenReturn(Arrays.asList("parameter1", "parameter2"));
-        when(springWebHandlerMethod.getMethodParameters()).thenReturn(new MethodParameter[]{methodParameter1});
+        when(springWebHandlerMethod.getMethodParameters()).thenReturn(new MethodParameter[]{});
 
         val actual = sut.build(springWebHandlerMethod);
 

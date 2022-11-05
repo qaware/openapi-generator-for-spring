@@ -42,7 +42,7 @@
           "200": {
             "description": "Default response",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/responseEntitySchema"
                 }
@@ -58,7 +58,7 @@
       "200": {
         "description": "Default response",
         "content": {
-          "*/*": {
+          "application/json": {
             "schema": {
               "$ref": "#/components/schemas/string_date-time"
             }

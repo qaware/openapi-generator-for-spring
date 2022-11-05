@@ -27,6 +27,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.springframework.core.ResolvableType;
+import org.springframework.util.MimeType;
 import org.springframework.web.reactive.function.server.RouterFunction;
 
 import java.lang.annotation.Annotation;
@@ -61,7 +63,7 @@ public class RouterFunctionHandlerMethod implements HandlerMethod {
     @Getter
     static class RouterFunctionType implements HandlerMethod.Type {
         private final AnnotationsSupplier annotationsSupplier;
-        private final java.lang.reflect.Type type;
+        private final ResolvableType type;
     }
 
     @RequiredArgsConstructor
@@ -90,7 +92,7 @@ public class RouterFunctionHandlerMethod implements HandlerMethod {
     @Getter
     static class Response implements HandlerMethod.Response {
         private final String responseCode;
-        private final Set<String> producesContentTypes;
+        private final Set<MimeType> producesMimeTypes;
         private final RouterFunctionType routerFunctionType;
 
         @Override

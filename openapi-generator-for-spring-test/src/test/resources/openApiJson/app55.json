@@ -1,20 +1,20 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "API for App42",
+    "title": "API for App55",
     "version": "unknown"
   },
   "paths": {
     "/": {
       "get": {
-        "operationId": "mapping1",
+        "operationId": "getJson",
         "responses": {
           "200": {
             "description": "Default response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/App42Controller.SomeType1"
+                  "$ref": "#/components/schemas/App55Controller.SomeDto"
                 }
               }
             }
@@ -25,13 +25,10 @@
   },
   "components": {
     "schemas": {
-      "App42Controller.SomeType1": {
-        "required": [
-          "notNullProperty"
-        ],
+      "App55Controller.SomeDto": {
         "type": "object",
         "properties": {
-          "notNullProperty": {
+          "someProperty": {
             "type": "string"
           }
         }

@@ -23,11 +23,13 @@ package de.qaware.openapigeneratorforspring.common.paths;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.common.annotation.AnnotationsSupplierFactory;
 import de.qaware.openapigeneratorforspring.common.operation.parameter.OpenApiSpringWebParameterNameDiscoverer;
-import de.qaware.openapigeneratorforspring.common.paths.method.AbstractSpringWebHandlerMethod;
+import de.qaware.openapigeneratorforspring.common.paths.method.AbstractSpringWebHandlerMethod.SpringWebParameter;
+import de.qaware.openapigeneratorforspring.common.paths.method.AbstractSpringWebHandlerMethod.SpringWebType;
 import de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.ResolvableType;
 
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
@@ -56,7 +58,7 @@ public class DefaultSpringWebHandlerMethodBuilder implements SpringWebHandlerMet
         );
     }
 
-    private List<HandlerMethod.Parameter> buildParameters(org.springframework.web.method.HandlerMethod springWebHandlerMethod) {
+    private List<SpringWebParameter> buildParameters(org.springframework.web.method.HandlerMethod springWebHandlerMethod) {
         MethodParameter[] methodParameters = springWebHandlerMethod.getMethodParameters();
         IntFunction<String> parameterNameSupplier = buildParameterNameSupplier(springWebHandlerMethod);
         return IntStream.range(0, methodParameters.length).boxed()
@@ -78,12 +80,15 @@ public class DefaultSpringWebHandlerMethodBuilder implements SpringWebHandlerMet
         return parameterIndex -> null;
     }
 
-    private AbstractSpringWebHandlerMethod.SpringWebParameter buildParameter(MethodParameter parameter, @Nullable String parameterName) {
-        return new AbstractSpringWebHandlerMethod.SpringWebParameter(
+    private SpringWebParameter buildParameter(MethodParameter parameter, @Nullable String parameterName) {
+        return new SpringWebParameter(
                 // simply using parameter.getParameterName() does not work because
                 // we don't want to set a ParameterNameDiscoverer, which is not thread-safe (see parameter.getParameterName())!
                 parameterName,
-                AbstractSpringWebHandlerMethod.SpringWebType.of(parameter.getGenericParameterType(), annotationsSupplierFactory.createFromAnnotatedElement(parameter.getParameterType())),
+                SpringWebType.of(
+                        ResolvableType.forMethodParameter(parameter),
+                        annotationsSupplierFactory.createFromAnnotatedElement(parameter.getParameterType())
+                ),
                 new AnnotationsSupplier() {
                     @Override
                     public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {

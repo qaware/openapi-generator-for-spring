@@ -42,6 +42,10 @@ import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationI
 import de.qaware.openapigeneratorforspring.common.operation.id.DefaultOperationIdProvider;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdConflictResolver;
 import de.qaware.openapigeneratorforspring.common.operation.id.OperationIdProvider;
+import de.qaware.openapigeneratorforspring.common.operation.mimetype.ConsumesMimeTypeProvider;
+import de.qaware.openapigeneratorforspring.common.operation.mimetype.DefaultConsumesMimeTypeProviderStrategy;
+import de.qaware.openapigeneratorforspring.common.operation.mimetype.DefaultProducesMimeTypeProviderStrategy;
+import de.qaware.openapigeneratorforspring.common.operation.mimetype.ProducesMimeTypeProvider;
 import de.qaware.openapigeneratorforspring.common.paths.HandlerMethod;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.SchemaResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -128,5 +132,17 @@ public class OpenApiGeneratorOperationAutoConfiguration {
             List<HandlerMethod.RequestBodyMapper> handlerMethodRequestBodyMappers
     ) {
         return new DefaultRequestBodyOperationCustomizer(requestBodyAnnotationMapper, schemaResolver, handlerMethodRequestBodyMappers);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultProducesMimeTypeProviderStrategy defaultProducesMimeTypeProviderStrategy(List<ProducesMimeTypeProvider> providers) {
+        return new DefaultProducesMimeTypeProviderStrategy(providers);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DefaultConsumesMimeTypeProviderStrategy defaultConsumesMimeTypeProviderStrategy(List<ConsumesMimeTypeProvider> providers) {
+        return new DefaultConsumesMimeTypeProviderStrategy(providers);
     }
 }
