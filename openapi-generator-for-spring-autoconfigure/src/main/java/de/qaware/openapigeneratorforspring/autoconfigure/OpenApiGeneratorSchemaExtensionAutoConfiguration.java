@@ -37,7 +37,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 
 @EnableConfigurationProperties(Java8TimeTypeResolverConfigurationProperties.class)
 public class OpenApiGeneratorSchemaExtensionAutoConfiguration {
