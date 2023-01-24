@@ -40,14 +40,10 @@ class DefaultAnnotationsSupplierFactoryTest {
         assertThat(sut.createFromAnnotatedElement(TestClassWithOneRepeatable.class).findAnnotations(RepeatableTestAnnotations.class)).isEmpty();
 
         assertThat(sut.createFromAnnotatedElement(TestClassWithTwoRepeatable.class).findAnnotations(RepeatableTestAnnotation.class)).hasSize(2);
-        assertThat(sut.createFromAnnotatedElement(TestClassWithTwoRepeatable.class).findAnnotations(RepeatableTestAnnotations.class))
-                .hasSize(1)
-                .allSatisfy(apiResponses -> assertThat(apiResponses.value()).hasSize(2));
+        assertThat(sut.createFromAnnotatedElement(TestClassWithTwoRepeatable.class).findAnnotations(RepeatableTestAnnotations.class)).isEmpty();
 
-        assertThat(sut.createFromAnnotatedElement(TestClassWithRepeatableTestAnnotations.class).findAnnotations(RepeatableTestAnnotations.class))
-                .hasSize(1)
-                .allSatisfy(apiResponses -> assertThat(apiResponses.value()).hasSize(2));
-
+        assertThat(sut.createFromAnnotatedElement(TestClassWithRepeatableTestAnnotations.class).findAnnotations(RepeatableTestAnnotation.class)).hasSize(2);
+        assertThat(sut.createFromAnnotatedElement(TestClassWithRepeatableTestAnnotations.class).findAnnotations(RepeatableTestAnnotations.class)).isEmpty();
     }
 
     @Inherited
