@@ -23,6 +23,7 @@ package de.qaware.openapigeneratorforspring.ui.swagger;
 import de.qaware.openapigeneratorforspring.ui.OpenApiSwaggerUiConfigurationProperties;
 import de.qaware.openapigeneratorforspring.ui.webjar.ShadedWebJarAssetLocator;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.ResourceUtils;
 
 import static org.springframework.util.AntPathMatcher.DEFAULT_PATH_SEPARATOR;
@@ -41,7 +42,7 @@ public class SwaggerUiSupport {
     }
 
     public String getUiPath() {
-        return swaggerUiProperties.getPath();
+        return StringUtils.removeEnd(swaggerUiProperties.getPath(), "/");
     }
 
     public String getRedirectPath() {
