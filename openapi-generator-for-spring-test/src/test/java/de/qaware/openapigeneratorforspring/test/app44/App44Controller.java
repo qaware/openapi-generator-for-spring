@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 public class App44Controller {
 
-    @GetMapping
+    @GetMapping(path = "/")
     public List<Base1> mapping1() {
         return Arrays.asList(
                 new SomeClass1("property1"),
