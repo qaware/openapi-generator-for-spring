@@ -330,6 +330,7 @@
                             <serverId>ossrh</serverId>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                             <autoDropAfterRelease>true</autoDropAfterRelease>
+                            <stagingProgressTimeoutMinutes>15</stagingProgressTimeoutMinutes>
                         </configuration>
                     </plugin>
 
