@@ -36,7 +36,7 @@ Inside your Spring Boot application, add the following (maven) dependency:
 <dependency>
     <groupId>de.qaware.tools.openapi-generator-for-spring</groupId>
     <artifactId>openapi-generator-for-spring-starter</artifactId>
-    <version>5.1.8</version>
+    <version>6.0.0</version>
 </dependency>
 ```
 
