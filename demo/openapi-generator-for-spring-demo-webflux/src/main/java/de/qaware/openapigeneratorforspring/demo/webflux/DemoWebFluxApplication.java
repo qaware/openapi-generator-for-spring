@@ -6,14 +6,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @OpenAPIDefinition(info = @Info(
-		description = "Demo API",
-		version = "1.0"
+        description = "Demo API",
+        version = "1.0"
 ))
 @SpringBootApplication
 public class DemoWebFluxApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DemoWebFluxApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(DemoWebFluxApplication.class, args);
+    }
 
 }

@@ -22,11 +22,11 @@ package de.qaware.openapigeneratorforspring.webmvc;
 
 import de.qaware.openapigeneratorforspring.common.OpenApiRequestParameterProvider;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiBaseUriSupplier;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 

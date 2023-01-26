@@ -55,7 +55,8 @@ public class OpenApiConfigurationPropertiesUtils {
                     .orElseGet(() -> {
                         try {
                             return propertiesClass.getDeclaredConstructor().newInstance();
-                        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
+                        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException |
+                                 InstantiationException e) {
                             throw new IllegalStateException("Cannot create instance of " + propertiesClass);
                         }
                     });

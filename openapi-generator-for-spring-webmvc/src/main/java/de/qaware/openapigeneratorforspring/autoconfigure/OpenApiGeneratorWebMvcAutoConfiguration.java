@@ -28,6 +28,7 @@ import de.qaware.openapigeneratorforspring.common.web.OpenApiResource;
 import de.qaware.openapigeneratorforspring.webmvc.HandlerMethodPathPatternsProviderForWebMvc;
 import de.qaware.openapigeneratorforspring.webmvc.HandlerMethodsProviderForWebMvc;
 import de.qaware.openapigeneratorforspring.webmvc.OpenApiRequestAwareSupplierForWebMvc;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -36,8 +37,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 

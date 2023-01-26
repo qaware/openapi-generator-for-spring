@@ -87,11 +87,11 @@ public class OpenApiSwaggerUiWebFluxAutoConfiguration {
     @Hidden
     public RouterFunction<ServerResponse> redirectToSwaggerUiIndexHtml(SwaggerUiSupport swaggerUiSupport) {
         return route(
-            GET(swaggerUiSupport.getUiPath())
-                .or(GET(swaggerUiSupport.getUiPath() + "/")),
-            req -> ServerResponse.status(HttpStatus.FOUND)
-                .location(req.uriBuilder().replacePath(swaggerUiSupport.getRedirectPath()).build())
-                .build()
+                GET(swaggerUiSupport.getUiPath())
+                        .or(GET(swaggerUiSupport.getUiPath() + "/")),
+                req -> ServerResponse.status(HttpStatus.FOUND)
+                        .location(req.uriBuilder().replacePath(swaggerUiSupport.getRedirectPath()).build())
+                        .build()
         );
     }
 

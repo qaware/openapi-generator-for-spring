@@ -51,9 +51,9 @@ public class HandlerMethodsProviderForWebFlux implements HandlerMethodsProvider 
     @Override
     public List<HandlerMethodWithInfo> getHandlerMethods() {
         return Stream.concat(
-                getHandlerMethodsFromRequestMappings(),
-                getHandlerMethodsFromRouterFunctions()
-        )
+                        getHandlerMethodsFromRequestMappings(),
+                        getHandlerMethodsFromRouterFunctions()
+                )
                 .collect(Collectors.toList());
     }
 

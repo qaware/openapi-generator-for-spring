@@ -31,13 +31,13 @@ import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeInitialSchemaBuilder;
 import de.qaware.openapigeneratorforspring.common.schema.resolver.type.extension.java8.Java8TimeTypeResolverConfigurationProperties;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiObjectMapperSupplier;
+import jakarta.validation.constraints.Min;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 import javax.annotation.Nullable;
-import jakarta.validation.constraints.Min;
 
 @EnableConfigurationProperties(Java8TimeTypeResolverConfigurationProperties.class)
 public class OpenApiGeneratorSchemaExtensionAutoConfiguration {

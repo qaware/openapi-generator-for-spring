@@ -11,8 +11,8 @@ class App25Test extends AbstractOpenApiGeneratorWebFluxBaseIntTest {
     void testSwaggerUiIsNotFoundWhenDisabled() throws Exception {
         performApiDocsRequest(x -> x, x -> x).expectStatus().isOk();
         webTestClient.get().uri(uriBuilder -> uriBuilder
-                .path("/swagger-ui/index.html")
-                .build())
+                        .path("/swagger-ui/index.html")
+                        .build())
                 .exchange()
                 .expectStatus().isNotFound();
     }

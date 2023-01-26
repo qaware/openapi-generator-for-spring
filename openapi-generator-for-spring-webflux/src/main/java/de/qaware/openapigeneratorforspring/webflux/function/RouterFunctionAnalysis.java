@@ -28,10 +28,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.reactive.function.server.*;
+import org.springframework.web.reactive.function.server.HandlerFunction;
+import org.springframework.web.reactive.function.server.RequestPredicate;
+import org.springframework.web.reactive.function.server.RequestPredicates;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.function.server.ServerRequest;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
@@ -83,9 +92,9 @@ class RouterFunctionAnalysis implements RouterFunctions.Visitor, RequestPredicat
     @Override
     public void method(Set<HttpMethod> methods) {
         methods.stream()
-            .map(HttpMethod::name)
-            .map(RequestMethod::valueOf)
-            .forEach(result.requestMethods::add);
+                .map(HttpMethod::name)
+                .map(RequestMethod::valueOf)
+                .forEach(result.requestMethods::add);
     }
 
     @Override
@@ -105,12 +114,10 @@ class RouterFunctionAnalysis implements RouterFunctions.Visitor, RequestPredicat
         if (HttpHeaders.ACCEPT.equals(name)) {
             // see also org.springframework.web.reactive.function.server.RequestPredicates.AcceptPredicate
             result.producesContentTypesFromHeader.add(value);
-        }
-        else if (HttpHeaders.CONTENT_TYPE.equals(name)) {
+        } else if (HttpHeaders.CONTENT_TYPE.equals(name)) {
             // see also org.springframework.web.reactive.function.server.RequestPredicates.ContentTypePredicate
             result.consumesContentTypesFromHeader.add(value);
-        }
-        else {
+        } else {
             result.parameters.add(new RouterFunctionHandlerMethod.Parameter(name, ParameterIn.HEADER));
         }
     }

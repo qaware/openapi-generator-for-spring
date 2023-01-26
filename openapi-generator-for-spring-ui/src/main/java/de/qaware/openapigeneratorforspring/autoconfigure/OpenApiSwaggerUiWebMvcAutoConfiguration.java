@@ -28,6 +28,7 @@ import de.qaware.openapigeneratorforspring.ui.webjar.WebJarResourceTransformerFa
 import de.qaware.openapigeneratorforspring.ui.webjar.WebJarTransformedResourceBuilder;
 import de.qaware.openapigeneratorforspring.ui.webmvc.OpenApiSwaggerUiCsrfSupportProviderForWebMvc;
 import de.qaware.openapigeneratorforspring.ui.webmvc.WebJarResourceTransformerSupportFactoryForWebMvc;
+import jakarta.servlet.ServletRequest;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +40,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import jakarta.servlet.ServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

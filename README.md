@@ -132,7 +132,9 @@ Feel free to investigate the
 for more details. The relevant interfaces all have the suffix `Customizer` and extend the `Ordered` interface.
 
 #### Examples
+
 `OperationCustomizer` bean that uses the class name of the RestController to set it as OpenAPI tag
+
 ```java
 /**
  * Provide an OperationCustomizer to use the class name of the REST controller as Tag. This way the API endpoints are grouped per REST controller.
@@ -155,6 +157,7 @@ public OperationCustomizer operationTagCustomizer() {
 ```
 
 `OperationIdProvider` to generate deep-links to specific endpoints that are compatible to the SpringFox style
+
 ```java
 /**
  * Provide an OperationIdProvider to generate deep-links that are compatible to the SpringFox style.
@@ -166,8 +169,6 @@ public OperationIdProvider operationIdProvider() {
     return operationInfo -> operationInfo.getHandlerMethod().getIdentifier() + "Using" + operationInfo.getRequestMethod().name();
 }
 ```
-
-
 
 ### How to customize the included Swagger UI?
 

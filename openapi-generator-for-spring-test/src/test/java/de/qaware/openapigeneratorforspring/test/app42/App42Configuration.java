@@ -11,10 +11,10 @@ class App42Configuration {
     public SchemaPropertiesCustomizer schemaPropertiesCustomizerForMyRequiredAnnotation() {
         return (schema, javaType, annotationsSupplier, properties) ->
                 properties.forEach((propertyName, property) -> property.customize(
-                        (propertySchema, propertyType, propertyAnnotationsSupplier) ->
-                                propertyAnnotationsSupplier.findAnnotations(MyRequiredAnnotation.class)
-                                        .findFirst()
-                                        .ifPresent(ignored -> schema.addRequired(propertyName))
+                                (propertySchema, propertyType, propertyAnnotationsSupplier) ->
+                                        propertyAnnotationsSupplier.findAnnotations(MyRequiredAnnotation.class)
+                                                .findFirst()
+                                                .ifPresent(ignored -> schema.addRequired(propertyName))
                         )
                 );
     }

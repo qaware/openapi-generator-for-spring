@@ -42,9 +42,9 @@ public class DefaultOperationServersCustomizer implements OperationCustomizer {
     @Override
     public void customize(Operation operation, OperationBuilderContext operationBuilderContext) {
         List<Server> servers = Stream.concat(
-                operation.getServers() == null ? Stream.empty() : operation.getServers().stream(),
-                collectServersFromHandlerMethod(operationBuilderContext)
-        )
+                        operation.getServers() == null ? Stream.empty() : operation.getServers().stream(),
+                        collectServersFromHandlerMethod(operationBuilderContext)
+                )
                 .distinct()
                 .collect(Collectors.toList());
         setCollectionIfNotEmpty(servers, operation::setServers);
