@@ -73,6 +73,16 @@
           }
         }
       }
+    },
+    "/mapping5": {
+      "post": {
+        "operationId": "lambdaMapping5",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
     }
   },
   "components": {

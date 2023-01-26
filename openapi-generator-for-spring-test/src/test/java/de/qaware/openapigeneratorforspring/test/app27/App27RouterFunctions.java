@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
+import static org.springframework.web.reactive.function.server.RequestPredicates.contentType;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -43,6 +44,13 @@ class App27RouterFunctions {
     @Bean
     RouterFunction<ServerResponse> lambdaMapping4() {
         return route(POST("/mapping4").and(NamedHeaderPredicate.of("header-1", "header-value")),
+                req -> ServerResponse.ok().build()
+        );
+    }
+
+    @Bean
+    RouterFunction<ServerResponse> lambdaMapping5() {
+        return route(POST("/mapping5").and(contentType(MediaType.APPLICATION_JSON)),
                 req -> ServerResponse.ok().build()
         );
     }
