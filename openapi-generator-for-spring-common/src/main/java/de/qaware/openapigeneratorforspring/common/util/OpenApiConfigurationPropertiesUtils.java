@@ -34,6 +34,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -52,22 +53,20 @@ public class OpenApiConfigurationPropertiesUtils {
         private T bindProperties(ConditionContext context) {
             return Binder.get(context.getEnvironment())
                     .bind(ConfigurationPropertyName.of(findPrefixFromClass()), Bindable.of(propertiesClass))
-                    .orElseGet(() -> {
-                        try {
-                            return propertiesClass.getDeclaredConstructor().newInstance();
-                        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException |
-                                 InstantiationException e) {
-                            throw new IllegalStateException("Cannot create instance of " + propertiesClass);
-                        }
-                    });
+                    .orElseGet(this::constructInstance);
+        }
+
+        private T constructInstance() {
+            try {
+                return propertiesClass.getDeclaredConstructor().newInstance();
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException |
+                     InstantiationException e) {
+                throw new IllegalStateException("Cannot create instance of " + propertiesClass);
+            }
         }
 
         private String findPrefixFromClass() {
-            ConfigurationProperties annotation = AnnotationUtils.findAnnotation(propertiesClass, ConfigurationProperties.class);
-            if (annotation == null) {
-                throw new IllegalStateException("Cannot find @ConfigurationProperties on " + propertiesClass);
-            }
-            return annotation.prefix();
+            return Objects.requireNonNull(AnnotationUtils.findAnnotation(propertiesClass, ConfigurationProperties.class)).prefix();
         }
     }
 }
