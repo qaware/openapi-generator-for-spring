@@ -28,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class HandlerMethodsProviderForWebMvc implements HandlerMethodsProvider {
@@ -46,6 +45,6 @@ public class HandlerMethodsProviderForWebMvc implements HandlerMethodsProvider {
                         handlerMethodPathPatternsProviderForWebMvc.findPatterns(entry.getKey()),
                         springWebRequestMethodEnumMapper.map(entry.getKey().getMethodsCondition().getMethods())
                 ))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

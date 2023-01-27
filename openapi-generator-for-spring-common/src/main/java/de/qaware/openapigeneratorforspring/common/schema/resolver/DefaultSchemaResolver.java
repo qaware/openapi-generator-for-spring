@@ -125,8 +125,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
             knownSchemas.forEach((recursionKey, knownSchema) -> LOGGER.debug("Known Schema: {} -> {}", recursionKey.hashCode(), logPretty(knownSchema)));
             referencableSchemas.forEach(referencableSchema -> {
                 LOGGER.debug("Resolving: {}", logPretty(referencableSchema.getSchema()));
-                if (referencableSchema.getSchema() instanceof RecursiveSchema) {
-                    RecursiveSchema recursiveSchema = (RecursiveSchema) referencableSchema.getSchema();
+                if (referencableSchema.getSchema() instanceof RecursiveSchema recursiveSchema) {
                     referencedSchemaConsumer.alwaysAsReference(recursiveSchema.getSchema(), referencableSchema.getSchemaConsumer());
                 } else if (referencableSchema.isMustBeReferenced()) {
                     referencedSchemaConsumer.alwaysAsReference(referencableSchema.getSchema(), referencableSchema.getSchemaConsumer());
@@ -253,8 +252,8 @@ public class DefaultSchemaResolver implements SchemaResolver {
         private final TypeResolver.RecursionKey recursionKey;
 
         public static Schema unwrap(Schema schema) {
-            if (schema instanceof RecursiveSchema) {
-                return ((RecursiveSchema) schema).getSchema();
+            if (schema instanceof RecursiveSchema recursiveSchema) {
+                return recursiveSchema.getSchema();
             }
             return schema;
         }

@@ -25,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiMapUtils.setMapIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStringUtils.setStringIfNotBlank;
@@ -40,7 +39,7 @@ public class DefaultServerAnnotationMapper implements ServerAnnotationMapper {
     public List<Server> mapArray(io.swagger.v3.oas.annotations.servers.Server[] serversAnnotations) {
         return Arrays.stream(serversAnnotations)
                 .map(this::map)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

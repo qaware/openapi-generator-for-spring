@@ -54,7 +54,7 @@ public class HandlerMethodsProviderForWebFlux implements HandlerMethodsProvider 
                         getHandlerMethodsFromRequestMappings(),
                         getHandlerMethodsFromRouterFunctions()
                 )
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Stream<HandlerMethodWithInfo> getHandlerMethodsFromRequestMappings() {

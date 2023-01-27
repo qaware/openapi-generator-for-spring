@@ -46,8 +46,7 @@ public class SpringWebHandlerMethodRequestBodyParameterMapper {
                                 // this can also be seen as request body
                                 parameter.getType()
                                         .filter(type -> type.getType().equals(InputStream.class))
-                                        .map(type -> RequestBodyParameter.of(parameter, false))
-                                        .map(Stream::of).orElseGet(Stream::empty)
+                                        .map(type -> RequestBodyParameter.of(parameter, false)).stream()
                         )
                 )
                 .reduce((a, b) -> {

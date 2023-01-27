@@ -26,6 +26,8 @@ import de.qaware.openapigeneratorforspring.model.media.Schema;
 
 import java.util.Map;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 public class SchemaCustomizerForRequiredProperties implements SchemaPropertiesCustomizer {
     @Override
     public void customize(Schema schema, JavaType javaType, AnnotationsSupplier annotationsSupplier, Map<String, ? extends SchemaPropertyCallback> properties) {
@@ -33,7 +35,12 @@ public class SchemaCustomizerForRequiredProperties implements SchemaPropertiesCu
                 customizer.customize((propertySchema, propertyJavaType, propertyAnnotationsSupplier) ->
                         propertyAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.media.Schema.class)
                                 .findFirst()
-                                .filter(io.swagger.v3.oas.annotations.media.Schema::required)
+                                .filter(schemaAnnotation -> {
+                                    if (schemaAnnotation.requiredMode() == REQUIRED) {
+                                        return true;
+                                    }
+                                    return schemaAnnotation.required();
+                                })
                                 .ifPresent(ignored -> schema.addRequired(propertyName)))
         );
     }

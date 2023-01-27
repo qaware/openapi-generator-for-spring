@@ -73,11 +73,11 @@ public class DefaultAnnotationsSupplierFactory implements AnnotationsSupplierFac
                             .filter(method -> MergedAnnotation.VALUE.equals(method.getName()))
                             .filter(method -> method.getParameterCount() == 0)
                             .flatMap(valueMethodGetter -> {
-                                // there should only be one method getter but we don't mind invoking multiple of them,
+                                // there should only be one method getter, but we don't mind invoking multiple of them,
                                 // they're simply flat mapped anyway
                                 try {
                                     Object result = valueMethodGetter.invoke(repeatableAnnotationContainer);
-                                    return result instanceof Object[] ? Arrays.stream((Object[]) result) : Stream.empty();
+                                    return result instanceof Object[] objects ? Arrays.stream(objects) : Stream.empty();
                                 } catch (IllegalAccessException | InvocationTargetException e) {
                                     // getter method should always be invokable
                                     throw new IllegalStateException("Cannot invoke value method getter " + valueMethodGetter, e);
@@ -97,9 +97,7 @@ public class DefaultAnnotationsSupplierFactory implements AnnotationsSupplierFac
 
         @Override
         public <A extends Annotation> Stream<A> findAnnotationsDelegate(Class<A> annotationType) {
-            return Optional.ofNullable(annotatedMember.getAnnotation(annotationType))
-                    .map(Stream::of)
-                    .orElse(Stream.empty());
+            return Optional.ofNullable(annotatedMember.getAnnotation(annotationType)).stream();
         }
     }
 

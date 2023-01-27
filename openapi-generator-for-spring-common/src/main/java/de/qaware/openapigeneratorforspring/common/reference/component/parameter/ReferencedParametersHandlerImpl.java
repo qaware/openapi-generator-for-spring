@@ -29,6 +29,7 @@ import lombok.With;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -42,8 +43,9 @@ public class ReferencedParametersHandlerImpl extends AbstractDependentReferenced
 
     @Override
     public void maybeAsReference(List<Parameter> parameters, Consumer<List<Parameter>> parametersSetter) {
-        parametersSetter.accept(parameters);
-        storage.maybeReferenceParameters(parameters, owner);
+        var modifiableParameters = new ArrayList<>(parameters);
+        parametersSetter.accept(modifiableParameters);
+        storage.maybeReferenceParameters(modifiableParameters, owner);
     }
 
     @Override

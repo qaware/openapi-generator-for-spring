@@ -54,10 +54,10 @@ public class SpringWebHandlerMethodParameterMerger {
                         .map(parameterName -> {
                             val parameters = entry.getValue().stream()
                                     .map(ExtendedParameter::getParameter)
-                                    .collect(Collectors.toList());
+                                    .toList();
                             val handlerMethodsForParameters = entry.getValue().stream()
                                     .map(ExtendedParameter::getOwningHandlerMethod)
-                                    .collect(Collectors.toList());
+                                    .toList();
                             return buildMergedParameter(parameterName, parameters, parameter -> {
                                 if (!handlerMethodsForParameters.containsAll(handlerMethods)) {
                                     parameter.setRequired(false); // otherwise, the Swagger UI doesn't work
@@ -72,7 +72,7 @@ public class SpringWebHandlerMethodParameterMerger {
                         })
                         .orElseThrow(() -> new IllegalStateException("Cannot merge handler methods with unnamed parameters: " + entry.getValue()))
                 )
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Pair<Optional<String>, ExtendedParameter> buildExtendedParameterPair(SpringWebHandlerMethod handlerMethod, HandlerMethod.Parameter parameter) {

@@ -38,8 +38,7 @@ public class MergedSpringWebHandlerMethodMapper {
         @Nullable
         @Override
         public HandlerMethod.ContextModifier<MapperContext> map(@Nullable HandlerMethod.Context context) {
-            if (context instanceof MergedSpringWebHandlerMethodContext) {
-                MergedSpringWebHandlerMethodContext mergedHandlerMethodContext = (MergedSpringWebHandlerMethodContext) context;
+            if (context instanceof MergedSpringWebHandlerMethodContext mergedHandlerMethodContext) {
                 MediaTypesProvider mediaTypesProvider = owningType -> {
                     if (RequestBody.class.equals(owningType)) {
                         return mergedHandlerMethodContext.getConsumesContentTypes();
@@ -60,8 +59,7 @@ public class MergedSpringWebHandlerMethodMapper {
         @Nullable
         @Override
         public List<HandlerMethod.RequestBody> map(HandlerMethod handlerMethod) {
-            if (handlerMethod instanceof MergedSpringWebHandlerMethod) {
-                MergedSpringWebHandlerMethod mergedSpringWebHandlerMethod = (MergedSpringWebHandlerMethod) handlerMethod;
+            if (handlerMethod instanceof MergedSpringWebHandlerMethod mergedSpringWebHandlerMethod) {
                 return requestBodyMerger.mergeRequestBodies(mergedSpringWebHandlerMethod.getHandlerMethods());
             }
             return null; // indicates we can't map this handler method instance
@@ -76,8 +74,7 @@ public class MergedSpringWebHandlerMethodMapper {
         @Nullable
         @Override
         public List<HandlerMethod.Response> map(HandlerMethod handlerMethod) {
-            if (handlerMethod instanceof MergedSpringWebHandlerMethod) {
-                MergedSpringWebHandlerMethod mergedSpringWebHandlerMethod = (MergedSpringWebHandlerMethod) handlerMethod;
+            if (handlerMethod instanceof MergedSpringWebHandlerMethod mergedSpringWebHandlerMethod) {
                 return responseMerger.mergeResponses(mergedSpringWebHandlerMethod.getHandlerMethods());
             }
             return null; // indicates we can't map this handler method instance

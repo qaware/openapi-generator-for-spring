@@ -46,8 +46,7 @@ public class SpringWebHandlerMethodMapper {
         @Nullable
         @Override
         public HandlerMethod.ContextModifier<MapperContext> map(@Nullable HandlerMethod.Context context) {
-            if (context instanceof SpringWebHandlerMethod) {
-                SpringWebHandlerMethod springWebHandlerMethod = (SpringWebHandlerMethod) context;
+            if (context instanceof SpringWebHandlerMethod springWebHandlerMethod) {
                 MediaTypesProvider mediaTypesProvider = owningType -> {
                     if (RequestBody.class.equals(owningType)) {
                         return contentTypesMapper.findConsumesContentTypes(springWebHandlerMethod);
@@ -71,8 +70,7 @@ public class SpringWebHandlerMethodMapper {
         @Nullable
         @Override
         public List<HandlerMethod.RequestBody> map(HandlerMethod handlerMethod) {
-            if (handlerMethod instanceof SpringWebHandlerMethod) {
-                SpringWebHandlerMethod springWebHandlerMethod = (SpringWebHandlerMethod) handlerMethod;
+            if (handlerMethod instanceof SpringWebHandlerMethod springWebHandlerMethod) {
                 return requestBodyParameterMapper.findRequestBodyParameter(springWebHandlerMethod)
                         .map(requestBodyParameter -> buildSpringWebRequestBody(requestBodyParameter, springWebHandlerMethod))
                         .map(HandlerMethod.RequestBody.class::cast)
@@ -107,8 +105,7 @@ public class SpringWebHandlerMethodMapper {
         @Nullable
         @Override
         public List<HandlerMethod.Response> map(HandlerMethod handlerMethod) {
-            if (handlerMethod instanceof SpringWebHandlerMethod) {
-                SpringWebHandlerMethod springWebHandlerMethod = (SpringWebHandlerMethod) handlerMethod;
+            if (handlerMethod instanceof SpringWebHandlerMethod springWebHandlerMethod) {
                 return Collections.singletonList(new AbstractSpringWebHandlerMethod.SpringWebResponse(
                         responseCodeMapper.getResponseCode(springWebHandlerMethod),
                         contentTypesMapper.findProducesContentTypes(springWebHandlerMethod),

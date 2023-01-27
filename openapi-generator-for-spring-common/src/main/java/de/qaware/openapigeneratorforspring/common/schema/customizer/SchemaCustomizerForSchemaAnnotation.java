@@ -83,7 +83,7 @@ public class SchemaCustomizerForSchemaAnnotation implements SchemaCustomizer {
 
         List<Object> allowableValues = Stream.of(annotation.allowableValues())
                 .map(parsableValueMapper::parse)
-                .collect(Collectors.toList());
+                .toList();
         setCollectionIfNotEmpty(allowableValues, schema::setEnumValues);
 
         setStringIfNotBlank(annotation.defaultValue(), value -> schema.setDefaultValue(parsableValueMapper.parse(value)));
@@ -120,8 +120,7 @@ public class SchemaCustomizerForSchemaAnnotation implements SchemaCustomizer {
             case WRITE_ONLY:
                 schema.setWriteOnly(true);
                 break;
-            case READ_WRITE:
-            case AUTO:
+            case READ_WRITE, AUTO:
                 break;
         }
     }

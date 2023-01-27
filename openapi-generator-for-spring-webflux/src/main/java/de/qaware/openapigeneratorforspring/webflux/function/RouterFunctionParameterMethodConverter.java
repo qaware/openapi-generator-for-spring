@@ -33,8 +33,7 @@ public class RouterFunctionParameterMethodConverter implements ParameterMethodCo
     @Nullable
     @Override
     public Parameter convert(HandlerMethod.Parameter handlerMethodParameter) {
-        if (handlerMethodParameter instanceof RouterFunctionHandlerMethod.Parameter) {
-            RouterFunctionHandlerMethod.Parameter parameter = (RouterFunctionHandlerMethod.Parameter) handlerMethodParameter;
+        if (handlerMethodParameter instanceof RouterFunctionHandlerMethod.Parameter parameter) {
             return Parameter.builder()
                     .name(parameter.getName()
                             .orElseThrow(() -> new IllegalStateException("Router function parameter should always have a name")))

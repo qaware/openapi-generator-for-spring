@@ -30,7 +30,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
@@ -55,18 +54,13 @@ public class SpringWebHandlerMethodMerger implements HandlerMethod.Merger {
 
     private Optional<List<SpringWebHandlerMethod>> findSpringWebHandlerMethods(List<HandlerMethod> handlerMethods) {
         List<SpringWebHandlerMethod> springWebHandlerMethods = handlerMethods.stream()
-                .map(handlerMethod -> {
-                    if (handlerMethod instanceof SpringWebHandlerMethod) {
-                        return (SpringWebHandlerMethod) handlerMethod;
-                    }
-                    return null;
-                })
+                .map(handlerMethod -> handlerMethod instanceof SpringWebHandlerMethod springWebHandlerMethod ? springWebHandlerMethod : null)
                 .filter(Objects::nonNull)
                 // we need a stable ordering of the discovered handler methods
                 // the order how Spring provides the handler methods appears to be undefined,
                 // and at least for merging, we need it to be ordered
                 .sorted(Comparator.comparing(SpringWebHandlerMethodMerger::getComparingKey))
-                .collect(Collectors.toList());
+                .toList();
         if (springWebHandlerMethods.isEmpty()) {
             return Optional.empty();
         }

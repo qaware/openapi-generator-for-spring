@@ -136,9 +136,9 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
         ), jsonSubTypes -> {
 
             Map<String, String> schemaReferenceMapping = new LinkedHashMap<>();
-            List<Schema> oneOfSchemas = jsonSubTypes.keySet().stream()
+            List<Schema> oneOfSchemas = new java.util.ArrayList<>(jsonSubTypes.keySet().stream()
                     .map(ignored -> new Schema())
-                    .collect(Collectors.toList());
+                    .toList());
             Map<String, Integer> oneOfSchemasIndexMap = zip(
                     jsonSubTypes.keySet().stream(), IntStream.range(0, jsonSubTypes.size()).boxed()
             ).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
@@ -190,20 +190,20 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
         Optional<String> propertyName = annotationsSupplier.findAnnotations(PropertyNameAnnotation.class)
                 .findFirst()
                 .map(PropertyNameAnnotation::value);
-        if (!propertyName.isPresent()) {
+        if (propertyName.isEmpty()) {
             return;
         }
         Optional<List<Object>> propertyEnumValues = annotationsSupplier.findAnnotations(PropertyEnumValuesAnnotation.class)
                 .findFirst()
                 .map(PropertyEnumValuesAnnotation::value)
                 .map(Arrays::asList);
-        if (!propertyEnumValues.isPresent()) {
+        if (propertyEnumValues.isEmpty()) {
             return;
         }
         Optional<String> propertySchemaName = annotationsSupplier.findAnnotations(PropertySchemaNameAnnotation.class)
                 .findFirst()
                 .map(PropertySchemaNameAnnotation::value);
-        if (!propertySchemaName.isPresent()) {
+        if (propertySchemaName.isEmpty()) {
             return;
         }
         SchemaPropertyCallback schemaPropertyCallback = properties.get(propertyName.get());
@@ -217,8 +217,8 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
 
     @Nullable
     private JsonTypeInfo getJsonTypeInfo(Schema schema) {
-        if (schema instanceof JacksonPolymorphismSchema) {
-            return ((JacksonPolymorphismSchema) schema).getJsonTypeInfo();
+        if (schema instanceof JacksonPolymorphismSchema jacksonPolymorphismSchema) {
+            return jacksonPolymorphismSchema.getJsonTypeInfo();
         }
         return null;
     }
@@ -277,11 +277,10 @@ public class TypeResolverForJacksonPolymorphism implements TypeResolver, Initial
         }
         return Stream.concat(
                 Optional.ofNullable(clazz.getSuperclass())
-                        .flatMap(TypeResolverForJacksonPolymorphism::findClassOwningJsonTypeInfo)
-                        .map(Stream::of).orElseGet(Stream::empty), // Optional.toStream()
+                        .flatMap(TypeResolverForJacksonPolymorphism::findClassOwningJsonTypeInfo).stream(),
                 Arrays.stream(clazz.getInterfaces())
                         .map(TypeResolverForJacksonPolymorphism::findClassOwningJsonTypeInfo)
-                        .flatMap(o -> o.map(Stream::<Class<?>>of).orElseGet(Stream::empty)) // Optional::toStream
+                        .flatMap(Optional::stream)
         ).findFirst();
     }
 

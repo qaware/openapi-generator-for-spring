@@ -36,7 +36,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
@@ -87,7 +86,7 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
                 Arrays.stream(parameterAnnotations)
                         .map(annotation -> parameterAnnotationMapper.buildFromAnnotation(annotation, mapperContext))
                         .filter(parameter -> !parameter.isEmpty())
-                        .collect(Collectors.toList()),
+                        .toList(),
                 parameters -> mapperContext.getReferencedItemConsumer(ReferencedParametersConsumer.class).maybeAsReference(parameters, setter)
         );
     }
@@ -117,14 +116,14 @@ public class DefaultOperationAnnotationMapper implements OperationAnnotationMapp
                 Stream.of(tags)
                         .filter(StringUtils::isNotBlank)
                         .distinct()
-                        .collect(Collectors.toList()),
+                        .toList(),
                 tagNames -> {
                     // also consume tag names here, even if no description or additional information is present
                     // the tags consumer is smart enough to merge tags with identical names
                     mapperContext.getReferencedItemConsumer(ReferencedTagsConsumer.class).accept(
                             tagNames.stream()
                                     .map(tagName -> new Tag().withName(tagName))
-                                    .collect(Collectors.toList())
+                                    .toList()
                     );
                     operation.setTags(tagNames);
                 }

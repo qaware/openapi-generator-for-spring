@@ -27,7 +27,6 @@ import de.qaware.openapigeneratorforspring.model.server.Server;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
@@ -46,7 +45,7 @@ public class DefaultOperationServersCustomizer implements OperationCustomizer {
                         collectServersFromHandlerMethod(operationBuilderContext)
                 )
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
         setCollectionIfNotEmpty(servers, operation::setServers);
     }
 

@@ -13,7 +13,6 @@ import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -50,7 +49,7 @@ class App48Controller {
         public RecursiveListDto(Collection<?> c) {
             super(c.stream()
                     .map(RecursiveListDto::castInnerList)
-                    .collect(Collectors.toList())
+                    .toList()
             );
         }
 

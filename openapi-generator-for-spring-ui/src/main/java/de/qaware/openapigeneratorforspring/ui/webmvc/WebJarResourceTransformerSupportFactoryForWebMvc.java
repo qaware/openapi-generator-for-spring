@@ -31,7 +31,6 @@ import lombok.RequiredArgsConstructor;
 import javax.annotation.Nullable;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class WebJarResourceTransformerSupportFactoryForWebMvc {
@@ -47,7 +46,7 @@ public class WebJarResourceTransformerSupportFactoryForWebMvc {
         OpenApiSwaggerUiCsrfSupport csrfSupport = getCsrfSupport();
         List<WebJarResourceTransformer> transformers = resourceTransformerFactories.stream()
                 .map(factory -> factory.create(baseUri, csrfSupport))
-                .collect(Collectors.toList());
+                .toList();
         return new WebJarResourceTransformerSupport(transformers, transformedResourceBuilder);
     }
 

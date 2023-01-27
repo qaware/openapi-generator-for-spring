@@ -72,8 +72,7 @@ public class OpenApiSwaggerUiWebMvcAutoConfiguration {
         public OpenApiSwaggerUiCsrfSupportProviderForWebMvc openApiCsrfSupportProviderForWebFlux(ServletRequest servletRequest) {
             return () -> {
                 Object csrfTokenAttribute = servletRequest.getAttribute(CsrfToken.class.getName());
-                if (csrfTokenAttribute instanceof CsrfToken) {
-                    CsrfToken csrfToken = (CsrfToken) csrfTokenAttribute;
+                if (csrfTokenAttribute instanceof CsrfToken csrfToken) {
                     return OpenApiSwaggerUiCsrfSupport.of(csrfToken.getHeaderName(), csrfToken.getToken());
                 }
                 return null;

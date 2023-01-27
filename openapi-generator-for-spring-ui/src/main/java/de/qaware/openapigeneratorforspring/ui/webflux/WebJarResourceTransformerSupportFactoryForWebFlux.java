@@ -33,7 +33,6 @@ import reactor.core.publisher.Mono;
 import javax.annotation.Nullable;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class WebJarResourceTransformerSupportFactoryForWebFlux {
@@ -53,7 +52,7 @@ public class WebJarResourceTransformerSupportFactoryForWebFlux {
     private List<WebJarResourceTransformer> createTransformers(URI baseUri, OpenApiSwaggerUiCsrfSupport csrfSupport) {
         return resourceTransformerFactories.stream()
                 .map(factory -> factory.create(baseUri, csrfSupport))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Mono<OpenApiSwaggerUiCsrfSupport> getCsrfSupport(ServerWebExchange exchange) {

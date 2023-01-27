@@ -47,6 +47,12 @@ public class OpenApiGeneratorWebMethodMergerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public MergedSpringWebHandlerMethodMapper.ContextModifierMapper mergedSpringWebHandSpringWebContextModifierMapper() {
+        return new MergedSpringWebHandlerMethodMapper.ContextModifierMapper();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public MergedSpringWebHandlerMethodMapper.RequestBodyMapper mergedSpringWebHandSpringWebRequestBodyParameterMapper(
             SpringWebHandlerMethodRequestBodyMerger springWebHandlerMethodRequestBodyMerger
     ) {

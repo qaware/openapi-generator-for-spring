@@ -30,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
@@ -54,7 +53,7 @@ public class DefaultOperationTagsCustomizer implements OperationCustomizer {
         List<String> distinctNonBlankTags = tagNames
                 .filter(StringUtils::isNotBlank)
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
         setCollectionIfNotEmpty(distinctNonBlankTags, operation::setTags);
     }
 
@@ -62,7 +61,7 @@ public class DefaultOperationTagsCustomizer implements OperationCustomizer {
         HandlerMethod handlerMethod = operationBuilderContext.getOperationInfo().getHandlerMethod();
         List<Tag> tags = handlerMethod.findAnnotations(io.swagger.v3.oas.annotations.tags.Tag.class)
                 .map(tagAnnotationMapper::map)
-                .collect(Collectors.toList());
+                .toList();
         setCollectionIfNotEmpty(tags, nonEmptyTags -> operationBuilderContext.getReferencedItemConsumer(ReferencedTagsConsumer.class)
                 .accept(nonEmptyTags));
         return tags.stream().map(Tag::getName);

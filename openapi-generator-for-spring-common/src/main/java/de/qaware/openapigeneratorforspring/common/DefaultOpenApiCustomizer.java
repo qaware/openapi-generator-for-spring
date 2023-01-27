@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
@@ -78,7 +77,7 @@ public class DefaultOpenApiCustomizer implements OpenApiCustomizer {
                         openAPIDefinitionAnnotationSupplier.getAnnotations(OpenAPIDefinition::servers),
                         springBootApplicationAnnotationsSupplier.findAnnotations(io.swagger.v3.oas.annotations.servers.Server.class)
                 ).map(serverAnnotationMapper::map)
-        ).collect(Collectors.toList());
+        ).toList();
         setCollectionIfNotEmpty(servers, setter);
     }
 

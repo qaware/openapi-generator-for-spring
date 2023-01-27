@@ -131,8 +131,8 @@ public class TypeResolverForCollectionLikeTypeSupport {
     }
 
     private static JavaType unpackJacksonResolvedRecursiveType(JavaType javaType) {
-        if (javaType instanceof ResolvedRecursiveType) {
-            JavaType selfReferencedType = ((ResolvedRecursiveType) javaType).getSelfReferencedType();
+        if (javaType instanceof ResolvedRecursiveType resolvedType) {
+            JavaType selfReferencedType = resolvedType.getSelfReferencedType();
             if (selfReferencedType != null) {
                 return selfReferencedType;
             }
@@ -187,7 +187,7 @@ public class TypeResolverForCollectionLikeTypeSupport {
         }
 
         static boolean matches(Object caller, InitialType initialType) {
-            return initialType instanceof CollectionLikeInitialType && ((CollectionLikeInitialType) initialType).caller.equals(caller);
+            return initialType instanceof CollectionLikeInitialType collectionLikeType && collectionLikeType.caller.equals(caller);
         }
     }
 

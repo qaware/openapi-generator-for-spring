@@ -47,8 +47,7 @@ public class RouterFunctionHandlerMethodMapper {
         @Nullable
         @Override
         public List<HandlerMethod.Response> map(HandlerMethod handlerMethod) {
-            if (handlerMethod instanceof RouterFunctionHandlerMethod) {
-                RouterFunctionHandlerMethod routerFunctionHandlerMethod = (RouterFunctionHandlerMethod) handlerMethod;
+            if (handlerMethod instanceof RouterFunctionHandlerMethod routerFunctionHandlerMethod) {
                 RouterFunctionHandlerMethod.Response response = new RouterFunctionHandlerMethod.Response(
                         // see GH Issue #4
                         findResponseCode(handlerMethod),

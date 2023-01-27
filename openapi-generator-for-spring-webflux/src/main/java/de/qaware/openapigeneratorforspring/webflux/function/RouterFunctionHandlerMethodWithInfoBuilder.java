@@ -56,8 +56,7 @@ public class RouterFunctionHandlerMethodWithInfoBuilder {
 
     private Optional<Method> findBeanFactoryMethod(String beanName) {
         BeanDefinition mergedBeanDefinition = beanFactory.getMergedBeanDefinition(beanName);
-        if (mergedBeanDefinition instanceof RootBeanDefinition) {
-            RootBeanDefinition rootBeanDefinition = (RootBeanDefinition) mergedBeanDefinition;
+        if (mergedBeanDefinition instanceof RootBeanDefinition rootBeanDefinition) {
             return Optional.ofNullable(rootBeanDefinition.getResolvedFactoryMethod());
         }
         return Optional.empty();

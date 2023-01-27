@@ -35,7 +35,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.IntFunction;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -61,7 +60,7 @@ public class DefaultSpringWebHandlerMethodBuilder implements SpringWebHandlerMet
         IntFunction<String> parameterNameSupplier = buildParameterNameSupplier(springWebHandlerMethod);
         return IntStream.range(0, methodParameters.length).boxed()
                 .map(parameterIndex -> buildParameter(methodParameters[parameterIndex], parameterNameSupplier.apply(parameterIndex)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private IntFunction<String> buildParameterNameSupplier(org.springframework.web.method.HandlerMethod springWebHandlerMethod) {
@@ -78,7 +77,7 @@ public class DefaultSpringWebHandlerMethodBuilder implements SpringWebHandlerMet
         return parameterIndex -> null;
     }
 
-    private AbstractSpringWebHandlerMethod.SpringWebParameter buildParameter(MethodParameter parameter, @Nullable String parameterName) {
+    private HandlerMethod.Parameter buildParameter(MethodParameter parameter, @Nullable String parameterName) {
         return new AbstractSpringWebHandlerMethod.SpringWebParameter(
                 // simply using parameter.getParameterName() does not work because
                 // we don't want to set a ParameterNameDiscoverer, which is not thread-safe (see parameter.getParameterName())!
@@ -87,8 +86,7 @@ public class DefaultSpringWebHandlerMethodBuilder implements SpringWebHandlerMet
                 new AnnotationsSupplier() {
                     @Override
                     public <A extends Annotation> Stream<A> findAnnotations(Class<A> annotationType) {
-                        return Optional.ofNullable(parameter.getParameterAnnotation(annotationType))
-                                .map(Stream::of).orElseGet(Stream::empty); // Optional.stream()
+                        return Optional.ofNullable(parameter.getParameterAnnotation(annotationType)).stream();
                     }
                 }
         );

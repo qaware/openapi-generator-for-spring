@@ -118,7 +118,7 @@ public class OpenApiSwaggerUiWebFluxAutoConfiguration {
                         transformerSupport -> transformerSupport.transformResourceIfMatching(outputResource, Mono::just, (transformer, resourceBuilder) ->
                                 DataBufferUtils.join(DataBufferUtils.read(outputResource, exchange.getResponse().bufferFactory(), StreamUtils.BUFFER_SIZE))
                                         .map(dataBuffer -> {
-                                            CharBuffer charBuffer = StandardCharsets.UTF_8.decode(dataBuffer.asByteBuffer());
+                                            CharBuffer charBuffer = StandardCharsets.UTF_8.decode(dataBuffer.toByteBuffer());
                                             String transformedContent = transformer.apply(charBuffer.toString());
                                             DataBufferUtils.release(dataBuffer);
                                             return resourceBuilder.apply(transformedContent);

@@ -58,8 +58,8 @@ public class OpenApiLoggingUtils {
 
     public static Object logPretty(Object object) {
         return logLazily(() -> {
-            if (object instanceof HasToPrettyString) {
-                return ((HasToPrettyString) object).toPrettyString();
+            if (object instanceof HasToPrettyString hasToPrettyString) {
+                return hasToPrettyString.toPrettyString();
             }
             return PRETTY_PRINTERS.entrySet().stream()
                     .filter(entry -> entry.getKey().isAssignableFrom(object.getClass()))

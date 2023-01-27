@@ -202,7 +202,7 @@ public abstract class AbstractReferencedItemStorage<T extends HasReference<T>> {
         List<ReferenceSetterWithIdentifier<T>> referenceSetters = entry.getReferenceSetters();
         List<IdentifierSetterImpl> identifierSetters = referenceSetters.stream()
                 .map(IdentifierSetterImpl::ofReferenceSetter)
-                .collect(Collectors.toList());
+                .toList();
         referenceIdentifierFactory.buildIdentifiers(entry.getItem(), Collections.unmodifiableList(identifierSetters));
         return IntStream.range(0, identifierSetters.size()).boxed()
                 .flatMap(i -> {

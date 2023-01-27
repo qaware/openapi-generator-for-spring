@@ -50,7 +50,6 @@ import java.util.stream.Stream;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.firstNonNull;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiCollectionUtils.setCollectionIfNotEmpty;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiObjectUtils.setIfNotEmpty;
-import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -126,7 +125,7 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
         return Stream.concat(
                 partitionedParameters.get(true).stream(),
                 partitionedParameters.get(false).stream()
-        ).collect(toList());
+        ).toList();
     }
 
     @RequiredArgsConstructor
@@ -159,7 +158,7 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
     private void setParametersToOperation(Operation operation, List<Parameter> parameters, OperationBuilderContext operationBuilderContext) {
         List<Parameter> filteredParameters = parameters.stream()
                 .filter(parameter -> parameterPostFilters.stream().allMatch(filter -> filter.postAccept(parameter)))
-                .collect(toList());
+                .toList();
         ReferencedParametersConsumer referencedParametersConsumer = operationBuilderContext.getReferencedItemConsumer(ReferencedParametersConsumer.class);
         setCollectionIfNotEmpty(filteredParameters, p -> referencedParametersConsumer.withOwner(operation).maybeAsReference(p, operation::setParameters));
     }
@@ -175,11 +174,10 @@ public class DefaultOperationParameterCustomizer implements OperationCustomizer 
                             // first callback of specific parameter implementation,
                             .map(parameter -> applyCustomizeCallback(parameter, methodParameter))
                             // then parameter customizers applying to any implementation
-                            .map(parameter -> applyParameterCustomizers(parameter, parameterCustomizerContext))
-                            .map(Stream::of).orElseGet(Stream::empty); // Optional.toStream()
+                            .map(parameter -> applyParameterCustomizers(parameter, parameterCustomizerContext)).stream();
                 })
                 .filter(parameter -> !parameter.isEmpty())
-                .collect(toList());
+                .toList();
     }
 
     private Parameter applyCustomizeCallback(Parameter parameter, HandlerMethod.Parameter methodParameter) {

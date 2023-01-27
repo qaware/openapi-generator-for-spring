@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Configuration
@@ -38,7 +37,7 @@ class App32Configuration {
                 .filter(bean -> bean.getBeanType() != null)
                 .map(bean -> Pair.of(bean, new ExceptionHandlerMethodResolver(bean.getBeanType())))
                 .filter(pair -> pair.getRight().hasExceptionMappings())
-                .collect(Collectors.toList());
+                .toList();
 
         return new OperationCustomizer() {
             @Override

@@ -50,7 +50,7 @@ public class ReferencedItemSupportFactory {
 
         List<ReferencedItemHandler> itemHandlers = factories.stream()
                 .map(ReferencedItemHandlerFactory::create)
-                .collect(Collectors.toList());
+                .toList();
 
         return new ReferencedItemSupport() {
             @Override
@@ -63,17 +63,17 @@ public class ReferencedItemSupportFactory {
                 if (openApi.getComponents() == null) {
                     openApi.setComponents(new Components());
                 }
-                List<AbstractDependentReferencedComponentHandler> referencedComponentHandlers = itemHandlers.stream()
+                var referencedComponentHandlers = itemHandlers.stream()
                         .map(itemHandler -> {
-                            if (itemHandler instanceof AbstractDependentReferencedComponentHandler) {
-                                return (AbstractDependentReferencedComponentHandler) itemHandler;
+                            if (itemHandler instanceof AbstractDependentReferencedComponentHandler dependentItemHandler) {
+                                return dependentItemHandler;
                             }
                             // non-dependent handler can already be handled here
                             itemHandler.applyToOpenApi(openApi);
                             return null;
                         })
                         .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+                        .toList();
 
                 new DependentReferencedComponentHandlersSupport(openApi, referencedComponentHandlers)
                         .handle();

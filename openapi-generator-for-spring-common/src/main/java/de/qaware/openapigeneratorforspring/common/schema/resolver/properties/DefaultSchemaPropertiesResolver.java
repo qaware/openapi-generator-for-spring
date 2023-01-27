@@ -122,7 +122,7 @@ public class DefaultSchemaPropertiesResolver implements SchemaPropertiesResolver
             throw new IllegalStateException("Unknown schema resolver mode " + mode);
         }
         return stream
-                .flatMap(annotationMember -> annotationMember.map(Stream::of).orElseGet(Stream::empty))
+                .flatMap(Optional::stream)
                 .map(annotationsSupplierFactory::createFromMember)
                 .reduce(AnnotationsSupplier::andThen);
     }

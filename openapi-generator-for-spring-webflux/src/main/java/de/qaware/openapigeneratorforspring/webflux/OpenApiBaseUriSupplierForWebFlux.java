@@ -53,8 +53,7 @@ public class OpenApiBaseUriSupplierForWebFlux implements OpenApiBaseUriSupplier,
 
     public static URI getBaseUri(ServerWebExchange serverWebExchange) {
         Object attribute = serverWebExchange.getAttribute(ATTRIBUTE_NAME);
-        if (attribute instanceof OpenApiBaseUriSupplier) {
-            OpenApiBaseUriSupplier openApiBaseUriSupplier = (OpenApiBaseUriSupplier) attribute;
+        if (attribute instanceof OpenApiBaseUriSupplier openApiBaseUriSupplier) {
             return openApiBaseUriSupplier.getBaseUri();
         }
         // this happens if the OpenApiBaseUriProviderForWebFluxWebFilter is running later than requesting this access

@@ -35,7 +35,6 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static de.qaware.openapigeneratorforspring.ui.swagger.SwaggerUiSupport.INDEX_HTML_FILE;
 
@@ -52,8 +51,7 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformer implements WebJarResour
 
     @Override
     public boolean matches(Resource resource) {
-        if (resource instanceof ClassPathResource) {
-            ClassPathResource classPathResource = (ClassPathResource) resource;
+        if (resource instanceof ClassPathResource classPathResource) {
             return classPathResource.getPath().endsWith(INDEX_HTML_FILE);
         }
         return false;
@@ -81,7 +79,7 @@ public class SwaggerUiIndexHtmlWebJarResourceTransformer implements WebJarResour
         }
         return apiDocsUris.stream()
                 .map(uri -> TemplateContext.UrlItem.of(uri.getName(), uri.getApiDocsUri()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @RequiredArgsConstructor(staticName = "of")

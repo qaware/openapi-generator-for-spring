@@ -25,7 +25,6 @@ import de.qaware.openapigeneratorforspring.common.reference.component.parameter.
 import de.qaware.openapigeneratorforspring.model.operation.Operation;
 import de.qaware.openapigeneratorforspring.model.parameter.Parameter;
 import de.qaware.openapigeneratorforspring.model.path.PathItem;
-import lombok.val;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,10 +44,10 @@ public class DefaultPathItemSharedParametersCustomizer implements PathItemCustom
         if (pathItem.getOperations().size() < 2) {
             return;
         }
-        val operations = pathItem.getOperations().values();
-        val sharedParameters = findSharedParametersAmongOperations(operations);
+        var operations = pathItem.getOperations().values();
+        var sharedParameters = findSharedParametersAmongOperations(operations);
         if (!sharedParameters.isEmpty()) {
-            val referencedParametersConsumer = referencedItemConsumerSupplier.get(ReferencedParametersConsumer.class);
+            var referencedParametersConsumer = referencedItemConsumerSupplier.get(ReferencedParametersConsumer.class);
             operations.forEach(operation -> {
                 operation.getParameters().removeAll(sharedParameters);
                 // owner update must be called even if operation parameters are empty

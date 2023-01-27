@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static de.qaware.openapigeneratorforspring.common.paths.method.SpringWebHandlerMethodContentTypesMapper.SINGLE_ALL_VALUE;
 import static de.qaware.openapigeneratorforspring.common.util.OpenApiStreamUtils.groupingByPairKeyAndCollectingValuesToList;
@@ -74,7 +73,7 @@ public class SpringWebHandlerMethodRequestBodyMerger {
                     List<RequestBodyParameter> requestBodyParameters = entry.getValue().stream()
                             .filter(Optional::isPresent)
                             .map(Optional::get)
-                            .collect(Collectors.toList());
+                            .toList();
                     return typeMerger.mergeTypes(requestBodyParameters.stream().map(RequestBodyParameter::getParameter))
                             .map(parameterType -> {
                                 boolean required = requestBodyParameters.stream()
@@ -98,7 +97,7 @@ public class SpringWebHandlerMethodRequestBodyMerger {
                             // do not omit request body entry just because the handler method doesn't have a parameter here
                             .orElseGet(() -> new EmptyRequestBody(consumesContentTypes));
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @RequiredArgsConstructor
