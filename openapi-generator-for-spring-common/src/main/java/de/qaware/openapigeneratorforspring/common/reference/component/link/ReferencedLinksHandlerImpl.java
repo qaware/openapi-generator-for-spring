@@ -22,11 +22,13 @@ package de.qaware.openapigeneratorforspring.common.reference.component.link;
 
 import de.qaware.openapigeneratorforspring.common.reference.ReferenceType;
 import de.qaware.openapigeneratorforspring.common.reference.handler.AbstractDependentReferencedComponentHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemBuildContext;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.link.Link;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -48,7 +50,7 @@ public class ReferencedLinksHandlerImpl extends AbstractDependentReferencedCompo
     }
 
     @Override
-    public void applyToComponents(Components components) {
-        storage.buildReferencedItems(components::setLinks);
+    public void applyToComponents(Components components, @Nullable ReferencedItemBuildContext context) {
+        storage.buildReferencedItems(components::setLinks, context);
     }
 }
