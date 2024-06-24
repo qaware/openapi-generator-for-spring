@@ -23,15 +23,19 @@ package de.qaware.openapigeneratorforspring.common.reference.handler;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.OpenApi;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public abstract class AbstractReferencedComponentHandler implements ReferencedItemHandler {
 
     @Override
-    public final void applyToOpenApi(OpenApi openApi) {
+    public final void applyToOpenApi(OpenApi openApi, @Nullable ReferencedItemBuildContext context) {
         // ReferencedItemSupportFactory ensures that openApi.getComponents() is not null
-        applyToComponents(Objects.requireNonNull(openApi.getComponents(), "components of openApi must not be null"));
+        applyToComponents(
+                Objects.requireNonNull(openApi.getComponents(), "components of openApi must not be null"),
+                context
+        );
     }
 
-    protected abstract void applyToComponents(Components components);
+    protected abstract void applyToComponents(Components components, @Nullable ReferencedItemBuildContext context);
 }

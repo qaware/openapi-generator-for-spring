@@ -22,12 +22,14 @@ package de.qaware.openapigeneratorforspring.common.reference.component.securitys
 
 import de.qaware.openapigeneratorforspring.common.mapper.SecuritySchemeAnnotationMapper;
 import de.qaware.openapigeneratorforspring.common.reference.handler.AbstractReferencedComponentHandler;
+import de.qaware.openapigeneratorforspring.common.reference.handler.ReferencedItemBuildContext;
 import de.qaware.openapigeneratorforspring.common.security.OpenApiSecuritySchemesSupplier;
 import de.qaware.openapigeneratorforspring.common.supplier.OpenApiSpringBootApplicationAnnotationsSupplier;
 import de.qaware.openapigeneratorforspring.model.Components;
 import de.qaware.openapigeneratorforspring.model.security.SecurityScheme;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -80,7 +82,7 @@ public class ReferencedSecuritySchemesHandlerImpl extends AbstractReferencedComp
     }
 
     @Override
-    public void applyToComponents(Components components) {
+    public void applyToComponents(Components components, @Nullable ReferencedItemBuildContext context) {
         setMapIfNotEmpty(securitySchemes, components::setSecuritySchemes);
     }
 }
